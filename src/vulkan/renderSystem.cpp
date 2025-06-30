@@ -155,23 +155,24 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
         std::cerr << "No valid sprites or model to render" << std::endl;
         return;
     }
-
     global.setAspectRatio();
 
-    // Bind the pipeline and descriptor set once
     pipeline->bind(commandBuffer);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
 
-    for (size_t i = 0; i < sprites.size(); ++i) {
-        const Sprite& sprite = spriteCPU[i];
-        sprite.model->bind(commandBuffer);
+    Push push{};
+    push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
-        Push push{};
-        push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    // Batch by model
+    std::unordered_map<std::shared_ptr<Model>, std::vector<size_t>> batches;
+    for (size_t i = 0; i < spriteCPU.size(); ++i)
+        batches[spriteCPU[i].model].push_back(i);
 
-        vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
-
-        sprite.model->draw(commandBuffer, 1);
+    for (const auto& [modelPtr, indices] : batches) {
+        modelPtr->bind(commandBuffer);
+        // You must also ensure the SpriteData buffer is ordered so that instance index matches the buffer slot!
+        modelPtr->draw(commandBuffer, static_cast<uint32_t>(indices.size()));
     }
 }
 

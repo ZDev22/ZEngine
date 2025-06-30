@@ -3,12 +3,12 @@
 
 layout(location = 0) in vec4 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
-layout(location = 2) flat in uint textureId;
+layout(location = 2) flat in uint textureID;
 
 layout(location = 0) out vec4 outColor;
 
 layout(set = 0, binding = 1) uniform sampler2D texSampler[];
 
 void main() {
-    outColor = texture(texSampler[textureId], fragTexCoord) * fragColor;
+    outColor = texture(texSampler[textureID], fragTexCoord) * fragColor;
 }

@@ -61,18 +61,20 @@ void Pipeline::loadSprites() {
     sprites.clear();
     spriteCPU.clear();
 
+    Sprite sprite;
+    SpriteData spriteData;
+
     for (size_t i = 0; i < texturePaths.size(); ++i) {
-        Sprite sprite;
         sprite.model = sharedModel;
 
         auto texture = std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this);
         sprite.texture = texture.get();
 
-        SpriteData spriteData;
         spriteData.translation = glm::vec2(i * 0.5f, i * 0.5f);
         spriteData.scale = glm::vec2(.2f, .2f);
         spriteData.rotation = 0.0f;
         spriteData.color = glm::vec4(1.0f);
+        spriteData.textureIndex = i;
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);
