@@ -72,7 +72,7 @@ void Pipeline::loadSprites() {
         auto texture = std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this);
         sprite.texture = texture.get();
 
-        spriteData.translation = glm::vec2(i * 0.5f, i * 0.5f);
+        spriteData.translation = glm::vec2(i * .2f, 0.f);
         spriteData.scale = glm::vec2(.2f, .2f);
         spriteData.rotation = 0.0f;
         spriteData.color = glm::vec4(1.0f);

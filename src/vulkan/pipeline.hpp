@@ -38,6 +38,6 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    std::vector<std::string> texturePaths = { "FlappyBird.png", "logo.jpg" };
+    std::vector<std::string> texturePaths = { "FlappyBird.png", "logo.jpg", "pipe.png"};
     std::vector<std::unique_ptr<Texture>> spriteTextures;
 };
