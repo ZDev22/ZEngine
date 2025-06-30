@@ -49,6 +49,8 @@ void Pipeline::setTexture(int textureID) {
 void Pipeline::loadSprites() {
     std::cout << "Starting sprite loading...\n";
 
+    for (size_t f = 0; f < texturePaths.size(); f++) { texturePaths[f] = "images/" + texturePaths[f]; }
+
     std::vector<Model::Vertex> vertices = {
         {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
