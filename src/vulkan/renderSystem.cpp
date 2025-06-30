@@ -130,7 +130,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     VkWriteDescriptorSet imageWrite{};
     imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     imageWrite.dstSet = spriteDataDescriptorSet;
-    imageWrite.dstBinding = 0;
+    imageWrite.dstBinding = 1;
     imageWrite.dstArrayElement = 0;
     imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     imageWrite.descriptorCount = static_cast<uint32_t>(imageInfos.size());
@@ -168,8 +168,6 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
 
         Push push{};
         push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-        // Add texture index to push constants if needed
-        push.textureIndex = sprite.textureIndex; // Assuming Sprite has a textureIndex field
 
         vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
