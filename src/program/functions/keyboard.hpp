@@ -16,11 +16,7 @@ public:
         for (int i = 0; i < glfwKeys.size(); ++i) { keyIndexMap[glfwKeys[i]] = i; }
     }
 
-<<<<<<< HEAD
     unsigned char updateKeyState(int key) {
-=======
-    unsigned char updateKeyState(int& key) {
->>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
         auto keyState = keyIndexMap.find(key);
         size_t index = keyState->second;
 
@@ -38,19 +34,11 @@ public:
         return keys[index];
     }
 
-<<<<<<< HEAD
     bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
     bool keyHit(int key) { return updateKeyState(key) == 3; }
     bool keyReleased(int key) { return updateKeyState(key) == 1; }
     bool keysPressed(std::vector<int>& keys) {
         for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false; } }
-=======
-    bool keyPressed(int& key) { return glfwGetKey(window, key) == GLFW_PRESS; }
-    bool keyHit(int& key) { return updateKeyState(key) == 3; }
-    bool keyReleased(int& key) { return updateKeyState(key) == 1; }
-    bool keysPressed(std::vector<int>& keys) {
-        for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false;} }
->>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
         return true;
     }
 

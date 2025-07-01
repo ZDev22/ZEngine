@@ -30,11 +30,7 @@ public:
             attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
             attributeDescriptions[0].offset = offsetof(Vertex, position);
             attributeDescriptions[1].binding = 0;
-<<<<<<< HEAD
             attributeDescriptions[1].location = 1;
-=======
-            attributeDescriptions[1].location = 2;
->>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
             attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
             attributeDescriptions[1].offset = offsetof(Vertex, texCoord);
             return attributeDescriptions;

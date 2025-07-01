@@ -9,11 +9,6 @@
 #include <vector>
 #include <string>
 
-<<<<<<< HEAD
-float speedY = 0.f;
-
-=======
->>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
 Program::Program(Keyboard& keyboard) : keyboard(keyboard) {
     // Currently no initialization to be seen
 }

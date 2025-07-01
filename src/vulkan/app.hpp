@@ -15,11 +15,7 @@
 class App {
 public:
     App();
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
     App(const App&) = delete;
     App& operator=(const App&) = delete;
 
