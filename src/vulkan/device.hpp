@@ -29,11 +29,11 @@ public:
     Device(Device&&) = delete;
     Device& operator=(Device&&) = delete;
 
-    VkCommandPool getCommandPool() { return commandPool; }
-    VkDevice device() { return device_; }
-    VkSurfaceKHR surface() { return surface_; }
-    VkQueue graphicsQueue() { return graphicsQueue_; }
-    VkQueue presentQueue() { return presentQueue_; }
+    VkCommandPool getCommandPool() const { return commandPool; }
+    VkDevice device() const { return device_; }
+    VkSurfaceKHR surface() const { return surface_; }
+    VkQueue graphicsQueue() const { return graphicsQueue_; }
+    VkQueue presentQueue() const { return presentQueue_; }
 
     SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
