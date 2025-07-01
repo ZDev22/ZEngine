@@ -16,9 +16,12 @@ public:
         for (int i = 0; i < glfwKeys.size(); ++i) { keyIndexMap[glfwKeys[i]] = i; }
     }
 
+<<<<<<< HEAD
     unsigned char updateKeyState(int key) {
+=======
+    unsigned char updateKeyState(int& key) {
+>>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
         auto keyState = keyIndexMap.find(key);
-
         size_t index = keyState->second;
 
         if (keys[index + 122] == 0) {
@@ -35,11 +38,19 @@ public:
         return keys[index];
     }
 
+<<<<<<< HEAD
     bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
     bool keyHit(int key) { return updateKeyState(key) == 3; }
     bool keyReleased(int key) { return updateKeyState(key) == 1; }
     bool keysPressed(std::vector<int>& keys) {
         for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false; } }
+=======
+    bool keyPressed(int& key) { return glfwGetKey(window, key) == GLFW_PRESS; }
+    bool keyHit(int& key) { return updateKeyState(key) == 3; }
+    bool keyReleased(int& key) { return updateKeyState(key) == 1; }
+    bool keysPressed(std::vector<int>& keys) {
+        for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false;} }
+>>>>>>> 8bd45812fdf72ff958a206dc0592dced42f5c02a
         return true;
     }
 
@@ -57,7 +68,6 @@ private:
         /*Keypad   */ GLFW_KEY_KP_0, GLFW_KEY_KP_1, GLFW_KEY_KP_2, GLFW_KEY_KP_3, GLFW_KEY_KP_4, GLFW_KEY_KP_5, GLFW_KEY_KP_6, GLFW_KEY_KP_7, GLFW_KEY_KP_8, GLFW_KEY_KP_9, GLFW_KEY_KP_DECIMAL, GLFW_KEY_KP_DIVIDE, GLFW_KEY_KP_MULTIPLY, GLFW_KEY_KP_SUBTRACT, GLFW_KEY_KP_ADD, GLFW_KEY_KP_ENTER, GLFW_KEY_KP_EQUAL,
         /*Modifiers*/ GLFW_KEY_LEFT_SHIFT, GLFW_KEY_LEFT_CONTROL, GLFW_KEY_LEFT_ALT, GLFW_KEY_LEFT_SUPER, GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_RIGHT_CONTROL, GLFW_KEY_RIGHT_ALT, GLFW_KEY_RIGHT_SUPER, GLFW_KEY_MENU
     };
-
     std::array<unsigned char, 244> keys;
 };
 
