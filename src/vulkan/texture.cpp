@@ -21,10 +21,21 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
         throw std::runtime_error("failed to load texture image: " + filepath);
     }
 
+    if (texWidth == 0 || texHeight == 0) {
+        stbi_image_free(pixels);
+        throw std::runtime_error("Image has invalid size (zero width or height): " + filepath);
+    }
+
     std::cout << "Texture loaded: " << filepath << ", Width: " << texWidth << ", Height: " << texHeight
         << ", Channels: " << texChannels << std::endl;
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
+    if (imageSize == 0) {
+        stbi_image_free(pixels);
+        throw std::runtime_error("Image size is zero: " + filepath);
+    }
+
+    std::cout << "Texture loaded: " << filepath << ", Width: " << texWidth << ", Height: " << texHeight << ", Channels: " << texChannels << std::endl;
     imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
     device.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,

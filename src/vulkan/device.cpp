@@ -46,43 +46,43 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 Device::Device(AppWindow& window) : window{ window } {
-    cout << "[Device] Creating instance...\n"; createInstance();
-    cout << "[Device] Creating debug messenger...\n"; setupDebugMessenger();
-    cout << "[Device] Creating surface...\n"; createSurface();
-    cout << "[Device] Creating physical device...\n"; pickPhysicalDevice();
-    cout << "[Device] Creating logical device...\n"; createLogicalDevice();
-    cout << "[Device] Creating command pool...\n"; createCommandPool();
-    cout << "[Device] Device constructed!\n";
+    cout << "[Device] Creating instance..." << std::endl; createInstance();
+    cout << "[Device] Creating debug messenger..." << std::endl; setupDebugMessenger();
+    cout << "[Device] Creating surface..." << std::endl; createSurface();
+    cout << "[Device] Creating physical device..." << std::endl; pickPhysicalDevice();
+    cout << "[Device] Creating logical device..." << std::endl; createLogicalDevice();
+    cout << "[Device] Creating command pool..." << std::endl; createCommandPool();
+    cout << "[Device] Device constructed!" << std::endl;
 }
 
 Device::~Device() {
-    cout << "[Device] Destroying command pool...\n";
+    cout << "[Device] Destroying command pool..." << std::endl;
     vkDestroyCommandPool(device_, commandPool, nullptr);
-    cout << "[Device] Destroying logical device...\n";
+    cout << "[Device] Destroying logical device..." << std::endl;
     vkDestroyDevice(device_, nullptr);
     if (enableValidationLayers && debugMessenger != VK_NULL_HANDLE) {
-        cout << "[Device] Destroying debug messenger...\n";
+        cout << "[Device] Destroying debug messenger..." << std::endl;
         DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
     }
-    cout << "[Device] Destroying surface...\n";
+    cout << "[Device] Destroying surface..." << std::endl;
     vkDestroySurfaceKHR(instance, surface_, nullptr);
-    cout << "[Device] Destroying instance...\n";
+    cout << "[Device] Destroying instance..." << std::endl;
     vkDestroyInstance(instance, nullptr);
-    cout << "[Device] Device destroyed!\n";
+    cout << "[Device] Device destroyed!" << std::endl;
 }
 
 void Device::createInstance() {
-    cout << "[Device] instance function called\n";
+    cout << "[Device] instance function called" << std::endl;
     if (enableValidationLayers) {
-        cout << "[Device] Checking validation support\n";
+        cout << "[Device] Checking validation support" << std::endl;
         if (!checkValidationLayerSupport()) {
-            std::cerr << "[Device] Warning: Validation layers requested but not available. Continuing without them.\n";
+            std::cerr << "[Device] Warning: Validation layers requested but not available. Continuing without them." << std::endl;
             enableValidationLayers = false;
         } else {
-            cout << "[Device] Validation layer check successful\n";
+            cout << "[Device] Validation layer check successful" << std::endl;
         }
     }
-    cout << "[Device] Creating app info...\n";
+    cout << "[Device] Creating app info..." << std::endl;
 
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -92,14 +92,14 @@ void Device::createInstance() {
     appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
     appInfo.apiVersion = VK_API_VERSION_1_2;
 
-    cout << "[Device] Creating instance info...\n";
+    cout << "[Device] Creating instance info..." << std::endl;
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    cout << "[Device] Getting extensions...\n";
+    cout << "[Device] Getting extensions..." << std::endl;
     auto extensions = getRequiredExtensions();
-    cout << "[Device] Enabling Vulkan instance extensions (" << extensions.size() << "):\n";
+    cout << "[Device] Enabling Vulkan instance extensions (" << extensions.size() << "):" << std::endl;
     for (const auto* ext : extensions) {
         cout << "  - " << (ext ? ext : "<nullptr>") << endl;
     }
@@ -108,7 +108,7 @@ void Device::createInstance() {
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if (enableValidationLayers) {
-        cout << "[Device] Enabling validation layers (" << validationLayers.size() << "):\n";
+        cout << "[Device] Enabling validation layers (" << validationLayers.size() << "):" << std::endl;
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         createInfo.ppEnabledLayerNames = validationLayers.data();
         for (const char* layer : validationLayers) {
@@ -117,42 +117,42 @@ void Device::createInstance() {
         populateDebugMessengerCreateInfo(debugCreateInfo);
         createInfo.pNext = &debugCreateInfo;
     }
-    cout << "[Device] Creating Vulkan instance (vkCreateInstance)...\n";
+    cout << "[Device] Creating Vulkan instance (vkCreateInstance)..." << std::endl;
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("[Device] Failed to create Vulkan instance");
     }
-    cout << "[Device] Vulkan instance created successfully!\n";
+    cout << "[Device] Vulkan instance created successfully!" << std::endl;
     hasGflwRequiredInstanceExtensions();
-    cout << "[Device] createInstance finished\n";
+    cout << "[Device] createInstance finished" << std::endl;
 }
 
 void Device::setupDebugMessenger() {
     if (!enableValidationLayers) {
-        cout << "[Device] Validation layers disabled, skipping debug messenger\n";
+        cout << "[Device] Validation layers disabled, skipping debug messenger" << std::endl;
         return;
     }
-    cout << "[Device] Setting up debug messenger...\n";
+    cout << "[Device] Setting up debug messenger..." << std::endl;
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
     if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-        std::cerr << "[Device] Warning: Failed to create debug messenger.\n";
+        std::cerr << "[Device] Warning: Failed to create debug messenger." << std::endl;
         debugMessenger = VK_NULL_HANDLE;
     } else {
-        cout << "[Device] Debug messenger created!\n";
+        cout << "[Device] Debug messenger created!" << std::endl;
     }
 }
 
 void Device::createSurface() {
-    cout << "[Device] Creating window surface...\n";
+    cout << "[Device] Creating window surface..." << std::endl;
     window.createWindowSurface(instance, &surface_);
-    cout << "[Device] Window surface created!\n";
+    cout << "[Device] Window surface created!" << std::endl;
 }
 
 void Device::pickPhysicalDevice() {
-    cout << "[Device] Enumerating physical devices...\n";
+    cout << "[Device] Enumerating physical devices..." << std::endl;
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-    cout << "[Device] Found " << deviceCount << " physical device(s)\n";
+    cout << "[Device] Found " << deviceCount << " physical device(s)" << std::endl;
 
     if (deviceCount == 0) {
         throw std::runtime_error("[Device] No Vulkan-compatible GPUs found");
@@ -162,16 +162,16 @@ void Device::pickPhysicalDevice() {
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     for (size_t i = 0; i < devices.size(); ++i) {
-        cout << "[Device] Checking device " << i << " for suitability...\n";
+        cout << "[Device] Checking device " << i << " for suitability..." << std::endl;
         if (isDeviceSuitable(devices[i])) {
             physicalDevice = devices[i];
-            cout << "[Device] Suitable device found at index " << i << "\n";
+            cout << "[Device] Suitable device found at index " << i << "" << std::endl;
             break;
         }
     }
 
     if (physicalDevice == VK_NULL_HANDLE) {
-        std::cerr << "[Device] Warning: No suitable GPU found, using first available\n";
+        std::cerr << "[Device] Warning: No suitable GPU found, using first available" << std::endl;
         physicalDevice = devices[0];
     }
 
@@ -180,7 +180,7 @@ void Device::pickPhysicalDevice() {
 }
 
 void Device::createLogicalDevice() {
-    cout << "[Device] Finding queue families...\n";
+    cout << "[Device] Finding queue families..." << std::endl;
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -209,7 +209,7 @@ void Device::createLogicalDevice() {
     std::vector<const char*> updatedDeviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
-    cout << "[Device] Device extensions to be enabled (" << updatedDeviceExtensions.size() << "):\n";
+    cout << "[Device] Device extensions to be enabled (" << updatedDeviceExtensions.size() << "):" << std::endl;
     for (const auto* ext : updatedDeviceExtensions) {
         cout << "  - " << ext << endl;
     }
@@ -217,7 +217,7 @@ void Device::createLogicalDevice() {
     createInfo.ppEnabledExtensionNames = updatedDeviceExtensions.data();
 
     if (enableValidationLayers) {
-        cout << "[Device] Enabling validation layers for logical device (" << validationLayers.size() << "):\n";
+        cout << "[Device] Enabling validation layers for logical device (" << validationLayers.size() << "):" << std::endl;
         for (const char* layer : validationLayers) {
             cout << "  - " << layer << endl;
         }
@@ -227,19 +227,19 @@ void Device::createLogicalDevice() {
         createInfo.enabledLayerCount = 0;
     }
 
-    cout << "[Device] Creating logical device...\n";
+    cout << "[Device] Creating logical device..." << std::endl;
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) {
         throw std::runtime_error("[Device] failed to create logical device!");
     }
-    cout << "[Device] Logical device created!\n";
+    cout << "[Device] Logical device created!" << std::endl;
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
-    cout << "[Device] Graphics queue obtained.\n";
+    cout << "[Device] Graphics queue obtained." << std::endl;
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
-    cout << "[Device] Present queue obtained.\n";
+    cout << "[Device] Present queue obtained." << std::endl;
 }
 
 void Device::createCommandPool() {
-    cout << "[Device] Finding physical queue families for command pool...\n";
+    cout << "[Device] Finding physical queue families for command pool..." << std::endl;
     QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
 
     VkCommandPoolCreateInfo poolInfo{};
@@ -247,20 +247,20 @@ void Device::createCommandPool() {
     poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    cout << "[Device] Creating command pool...\n";
+    cout << "[Device] Creating command pool..." << std::endl;
     if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
         throw std::runtime_error("[Device] failed to create command pool!");
     }
-    cout << "[Device] Command pool created!\n";
+    cout << "[Device] Command pool created!" << std::endl;
 }
 
 bool Device::isDeviceSuitable(VkPhysicalDevice device) {
-    cout << "[Device] Checking device suitability...\n";
+    cout << "[Device] Checking device suitability..." << std::endl;
     QueueFamilyIndices indices = findQueueFamilies(device);
     bool extensionsSupported = checkDeviceExtensionSupport(device);
     bool swapChainAdequate = false;
     if (extensionsSupported) {
-        cout << "[Device] Device supports required extensions.\n";
+        cout << "[Device] Device supports required extensions." << std::endl;
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         cout << "[Device] SwapChain formats: " << swapChainSupport.formats.size()
@@ -275,7 +275,7 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
 
 bool Device::checkValidationLayerSupport() {
     uint32_t layerCount;
-    cout << "[Device] Calling 'vkEnumerateInstanceLayerProperties'\n";
+    cout << "[Device] Calling 'vkEnumerateInstanceLayerProperties'" << std::endl;
     VkResult result = vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
     if (result != VK_SUCCESS) {
         std::cerr << "[Device] Failed to enumerate instance layer properties: " << result << std::endl;
@@ -283,7 +283,7 @@ bool Device::checkValidationLayerSupport() {
     }
 
     std::vector<VkLayerProperties> availableLayers(layerCount);
-    cout << "[Device] Calling 'vkEnumerateInstanceLayerProperties' (again)\n";
+    cout << "[Device] Calling 'vkEnumerateInstanceLayerProperties' (again)" << std::endl;
     result = vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
     if (result != VK_SUCCESS) {
         std::cerr << "[Device] Failed to enumerate instance layer properties: " << result << std::endl;
@@ -350,7 +350,7 @@ std::vector<const char*> Device::getRequiredExtensions() {
 }
 
 void Device::hasGflwRequiredInstanceExtensions() {
-    cout << "[Device] Checking GLFW required instance extensions...\n";
+    cout << "[Device] Checking GLFW required instance extensions..." << std::endl;
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
     std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -368,11 +368,11 @@ void Device::hasGflwRequiredInstanceExtensions() {
             cout << "[Device] Found required GLFW extension: " << required << endl;
         }
     }
-    cout << "[Device] Checked all GLFW required instance extensions.\n";
+    cout << "[Device] Checked all GLFW required instance extensions." << std::endl;
 }
 
 bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
-    cout << "[Device] Checking device extension support...\n";
+    cout << "[Device] Checking device extension support..." << std::endl;
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
@@ -397,7 +397,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 }
 
 QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
-    cout << "[Device] Finding queue families...\n";
+    cout << "[Device] Finding queue families..." << std::endl;
     QueueFamilyIndices indices;
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -422,12 +422,12 @@ QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
         if (indices.isComplete()) break;
         i++;
     }
-    cout << "[Device] Queue family search complete\n";
+    cout << "[Device] Queue family search complete" << std::endl;
     return indices;
 }
 
 SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
-    cout << "[Device] Querying swapchain support...\n";
+    cout << "[Device] Querying swapchain support..." << std::endl;
     SwapChainSupportDetails details;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
     uint32_t formatCount;
@@ -444,12 +444,12 @@ SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
         details.presentModes.resize(presentModeCount);
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
     }
-    cout << "[Device] Swapchain support queried\n";
+    cout << "[Device] Swapchain support queried" << std::endl;
     return details;
 }
 
 VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
-    cout << "[Device] Finding supported format...\n";
+    cout << "[Device] Finding supported format..." << std::endl;
     for (VkFormat format : candidates) {
         VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
@@ -466,7 +466,7 @@ VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidates, Vk
 }
 
 uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-    cout << "[Device] Finding memory type...\n";
+    cout << "[Device] Finding memory type..." << std::endl;
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
@@ -492,7 +492,7 @@ VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMem
     if (result != VK_SUCCESS) {
         throw std::runtime_error("[Device] failed to create buffer! VkResult: " + std::to_string(result));
     }
-    cout << "[Device] Buffer created.\n";
+    cout << "[Device] Buffer created." << std::endl;
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
@@ -508,7 +508,7 @@ VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMem
         vkDestroyBuffer(device_, buffer, nullptr);
         throw std::runtime_error("[Device] failed to allocate buffer memory! VkResult: " + std::to_string(result));
     }
-    cout << "[Device] Buffer memory allocated.\n";
+    cout << "[Device] Buffer memory allocated." << std::endl;
 
     result = vkBindBufferMemory(device_, buffer, bufferMemory, 0);
     if (result != VK_SUCCESS) {
@@ -516,13 +516,13 @@ VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMem
         vkFreeMemory(device_, bufferMemory, nullptr);
         throw std::runtime_error("[Device] failed to bind buffer memory! VkResult: " + std::to_string(result));
     }
-    cout << "[Device] Buffer memory bound.\n";
+    cout << "[Device] Buffer memory bound." << std::endl;
 
     return VK_SUCCESS;
 }
 
 VkCommandBuffer Device::beginSingleTimeCommands() {
-    cout << "[Device] beginSingleTimeCommands\n";
+    cout << "[Device] beginSingleTimeCommands" << std::endl;
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -537,12 +537,12 @@ VkCommandBuffer Device::beginSingleTimeCommands() {
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    cout << "[Device] Single time command buffer begun\n";
+    cout << "[Device] Single time command buffer begun" << std::endl;
     return commandBuffer;
 }
 
 void Device::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-    cout << "[Device] endSingleTimeCommands\n";
+    cout << "[Device] endSingleTimeCommands" << std::endl;
     vkEndCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo{};
@@ -554,7 +554,7 @@ void Device::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkQueueWaitIdle(graphicsQueue_);
 
     vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
-    cout << "[Device] Single time command buffer ended and freed\n";
+    cout << "[Device] Single time command buffer ended and freed" << std::endl;
 }
 
 void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
@@ -566,7 +566,7 @@ void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize siz
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
     endSingleTimeCommands(commandBuffer);
-    cout << "[Device] copyBuffer complete\n";
+    cout << "[Device] copyBuffer complete" << std::endl;
 }
 
 void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount) {
@@ -584,16 +584,16 @@ void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, u
     region.imageExtent = { width, height, 1 };
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     endSingleTimeCommands(commandBuffer);
-    cout << "[Device] copyBufferToImage complete\n";
+    cout << "[Device] copyBufferToImage complete" << std::endl;
 }
 
 VkResult Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
-    cout << "[Device] createImageWithInfo\n";
+    cout << "[Device] createImageWithInfo" << std::endl;
     VkResult result = vkCreateImage(device_, &imageInfo, nullptr, &image);
     if (result != VK_SUCCESS) {
         throw std::runtime_error("[Device] failed to create image! VkResult: " + std::to_string(result));
     }
-    cout << "[Device] Image created.\n";
+    cout << "[Device] Image created." << std::endl;
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(device_, image, &memRequirements);
@@ -615,13 +615,13 @@ VkResult Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemor
         vkFreeMemory(device_, imageMemory, nullptr);
         throw std::runtime_error("[Device] failed to bind image memory! VkResult: " + std::to_string(result));
     }
-    cout << "[Device] Image memory allocated and bound.\n";
+    cout << "[Device] Image memory allocated and bound." << std::endl;
 
     return VK_SUCCESS;
 }
 
 void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
-    cout << "[Device] Populating debug messenger create info...\n";
+    cout << "[Device] Populating debug messenger create info..." << std::endl;
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
@@ -634,6 +634,6 @@ void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT
 }
 
 VkDevice Device::getDevice() {
-    cout << "[Device] getDevice called\n";
+    cout << "[Device] getDevice called" << std::endl;
     return device_;
 }
