@@ -32,8 +32,6 @@ App::App() {
     renderSystem->initialize();
 }
 
-App::~App() {}
-
 void App::run() {
     lastTime = HighResClock::now();
 

@@ -52,10 +52,10 @@ void Pipeline::loadSprites() {
     for (size_t f = 0; f < texturePaths.size(); f++) { texturePaths[f] = "images/" + texturePaths[f]; }
 
     std::vector<Model::Vertex> vertices = {
-        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+        {{-0.5f, -0.5f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 1.0f}}
     };
     std::vector<uint32_t> indices = { 0, 1, 2, 2, 3, 0 };
     auto sharedModel = std::make_shared<Model>(device, vertices, indices);
