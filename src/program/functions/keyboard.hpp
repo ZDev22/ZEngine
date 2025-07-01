@@ -6,16 +6,15 @@
 
 #include <unordered_map>
 #include <cstring>
+#include <vector>
 #include <array>
 
 class Keyboard {
 public:
     explicit Keyboard(AppWindow& appWindow) : window{appWindow.getWindow()} {
-        for (size_t i = 0; i < keys.size(); ++i) { keys[i] = (i <= 121) ? 0 : 0; }
+        std::memset(keys.data(), 0, keys.size());
         for (int i = 0; i < glfwKeys.size(); ++i) { keyIndexMap[glfwKeys[i]] = i; }
     }
-
-    bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
 
     unsigned char updateKeyState(int key) {
         auto keyState = keyIndexMap.find(key);
@@ -36,8 +35,13 @@ public:
         return keys[index];
     }
 
+    bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
     bool keyHit(int key) { return updateKeyState(key) == 3; }
     bool keyReleased(int key) { return updateKeyState(key) == 1; }
+    bool keysPressed(std::vector<int>& keys) {
+        for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false; } }
+        return true;
+    }
 
     void resetKeys() { std::memset(keys.data() + 122, 0, (122)); }
 

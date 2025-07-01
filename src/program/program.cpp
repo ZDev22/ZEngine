@@ -5,13 +5,12 @@
 #include <glm/glm.hpp>
 
 #include <iostream>
+#include <vector>
 #include <string>
-#include "functions/keyboard.hpp"
 
 float speedY = 0.f;
 
-Program::Program(Keyboard& keyboard)
-: keyboard(keyboard) {
+Program::Program(Keyboard& keyboard) : keyboard(keyboard) {
     // Currently no initialization to be seen
 }
 
@@ -24,7 +23,6 @@ void Program::tick() {
         speedY = -1.5f;
         sprites[0].rotation = -25.f;
     }
-
 
     //Reset stuff for next frame
     keyboard.resetKeys();
