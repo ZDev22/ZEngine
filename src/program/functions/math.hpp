@@ -41,34 +41,11 @@ float easeOutBounce(float& t) {
 }
 
 // Averages
-short averageChar(vector<unsigned char>& chars) {
-    short average;
-    for (const short a : chars) { average += a; }
-    return { average / chars.size() };
-}
-
-short averageShort(vector<short>& shorts) {
-    int average;
-    for (const short a : shorts) { average += a; }
-    return { average / shorts.size() };
-}
-
-int averageInt(vector<int>& ints) {
-    long long average;
-    for (const int a : ints) { average += a; }
-    return { average / ints.size() };
-}
-
-long long averageLong(vector<long long>& longs) {
-    long long average;
-    for (const long long a : longs) { average += a; }
-    return { average / longs.size() };
-}
-
-float averageFloat(vector<float>& floats) {
-    float average;
-    for (const float a : floats) { average += a; }
-    return { average / floats.size() };
+template<typename T>
+T averageNum(const vector<T>& nums) {
+    double average = 0.0;
+    for (const T& a : nums) { average += a; }
+    return static_cast<T>(average / nums.size());
 }
 
 bool averageBool(vector<bool>& bools) {
@@ -80,62 +57,15 @@ bool averageBool(vector<bool>& bools) {
     return { randomBool(); }
 }
 
-short averageMinMaxChar(const vector<unsigned char>& chars) {
-    unsigned char minVal = 0, maxVal = 0;
-    short sum;
-
-    for (const short a : chars) {
+template<typename T>
+T averageMinMaxNum(const vector<T>& nums) {
+    double minVal = 0.0, maxVal = 0, average = 0.0;
+    for (const T& a : chars) {
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const short a : chars) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / chars.size();
-}
-
-short averageMinMaxShort(const vector<short>& shorts) {
-    short minVal = 0, maxVal = 0;
-    int sum;
-
-    for (const short a : shorts) {
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (const short a : shorts) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / shorts.size();
-}
-
-int averageMinMaxInt(const vector<int>& ints) {
-    int minVal = 0, maxVal = 0;
-    long long sum;
-
-    for (const int a : ints) {
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (const int a : ints) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / ints.size();
-}
-
-long long averageMinMaxLong(const vector<long long>& longs) {
-    long long minVal = 0, maxVal = 0, sum;
-
-    for (const long long a : longs) {
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (const long long a : longs) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / longs.size();
-}
-
-float averageMinMaxFloat(const vector<float>& floats) {
-    float minVal = 0.f, maxVal = 0.f, sum;
-
-    for (const long long a : floats) {
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (const float a : floats) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / floats.size();
+    for (const T& a : chars) { if (a != minVal && a != maxVal) { sum += a; } }
+    return static_cast<T>(average / nums.size());
 }
 
 // Random
@@ -147,10 +77,8 @@ uint32_t xorshift32() {
     return state;
 }
 
-unsigned char randomShort(unsigned char& min, unsigned char& max) { return min + (xorshift32() % (max - min + 1)); }
-short randomShort(short& min, short& max) { return min + (xorshift32() % (max - min + 1)); }
-int randomInt(int& min, int& max) { return min + (xorshift32() % (max - min + 1)); }
-long long randomLong(long long& min, long long& max) { return min + (((xorshift32() << 32) | xorshift32()) % (max - min + 1)); }
+template<typename T>
+T randomNum(const T& min, const T& max) { return min + (xorshift32() % (max - min + 1)); }
 float randomFloat(float& min, float& max) { return min + (max - min) * (xorshift32() / 4,294,967,295.0f); }
 bool randomBool() { return (xorshift32() & 1) == 0; }
 
@@ -218,11 +146,9 @@ double solveWithVariablesPrecise(const std::string& expression, const std::map<s
 }
 
 // Values
-void setValuesInRangeChar(std::vector<unsigned char>& chars, unsigned char& value, int& minIndex, int& maxIndex) { std::fill(chars.begin() + minIndex, chars.begin() + maxIndex, value); }
-void setValuesInRangeShort(std::vector<short>& shorts, short& value, int& minIndex, int& maxIndex) { std::fill(shorts.begin() + minIndex, shorts.begin() + maxIndex, value); }
-void setValuesInRangeInt(std::vector<int>& ints, int& value, int& minIndex, int& maxIndex) { std::fill(ints.begin() + minIndex, ints.begin() + maxIndex, value); }
-void setValuesInRangeLong(std::vector<long long>& longs, long long& value, int& minIndex, int& maxIndex) { std::fill(longs.begin() + minIndex, longs.begin() + maxIndex, value); }
-void setValuesInRangeFloat(std::vector<float>& floats, float& value, int& minIndex, int& maxIndex) { std::fill(floats.begin() + minIndex, floats.begin() + maxIndex, value); }
-void setValuesInRangeBool(std::vector<bool>& bools, bool& value, int& minIndex, int& maxIndex) { std::fill(bools.begin() + minIndex, bools.begin() + maxIndex, value); }
+template<typename T>
+void setValuesInRange(std::vector<T>& vec, const T& value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
+template<typename T>
+void setZero(std::vector<T>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(T)); }
 
 #endif
