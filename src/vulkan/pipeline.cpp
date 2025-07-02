@@ -46,31 +46,45 @@ void Pipeline::setTexture(int textureID) {
     );
 }
 
+std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positions) {
+    glm::vec2 baseMin = {-0.5f, -0.5f};
+    glm::vec2 baseSize = {1.0f, 1.0f};
+
+    std::vector<Model::Vertex> vertices;
+    for (const auto& pos : positions) {
+        glm::vec2 uv = (pos - baseMin) / baseSize;
+        vertices.push_back({ pos, uv });
+    }
+
+    std::vector<uint32_t> indices(positions.size());
+    for (uint32_t i = 0; i < positions.size(); ++i) { indices[i] = i; }
+
+    return std::make_shared<Model>(device, vertices, indices);
+}
+
 void Pipeline::loadSprites() {
     std::cout << "Starting sprite loading...\n";
-
     for (size_t f = 0; f < texturePaths.size(); f++) { texturePaths[f] = "images/" + texturePaths[f]; }
-
-    std::vector<Model::Vertex> vertices = {
-        {{-0.5f, -0.5f}, {0.0f, 0.0f}},
-        {{0.5f, -0.5f}, {1.0f, 0.0f}},
-        {{0.5f, 0.5f}, {1.0f, 1.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 1.0f}}
-    };
-    std::vector<uint32_t> indices = { 0, 1, 2, 2, 3, 0 };
-    auto sharedModel = std::make_shared<Model>(device, vertices, indices);
 
     sprites.clear();
     spriteCPU.clear();
 
-    Sprite sprite;
-    SpriteData spriteData;
+    // Create one quad model and reuse
+    auto quadModel = makeModel({
+        {-0.5f, -0.5f},
+        { 0.5f, -0.5f},
+        {-0.5f,  0.5f},
+        { 0.5f,  0.5f}
+    });
 
     for (size_t i = 0; i < texturePaths.size(); ++i) {
-        sprite.model = sharedModel;
+        Sprite sprite;
+        SpriteData spriteData;
 
+        sprite.model = quadModel; // <-- share the model!
         auto texture = std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this);
         sprite.texture = texture.get();
+        sprite.textureIndex = i;
 
         spriteData.translation = glm::vec2(i * .2f, 0.f);
         spriteData.scale = glm::vec2(.2f, .2f);
@@ -118,7 +132,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
     std::cout << "[Pipeline] Input assembly state created" << std::endl;
 

@@ -151,10 +151,6 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
-    if (sprites.empty() || !spriteCPU[0].model) {
-        std::cerr << "No valid sprites or model to render" << std::endl;
-        return;
-    }
     global.setAspectRatio();
 
     pipeline->bind(commandBuffer);

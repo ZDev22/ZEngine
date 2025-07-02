@@ -28,6 +28,7 @@ private:
     static std::vector<char> readFile(const std::string& filepath);
     void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass);
     VkShaderModule createShaderModule(const std::vector<char>& code);
+    std::shared_ptr<Model> makeModel(const std::vector<glm::vec2>& positions);
     void setTexture(int textureID);
 
     Device& device;
