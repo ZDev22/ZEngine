@@ -1,5 +1,6 @@
 ﻿#include "pipeline.hpp"
 #include "global.hpp"
+#include "../program/functions/math.hpp"
 
 #include <filesystem>
 #include <stdexcept>
@@ -70,10 +71,10 @@ void Pipeline::loadSprites() {
     spriteCPU.clear();
 
     auto quadModel = makeModel({
-        {-0.5f, -0.5f},
-        { 0.5f, -0.5f},
-        {-0.5f,  0.5f},
-        { 0.5f,  0.5f}
+        {-0.5f, -0.5f}, // Bottom-Left  (Vertex 0)
+        { 0.5f, -0.5f}, // Bottom-Right (Vertex 1)
+        {-0.5f,  0.5f}, // Top-Right    (Vertex 2)
+        { 0.5f,  0.5f}  // Top-Left     (Vertex 3)
     });
     auto texture = std::make_unique<Texture>(device, texturePaths[0], descriptorSetLayout, descriptorPool, *this);
 
@@ -84,7 +85,7 @@ void Pipeline::loadSprites() {
     sprite.texture = texture.get();
     sprite.textureIndex = 0;
 
-    spriteData.translation = glm::vec2(-.5f, -.2f);
+    spriteData.translation = glm::vec2(-.7f, -.2f);
     spriteData.scale = glm::vec2(.1f, .1f);
     spriteData.rotation = 0.0f;
     spriteData.color = glm::vec4(1.0f);
@@ -94,27 +95,21 @@ void Pipeline::loadSprites() {
     spriteCPU.push_back(sprite);
     spriteTextures.push_back(std::move(texture));
 
-    quadModel = makeModel({
-        {-0.5f, -0.5f},
-        { 0.5f, -0.5f},
-        {-0.5f,  0.5f},
-        { 0.5f,  0.5f}
-    });
+    //Re-use some values for the second sprite
     texture = std::make_unique<Texture>(device, texturePaths[1], descriptorSetLayout, descriptorPool, *this);
-    
-    sprite.model = quadModel;
     sprite.texture = texture.get();
     sprite.textureIndex = 1;
 
-    spriteData.translation = glm::vec2(0.f, 0.f);
-    spriteData.scale = glm::vec2(.3f, .3f);
-    spriteData.rotation = 0.0f;
-    spriteData.color = glm::vec4(1.0f);
     spriteData.textureIndex = 1;
+    spriteData.scale = glm::vec2(.15f, 1.5f);
 
-    sprites.push_back(spriteData);
-    spriteCPU.push_back(sprite);
-    spriteTextures.push_back(std::move(texture));
+    for (int i = 1; i < 4; i++) {
+        spriteData.translation = glm::vec2(1.f + (i / 2), randomFloat(-1.f, -.5f));
+
+        sprites.push_back(spriteData);
+        spriteCPU.push_back(sprite);
+        spriteTextures.push_back(std::move(texture));
+    }
 
     std::cout << "Sprites created: " << sprites.size() << std::endl;
 }

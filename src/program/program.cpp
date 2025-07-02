@@ -25,6 +25,13 @@ void Program::tick() {
         sprites[0].rotation = -25.f;
     }
 
+    for (size_t i = 1; i < sprites.size(); i++) {
+        sprites[i].translation.x -= .5f * deltaTime;
+        if (sprites[i].translation.x < -1.5f) {
+            sprites[i].translation.x = 1.5f;
+        }
+    }
+
     //Reset stuff for next frame
     keyboard.resetKeys();
 }

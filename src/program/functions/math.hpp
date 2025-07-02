@@ -40,6 +40,20 @@ float easeOutBounce(float& t) {
     return (54 / 5.f * t * t) - (513 / 25.f * t) + 268 / 25.f;
 }
 
+// Random
+uint32_t state = 730182364;
+uint32_t xorshift32() {
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+    return state;
+}
+
+template<typename T>
+T randomNum(const T& min, const T& max) { return min + (xorshift32() % (max - min + 1)); }
+float randomFloat(float min, float max) { return min + (max - min) * (xorshift32() / 4294967295.0f); }
+bool randomBool() { return (xorshift32() & 1) == 0; }
+
 // Averages
 template<typename T>
 T averageNum(const vector<T>& nums) {
@@ -54,33 +68,19 @@ bool averageBool(vector<bool>& bools) {
     for (const int a : bools) { if (bools[a]) { averageTrue++; } else { averageFalse++; } }
     if (averageTrue > averageFalse) { return true; }
     if (averageFalse > averageTrue) { return false; }
-    return { randomBool(); }
+    return randomBool();
 }
 
 template<typename T>
 T averageMinMaxNum(const vector<T>& nums) {
     double minVal = 0.0, maxVal = 0, average = 0.0;
-    for (const T& a : chars) {
+    for (const T& a : nums) {
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const T& a : chars) { if (a != minVal && a != maxVal) { sum += a; } }
+    for (const T& a : nums) { if (a != minVal && a != maxVal) { average += a; } }
     return static_cast<T>(average / nums.size());
 }
-
-// Random
-uint32_t state = 730182364;
-uint32_t xorshift32() {
-    state ^= state << 13;
-    state ^= state >> 17;
-    state ^= state << 5;
-    return state;
-}
-
-template<typename T>
-T randomNum(const T& min, const T& max) { return min + (xorshift32() % (max - min + 1)); }
-float randomFloat(float& min, float& max) { return min + (max - min) * (xorshift32() / 4,294,967,295.0f); }
-bool randomBool() { return (xorshift32() & 1) == 0; }
 
 // Solve
 float solve(const std::string& expression) {
