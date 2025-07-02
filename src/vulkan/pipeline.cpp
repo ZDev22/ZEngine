@@ -69,33 +69,52 @@ void Pipeline::loadSprites() {
     sprites.clear();
     spriteCPU.clear();
 
-    // Create one quad model and reuse
     auto quadModel = makeModel({
         {-0.5f, -0.5f},
         { 0.5f, -0.5f},
         {-0.5f,  0.5f},
         { 0.5f,  0.5f}
     });
+    auto texture = std::make_unique<Texture>(device, texturePaths[0], descriptorSetLayout, descriptorPool, *this);
 
-    for (size_t i = 0; i < texturePaths.size(); ++i) {
-        Sprite sprite;
-        SpriteData spriteData;
+    Sprite sprite;
+    SpriteData spriteData;
 
-        sprite.model = quadModel; // <-- share the model!
-        auto texture = std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this);
-        sprite.texture = texture.get();
-        sprite.textureIndex = i;
+    sprite.model = quadModel;
+    sprite.texture = texture.get();
+    sprite.textureIndex = 0;
 
-        spriteData.translation = glm::vec2(i * .2f, 0.f);
-        spriteData.scale = glm::vec2(.2f, .2f);
-        spriteData.rotation = 0.0f;
-        spriteData.color = glm::vec4(1.0f);
-        spriteData.textureIndex = i;
+    spriteData.translation = glm::vec2(-.5f, -.2f);
+    spriteData.scale = glm::vec2(.1f, .1f);
+    spriteData.rotation = 0.0f;
+    spriteData.color = glm::vec4(1.0f);
+    spriteData.textureIndex = 0;
 
-        sprites.push_back(spriteData);
-        spriteCPU.push_back(sprite);
-        spriteTextures.push_back(std::move(texture));
-    }
+    sprites.push_back(spriteData);
+    spriteCPU.push_back(sprite);
+    spriteTextures.push_back(std::move(texture));
+
+    quadModel = makeModel({
+        {-0.5f, -0.5f},
+        { 0.5f, -0.5f},
+        {-0.5f,  0.5f},
+        { 0.5f,  0.5f}
+    });
+    texture = std::make_unique<Texture>(device, texturePaths[1], descriptorSetLayout, descriptorPool, *this);
+    
+    sprite.model = quadModel;
+    sprite.texture = texture.get();
+    sprite.textureIndex = 1;
+
+    spriteData.translation = glm::vec2(0.f, 0.f);
+    spriteData.scale = glm::vec2(.3f, .3f);
+    spriteData.rotation = 0.0f;
+    spriteData.color = glm::vec4(1.0f);
+    spriteData.textureIndex = 1;
+
+    sprites.push_back(spriteData);
+    spriteCPU.push_back(sprite);
+    spriteTextures.push_back(std::move(texture));
 
     std::cout << "Sprites created: " << sprites.size() << std::endl;
 }

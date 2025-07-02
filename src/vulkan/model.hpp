@@ -43,7 +43,7 @@ public:
     Model& operator=(const Model&) = delete;
 
     void bind(VkCommandBuffer commandBuffer);
-    void draw(VkCommandBuffer commandBuffer, uint32_t instanceCount);
+    void draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t baseInstance = 0);
 
 private:
     void createVertexBuffers(const std::vector<Vertex>& vertices);

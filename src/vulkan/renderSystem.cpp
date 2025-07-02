@@ -165,10 +165,11 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     for (size_t i = 0; i < spriteCPU.size(); ++i)
         batches[spriteCPU[i].model].push_back(i);
 
+    uint32_t baseInstance = 0;
     for (const auto& [modelPtr, indices] : batches) {
         modelPtr->bind(commandBuffer);
-        // You must also ensure the SpriteData buffer is ordered so that instance index matches the buffer slot!
-        modelPtr->draw(commandBuffer, static_cast<uint32_t>(indices.size()));
+        modelPtr->draw(commandBuffer, static_cast<uint32_t>(indices.size()), baseInstance);
+        baseInstance += indices.size();
     }
 }
 
