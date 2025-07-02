@@ -2,16 +2,55 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build all cpp files (Ninja)",
+      "label": "Build Windows Debug (MSVC)",
       "type": "shell",
-      "command": "ninja",
-      "args": ["-j8"],
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "windows-msvc-debug"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": [],
-      "detail": "Build the project using Ninja"
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Windows Release (MSVC)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "windows-msvc-release"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Linux Debug",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "linux-gcc-debug"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Linux Release",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "linux-gcc-release"
+      ],
+      "group": "build",
+      "problemMatcher": []
     }
   ]
 }

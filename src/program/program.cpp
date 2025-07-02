@@ -3,6 +3,9 @@
 #include "../vulkan/global.hpp"
 #include "functions/keyboard.hpp"
 
+#define MINIAUDIO_IMPLEMENTATION
+#include "functions/deps/miniaudio.h"
+
 #include <glm/glm.hpp>
 
 #include <iostream>
@@ -10,7 +13,9 @@
 #include <string>
 
 Program::Program(Keyboard& keyboard) : keyboard(keyboard) {
-    // Currently no initialization to be seen
+    ma_engine engine;
+    ma_engine_init(NULL, &engine);
+    ma_sound sound;
 }
 
 float speedY = 0.f;
@@ -31,6 +36,10 @@ void Program::tick() {
             sprites[i].translation.x = 1.5f;
         }
     }
+
+
+    // ma_sound_init_from_file(&engine, "audio.wav", 0, NULL, NULL, &sound);
+    // ma_sound_start(&sound);
 
     //Reset stuff for next frame
     keyboard.resetKeys();
