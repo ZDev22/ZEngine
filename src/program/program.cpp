@@ -3,8 +3,8 @@
 #include "../vulkan/global.hpp"
 #include "functions/keyboard.hpp"
 
-#define MINIAUDIO_IMPLEMENTATION
-#include "functions/deps/miniaudio.h"
+// #define MINIAUDIO_IMPLEMENTATION
+// #include "functions/deps/miniaudio.h"
 
 #include <glm/glm.hpp>
 
@@ -13,9 +13,9 @@
 #include <string>
 
 Program::Program(Keyboard& keyboard) : keyboard(keyboard) {
-    ma_engine engine;
-    ma_engine_init(NULL, &engine);
-    ma_sound sound;
+    // ma_engine engine;
+    // ma_engine_init(NULL, &engine);
+    // ma_sound sound;
 }
 
 float speedY = 0.f;
