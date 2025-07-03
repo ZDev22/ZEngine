@@ -19,9 +19,9 @@ using namespace std;
 float lerp(float& a, float& b, float& t) { return a + (b - a) * t; }
 float smoothstep(float& edge0, float& edge1, float& x) { float t = clamp((x - edge0) / (edge1 - edge0), .0f, 1.f); return t * t * (3 - 2 * t); }
 float smootherstep(float& edge0, float& edge1, float& x) { float t = clamp((x - edge0) / (edge1 - edge0), .0f, 1.f); return t * t * t * (t * (t * 6 - 15) + 10); }
-float easeInSine(float& t) { return 1 - cos((t * M_PI) / 2); }
-float easeOutSine(float& t) { return sin((t * M_PI) / 2); }
-float easeInOutSine(float& t) { return -(cos(M_PI * t) - 1) / 2; }
+float easeInSine(float& t) { return 1 - cos((t * 3.14159265358979323846) / 2); }
+float easeOutSine(float& t) { return sin((t * 3.14159265358979323846) / 2); }
+float easeInOutSine(float& t) { return -(cos(3.14159265358979323846 * t) - 1) / 2; }
 float easeInExpo(float& t) { return (t == 0) ? 0 : pow(2, 10 * (t - 1)); }
 float easeOutExpo(float& t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
 float easeInOutExpo(float& t) {
@@ -63,7 +63,7 @@ T averageNum(const vector<T>& nums) {
 }
 
 bool averageBool(vector<bool>& bools) {
-    int averageFalse, averageTrue;
+    int averageFalse = 0, averageTrue = 0;
 
     for (const int a : bools) { if (bools[a]) { averageTrue++; } else { averageFalse++; } }
     if (averageTrue > averageFalse) { return true; }

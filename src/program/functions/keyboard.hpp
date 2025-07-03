@@ -1,6 +1,8 @@
 #ifndef KEYBOARD_HPP
 #define KEYBOARD_HPP
 
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
 #include "../../deps/glfw/GLFW/glfw3.h"
 #include "../../vulkan/window.hpp"
 

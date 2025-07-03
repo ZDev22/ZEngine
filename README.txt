@@ -15,6 +15,14 @@ FASTNOISELITE
 
 -------------------COMMANDS-----------------
 
-CMAKE: cmake -G "ninja" ../..
-MAKE: ninja
+WINDOWS:
+cmake: cmake --preset windows-debug
+build: cmake --build --preset windows-debug
+
+LINUX:
+cmake: cmake --preset linux-debug
+build: cmake --build --preset linux-debug
+
+(Also works for release too)
+
 Get the latest github changes: git fetch origin
