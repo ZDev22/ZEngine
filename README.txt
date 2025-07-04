@@ -10,7 +10,6 @@ Still in development! Shared so you guys can look at my code!
 GLFW
 GLM
 VULKAN
-EXPRTK
 FASTNOISELITE
 
 -------------------COMMANDS-----------------

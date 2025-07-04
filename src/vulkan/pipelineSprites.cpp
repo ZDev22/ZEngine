@@ -1,5 +1,5 @@
 #include "pipeline.hpp"
-//#include "../program/functions/math.hpp"
+#include "../program/functions/math.hpp"
 #include <iostream>
 
 void Pipeline::setTexture(int textureID) {
