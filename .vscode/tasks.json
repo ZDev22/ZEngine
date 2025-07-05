@@ -2,13 +2,13 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build Windows Debug (MSVC)",
+      "label": "windows",
       "type": "shell",
       "command": "cmake",
       "args": [
         "--build",
         "--preset",
-        "windows-msvc-debug"
+        "windows-debug"
       ],
       "group": {
         "kind": "build",
@@ -17,37 +17,37 @@
       "problemMatcher": []
     },
     {
-      "label": "Build Windows Release (MSVC)",
+      "label": "windowsrelease",
       "type": "shell",
       "command": "cmake",
       "args": [
         "--build",
         "--preset",
-        "windows-msvc-release"
+        "windows-release"
       ],
       "group": "build",
       "problemMatcher": []
     },
     {
-      "label": "Build Linux Debug",
+      "label": "linux",
       "type": "shell",
       "command": "cmake",
       "args": [
         "--build",
         "--preset",
-        "linux-gcc-debug"
+        "linux-debug"
       ],
       "group": "build",
       "problemMatcher": []
     },
     {
-      "label": "Build Linux Release",
+      "label": "linuxrelease",
       "type": "shell",
       "command": "cmake",
       "args": [
         "--build",
         "--preset",
-        "linux-gcc-release"
+        "linux-release"
       ],
       "group": "build",
       "problemMatcher": []

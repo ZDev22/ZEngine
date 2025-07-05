@@ -15,13 +15,15 @@ FASTNOISELITE
 -------------------COMMANDS-----------------
 
 WINDOWS BUILD:
-cmake --preset windows-debug
-cmake --build --preset windows-debug
+cmake --preset windows
+cmake --build --preset windows
+
+or use "windowsrelease" for release builds
 
 LINUX BUILD:
-cmake --preset linux-debug
-cmake --build --preset linux-debug
+cmake --preset linux
+cmake --build --preset linux
 
-(Also works for release too)
+or use "linuxrelease" for release builds
 
 Get the latest github changes: git fetch origin

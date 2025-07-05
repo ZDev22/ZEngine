@@ -6,7 +6,7 @@
   },
   "configurePresets": [
     {
-      "name": "linux-debug",
+      "name": "linux",
       "displayName": "Linux GCC Debug",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/linux/gcc-debug",
@@ -15,7 +15,7 @@
       }
     },
     {
-      "name": "linux-release",
+      "name": "linuxrelease",
       "displayName": "Linux GCC Release",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/linux/gcc-release",
@@ -24,21 +24,19 @@
       }
     },
     {
-      "name": "windows-debug",
-      "displayName": "Windows MSVC Debug",
-      "generator": "Visual Studio 17 2022",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/build/windows/msvc-debug",
+      "name": "windows",
+      "displayName": "Windows MinGW Debug",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build/windows/mingw-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "windows-release",
-      "displayName": "Windows MSVC Release",
-      "generator": "Visual Studio 17 2022",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/build/windows/msvc-release",
+      "name": "windowsrelease",
+      "displayName": "Windows MinGW Release",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build/windows/mingw-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -46,20 +44,20 @@
   ],
   "buildPresets": [
     {
-      "name": "linux-debug",
-      "configurePreset": "linux-debug"
+      "name": "linux",
+      "configurePreset": "linux"
     },
     {
-      "name": "linux-release",
-      "configurePreset": "linux-release"
+      "name": "linuxrelease",
+      "configurePreset": "linuxrelease"
     },
     {
-      "name": "windows-debug",
-      "configurePreset": "windows-debug"
+      "name": "windows",
+      "configurePreset": "windows"
     },
     {
-      "name": "windows-release",
-      "configurePreset": "windows-release"
+      "name": "windowsrelease",
+      "configurePreset": "windowsrelease"
     }
   ]
 }
