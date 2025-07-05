@@ -95,7 +95,6 @@ if(WIN32)
         ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib
     )
 
-    # Optional: Copy Vulkan lib (but probably you wanted the DLL, let me know)
     add_custom_command(TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib"
