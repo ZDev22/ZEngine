@@ -3,7 +3,7 @@
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
-#include "../../deps/glfw/GLFW/glfw3.h"
+#include "../../deps/glfw/glfw3.h"
 #include "../../vulkan/window.hpp"
 
 #include <unordered_map>

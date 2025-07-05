@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "deps/glfw/GLFW/glfw3.h"
+#include "deps/glfw/glfw3.h"
 
 short scene = 1;
 
