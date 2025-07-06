@@ -78,6 +78,7 @@ VkCommandBuffer Renderer::beginFrame() {
     }
     return commandBuffer;
 }
+
 void Renderer::endFrame() {
     assert(isFrameStarted && "Can't call end frame while frame is not in progress");
     auto commandBuffer = getCurrentCommandBuffer();

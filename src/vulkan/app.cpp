@@ -8,8 +8,8 @@
 
 using HighResClock = std::chrono::high_resolution_clock;
 static HighResClock::time_point lastTime;
-static uint32_t fps = 0;
-static float timeAccumulator = 0.0f;
+static float timeAccumulator = 0.f;
+static float titleUpdateAccumulator = 0.f;
 
 App::App() {
     pipeline = std::make_unique<Pipeline>(
@@ -40,9 +40,12 @@ void App::run() {
         std::chrono::duration<float> elapsed = currentTime - lastTime;
         deltaTime = elapsed.count();
         lastTime = currentTime;
+        titleUpdateAccumulator += deltaTime;
 
-        fps = 1 / deltaTime;
-        window.setWindowName("vulkan - " + std::to_string(fps));
+        if (titleUpdateAccumulator > 1.f) {
+            window.setWindowName("vulkan - " + std::to_string(1 / deltaTime));
+            titleUpdateAccumulator = .0f;
+        }
 
         glfwPollEvents();
         renderSystem->updateSprites();
