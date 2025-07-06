@@ -1,35 +1,48 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanProject)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+<<<<<<< HEAD
 # --- Optimization flags for Release ---
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG")
 
 # Set output directory based on platform
+=======
+# Set output directory based on platform and build type
+>>>>>>> 63d605a9a97b0d5542e09b6dd52fb32a13fbb08d
 if(WIN32)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/windows)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
 elseif(UNIX AND NOT APPLE)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/linux)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/linux/Debug)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/linux/Release)
 else()
     message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
 
 # Define paths to local dependencies
 set(GLFW_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/glfw)
+set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR})
+
+# Select GLFW library based on platform
+if(WIN32)
+    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/windows.a)
+elseif(UNIX AND NOT APPLE)
+    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/linux.a)
+else()
+    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
+endif()
+
 set(GLM_DIR ${CMAKE_SOURCE_DIR}/src/deps/glm)
 
 # Select Vulkan include directory based on platform
 if(UNIX AND NOT APPLE)
     set(VULKAN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includelinux)
-    set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR}/glfwlinux/include)
-    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/glfwlinux/lib/libglfw3.a)
 elseif(WIN32)
     set(VULKAN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows)
-    set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR}/glfwwindows/include)
-    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/glfwwindows/lib-mingw/libglfw3.a)
 else()
     message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
@@ -89,7 +102,7 @@ if(WIN32)
         shell32
         ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib
     )
-    # Copy Vulkan DLL if needed (dynamic loading)
+
     add_custom_command(TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib"
