@@ -24,36 +24,19 @@ bool compile() {
     return success;
 }
 
-void error_callback(int error, const char* description) {
-    std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
-}
-
+void error_callback(int error, const char* description) { std::cerr << "GLFW Error (" << error << "): " << description << std::endl; }
 int main() {
     if (compile()) {
 
         glfwSetErrorCallback(error_callback);
         std::cout << "Calling glfwInit()..." << std::endl;
-        if (!glfwInit()) {
-            std::cout << "GLFW failed to initialize!" << std::endl;
-            return 1;
-        }
+        if (!glfwInit()) { std::cout << "GLFW failed to initialize!" << std::endl; return 1; }
         std::cout << "GLFW initialized successfully!" << std::endl;
-        if (!glfwVulkanSupported()) {
-            std::cerr << "GLFW says Vulkan is NOT supported!" << std::endl;
-            return -1;
-        }
+        if (!glfwVulkanSupported()) { std::cerr << "GLFW says Vulkan is NOT supported!" << std::endl; return -1; }
         std::cout << "GLFW Vulkan is supported." << std::endl;
 
         App app{};
-
-        try {
-            app.run();
-        }
-        catch (const std::exception& e) {
-            std::cerr << e.what() << '\n';
-            return EXIT_FAILURE;
-        }
-        return EXIT_SUCCESS;
+        app.run();
     }
-    else { return 0; }
+    return 0;
 }

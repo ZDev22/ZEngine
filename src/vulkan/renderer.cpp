@@ -13,7 +13,6 @@ Renderer::Renderer(AppWindow& window, Device& device) : window{ window }, device
 }
 
 Renderer::~Renderer() { freeCommandBuffers(); }
-
 void Renderer::recreateSwapChain() {
     auto extent = window.getExtent();
     while (extent.width == 0 || extent.height == 0) {
@@ -22,9 +21,7 @@ void Renderer::recreateSwapChain() {
     }
     vkDeviceWaitIdle(device.device());
 
-    if (swapChain == nullptr) {
-        swapChain = std::make_unique<SwapChain>(device, extent);
-    }
+    if (swapChain == nullptr) { swapChain = std::make_unique<SwapChain>(device, extent); }
     else {
         auto oldSwapChain = std::move(swapChain);
         swapChain = std::make_unique<SwapChain>(device, extent, std::move(oldSwapChain));
@@ -44,11 +41,9 @@ void Renderer::createCommandBuffers() {
     allocInfo.commandPool = device.getCommandPool();
     allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-    if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate command buffers!");
-    }
+    if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) { throw std::runtime_error("failed to allocate command buffers!"); }
 }
+
 void Renderer::freeCommandBuffers() {
     vkFreeCommandBuffers(device.device(), device.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
     commandBuffers.clear();
@@ -56,13 +51,9 @@ void Renderer::freeCommandBuffers() {
 
 VkCommandBuffer Renderer::beginFrame() {
     auto result = swapChain->acquireNextImage(&currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        recreateSwapChain();
-        return nullptr;
-    }
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) { recreateSwapChain(); return nullptr; }
 
     isFrameStarted = true;
-
     auto commandBuffer = getCurrentCommandBuffer();
 
     VkCommandBufferBeginInfo beginInfo{};

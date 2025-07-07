@@ -15,17 +15,14 @@ uint32_t instanceCount;
 
 using namespace std;
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout, Global& global)
-    : device(device), window(window), global(global), keyboard(keyboard), program(program), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout, Global& global) : device(device), window(window), global(global), keyboard(keyboard), program(program), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
     createPipeline(renderPass);
     cout << "RenderSystem created" << endl;
 }
 
 RenderSystem::~RenderSystem() {
-    if (spriteDataBuffer) {
-        spriteDataBuffer->unmap();
-    }
+    if (spriteDataBuffer) { spriteDataBuffer->unmap(); }
     vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
 }
 
@@ -47,41 +44,20 @@ void RenderSystem::createPipelineLayout() {
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        throw runtime_error("failed to create pipeline layout!");
-    }
+    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw runtime_error("failed to create pipeline layout!"); }
 }
 
-void RenderSystem::createPipeline(VkRenderPass renderPass) {
-    pipeline = make_unique<Pipeline>(
-        device,
-        "vulkan/shaders/triangle.vert.spv",
-        "vulkan/shaders/triangle.frag.spv",
-        renderPass
-    );
-}
-
+void RenderSystem::createPipeline(VkRenderPass renderPass) { pipeline = make_unique<Pipeline>(device, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv", renderPass); }
 void RenderSystem::initializeSpriteData() {
     VkDeviceSize bufferSize = sizeof(SpriteData) * sprites.size();
-    spriteDataBuffer = make_unique<Buffer>(
-        device,
-        bufferSize,
-        1,
-        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        device.properties.limits.minStorageBufferOffsetAlignment
-    );
-
+    spriteDataBuffer = make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);
     spriteDataBuffer->map();
     spriteDataBuffer->writeToBuffer(sprites.data(), bufferSize);
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    if (!spriteDataBuffer) {
-        throw std::runtime_error("spriteDataBuffer is not initialized!");
-    }
+    if (!spriteDataBuffer) { throw std::runtime_error("spriteDataBuffer is not initialized!"); }
 
-    // Gather unique textures and assign texture indices
     std::vector<VkDescriptorImageInfo> imageInfos;
     std::unordered_map<Texture*, uint32_t> textureToIndex;
     uint32_t textureIndex = 0;
@@ -96,10 +72,8 @@ void RenderSystem::createTextureArrayDescriptorSet() {
             imageInfo.sampler = texture->getSampler();
             imageInfos.push_back(imageInfo);
         }
-        sprite.textureIndex = textureToIndex[texture]; // Assign texture index to sprite
+        sprite.textureIndex = textureToIndex[texture];
     }
-
-    cout << "Found " << imageInfos.size() << " unique textures." << endl;
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -107,11 +81,8 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate descriptor set!");
-    }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor set!"); }
 
-    // Storage buffer write
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
     bufferInfo.offset = 0;
@@ -126,7 +97,6 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     bufferWrite.descriptorCount = 1;
     bufferWrite.pBufferInfo = &bufferInfo;
 
-    // Texture array write
     VkWriteDescriptorSet imageWrite{};
     imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     imageWrite.dstSet = spriteDataDescriptorSet;
@@ -141,7 +111,6 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     cout << "Combined texture array descriptor set created: " << spriteDataDescriptorSet << endl;
 
-    // Update spriteDataBuffer with texture indices
     std::vector<SpriteData> spriteData(sprites.size());
     for (size_t i = 0; i < sprites.size(); ++i) {
         spriteData[i] = sprites[i];
@@ -160,7 +129,6 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
-    // Batch by model
     std::unordered_map<std::shared_ptr<Model>, std::vector<size_t>> batches;
     for (size_t i = 0; i < spriteCPU.size(); ++i)
         batches[spriteCPU[i].model].push_back(i);

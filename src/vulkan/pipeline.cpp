@@ -9,11 +9,7 @@
 #include <cassert>
 #include <array>
 
-Pipeline::Pipeline(Device& device, const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass)
-    : device{ device } {
-    createGraphicsPipeline(vertFilepath, fragFilepath, renderPass);
-}
-
+Pipeline::Pipeline(Device& device, const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass) : device{ device } { createGraphicsPipeline(vertFilepath, fragFilepath, renderPass); }
 Pipeline::~Pipeline() {
     vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
     vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
@@ -24,15 +20,10 @@ Pipeline::~Pipeline() {
     std::cout << "Destroying Pipeline" << std::endl;
 }
 
-void Pipeline::bind(VkCommandBuffer commandBuffer) {
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-}
-
+void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
-    if (!file.is_open()) {
-        throw std::runtime_error("failed to open file: " + filepath);
-    }
+    if (!file.is_open()) { throw std::runtime_error("failed to open file: " + filepath); }
     size_t fileSize = static_cast<size_t>(file.tellg());
     std::vector<char> buffer(fileSize);
     file.seekg(0);
@@ -133,7 +124,6 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     dynamicState.pDynamicStates = dynamicStates.data();
     std::cout << "[Pipeline] Dynamic state created" << std::endl;
 
-    // Descriptor set layout bindings
     if (texturePaths.empty()) {
         std::cerr << "[Pipeline][ERROR] texturePaths is empty! Cannot create descriptor set layout." << std::endl;
         throw std::runtime_error("No textures provided for pipeline!");
@@ -237,22 +227,11 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
     VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create shader module!");
-    }
+    vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule);
     return shaderModule;
 }
 
-void Pipeline::setTexture(int textureID) {
-    spriteTextures[textureID] = std::make_unique<Texture>(
-        device,
-        texturePaths,
-        descriptorSetLayout,
-        descriptorPool,
-        *this
-    );
-}
-
+void Pipeline::setTexture(int textureID) { spriteTextures[textureID] = std::make_unique<Texture>(device, texturePaths, descriptorSetLayout, descriptorPool, *this); }
 std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positions) {
     glm::vec2 baseMin = {-0.5f, -0.5f};
     glm::vec2 baseSize = {1.0f, 1.0f};
@@ -265,7 +244,6 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
 
     std::vector<uint32_t> indices(positions.size());
     for (uint32_t i = 0; i < positions.size(); ++i) { indices[i] = i; }
-
     return std::make_shared<Model>(device, vertices, indices);
 }
 
@@ -301,7 +279,7 @@ void Pipeline::loadSprites() {
     spriteCPU.push_back(sprite);
     spriteTextures.push_back(std::move(texture));
 
-    // Re-use some values for the second sprite
+    //Pipes
     texture = std::make_unique<Texture>(device, texturePaths[1], descriptorSetLayout, descriptorPool, *this);
     sprite.texture = texture.get();
     sprite.textureIndex = 1;

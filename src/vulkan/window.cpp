@@ -2,10 +2,7 @@
 
 #include <stdexcept>
 
-AppWindow::AppWindow(int w, int h) : width{ w }, height{ h } {
-    initWindow();
-}
-
+AppWindow::AppWindow(int w, int h) : width{ w }, height{ h } { initWindow(); }
 AppWindow::~AppWindow() {
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -20,11 +17,7 @@ void AppWindow::initWindow() {
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
-void AppWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) {
-    if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create window surface!");
-    }
-}
+void AppWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) { if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) { throw std::runtime_error("failed to create window surface!"); }}
 
 void AppWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto vulkanWindow = reinterpret_cast<AppWindow*>(glfwGetWindowUserPointer(window));

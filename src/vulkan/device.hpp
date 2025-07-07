@@ -49,7 +49,6 @@ public:
     VkResult createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     VkQueue getGraphicsQueue() { return graphicsQueue_; }
     VkPhysicalDevice findPhysicalDevice() { return physicalDevice; }
-    VkDevice getDevice();
 
     VkPhysicalDeviceProperties properties;
 

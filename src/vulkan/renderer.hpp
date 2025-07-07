@@ -11,7 +11,6 @@
 
 class Renderer {
 public:
-
     Renderer(AppWindow& window, Device& device);
     ~Renderer();
 
@@ -21,11 +20,7 @@ public:
     VkRenderPass getSwapChainRenderPass() const { return swapChain->getRenderPass(); }
     bool isFrameInProgress() const { return isFrameStarted; }
 
-    VkCommandBuffer getCurrentCommandBuffer() const {
-        assert(isFrameStarted && "cannot get command buffer when frame is not in progress!");
-        return commandBuffers[currentImageIndex];
-    }
-
+    VkCommandBuffer getCurrentCommandBuffer() const { return commandBuffers[currentImageIndex]; }
     VkCommandBuffer beginFrame();
     void endFrame();
     void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);

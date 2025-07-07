@@ -12,9 +12,7 @@ Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount
     bufferInfo.usage = usageFlags;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(device.device(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create buffer!");
-    }
+    if (vkCreateBuffer(device.device(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) { throw std::runtime_error("failed to create buffer!"); }
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device.device(), buffer, &memRequirements);
