@@ -1,5 +1,5 @@
 /build/windows/*
-!/build/windows/Debug/main.exe
 
-/build/linux/*
-!/build/linux/main
+/build/linux/gcc-debug/
+!/build/linux/Debug/main
+!/build/linux/Release/main

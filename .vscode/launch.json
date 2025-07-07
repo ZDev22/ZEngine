@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "${workspaceFolder}/src",
-      "program": "${workspaceFolder}/build/linux/main",
+      "program": "${workspaceFolder}/build/linux/Debug/main",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
