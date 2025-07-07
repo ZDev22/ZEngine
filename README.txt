@@ -10,6 +10,7 @@ Still in development! Shared so you guys can look at my code!
 GLFW
 GLM
 VULKAN
+STB_IMAGE
 FASTNOISELITE
 
 -------------------COMMANDS-----------------
