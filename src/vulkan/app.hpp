@@ -20,6 +20,7 @@ public:
     App& operator=(const App&) = delete;
 
     void run();
+    void render();
 
 private:
     AppWindow window{1280, 720};

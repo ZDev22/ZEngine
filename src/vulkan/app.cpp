@@ -5,11 +5,14 @@
 #include <stdexcept>
 #include <chrono>
 #include <string>
+#include <thread>
 
 using HighResClock = std::chrono::high_resolution_clock;
 static HighResClock::time_point lastTime;
 static float timeAccumulator = 0.f;
 static float titleUpdateAccumulator = 0.f;
+
+bool shouldClose = false;
 
 App::App() {
     pipeline = std::make_unique<Pipeline>(
@@ -35,7 +38,10 @@ App::App() {
 void App::run() {
     lastTime = HighResClock::now();
 
-    while (!window.shouldClose()) {
+    std::thread update(&App::render, this);
+    update.detach();
+
+    while (!shouldClose) {
         auto currentTime = HighResClock::now();
         std::chrono::duration<float> elapsed = currentTime - lastTime;
         deltaTime = elapsed.count();
@@ -50,6 +56,14 @@ void App::run() {
         glfwPollEvents();
         renderSystem->updateSprites();
 
+        shouldClose = window.shouldClose();
+    }
+
+    vkDeviceWaitIdle(device.device());
+}
+
+void App::render() {
+    while (!shouldClose) {
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
             renderSystem->renderSprites(commandBuffer);
@@ -57,6 +71,4 @@ void App::run() {
             renderer.endFrame();
         }
     }
-
-    vkDeviceWaitIdle(device.device());
 }

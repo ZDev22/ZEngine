@@ -55,15 +55,10 @@ void Renderer::freeCommandBuffers() {
 }
 
 VkCommandBuffer Renderer::beginFrame() {
-    assert(!isFrameStarted && "Can't call beginFrame while already in progress");
     auto result = swapChain->acquireNextImage(&currentImageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapChain();
         return nullptr;
-    }
-
-    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("failed to acquire swap chain image!");
     }
 
     isFrameStarted = true;
@@ -73,28 +68,18 @@ VkCommandBuffer Renderer::beginFrame() {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-        throw std::runtime_error("failed to begin recording command buffer!");
-    }
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
     return commandBuffer;
 }
 
 void Renderer::endFrame() {
-    assert(isFrameStarted && "Can't call end frame while frame is not in progress");
     auto commandBuffer = getCurrentCommandBuffer();
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to record command buffer!");
-    }
+    vkEndCommandBuffer(commandBuffer);
 
     auto result = swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-        window.wasWindowResized()) {
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized()) {
         window.resetWindowResizedFlag();
         recreateSwapChain();
-    }
-
-    else if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to present swap chain image!");
     }
 
     isFrameStarted = false;

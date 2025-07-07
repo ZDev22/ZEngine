@@ -310,7 +310,7 @@ void Pipeline::loadSprites() {
     spriteData.scale = glm::vec2(.15f, 1.5f);
 
     for (int i = 1; i < 4; i++) {
-        spriteData.translation = glm::vec2(1.f + (i / 2), 0.f);
+        spriteData.translation = glm::vec2(1.f + (i / 2), randomFloat(.8f, .2f));
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);

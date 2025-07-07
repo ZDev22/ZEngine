@@ -24,31 +24,13 @@ Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
 
-    if (vkAllocateMemory(device.device(), &allocInfo, nullptr, &memory) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate buffer memory!");
-    }
+    if (vkAllocateMemory(device.device(), &allocInfo, nullptr, &memory) != VK_SUCCESS) { throw std::runtime_error("failed to allocate buffer memory!"); }
 
     vkBindBufferMemory(device.device(), buffer, memory, 0);
 }
 
-Buffer::~Buffer() {
-    if (buffer != VK_NULL_HANDLE) {
-        vkDestroyBuffer(device.device(), buffer, nullptr);
-    }
-    if (memory != VK_NULL_HANDLE) {
-        vkFreeMemory(device.device(), memory, nullptr);
-    }
-}
-
-void Buffer::map() {
-    if (vkMapMemory(device.device(), memory, 0, bufferSize, 0, &mapped) != VK_SUCCESS) {
-        throw std::runtime_error("failed to map buffer memory!");
-    }
-}
-
-void Buffer::writeToBuffer(const void* data, VkDeviceSize size, VkDeviceSize offset) {
-    std::memcpy(static_cast<char*>(mapped) + offset, data, static_cast<size_t>(size));
-}
+void Buffer::map() { vkMapMemory(device.device(), memory, 0, bufferSize, 0, &mapped); }
+void Buffer::writeToBuffer(const void* data, VkDeviceSize size, VkDeviceSize offset) { std::memcpy(static_cast<char*>(mapped) + offset, data, static_cast<size_t>(size)); }
 
 void Buffer::unmap() {
     if (mapped) {
