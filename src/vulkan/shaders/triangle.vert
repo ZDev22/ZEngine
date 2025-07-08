@@ -21,7 +21,7 @@ layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprit
 
 void main() {
     float rotation = radians(sprites[gl_InstanceIndex].rotation);
-    vec2 transformedPos = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation)) * (inPosition * sprites[gl_InstanceIndex].scale) + sprites[gl_InstanceIndex].translation;
+    vec2 transformedPos = sprites[gl_InstanceIndex].rotationMatrix * (inPosition * sprites[gl_InstanceIndex].scale) + sprites[gl_InstanceIndex].translation;
 
     gl_Position = push.projection * vec4(transformedPos, 0.0, 1.0);
     fragColor = sprites[gl_InstanceIndex].color;

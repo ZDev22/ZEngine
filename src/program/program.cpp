@@ -23,6 +23,7 @@ void Program::tick() {
     if (keyboard.keyHit(keys[0])) {
         speedY = -1.5f;
         sprites[0].rotation = 60.f;
+        sprites[0].textureIndex = 0;
     }
 
     for (size_t i = 1; i < (sprites.size()) / 2; i++) {
@@ -35,7 +36,7 @@ void Program::tick() {
         sprites[index + 1].translation.x = sprites[index].translation.x;
         sprites[index + 1].translation.y = sprites[index].translation.y - 2.f;
 
-        for (int i = 0; i < 4000; i++) { if (checkFastCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkFastCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0])) { sprites[0].textureIndex = 1; }}
+        //for (int i = 0; i < 5000; i++) { if (checkFastCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkFastCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0])) { sprites[0].textureIndex = 1; }}
     }
 
     //Reset stuff for next frame
