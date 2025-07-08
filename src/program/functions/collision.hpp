@@ -5,10 +5,16 @@
 
 #include <glm/glm.hpp>
 
+#include <limits>
 #include <vector>
 #include <algorithm>
 
-bool checkCollision(const Sprite& spriteA, const SpriteData& dataA, const Sprite& spriteB, const SpriteData& dataB) {
+// Currently really slow! IDK how to fix it tho
+bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+
+    dataA.rotationMatrix = glm::mat2(cos(dataA.rotation), -sin(dataA.rotation), sin(dataA.rotation), cos(dataA.rotation));
+    dataB.rotationMatrix = glm::mat2(cos(dataB.rotation), -sin(dataB.rotation), sin(dataB.rotation), cos(dataB.rotation));
+
     auto transformVertices = [](const std::vector<Model::Vertex>& vertices, const SpriteData& data) {
         std::vector<glm::vec2> transformed;
         transformed.reserve(vertices.size());
@@ -24,20 +30,18 @@ bool checkCollision(const Sprite& spriteA, const SpriteData& dataA, const Sprite
     };
 
     // Helper function to compute AABB from vertices
-    auto getAABB = [](const std::vector<glm::vec2>& vertices) {
-        if (vertices.empty()) {
-            return std::pair<glm::vec2, glm::vec2>(glm::vec2(0.0f), glm::vec2(0.0f));
-        }
-        glm::vec2 min = vertices[0];
-        glm::vec2 max = vertices[0];
+    auto getAABB = [](const std::vector<glm::vec2>& vertices) -> std::pair<glm::vec2, glm::vec2> {
+        glm::vec2 min(3.402823466e+38f, 3.402823466e+38f);
+        glm::vec2 max(-3.402823466e+38f, -3.402823466e+38f);
 
-        for (size_t i = 1; i < vertices.size(); ++i) {
-            min.x = std::min(min.x, vertices[i].x);
-            min.y = std::min(min.y, vertices[i].y);
-            max.x = std::max(max.x, vertices[i].x);
-            max.y = std::max(max.y, vertices[i].y);
+        for (const auto& vertex : vertices) {
+            min.x = vertex.x < min.x ? vertex.x : min.x;
+            min.y = vertex.y < min.y ? vertex.y : min.y;
+            max.x = vertex.x > max.x ? vertex.x : max.x;
+            max.y = vertex.y > max.y ? vertex.y : max.y;
         }
-        return std::pair<glm::vec2, glm::vec2>(min, max);
+
+        return {min, max};
     };
 
     // Get transformed vertices for both sprites
@@ -49,6 +53,5 @@ bool checkCollision(const Sprite& spriteA, const SpriteData& dataA, const Sprite
     auto [bMin, bMax] = getAABB(verticesB);
 
     // AABB collision check
-    return (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
-           (aMin.y <= bMax.y && aMax.y >= bMin.y);
+    return (aMin.x <= bMax.x && aMax.x >= bMin.x) && (aMin.y <= bMax.y && aMax.y >= bMin.y);
 }
