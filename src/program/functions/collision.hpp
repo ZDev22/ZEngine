@@ -4,6 +4,7 @@
 #include "../../vulkan/sprite.hpp"
 
 #include <glm/glm.hpp>
+
 #include <array>
 #include <limits>
 #include <vector>
@@ -26,15 +27,15 @@ bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& 
             glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
             glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
 
-            aMin.x = std::min(aMin.x, transformedA.x);
-            aMin.y = std::min(aMin.y, transformedA.y);
-            aMax.x = std::max(aMax.x, transformedA.x);
-            aMax.y = std::max(aMax.y, transformedA.y);
+            aMin.x = transformedA.x < aMin.x ? transformedA.x : aMin.x;
+            aMin.y = transformedA.y < aMin.y ? transformedA.y : aMin.y;
+            aMax.x = transformedA.x > aMax.x ? transformedA.x : aMax.x;
+            aMax.y = transformedA.y > aMax.y ? transformedA.y : aMax.y;
 
-            bMin.x = std::min(bMin.x, transformedB.x);
-            bMin.y = std::min(bMin.y, transformedB.y);
-            bMax.x = std::max(bMax.x, transformedB.x);
-            bMax.y = std::max(bMax.y, transformedB.y);
+            bMin.x = transformedB.x < bMin.x ? transformedB.x : bMin.x;
+            bMin.y = transformedB.y < bMin.y ? transformedB.y : bMin.y;
+            bMax.x = transformedB.x > bMax.x ? transformedB.x : bMax.x;
+            bMax.y = transformedB.y > bMax.y ? transformedB.y : bMax.y;
         }
     }
     else if (verticesA.size() < verticesB.size()) {
@@ -44,16 +45,16 @@ bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& 
             if (i < verticesA.size()) {
                 glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
 
-                aMin.x = std::min(aMin.x, transformedA.x);
-                aMin.y = std::min(aMin.y, transformedA.y);
-                aMax.x = std::max(aMax.x, transformedA.x);
-                aMax.y = std::max(aMax.y, transformedA.y);
+                aMin.x = transformedA.x < aMin.x ? transformedA.x : aMin.x;
+                aMin.y = transformedA.y < aMin.y ? transformedA.y : aMin.y;
+                aMax.x = transformedA.x > aMax.x ? transformedA.x : aMax.x;
+                aMax.y = transformedA.y > aMax.y ? transformedA.y : aMax.y;
             }
 
-            bMin.x = std::min(bMin.x, transformedB.x);
-            bMin.y = std::min(bMin.y, transformedB.y);
-            bMax.x = std::max(bMax.x, transformedB.x);
-            bMax.y = std::max(bMax.y, transformedB.y);
+            bMin.x = transformedB.x < bMin.x ? transformedB.x : bMin.x;
+            bMin.y = transformedB.y < bMin.y ? transformedB.y : bMin.y;
+            bMax.x = transformedB.x > bMax.x ? transformedB.x : bMax.x;
+            bMax.y = transformedB.y > bMax.y ? transformedB.y : bMax.y;
         }
     }
     else {
@@ -61,15 +62,15 @@ bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& 
             glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
             glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
 
-            aMin.x = std::min(aMin.x, transformedA.x);
-            aMin.y = std::min(aMin.y, transformedA.y);
-            aMax.x = std::max(aMax.x, transformedA.x);
-            aMax.y = std::max(aMax.y, transformedA.y);
+            aMin.x = transformedA.x < aMin.x ? transformedA.x : aMin.x;
+            aMin.y = transformedA.y < aMin.y ? transformedA.y : aMin.y;
+            aMax.x = transformedA.x > aMax.x ? transformedA.x : aMax.x;
+            aMax.y = transformedA.y > aMax.y ? transformedA.y : aMax.y;
 
-            bMin.x = std::min(bMin.x, transformedB.x);
-            bMin.y = std::min(bMin.y, transformedB.y);
-            bMax.x = std::max(bMax.x, transformedB.x);
-            bMax.y = std::max(bMax.y, transformedB.y);
+            bMin.x = transformedB.x < bMin.x ? transformedB.x : bMin.x;
+            bMin.y = transformedB.y < bMin.y ? transformedB.y : bMin.y;
+            bMax.x = transformedB.x > bMax.x ? transformedB.x : bMax.x;
+            bMax.y = transformedB.y > bMax.y ? transformedB.y : bMax.y;
         }
     }
 
