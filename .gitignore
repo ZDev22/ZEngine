@@ -1,4 +1,7 @@
 /build/windows/*
+!build/windows/Debug/
+!build/windows/Release/
 
-/build/linux/gcc-debug/
-/build/linux/gcc-release/
+/build/linux/*
+!build/linux/Debug/
+!build/linux/Release/
