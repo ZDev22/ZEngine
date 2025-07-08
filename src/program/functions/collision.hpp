@@ -4,13 +4,11 @@
 #include "../../vulkan/sprite.hpp"
 
 #include <glm/glm.hpp>
-
 #include <array>
 #include <limits>
 #include <vector>
 #include <algorithm>
 
-// Can run ~16000 times at ~60 fps
 bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
     dataA.rotationMatrix = glm::mat2(cos(dataA.rotation), -sin(dataA.rotation), sin(dataA.rotation),  cos(dataA.rotation));
     dataB.rotationMatrix = glm::mat2(cos(dataB.rotation), -sin(dataB.rotation), sin(dataB.rotation),  cos(dataB.rotation));
@@ -20,22 +18,59 @@ bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& 
     glm::vec2 bMin(3.402823466e+38f, 3.402823466e+38f);
     glm::vec2 bMax(-3.402823466e+38f, -3.402823466e+38f);
 
-    for (const auto& vertex : spriteA.model->getVertices()) {
-        glm::vec2 transformed = (dataA.rotationMatrix * (vertex.position * dataA.scale)) + dataA.translation;
+    const auto& verticesA = spriteA.model->getVertices();
+    const auto& verticesB = spriteB.model->getVertices();
 
-        aMin.x = transformed.x < aMin.x ? transformed.x : aMin.x;
-        aMin.y = transformed.y < aMin.y ? transformed.y : aMin.y;
-        aMax.x = transformed.x > aMax.x ? transformed.x : aMax.x;
-        aMax.y = transformed.y > aMax.y ? transformed.y : aMax.y;
+    if (verticesA.size() > verticesB.size()) {
+        for (size_t i = 0; i < verticesB.size(); ++i) {
+            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
+            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
+
+            aMin.x = std::min(aMin.x, transformedA.x);
+            aMin.y = std::min(aMin.y, transformedA.y);
+            aMax.x = std::max(aMax.x, transformedA.x);
+            aMax.y = std::max(aMax.y, transformedA.y);
+
+            bMin.x = std::min(bMin.x, transformedB.x);
+            bMin.y = std::min(bMin.y, transformedB.y);
+            bMax.x = std::max(bMax.x, transformedB.x);
+            bMax.y = std::max(bMax.y, transformedB.y);
+        }
     }
+    else if (verticesA.size() < verticesB.size()) {
+        for (size_t i = 0; i < verticesB.size(); ++i) {
+            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
 
-    for (const auto& vertex : spriteB.model->getVertices()) {
-        glm::vec2 transformed = (dataB.rotationMatrix * (vertex.position * dataB.scale)) + dataB.translation;
+            if (i < verticesA.size()) {
+                glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
 
-        bMin.x = transformed.x < bMin.x ? transformed.x : bMin.x;
-        bMin.y = transformed.y < bMin.y ? transformed.y : bMin.y;
-        bMax.x = transformed.x > bMax.x ? transformed.x : bMax.x;
-        bMax.y = transformed.y > bMax.y ? transformed.y : bMax.y;
+                aMin.x = std::min(aMin.x, transformedA.x);
+                aMin.y = std::min(aMin.y, transformedA.y);
+                aMax.x = std::max(aMax.x, transformedA.x);
+                aMax.y = std::max(aMax.y, transformedA.y);
+            }
+
+            bMin.x = std::min(bMin.x, transformedB.x);
+            bMin.y = std::min(bMin.y, transformedB.y);
+            bMax.x = std::max(bMax.x, transformedB.x);
+            bMax.y = std::max(bMax.y, transformedB.y);
+        }
+    }
+    else {
+        for (size_t i = 0; i < verticesA.size(); ++i) {
+            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
+            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
+
+            aMin.x = std::min(aMin.x, transformedA.x);
+            aMin.y = std::min(aMin.y, transformedA.y);
+            aMax.x = std::max(aMax.x, transformedA.x);
+            aMax.y = std::max(aMax.y, transformedA.y);
+
+            bMin.x = std::min(bMin.x, transformedB.x);
+            bMin.y = std::min(bMin.y, transformedB.y);
+            bMax.x = std::max(bMax.x, transformedB.x);
+            bMax.y = std::max(bMax.y, transformedB.y);
+        }
     }
 
     return (aMin.x <= bMax.x && aMax.x >= bMin.x) && (aMin.y <= bMax.y && aMax.y >= bMin.y);
