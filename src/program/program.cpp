@@ -3,6 +3,7 @@
 #include "../vulkan/global.hpp"
 #include "functions/keyboard.hpp"
 #include "functions/math.hpp"
+#include "functions/collision.hpp"
 
 #include <glm/glm.hpp>
 
@@ -33,6 +34,8 @@ void Program::tick() {
         }
         sprites[index + 1].translation.x = sprites[index].translation.x;
         sprites[index + 1].translation.y = sprites[index].translation.y - 2.f;
+
+        if (checkCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0])) { sprites[0].textureIndex = 1; }
     }
 
     //Reset stuff for next frame

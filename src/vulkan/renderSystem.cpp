@@ -130,8 +130,13 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     std::unordered_map<std::shared_ptr<Model>, std::vector<size_t>> batches;
-    for (size_t i = 0; i < spriteCPU.size(); ++i)
+    for (size_t i = 0; i < spriteCPU.size(); ++i) {
+        sprites[i].rotationMatrix = glm::mat2 {
+            cos(sprites[i].rotation), -sin(sprites[i].rotation),
+            sin(sprites[i].rotation), cos(sprites[i].rotation)
+        };
         batches[spriteCPU[i].model].push_back(i);
+    }
 
     uint32_t baseInstance = 0;
     for (const auto& [modelPtr, indices] : batches) {

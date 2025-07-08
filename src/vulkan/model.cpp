@@ -2,7 +2,8 @@
 
 #include <stdexcept>
 
-Model::Model(Device& device, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) : device{ device }, vertexCount{ static_cast<uint32_t>(vertices.size()) }, indexCount{ static_cast<uint32_t>(indices.size()) } {
+Model::Model(Device& device, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) 
+    : device{ device }, vertices{ vertices }, vertexCount{ static_cast<uint32_t>(vertices.size()) }, indexCount{ static_cast<uint32_t>(indices.size()) } {
     createVertexBuffers(vertices);
     createIndexBuffers(indices);
 }
@@ -38,4 +39,6 @@ void Model::bind(VkCommandBuffer commandBuffer) {
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 }
 
-void Model::draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t baseInstance) { vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, 0, 0, baseInstance); }
+void Model::draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t baseInstance) { 
+    vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, 0, 0, baseInstance); 
+}
