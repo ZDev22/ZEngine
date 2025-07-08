@@ -287,8 +287,17 @@ void Pipeline::loadSprites() {
     spriteData.textureIndex = 1;
     spriteData.scale = glm::vec2(.15f, 1.5f);
 
-    for (float i = 1.f; i < 4.f; i += 1.f) {
-        spriteData.translation = glm::vec2(i, randomFloat(.8f, .2f));
+    for (float i = 1.f; i < 5.f; i++) {
+        float y = randomFloat(.4f, 1.4f);
+        spriteData.rotation = 0.f;
+        spriteData.translation = glm::vec2(i, y);
+
+        sprites.push_back(spriteData);
+        spriteCPU.push_back(sprite);
+        spriteTextures.push_back(std::move(texture));
+
+        spriteData.rotation = 180.f;
+        spriteData.translation = glm::vec2(i, y - 2.f);
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);

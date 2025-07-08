@@ -12,6 +12,14 @@
 
 using namespace std;
 
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable : 4244)  // narrowing conversion: 'double' to 'float'
+#elif defined(__GNUC__) || defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wnarrowing"
+#endif
+
 // Global functions
 inline float clamp(float value, float minValue, float maxValue) { return max(minValue, min(maxValue, value)); }
 
@@ -49,10 +57,10 @@ inline float easeInOutCirc(float t) {
 }
 
 inline float easeOutBounce(float t) {
-    if (t < 4 / 11.0f) { return (121 * t * t) / 16.0f; } 
-    else if (t < 8 / 11.0f) { return (363 / 40.0f * t * t) - (99 / 10.0f * t) + 17 / 5.0f; }
-    else if (t < 9 / 10.0f) { return (4356 / 361.0f * t * t) - (35442 / 1805.0f * t) + 16061 / 1805.0f; }
-    return (54 / 5.0f * t * t) - (513 / 25.0f * t) + 268 / 25.0f;
+    if (t < 4.f / 11.f) { return (121.f * t * t) / 16.f; } 
+    else if (t < 8.f / 11.f) { return (363.f / 40.f * t * t) - (99.f / 10.f * t) + 17.f / 5.f; }
+    else if (t < 9.f / 10.f) { return (4356.f / 361.f * t * t) - (35442 / 1805.f * t) + 16061.f / 1805.f; }
+    return (54.f / 5.f * t * t) - (513.f / 25.f * t) + 268.f / 25.f;
 }
 
 // Random
@@ -186,5 +194,11 @@ inline void setZeroFloat(vector<float>& vec, size_t startIndex, size_t count) { 
 
 inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, true); }
 inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, false); }
+
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
 
 #endif

@@ -15,21 +15,24 @@ Program::Program(Keyboard& keyboard) : keyboard(keyboard) {}
 float speedY = 0.f;
 
 void Program::tick() {
-    speedY += 2.9f * deltaTime;
+    speedY += 3.5f * deltaTime;
     sprites[0].translation.y += speedY * deltaTime;
-    sprites[0].rotation -= 80.f * deltaTime;
+    sprites[0].rotation -= 90.f * deltaTime;
     std::vector<int> keys = {GLFW_KEY_SPACE, GLFW_KEY_A, GLFW_KEY_S, GLFW_KEY_D};
     if (keyboard.keyHit(keys[0])) {
         speedY = -1.5f;
-        sprites[0].rotation = 50.f;
+        sprites[0].rotation = 60.f;
     }
 
-    for (size_t i = 1; i < sprites.size(); i++) {
-        sprites[i].translation.x -= .5f * deltaTime;
-        if (sprites[i].translation.x < -1.5f) {
-            sprites[i].translation.x = 1.5f;
-            sprites[i].translation.y = randomFloat(.8f, .2f);
+    for (size_t i = 1; i < (sprites.size()) / 2; i++) {
+        size_t index = ((i - 1) * 2) + 1; // A reliable method of searching every other index in a list!
+        sprites[index].translation.x -= .5f * deltaTime;
+        if (sprites[index].translation.x < -1.5f) {
+            sprites[index].translation.x = 1.5f;
+            sprites[index].translation.y = randomFloat(.4f, 1.4f);
         }
+        sprites[index + 1].translation.x = sprites[index].translation.x;
+        sprites[index + 1].translation.y = sprites[index].translation.y - 2.f;
     }
 
     //Reset stuff for next frame
