@@ -13,8 +13,8 @@
 // Can run 30K times at 75 fps (with 4 vertex models)
 bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
 
-    dataA.rotationMatrix = glm::mat2(cos(glm::radians(dataA.rotation)), -sin(glm::radians(dataA.rotation)), sin(glm::radians(dataA.rotation)), cos(glm::radians(dataA.rotation)));
-    dataB.rotationMatrix = glm::mat2(cos(glm::radians(dataB.rotation)), -sin(glm::radians(dataB.rotation)), sin(glm::radians(dataB.rotation)), cos(glm::radians(dataB.rotation)));
+    dataA.setRotationMatrix();
+    dataB.setRotationMatrix();
 
     glm::vec2 aMin(3.402823466e+38f, 3.402823466e+38f);
     glm::vec2 aMax(-3.402823466e+38f, -3.402823466e+38f);

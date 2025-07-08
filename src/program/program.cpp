@@ -36,7 +36,7 @@ void Program::tick() {
         sprites[index + 1].translation.x = sprites[index].translation.x;
         sprites[index + 1].translation.y = sprites[index].translation.y - 2.f;
 
-        //for (int i = 0; i < 5000; i++) { if (checkFastCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkFastCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0])) { sprites[0].textureIndex = 1; }}
+        for (int i = 0; i < 10000; i++) { if (checkFastCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkFastCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0])) { sprites[0].textureIndex = 1; }}
     }
 
     //Reset stuff for next frame

@@ -131,7 +131,7 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
 
     std::unordered_map<std::shared_ptr<Model>, std::vector<size_t>> batches;
     for (size_t i = 0; i < spriteCPU.size(); ++i) {
-        sprites[i].rotationMatrix = glm::mat2(cos(glm::radians(sprites[i].rotation)), -sin(glm::radians(sprites[i].rotation)), sin(glm::radians(sprites[i].rotation)), cos(glm::radians(sprites[i].rotation)));
+        sprites[i].setRotationMatrix();
         batches[spriteCPU[i].model].push_back(i);
     }
 

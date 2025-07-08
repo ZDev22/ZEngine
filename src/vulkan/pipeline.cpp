@@ -258,6 +258,11 @@ void Pipeline::loadSprites() {
         {-0.5f, -0.5f}, // Bottom-Left  (Vertex 0)
         { 0.5f, -0.5f}, // Bottom-Right (Vertex 1)
         {-0.5f,  0.5f}, // Top-Right    (Vertex 2)
+        { 0.5f,  0.5f},  // Top-Left     (Vertex 3)
+        { 0.5f,  0.5f},  // Top-Left     (Vertex 3)
+        { 0.5f,  0.5f},  // Top-Left     (Vertex 3)
+        { 0.5f,  0.5f},  // Top-Left     (Vertex 3)
+        { 0.5f,  0.5f},  // Top-Left     (Vertex 3)
         { 0.5f,  0.5f}  // Top-Left     (Vertex 3)
     });
     auto texture = std::make_unique<Texture>(device, texturePaths[0], descriptorSetLayout, descriptorPool, *this);
