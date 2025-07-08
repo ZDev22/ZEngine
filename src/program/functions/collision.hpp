@@ -10,8 +10,8 @@
 #include <vector>
 #include <algorithm>
 
-// Can run 30K times at 75 fps (with 4 vertex models)
-bool checkFastCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+// Can run 30K times at 75 fps (with 4 vertex points)
+bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
 
     dataA.setRotationMatrix();
     dataB.setRotationMatrix();
