@@ -231,7 +231,6 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     return shaderModule;
 }
 
-void Pipeline::setTexture(int textureID) { spriteTextures[textureID] = std::make_unique<Texture>(device, texturePaths, descriptorSetLayout, descriptorPool, *this); }
 std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positions) {
     glm::vec2 baseMin = {-0.5f, -0.5f};
     glm::vec2 baseSize = {1.0f, 1.0f};

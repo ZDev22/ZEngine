@@ -1,9 +1,11 @@
 #include "texture.hpp"
 #include "pipeline.hpp"
+#include "sprite.hpp"
+#include "../program/functions/string.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ASSERT(x)
-#include "stb_image.h"
+#include "../deps/stb_image.h"
 
 #include <stdexcept>
 #include <cstring>
@@ -320,4 +322,11 @@ void Texture::transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLa
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     device.endSingleTimeCommands(commandBuffer);
     imageLayout = newLayout;
+}
+
+int Texture::switchTexture(Sprite& sprite, const std::string texture) {
+    int index = getItemOfStringFromVector("images/" + texture, pipeline.getTexturePaths());
+    auto texture = Texture(device, texturePaths[index], descriptorSetLayout, descriptorPool, pipeline);
+    sprite.texture = texture.get();
+    return index;
 }
