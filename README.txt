@@ -1,6 +1,6 @@
-A sprite-based C++ Vulkan engine - supports WINDOWS, and maybe LINUX.
+A sprite-based C++ Vulkan engine - supports WINDOWS, and can run on LINUX.
 
-Requires C++ installed on your computer to run.
+Requires mingw64 from MSYS2, VULKAN, and CMake in your systems's PATH to run.
 
 Still in development! Shared so you guys can look at my code!
 
