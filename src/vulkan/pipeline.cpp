@@ -268,7 +268,7 @@ void Pipeline::loadSprites() {
     sprite.model = quadModel;
     sprite.texture = texture.get();
 
-    spriteData.translation = glm::vec2(-.7f, -.2f);
+    spriteData.position = glm::vec2(-.7f, -.2f);
     spriteData.scale = glm::vec2(.1f, .1f);
     spriteData.rotation = 0.0f;
     spriteData.color = glm::vec4(1.0f);
@@ -288,14 +288,14 @@ void Pipeline::loadSprites() {
     for (float i = 1.f; i < 5.f; i++) {
         float y = randomFloat(.4f, 1.4f);
         spriteData.rotation = 0.f;
-        spriteData.translation = glm::vec2(i, y);
+        spriteData.position = glm::vec2(i, y);
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);
         spriteTextures.push_back(std::move(texture));
 
         spriteData.rotation = 180.f;
-        spriteData.translation = glm::vec2(i, y - 2.f);
+        spriteData.position = glm::vec2(i, y - 2.f);
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);

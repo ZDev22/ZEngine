@@ -26,14 +26,14 @@ bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spri
 
     if (verticesA.size() > verticesB.size()) {
         for (size_t i = 0; i < verticesA.size(); i++) {
-            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
+            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
             if (transformedA.x < aMin.x) { aMin.x = transformedA.x; }
             if (transformedA.y < aMin.y) { aMin.y = transformedA.y; }
             if (transformedA.x > aMax.x) { aMax.x = transformedA.x; }
             if (transformedA.y > aMax.y) { aMax.y = transformedA.y; }
 
             if (i < verticesB.size()) {
-                glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
+                glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
                 if (transformedB.x < bMin.x) { bMin.x = transformedB.x; }
                 if (transformedB.y < bMin.y) { bMin.y = transformedB.y; }
                 if (transformedB.x > bMax.x) { bMax.x = transformedB.x; }
@@ -43,10 +43,10 @@ bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spri
     }
     else if (verticesA.size() < verticesB.size()) {
         for (size_t i = 0; i < verticesB.size(); i++) {
-            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
+            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
 
             if (i < verticesA.size()) {
-                glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
+                glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
 
                 if (transformedA.x < aMin.x) { aMin.x = transformedA.x; }
                 if (transformedA.y < aMin.y) { aMin.y = transformedA.y; }
@@ -62,8 +62,8 @@ bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spri
     }
     else {
         for (size_t i = 0; i < verticesA.size(); i++) {
-            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.translation;
-            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.translation;
+            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
+            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
 
             if (transformedA.x < aMin.x) { aMin.x = transformedA.x; }
             if (transformedA.y < aMin.y) { aMin.y = transformedA.y; }
