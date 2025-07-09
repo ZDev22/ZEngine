@@ -3,7 +3,6 @@
 #include "deps/FastNoiseLite.h"
 #include <vector>
 
-// TODO: Add FastNoise2 support (and make sure this works)
 class Noise {
 public:
     Noise();

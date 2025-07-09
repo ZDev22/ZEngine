@@ -1,12 +1,11 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
 #include <string>
 #include <vector>
 
+#include <vulkan/vulkan.h>
+
 class Device;
-class Sprite;
 class Pipeline;
 
 class Texture {
@@ -24,7 +23,6 @@ public:
     bool getIsArray() const { return isArray; }
     uint32_t getArrayLayers() const { return arrayLayers; }
     void createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
-    int switchTexture(Sprite& sprite, const std::string texture);
 
 private:
     void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);

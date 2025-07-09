@@ -3,20 +3,13 @@
 
 #include "functions/keyboard.hpp"
 
-#include <vulkan/vulkan.h>
-
 class Program {
 public:
-    Program(Keyboard& keyboard, Device& device, Pipeline& pipeline, VkDescriptorSetLayout& descriptorSetLayout, VkDescriptorPool& descriptorPool);
+    Program(Keyboard& keyboard);
 
     void tick();
 private:
     Keyboard& keyboard;
-    Device& device;
-    Pipeline& pipeline;
-    Texture& texture;
-    VkDescriptorSetLayout& descriptorSetLayout;
-    VkDescriptorPool& descriptorPool;
 };
 
 #endif
