@@ -11,7 +11,7 @@ struct Sprite {
 };
 
 struct alignas(16) SpriteData {
-    glm::vec2 translation;
+    glm::vec2 position;
     glm::vec2 scale;
     glm::mat2 rotationMatrix;
     glm::vec4 color;
