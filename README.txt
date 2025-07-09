@@ -7,11 +7,11 @@ Still in development! Shared so you guys can look at my code!
 
 -----------THIRD-PARTY-DEPENDENCIES---------
 
-GLFW
-GLM
-VULKAN
-STB_IMAGE
-FASTNOISELITE
+GLM - https://github.com/icaven/glm
+GLFW - https://www.glfw.org/download
+VULKAN - https://vulkan.lunarg.com/sdk/home
+STB-LIBRARIES - https://github.com/nothings/stb
+FASTNOISELITE - https://github.com/Auburn/FastNoiseLite
 
 -------------------COMMANDS-----------------
 
