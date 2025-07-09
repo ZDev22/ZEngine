@@ -8,8 +8,6 @@
 struct Sprite {
     std::shared_ptr<Model> model;
     Texture* texture;
-
-    uint32_t textureIndex;
 };
 
 struct alignas(16) SpriteData {

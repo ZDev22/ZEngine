@@ -72,7 +72,6 @@ void RenderSystem::createTextureArrayDescriptorSet() {
             imageInfo.sampler = texture->getSampler();
             imageInfos.push_back(imageInfo);
         }
-        sprite.textureIndex = textureToIndex[texture];
     }
 
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -111,12 +110,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     cout << "Combined texture array descriptor set created: " << spriteDataDescriptorSet << endl;
 
-    std::vector<SpriteData> spriteData(sprites.size());
-    for (size_t i = 0; i < sprites.size(); ++i) {
-        spriteData[i] = sprites[i];
-        spriteData[i].textureIndex = spriteCPU[i].textureIndex;
-    }
-    spriteDataBuffer->writeToBuffer(spriteData.data(), sizeof(SpriteData) * sprites.size());
+    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * spriteCPU.size());
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
@@ -146,6 +140,6 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
 void RenderSystem::updateSprites() {
     program.tick();
 
-    VkDeviceSize bufferSize = sizeof(SpriteData) * sprites.size();
+    VkDeviceSize bufferSize = sizeof(SpriteData) * spriteCPU.size();
     spriteDataBuffer->writeToBuffer(sprites.data(), bufferSize);
 }

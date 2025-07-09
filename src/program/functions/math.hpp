@@ -14,7 +14,7 @@ using namespace std;
 
 #if defined(_MSC_VER)
     #pragma warning(push)
-    #pragma warning(disable : 4244)  // narrowing conversion: 'double' to 'float'
+    #pragma warning(disable : 4244)
 #elif defined(__GNUC__) || defined(__clang__)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wnarrowing"

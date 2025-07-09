@@ -1,5 +1,3 @@
-#include "main.hpp"
-
 #include "vulkan/app.hpp"
 
 #include <cstdlib>
@@ -7,8 +5,6 @@
 #include <stdexcept>
 
 #include "deps/glfw/glfw3.h"
-
-short scene = 1;
 
 bool compileShader(const std::string& inputFile, const std::string& outputFile, const std::string& stage) {
     std::string command = "glslc -fshader-stage=" + stage + " " + inputFile + " -o " + outputFile;

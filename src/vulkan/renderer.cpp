@@ -1,6 +1,5 @@
 #include "renderer.hpp"
 #include "pipeline.hpp"
-#include "../main.hpp"
 
 #include <array>
 #include <cassert>

@@ -267,7 +267,6 @@ void Pipeline::loadSprites() {
 
     sprite.model = quadModel;
     sprite.texture = texture.get();
-    sprite.textureIndex = 0;
 
     spriteData.translation = glm::vec2(-.7f, -.2f);
     spriteData.scale = glm::vec2(.1f, .1f);
@@ -282,7 +281,6 @@ void Pipeline::loadSprites() {
     //Pipes
     texture = std::make_unique<Texture>(device, texturePaths[1], descriptorSetLayout, descriptorPool, *this);
     sprite.texture = texture.get();
-    sprite.textureIndex = 1;
 
     spriteData.textureIndex = 1;
     spriteData.scale = glm::vec2(.15f, 1.5f);
