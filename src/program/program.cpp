@@ -1,5 +1,6 @@
 #include "program.hpp"
 #include "../vulkan/global.hpp"
+#include "../vulkan/pipeline.hpp"
 #include "functions/keyboard.hpp"
 #include "functions/math.hpp"
 #include "functions/collision.hpp"
@@ -10,7 +11,9 @@
 #include <vector>
 #include <string>
 
-Program::Program(Keyboard& keyboard) : keyboard(keyboard) {}
+Program::Program(Keyboard& keyboard, Pipeline& pipeline) : keyboard(keyboard), pipeline(pipeline) {
+
+}
 
 float speedY = 0.f;
 

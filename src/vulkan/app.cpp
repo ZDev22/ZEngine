@@ -23,6 +23,7 @@ App::App() {
     );
     pipeline->loadSprites();
     global = std::make_unique<Global>(window);
+    Program program{keyboard, *pipeline};
     renderSystem = std::make_unique<RenderSystem>(
         device,
         window,
