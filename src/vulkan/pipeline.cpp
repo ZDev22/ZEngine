@@ -249,7 +249,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
 }
 
 int Pipeline::switchTexture(Sprite& sprite, const std::string& textureName) {
-    int index = getItemOfStringFromVector("images/" + textureName, texturePaths);
+    int index = 0;
     auto texture = std::make_unique<Texture>(device, texturePaths[index], descriptorSetLayout, descriptorPool, *this);
     sprite.texture = texture.get();
     spriteTextures.push_back(std::move(texture));
