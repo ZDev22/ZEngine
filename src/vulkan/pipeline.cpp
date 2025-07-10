@@ -1,6 +1,7 @@
 ﻿#include "pipeline.hpp"
 #include "global.hpp"
 #include "../program/functions/math.hpp"
+#include "../program/functions/string.hpp"
 
 #include <filesystem>
 #include <stdexcept>
@@ -245,6 +246,14 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
     std::vector<uint32_t> indices(positions.size());
     for (uint32_t i = 0; i < positions.size(); ++i) { indices[i] = i; }
     return std::make_shared<Model>(device, vertices, indices);
+}
+
+int Pipeline::switchTexture(Sprite& sprite, const std::string& textureName) {
+    int index = getItemOfStringFromVector("images/" + textureName, texturePaths);
+    auto texture = std::make_unique<Texture>(device, texturePaths[index], descriptorSetLayout, descriptorPool, *this);
+    sprite.texture = texture.get();
+    spriteTextures.push_back(std::move(texture));
+    return index;
 }
 
 void Pipeline::loadSprites() {

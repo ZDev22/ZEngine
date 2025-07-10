@@ -11,18 +11,17 @@
 #include <vector>
 #include <string>
 
-Program::Program(Keyboard& keyboard, Pipeline& pipeline) : keyboard(keyboard), pipeline(pipeline) {
-
-}
+Program::Program(Keyboard& keyboard, Pipeline& pipeline) : keyboard(keyboard), pipeline(pipeline) {}
 
 float speedY = 0.f;
+bool dead = false;
+int score = 0;
 
 void Program::tick() {
     speedY += 3.8f * deltaTime;
     sprites[0].position.y += speedY * deltaTime;
     sprites[0].rotation -= 90.f * deltaTime;
-    std::vector<int> keys = {GLFW_KEY_SPACE, GLFW_KEY_A, GLFW_KEY_S, GLFW_KEY_D};
-    if (keyboard.keyHit(keys[0])) {
+    if (!dead && keyboard.keyHit(GLFW_KEY_SPACE)) {
         speedY = -1.3f;
         sprites[0].rotation = 60.f;
         sprites[0].textureIndex = 0;
@@ -38,7 +37,19 @@ void Program::tick() {
         sprites[index + 1].position.x = sprites[index].position.x;
         sprites[index + 1].position.y = sprites[index].position.y - 2.f;
 
-        if (checkCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0])) { sprites[0].textureIndex = 1; }
+        if (!dead && (checkCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) { 
+            dead = true; 
+            speedY = -1.5f; 
+            sprites[0].rotation = 60.f;
+            sprites[0].textureIndex = pipeline.switchTexture(spriteCPU[0], "pipe.png");
+        }
+    }
+
+    if (dead && sprites[0].position.y > 2.5f) {
+        sprites[0].position.y = -.25f;
+        sprites[0].rotation = 0.f;
+        speedY = 0.f;
+        dead = false;
     }
 
     //Reset stuff for next frame

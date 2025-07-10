@@ -15,24 +15,10 @@ static float titleUpdateAccumulator = 0.f;
 bool shouldClose = false;
 
 App::App() {
-    pipeline = std::make_unique<Pipeline>(
-        device,
-        "vulkan/shaders/triangle.vert.spv",
-        "vulkan/shaders/triangle.frag.spv",
-        renderer.getSwapChainRenderPass()
-    );
+    pipeline = std::make_unique<Pipeline>(device, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv", renderer.getSwapChainRenderPass());
     pipeline->loadSprites();
     global = std::make_unique<Global>(window);
-    Program program{keyboard, *pipeline};
-    renderSystem = std::make_unique<RenderSystem>(
-        device,
-        window,
-        keyboard,
-        program,
-        renderer.getSwapChainRenderPass(),
-        pipeline->getDescriptorSetLayout(),
-        *global
-    );
+    renderSystem = std::make_unique<RenderSystem>(device, window, keyboard, program, renderer.getSwapChainRenderPass(), pipeline->getDescriptorSetLayout(), *global);
     renderSystem->initialize();
 }
 
@@ -56,7 +42,6 @@ void App::run() {
 
         glfwPollEvents();
         renderSystem->updateSprites();
-
         shouldClose = window.shouldClose();
     }
 

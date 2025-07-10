@@ -24,6 +24,8 @@ public:
     VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; } 
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
+    int switchTexture(Sprite& sprite, const std::string& textureName);
+
 private:
     static std::vector<char> readFile(const std::string& filepath);
     void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass);
