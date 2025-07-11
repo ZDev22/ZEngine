@@ -253,7 +253,7 @@ int Pipeline::switchTexture(Sprite& sprite, int textureID) {
     // auto texture = std::make_unique<Texture>(device, texturePaths[index], descriptorSetLayout, descriptorPool, *this);
     // sprite.texture = texture.get();
     // spriteTextures.push_back(std::move(texture));
-    sprite.texture = spriteTextures[textureID].get();
+    // sprite.texture = spriteTextures[textureID].get();
     return textureID;
 }
 

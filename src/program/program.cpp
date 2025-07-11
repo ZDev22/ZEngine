@@ -46,6 +46,7 @@ void Program::tick() {
     }
 
     if (dead && sprites[0].position.y > 2.5f) {
+        sprites[0].textureIndex = 0;
         sprites[0].position.y = -.25f;
         sprites[0].rotation = 0.f;
         speedY = 0.f;
