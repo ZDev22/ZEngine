@@ -41,7 +41,7 @@ void Program::tick() {
             dead = true; 
             speedY = -1.5f; 
             sprites[0].rotation = 60.f;
-            sprites[0].textureIndex = pipeline.switchTexture(spriteCPU[0], "pipe.png");
+            sprites[0].textureIndex = pipeline.switchTexture(spriteCPU[0], 1);
         }
     }
 

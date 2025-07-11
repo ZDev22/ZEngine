@@ -248,17 +248,21 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
     return std::make_shared<Model>(device, vertices, indices);
 }
 
-int Pipeline::switchTexture(Sprite& sprite, const std::string& textureName) {
-    int index = 0;
-    auto texture = std::make_unique<Texture>(device, texturePaths[index], descriptorSetLayout, descriptorPool, *this);
-    sprite.texture = texture.get();
-    spriteTextures.push_back(std::move(texture));
-    return index;
+int Pipeline::switchTexture(Sprite& sprite, int textureID) {
+    // int index = 0;
+    // auto texture = std::make_unique<Texture>(device, texturePaths[index], descriptorSetLayout, descriptorPool, *this);
+    // sprite.texture = texture.get();
+    // spriteTextures.push_back(std::move(texture));
+    sprite.texture = spriteTextures[textureID].get();
+    return textureID;
 }
 
 void Pipeline::loadSprites() {
     std::cout << "Starting sprite loading...\n";
-    for (size_t f = 0; f < texturePaths.size(); f++) { texturePaths[f] = "images/" + texturePaths[f]; }
+    spriteTextures.reserve(texturePaths.size());
+    for (size_t f = 0; f < texturePaths.size(); f++) { 
+        spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[f], descriptorSetLayout, descriptorPool, *this));
+    }
 
     sprites.clear();
     spriteCPU.clear();
@@ -269,13 +273,12 @@ void Pipeline::loadSprites() {
         {-0.5f,  0.5f}, // Top-Right    (Vertex 2)
         { 0.5f,  0.5f}  // Top-Left     (Vertex 3)
     });
-    auto texture = std::make_unique<Texture>(device, texturePaths[0], descriptorSetLayout, descriptorPool, *this);
 
     Sprite sprite;
     SpriteData spriteData;
 
     sprite.model = quadModel;
-    sprite.texture = texture.get();
+    sprite.texture = spriteTextures[0].get();
 
     spriteData.position = glm::vec2(-.7f, -.2f);
     spriteData.scale = glm::vec2(.1f, .1f);
@@ -285,11 +288,9 @@ void Pipeline::loadSprites() {
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
-    spriteTextures.push_back(std::move(texture));
 
     //Pipes
-    texture = std::make_unique<Texture>(device, texturePaths[1], descriptorSetLayout, descriptorPool, *this);
-    sprite.texture = texture.get();
+    sprite.texture = spriteTextures[1].get();
 
     spriteData.textureIndex = 1;
     spriteData.scale = glm::vec2(.15f, 1.5f);
@@ -301,14 +302,12 @@ void Pipeline::loadSprites() {
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);
-        spriteTextures.push_back(std::move(texture));
 
         spriteData.rotation = 180.f;
         spriteData.position = glm::vec2(i, y - 2.f);
 
         sprites.push_back(spriteData);
         spriteCPU.push_back(sprite);
-        spriteTextures.push_back(std::move(texture));
     }
 
     std::cout << "Sprites created: " << sprites.size() << std::endl;

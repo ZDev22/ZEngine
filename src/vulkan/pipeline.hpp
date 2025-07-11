@@ -24,7 +24,7 @@ public:
     VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; } 
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
-    int switchTexture(Sprite& sprite, const std::string& textureName);
+    int switchTexture(Sprite& sprite, int textureID);
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
@@ -41,6 +41,6 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    std::vector<std::string> texturePaths = { "FlappyBird.png", "pipe.png"};
+    std::vector<std::string> texturePaths = { "images/FlappyBird.png", "images/pipe.png"};
     std::vector<std::unique_ptr<Texture>> spriteTextures;
 };
