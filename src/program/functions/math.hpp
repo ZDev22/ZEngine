@@ -1,6 +1,8 @@
 #ifndef MATH_HPP
 #define MATH_HPP
 
+#define PI 3.1415926535
+
 #include <cmath>
 #include <array>
 #include <vector>
@@ -37,9 +39,9 @@ inline float smootherstep(float edge0, float edge1, float x) {
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-inline float easeInSine(float t) { return 1 - cos((t * 3.14159265358979323846) / 2); }
-inline float easeOutSine(float t) { return sin((t * 3.14159265358979323846) / 2); }
-inline float easeInOutSine(float t) { return -(cos(3.14159265358979323846 * t) - 1) / 2; }
+inline float easeInSine(float t) { return 1 - cos((t * PI) / 2); }
+inline float easeOutSine(float t) { return sin((t * PI) / 2); }
+inline float easeInOutSine(float t) { return -(cos(PI * t) - 1) / 2; }
 inline float easeInExpo(float t) { return (t == 0) ? 0 : pow(2, 10 * (t - 1)); }
 inline float easeOutExpo(float t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
 inline float easeInOutExpo(float t) {

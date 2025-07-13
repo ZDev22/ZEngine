@@ -1,6 +1,11 @@
 #ifndef KEYBOARD_HPP
 #define KEYBOARD_HPP
 
+#define KEY_IDLE 0
+#define KEY_HIT 2
+#define KEY_PRESSED 3
+#define KEY_RELEASED 1
+
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include "../../deps/glfw/glfw3.h"
@@ -24,12 +29,12 @@ public:
 
         if (keys[index + 122] == 0) {
             if (glfwGetKey(window, key) == GLFW_PRESS) {
-                if (keys[index] == 0) { keys[index] = 3; }
-                else { keys[index] = 4; }
+                if (keys[index] == KEY_IDLE) { keys[index] = KEY_HIT; }
+                else { keys[index] = KEY_PRESSED; }
             }
             else {
-                if (keys[index] >= 3) { keys[index] = 1; }
-                else { keys[index] = 0; }
+                if (keys[index] >= KEY_HIT) { keys[index] = KEY_RELEASED; }
+                else { keys[index] = KEY_IDLE; }
             }
             keys[index + 122] = 1;
         }
@@ -37,8 +42,8 @@ public:
     }
 
     bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
-    bool keyHit(int key) { return updateKeyState(key) == 3; }
-    bool keyReleased(int key) { return updateKeyState(key) == 1; }
+    bool keyHit(int key) { return updateKeyState(key) == KEY_HIT; }
+    bool keyReleased(int key) { return updateKeyState(key) == KEY_RELEASED; }
     bool keysPressed(std::vector<int>& keys) {
         for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false; } }
         return true;
