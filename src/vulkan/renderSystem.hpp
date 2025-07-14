@@ -14,19 +14,20 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout, Global& global);
+    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, VkDescriptorSetLayout descriptorSetLayout, Global& global);
     ~RenderSystem();
 
     RenderSystem(const RenderSystem&) = delete;
     RenderSystem& operator=(const RenderSystem&) = delete;
 
     void initialize();
+    void reset(VkDescriptorSetLayout newDescriptorSetLayout);
     void renderSprites(VkCommandBuffer commandBuffer);
     void updateSprites();
 
 private:
+    void createPipeline();
     void createPipelineLayout();
-    void createPipeline(VkRenderPass renderPass);
     void initializeSpriteData();
     void createTextureArrayDescriptorSet();
 
@@ -35,6 +36,7 @@ private:
     Global& global;
     Keyboard& keyboard;
     Program& program;
+    Renderer& renderer;
     std::unique_ptr<Pipeline> pipeline;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;

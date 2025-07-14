@@ -15,10 +15,10 @@ static float titleUpdateAccumulator = 0.f;
 bool shouldClose = false;
 
 App::App() {
-    pipeline = std::make_unique<Pipeline>(device, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv", renderer.getSwapChainRenderPass());
+    pipeline = std::make_unique<Pipeline>(device, *renderSystem, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
     pipeline->loadSprites();
     global = std::make_unique<Global>(window);
-    renderSystem = std::make_unique<RenderSystem>(device, window, keyboard, program, renderer.getSwapChainRenderPass(), pipeline->getDescriptorSetLayout(), *global);
+    renderSystem = std::make_unique<RenderSystem>(device, window, keyboard, program, renderer, pipeline->getDescriptorSetLayout(), *global);
     renderSystem->initialize();
 }
 

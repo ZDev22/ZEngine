@@ -54,19 +54,11 @@ Device::Device(AppWindow& window) : window{ window } {
 }
 
 Device::~Device() {
-    cout << "[Device] Destroying command pool..." << std::endl;
     vkDestroyCommandPool(device_, commandPool, nullptr);
-    cout << "[Device] Destroying logical device..." << std::endl;
     vkDestroyDevice(device_, nullptr);
-    if (enableValidationLayers && debugMessenger != VK_NULL_HANDLE) {
-        cout << "[Device] Destroying debug messenger..." << std::endl;
-        DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-    }
-    cout << "[Device] Destroying surface..." << std::endl;
+    if (enableValidationLayers && debugMessenger != VK_NULL_HANDLE) { DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr); }
     vkDestroySurfaceKHR(instance, surface_, nullptr);
-    cout << "[Device] Destroying instance..." << std::endl;
     vkDestroyInstance(instance, nullptr);
-    cout << "[Device] Device destroyed!" << std::endl;
 }
 
 void Device::createInstance() {
@@ -407,12 +399,14 @@ VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidates, Vk
 }
 
 uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-    cout << "[Device] Finding memory type..." << std::endl;
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { cout << "[Device] Found memory type: " << i << endl; return i; } }
-    throw std::runtime_error("[Device] failed to find suitable memory type!");
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+    throw std::runtime_error("Failed to find suitable memory type!");
 }
 
 VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {

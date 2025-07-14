@@ -15,15 +15,21 @@ uint32_t instanceCount;
 
 using namespace std;
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout, Global& global) : device(device), window(window), global(global), keyboard(keyboard), program(program), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, VkDescriptorSetLayout descriptorSetLayout, Global& global) : device(device), window(window), global(global), keyboard(keyboard), program(program), renderer(renderer), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
-    createPipeline(renderPass);
+    createPipeline();
     cout << "RenderSystem created" << endl;
 }
 
 RenderSystem::~RenderSystem() {
-    if (spriteDataBuffer) { spriteDataBuffer->unmap(); }
+    spriteDataBuffer->unmap();
     vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+}
+
+void RenderSystem::reset(VkDescriptorSetLayout newDescriptorSetLayout) {
+    createPipeline();
+    descriptorSetLayout = newDescriptorSetLayout;
+    initialize();
 }
 
 void RenderSystem::initialize() {
@@ -47,7 +53,7 @@ void RenderSystem::createPipelineLayout() {
     if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw runtime_error("failed to create pipeline layout!"); }
 }
 
-void RenderSystem::createPipeline(VkRenderPass renderPass) { pipeline = make_unique<Pipeline>(device, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv", renderPass); }
+void RenderSystem::createPipeline() { pipeline = make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv"); }
 void RenderSystem::initializeSpriteData() {
     VkDeviceSize bufferSize = sizeof(SpriteData) * sprites.size();
     spriteDataBuffer = make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);

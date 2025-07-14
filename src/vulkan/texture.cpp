@@ -102,11 +102,10 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
 Texture::Texture(Device& device, const std::vector<std::string>& filepaths, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(true) { createTextureArray(filepaths); }
 Texture::~Texture() {
-    if (sampler != VK_NULL_HANDLE) { vkDestroySampler(device.device(), sampler, nullptr); sampler = VK_NULL_HANDLE; }
-    if (imageView != VK_NULL_HANDLE) { vkDestroyImageView(device.device(), imageView, nullptr); imageView = VK_NULL_HANDLE; }
-    if (image != VK_NULL_HANDLE) { vkDestroyImage(device.device(), image, nullptr); image = VK_NULL_HANDLE; }
-    if (imageMemory != VK_NULL_HANDLE) { vkFreeMemory(device.device(), imageMemory, nullptr); imageMemory = VK_NULL_HANDLE; }
-    std::cout << "Destroying Texture, VkDevice: " << device.device() << std::endl;
+    vkDestroySampler(device.device(), sampler, nullptr); sampler = VK_NULL_HANDLE;
+    vkDestroyImageView(device.device(), imageView, nullptr); imageView = VK_NULL_HANDLE;
+    vkDestroyImage(device.device(), image, nullptr); image = VK_NULL_HANDLE;
+    vkFreeMemory(device.device(), imageMemory, nullptr); imageMemory = VK_NULL_HANDLE;
 }
 
 void Texture::createTextureArray(const std::vector<std::string>& filepaths) {

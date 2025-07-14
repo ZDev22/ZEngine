@@ -10,9 +10,11 @@
 #include <vector>
 #include <string>
 
+class RenderSystem;
+class Renderer;
 class Pipeline {
 public:
-    Pipeline(Device& device, const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass);
+    Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath);
     ~Pipeline();
 
     Pipeline(const Pipeline&) = delete;
@@ -25,16 +27,18 @@ public:
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);
-    void createSprite(std::shared_ptr<Model> model, Texture* texture, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, int textureIndex);
+    std::shared_ptr<Model> makeModel(const std::vector<glm::vec2>& positions);
+    void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color);
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
-    void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass);
+    void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath);
     VkShaderModule createShaderModule(const std::vector<char>& code);
-    std::shared_ptr<Model> makeModel(const std::vector<glm::vec2>& positions);
     void setTexture(int textureID);
 
     Device& device;
+    RenderSystem& renderSystem;
+    Renderer& renderer;
     VkPipeline graphicsPipeline;
     VkShaderModule vertShaderModule;
     VkShaderModule fragShaderModule;

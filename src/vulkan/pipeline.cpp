@@ -1,4 +1,6 @@
 ﻿#include "pipeline.hpp"
+#include "renderSystem.hpp"
+#include "renderer.hpp"
 #include "texture.hpp"
 #include "global.hpp"
 #include "../program/functions/math.hpp"
@@ -11,7 +13,7 @@
 #include <cassert>
 #include <array>
 
-Pipeline::Pipeline(Device& device, const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass) : device{ device } { createGraphicsPipeline(vertFilepath, fragFilepath, renderPass); }
+Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(vertFilepath, fragFilepath); }
 Pipeline::~Pipeline() {
     vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
     vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
@@ -19,7 +21,6 @@ Pipeline::~Pipeline() {
     vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
     vkDestroyDescriptorSetLayout(device.device(), descriptorSetLayout, nullptr);
     vkDestroyDescriptorPool(device.device(), descriptorPool, nullptr);
-    std::cout << "Destroying Pipeline" << std::endl;
 }
 
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
@@ -34,7 +35,7 @@ std::vector<char> Pipeline::readFile(const std::string& filepath) {
     return buffer;
 }
 
-void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath, VkRenderPass renderPass) {
+void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath) {
     std::cout << "[Pipeline] Reading vertex shader: " << vertFilepath << std::endl;
     vertShaderModule = createShaderModule(readFile(vertFilepath));
     std::cout << "[Pipeline] Vertex shader loaded and module created" << std::endl;
@@ -209,7 +210,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayout;
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.renderPass = renderer.getSwapChainRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -258,21 +259,23 @@ int Pipeline::switchTexture(Sprite& sprite, int textureID) {
     return textureID;
 }
 
-void Pipeline::createSprite(std::shared_ptr<Model> model, Texture* texture, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, int textureIndex) {
+void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color) {
     Sprite sprite;
     SpriteData spriteData;
 
-    sprite.model = quadModel;
-    sprite.texture = spriteTextures[0].get();
+    sprite.model = model;
+    sprite.texture = spriteTextures[textureIndex].get();
 
-    spriteData.position = glm::vec2(0.f, 0.f);
-    spriteData.scale = glm::vec2(.1f, .1f);
-    spriteData.rotation = 0.f;
-    spriteData.color = glm::vec4(1.0f);
-    spriteData.textureIndex = 0;
+    spriteData.position = position;
+    spriteData.scale = scale;
+    spriteData.rotation = rotation;
+    spriteData.color = color;
+    spriteData.textureIndex = textureIndex;
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
+
+    //renderSystem.reset(getDescriptorSetLayout());
 }
 
 void Pipeline::loadSprites() {
@@ -291,41 +294,15 @@ void Pipeline::loadSprites() {
         {-0.5f,  0.5f}, // Top-Right    (Vertex 2)
         { 0.5f,  0.5f}  // Top-Left     (Vertex 3)
     });
-
-    Sprite sprite;
-    SpriteData spriteData;
-
-    sprite.model = quadModel;
-    sprite.texture = spriteTextures[0].get();
-
-    spriteData.position = glm::vec2(-.7f, -.2f);
-    spriteData.scale = glm::vec2(.1f, .1f);
-    spriteData.rotation = 0.0f;
-    spriteData.color = glm::vec4(1.0f);
-    spriteData.textureIndex = 0;
-
-    sprites.push_back(spriteData);
-    spriteCPU.push_back(sprite);
+    
+    createSprite(/*Model*/ quadModel, /*Texture Index*/ 0, /*Position*/ glm::vec2(-.7f, -.2f), /*Scale*/ glm::vec2(.1f, .1f), /*Rotation*/ 0.f, /*Color*/ glm::vec4(1.f));
 
     //Pipes
-    sprite.texture = spriteTextures[1].get();
-
-    spriteData.textureIndex = 1;
-    spriteData.scale = glm::vec2(.15f, 1.5f);
-
     for (float i = 1.f; i < 5.f; i++) {
         float y = randomFloat(.4f, 1.4f);
-        spriteData.rotation = 0.f;
-        spriteData.position = glm::vec2(i, y);
 
-        sprites.push_back(spriteData);
-        spriteCPU.push_back(sprite);
-
-        spriteData.rotation = 180.f;
-        spriteData.position = glm::vec2(i, y - 2.f);
-
-        sprites.push_back(spriteData);
-        spriteCPU.push_back(sprite);
+        createSprite(quadModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
+        createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
 
     std::cout << "Sprites created: " << sprites.size() << std::endl;
