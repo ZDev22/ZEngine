@@ -7,8 +7,7 @@
 #include <string>
 #include <thread>
 
-using HighResClock = std::chrono::high_resolution_clock;
-static HighResClock::time_point lastTime;
+static std::chrono::high_resolution_clock::time_point lastTime;
 static float timeAccumulator = 0.f;
 static float titleUpdateAccumulator = 0.f;
 
@@ -23,13 +22,13 @@ App::App() {
 }
 
 void App::run() {
-    lastTime = HighResClock::now();
+    lastTime = std::chrono::high_resolution_clock::now();
 
     std::thread update(&App::render, this);
     update.detach();
 
     while (!shouldClose) {
-        auto currentTime = HighResClock::now();
+        auto currentTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> elapsed = currentTime - lastTime;
         deltaTime = elapsed.count();
         lastTime = currentTime;

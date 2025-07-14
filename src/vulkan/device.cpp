@@ -56,7 +56,7 @@ Device::Device(AppWindow& window) : window{ window } {
 Device::~Device() {
     vkDestroyCommandPool(device_, commandPool, nullptr);
     vkDestroyDevice(device_, nullptr);
-    if (enableValidationLayers && debugMessenger != VK_NULL_HANDLE) { DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr); }
+    DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
     vkDestroySurfaceKHR(instance, surface_, nullptr);
     vkDestroyInstance(instance, nullptr);
 }

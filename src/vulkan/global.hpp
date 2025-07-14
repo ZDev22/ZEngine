@@ -1,19 +1,13 @@
 #pragma once
 
-#include "sprite.hpp"
 #include "window.hpp"
 
 #include <glm/glm.hpp>
 
-struct Push { glm::mat4 projection; };
-
-extern std::vector<SpriteData> sprites;
-extern std::vector<Sprite> spriteCPU;
-
 extern float deltaTime;
-
 extern uint16_t imageCount;
 
+struct Push { glm::mat4 projection; };
 class Global {
 public:
     Global(AppWindow& window) : window(window), aspectRatio(1.0f) { setAspectRatio();  }

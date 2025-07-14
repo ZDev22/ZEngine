@@ -62,10 +62,10 @@ void RenderSystem::initializeSpriteData() {
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    if (!spriteDataBuffer) { throw std::runtime_error("spriteDataBuffer is not initialized!"); }
+    if (!spriteDataBuffer) { throw runtime_error("spriteDataBuffer is not initialized!"); }
 
-    std::vector<VkDescriptorImageInfo> imageInfos;
-    std::unordered_map<Texture*, uint32_t> textureToIndex;
+    vector<VkDescriptorImageInfo> imageInfos;
+    unordered_map<Texture*, uint32_t> textureToIndex;
     uint32_t textureIndex = 0;
 
     for (auto& sprite : spriteCPU) {
@@ -86,7 +86,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor set!"); }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw runtime_error("failed to allocate descriptor set!"); }
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
@@ -111,7 +111,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     imageWrite.descriptorCount = static_cast<uint32_t>(imageInfos.size());
     imageWrite.pImageInfo = imageInfos.data();
 
-    std::array<VkWriteDescriptorSet, 2> descriptorWrites = { bufferWrite, imageWrite };
+    array<VkWriteDescriptorSet, 2> descriptorWrites = { bufferWrite, imageWrite };
     vkUpdateDescriptorSets(device.device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
 
     cout << "Combined texture array descriptor set created: " << spriteDataDescriptorSet << endl;
@@ -129,7 +129,7 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
-    std::unordered_map<std::shared_ptr<Model>, std::vector<size_t>> batches;
+    unordered_map<shared_ptr<Model>, vector<size_t>> batches;
     for (size_t i = 0; i < spriteCPU.size(); ++i) {
         sprites[i].setRotationMatrix();
         batches[spriteCPU[i].model].push_back(i);

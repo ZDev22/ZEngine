@@ -25,3 +25,6 @@ struct Sprite {
     Texture* texture;
     std::vector<std::variant<Sprite, SpriteData>> clones;
 };
+
+extern std::vector<SpriteData> sprites;
+extern std::vector<Sprite> spriteCPU;
