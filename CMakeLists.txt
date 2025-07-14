@@ -22,11 +22,16 @@ endif()
 set(GLFW_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/glfw)
 set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR})
 
-# Select GLFW library based on platform
+set(FREETYPE_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/freeType)
+set(FREETYPE_INCLUDE_DIR ${FREETYPE_BASE_DIR}/include)
+
+# Select GLFW and FreeType libraries based on platform
 if(WIN32)
     set(GLFW_LIBRARY ${GLFW_BASE_DIR}/windows.a)
+    set(FREETYPE_LIBRARY ${FREETYPE_BASE_DIR}/libfreetypewindows.a)
 elseif(UNIX AND NOT APPLE)
     set(GLFW_LIBRARY ${GLFW_BASE_DIR}/linux.a)
+    set(FREETYPE_LIBRARY ${FREETYPE_BASE_DIR}/libfreetypelinux.a)
 else()
     message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
@@ -83,6 +88,7 @@ target_include_directories(main PRIVATE
     ${VULKAN_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
     ${GLFW_INCLUDE_DIR}
+    ${FREETYPE_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/include
 )
@@ -91,21 +97,32 @@ target_include_directories(main PRIVATE
 if(WIN32)
     target_link_libraries(main PRIVATE
         ${GLFW_LIBRARY}
+        ${FREETYPE_LIBRARY}
         opengl32
         gdi32
         user32
         shell32
         ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib
     )
-
     add_custom_command(TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib"
         $<TARGET_FILE_DIR:main>/vulkan-1.lib
     )
+    add_custom_command(TARGET main POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${FREETYPE_LIBRARY}"
+        $<TARGET_FILE_DIR:main>/libfreetypewindows.a
+    )
 elseif(UNIX AND NOT APPLE)
     find_package(Vulkan REQUIRED)
-    target_link_libraries(main PRIVATE ${GLFW_LIBRARY} Vulkan::Vulkan dl pthread)
+    target_link_libraries(main PRIVATE
+        ${GLFW_LIBRARY}
+        ${FREETYPE_LIBRARY}
+        Vulkan::Vulkan
+        dl
+        pthread
+    )
 endif()
 
 # Set the executable properties
