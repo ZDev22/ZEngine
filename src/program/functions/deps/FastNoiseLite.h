@@ -22,12 +22,9 @@
 // SOFTWARE.
 // VERSION: 1.1.1
 // https://github.com/Auburn/FastNoiseLite
-
 #ifndef FASTNOISELITE_H
 #define FASTNOISELITE_H
-
 #include <cmath>
-
 class FastNoiseLite
 {
 public:
@@ -40,14 +37,12 @@ public:
         NoiseType_ValueCubic,
         NoiseType_Value
     };
-
     enum RotationType3D
     {
         RotationType3D_None,
         RotationType3D_ImproveXYPlanes,
         RotationType3D_ImproveXZPlanes
     };
-
     enum FractalType
     {
         FractalType_None,
@@ -57,7 +52,6 @@ public:
         FractalType_DomainWarpProgressive,
         FractalType_DomainWarpIndependent
     };
-
     enum CellularDistanceFunction
     {
         CellularDistanceFunction_Euclidean,
@@ -65,7 +59,6 @@ public:
         CellularDistanceFunction_Manhattan,
         CellularDistanceFunction_Hybrid
     };
-
     enum CellularReturnType
     {
         CellularReturnType_CellValue,
@@ -76,14 +69,12 @@ public:
         CellularReturnType_Distance2Mul,
         CellularReturnType_Distance2Div
     };
-
     enum DomainWarpType
     {
         DomainWarpType_OpenSimplex2,
         DomainWarpType_OpenSimplex2Reduced,
         DomainWarpType_BasicGrid
     };
-
     FastNoiseLite(int seed = 1337)
     {
         mSeed = seed;
@@ -91,20 +82,16 @@ public:
         mNoiseType = NoiseType_OpenSimplex2;
         mRotationType3D = RotationType3D_None;
         mTransformType3D = TransformType3D_DefaultOpenSimplex2;
-
         mFractalType = FractalType_None;
         mOctaves = 3;
         mLacunarity = 2.0f;
         mGain = 0.5f;
         mWeightedStrength = 0.0f;
         mPingPongStrength = 2.0f;
-
         mFractalBounding = 1 / 1.75f;
-
         mCellularDistanceFunction = CellularDistanceFunction_EuclideanSq;
         mCellularReturnType = CellularReturnType_Distance;
         mCellularJitterModifier = 1.0f;
-
         mDomainWarpType = DomainWarpType_OpenSimplex2;
         mWarpTransformType3D = TransformType3D_DefaultOpenSimplex2;
         mDomainWarpAmp = 1.0f;
@@ -116,14 +103,12 @@ public:
         mNoiseType = noiseType;
         UpdateTransformType3D();
     }
-
     void SetRotationType3D(RotationType3D rotationType3D)
     {
         mRotationType3D = rotationType3D;
         UpdateTransformType3D();
         UpdateWarpTransformType3D();
     }
-
     void SetFractalType(FractalType fractalType) { mFractalType = fractalType; }
     void SetFractalOctaves(int octaves)
     {
@@ -151,9 +136,7 @@ public:
     float GetNoise(FNfloat x, FNfloat y) const
     {
         Arguments_must_be_floating_point_values<FNfloat>();
-
         TransformNoiseCoordinate(x, y);
-
         switch (mFractalType)
         {
         default:
@@ -170,9 +153,7 @@ public:
     float GetNoise(FNfloat x, FNfloat y, FNfloat z) const
     {
         Arguments_must_be_floating_point_values<FNfloat>();
-
         TransformNoiseCoordinate(x, y, z);
-
         switch (mFractalType)
         {
         default:
@@ -185,12 +166,10 @@ public:
             return GenFractalPingPong(x, y, z);
         }
     }
-
     template <typename FNfloat>
     void DomainWarp(FNfloat& x, FNfloat& y) const
     {
         Arguments_must_be_floating_point_values<FNfloat>();
-
         switch (mFractalType)
         {
         default:
@@ -208,7 +187,6 @@ public:
     void DomainWarp(FNfloat& x, FNfloat& y, FNfloat& z) const
     {
         Arguments_must_be_floating_point_values<FNfloat>();
-
         switch (mFractalType)
         {
         default:
@@ -222,11 +200,9 @@ public:
             break;
         }
     }
-
 private:
     template <typename T>
     struct Arguments_must_be_floating_point_values;
-
     enum TransformType3D
     {
         TransformType3D_None,
@@ -234,31 +210,24 @@ private:
         TransformType3D_ImproveXZPlanes,
         TransformType3D_DefaultOpenSimplex2
     };
-
     int mSeed;
     float mFrequency;
     NoiseType mNoiseType;
     RotationType3D mRotationType3D;
     TransformType3D mTransformType3D;
-
     FractalType mFractalType;
     int mOctaves;
     float mLacunarity;
     float mGain;
     float mWeightedStrength;
     float mPingPongStrength;
-
     float mFractalBounding;
-
     CellularDistanceFunction mCellularDistanceFunction;
     CellularReturnType mCellularReturnType;
     float mCellularJitterModifier;
-
     DomainWarpType mDomainWarpType;
     TransformType3D mWarpTransformType3D;
     float mDomainWarpAmp;
-
-
     template <typename T>
     struct Lookup
     {
@@ -267,39 +236,27 @@ private:
         static const T RandVecs2D[];
         static const T RandVecs3D[];
     };
-
     static float FastMin(float a, float b) { return a < b ? a : b; }
-
     static float FastMax(float a, float b) { return a > b ? a : b; }
-
     static float FastAbs(float f) { return f < 0 ? -f : f; }
-
     static float FastSqrt(float f) { return sqrtf(f); }
-
     template <typename FNfloat>
     static int FastFloor(FNfloat f) { return f >= 0 ? (int)f : (int)f - 1; }
-
     template <typename FNfloat>
     static int FastRound(FNfloat f) { return f >= 0 ? (int)(f + 0.5f) : (int)(f - 0.5f); }
-
     static float Lerp(float a, float b, float t) { return a + t * (b - a); }
-
     static float InterpHermite(float t) { return t * t * (3 - 2 * t); }
-
     static float InterpQuintic(float t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-
     static float CubicLerp(float a, float b, float c, float d, float t)
     {
         float p = (d - c) - (a - b);
         return t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b;
     }
-
     static float PingPong(float t)
     {
         t -= (int)(t * 0.5f) * 2;
         return t < 1 ? t : 2 - t;
     }
-
     void CalculateFractalBounding()
     {
         float gain = FastAbs(mGain);
@@ -312,137 +269,98 @@ private:
         }
         mFractalBounding = 1 / ampFractal;
     }
-
-    // Hashing
+    
     static const int PrimeX = 501125321;
     static const int PrimeY = 1136930381;
     static const int PrimeZ = 1720413743;
-
     static int Hash(int seed, int xPrimed, int yPrimed)
     {
         int hash = seed ^ xPrimed ^ yPrimed;
-
         hash *= 0x27d4eb2d;
         return hash;
     }
-
-
     static int Hash(int seed, int xPrimed, int yPrimed, int zPrimed)
     {
         int hash = seed ^ xPrimed ^ yPrimed ^ zPrimed;
-
         hash *= 0x27d4eb2d;
         return hash;
     }
-
-
     static float ValCoord(int seed, int xPrimed, int yPrimed)
     {
         int hash = Hash(seed, xPrimed, yPrimed);
-
         hash *= hash;
         hash ^= hash << 19;
         return hash * (1 / 2147483648.0f);
     }
-
-
     static float ValCoord(int seed, int xPrimed, int yPrimed, int zPrimed)
     {
         int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
-
         hash *= hash;
         hash ^= hash << 19;
         return hash * (1 / 2147483648.0f);
     }
-
-
     float GradCoord(int seed, int xPrimed, int yPrimed, float xd, float yd) const
     {
         int hash = Hash(seed, xPrimed, yPrimed);
         hash ^= hash >> 15;
         hash &= 127 << 1;
-
         float xg = Lookup<float>::Gradients2D[hash];
         float yg = Lookup<float>::Gradients2D[hash | 1];
-
         return xd * xg + yd * yg;
     }
-
-
     float GradCoord(int seed, int xPrimed, int yPrimed, int zPrimed, float xd, float yd, float zd) const
     {
         int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
         hash ^= hash >> 15;
         hash &= 63 << 2;
-
         float xg = Lookup<float>::Gradients3D[hash];
         float yg = Lookup<float>::Gradients3D[hash | 1];
         float zg = Lookup<float>::Gradients3D[hash | 2];
-
         return xd * xg + yd * yg + zd * zg;
     }
-
-
     void GradCoordOut(int seed, int xPrimed, int yPrimed, float& xo, float& yo) const
     {
         int hash = Hash(seed, xPrimed, yPrimed) & (255 << 1);
-
         xo = Lookup<float>::RandVecs2D[hash];
         yo = Lookup<float>::RandVecs2D[hash | 1];
     }
-
-
     void GradCoordOut(int seed, int xPrimed, int yPrimed, int zPrimed, float& xo, float& yo, float& zo) const
     {
         int hash = Hash(seed, xPrimed, yPrimed, zPrimed) & (255 << 2);
-
         xo = Lookup<float>::RandVecs3D[hash];
         yo = Lookup<float>::RandVecs3D[hash | 1];
         zo = Lookup<float>::RandVecs3D[hash | 2];
     }
-
-
     void GradCoordDual(int seed, int xPrimed, int yPrimed, float xd, float yd, float& xo, float& yo) const
     {
         int hash = Hash(seed, xPrimed, yPrimed);
         int index1 = hash & (127 << 1);
         int index2 = (hash >> 7) & (255 << 1);
-
         float xg = Lookup<float>::Gradients2D[index1];
         float yg = Lookup<float>::Gradients2D[index1 | 1];
         float value = xd * xg + yd * yg;
-
         float xgo = Lookup<float>::RandVecs2D[index2];
         float ygo = Lookup<float>::RandVecs2D[index2 | 1];
-
         xo = value * xgo;
         yo = value * ygo;
     }
-
-
     void GradCoordDual(int seed, int xPrimed, int yPrimed, int zPrimed, float xd, float yd, float zd, float& xo, float& yo, float& zo) const
     {
         int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
         int index1 = hash & (63 << 2);
         int index2 = (hash >> 6) & (255 << 2);
-
         float xg = Lookup<float>::Gradients3D[index1];
         float yg = Lookup<float>::Gradients3D[index1 | 1];
         float zg = Lookup<float>::Gradients3D[index1 | 2];
         float value = xd * xg + yd * yg + zd * zg;
-
         float xgo = Lookup<float>::RandVecs3D[index2];
         float ygo = Lookup<float>::RandVecs3D[index2 | 1];
         float zgo = Lookup<float>::RandVecs3D[index2 | 2];
-
         xo = value * xgo;
         yo = value * ygo;
         zo = value * zgo;
     }
-
-
-    // Generic noise gen
-
+    
     template <typename FNfloat>
     float GenNoiseSingle(int seed, FNfloat x, FNfloat y) const
     {
@@ -464,7 +382,6 @@ private:
             return 0;
         }
     }
-
     template <typename FNfloat>
     float GenNoiseSingle(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
@@ -486,16 +403,12 @@ private:
             return 0;
         }
     }
-
-
-    // Noise Coordinate Transforms (frequency, and possible skew or rotation)
-
+    
     template <typename FNfloat>
     void TransformNoiseCoordinate(FNfloat& x, FNfloat& y) const
     {
         x *= mFrequency;
         y *= mFrequency;
-
         switch (mNoiseType)
         {
         case NoiseType_OpenSimplex2:
@@ -512,14 +425,12 @@ private:
             break;
         }
     }
-
     template <typename FNfloat>
     void TransformNoiseCoordinate(FNfloat& x, FNfloat& y, FNfloat& z) const
     {
         x *= mFrequency;
         y *= mFrequency;
         z *= mFrequency;
-
         switch (mTransformType3D)
         {
         case TransformType3D_ImproveXYPlanes:
@@ -545,7 +456,7 @@ private:
         case TransformType3D_DefaultOpenSimplex2:
             {
                 const FNfloat R3 = (FNfloat)(2.0 / 3.0);
-                FNfloat r = (x + y + z) * R3; // Rotation, not skew
+                FNfloat r = (x + y + z) * R3; 
                 x = r - x;
                 y = r - y;
                 z = r - z;
@@ -555,7 +466,6 @@ private:
             break;
         }
     }
-
     void UpdateTransformType3D()
     {
         switch (mRotationType3D)
@@ -580,10 +490,7 @@ private:
             break;
         }
     }
-
-
-    // Domain Warp Coordinate Transforms
-
+    
     template <typename FNfloat>
     void TransformDomainWarpCoordinate(FNfloat& x, FNfloat& y) const
     {
@@ -603,7 +510,6 @@ private:
             break;
         }
     }
-
     template <typename FNfloat>
     void TransformDomainWarpCoordinate(FNfloat& x, FNfloat& y, FNfloat& z) const
     {
@@ -632,7 +538,7 @@ private:
         case TransformType3D_DefaultOpenSimplex2:
             {
                 const FNfloat R3 = (FNfloat)(2.0 / 3.0);
-                FNfloat r = (x + y + z) * R3; // Rotation, not skew
+                FNfloat r = (x + y + z) * R3; 
                 x = r - x;
                 y = r - y;
                 z = r - z;
@@ -642,7 +548,6 @@ private:
             break;
         }
     }
-
     void UpdateWarpTransformType3D()
     {
         switch (mRotationType3D)
@@ -667,184 +572,143 @@ private:
             break;
         }
     }
-
-
-    // Fractal FBm
-
+    
     template <typename FNfloat>
     float GenFractalFBm(FNfloat x, FNfloat y) const
     {
         int seed = mSeed;
         float sum = 0;
         float amp = mFractalBounding;
-
         for (int i = 0; i < mOctaves; i++)
         {
             float noise = GenNoiseSingle(seed++, x, y);
             sum += noise * amp;
             amp *= Lerp(1.0f, FastMin(noise + 1, 2) * 0.5f, mWeightedStrength);
-
             x *= mLacunarity;
             y *= mLacunarity;
             amp *= mGain;
         }
-
         return sum;
     }
-
     template <typename FNfloat>
     float GenFractalFBm(FNfloat x, FNfloat y, FNfloat z) const
     {
         int seed = mSeed;
         float sum = 0;
         float amp = mFractalBounding;
-
         for (int i = 0; i < mOctaves; i++)
         {
             float noise = GenNoiseSingle(seed++, x, y, z);
             sum += noise * amp;
             amp *= Lerp(1.0f, (noise + 1) * 0.5f, mWeightedStrength);
-
             x *= mLacunarity;
             y *= mLacunarity;
             z *= mLacunarity;
             amp *= mGain;
         }
-
         return sum;
     }
-
-
-    // Fractal Ridged
-
+    
     template <typename FNfloat>
     float GenFractalRidged(FNfloat x, FNfloat y) const
     {
         int seed = mSeed;
         float sum = 0;
         float amp = mFractalBounding;
-
         for (int i = 0; i < mOctaves; i++)
         {
             float noise = FastAbs(GenNoiseSingle(seed++, x, y));
             sum += (noise * -2 + 1) * amp;
             amp *= Lerp(1.0f, 1 - noise, mWeightedStrength);
-
             x *= mLacunarity;
             y *= mLacunarity;
             amp *= mGain;
         }
-
         return sum;
     }
-
     template <typename FNfloat>
     float GenFractalRidged(FNfloat x, FNfloat y, FNfloat z) const
     {
         int seed = mSeed;
         float sum = 0;
         float amp = mFractalBounding;
-
         for (int i = 0; i < mOctaves; i++)
         {
             float noise = FastAbs(GenNoiseSingle(seed++, x, y, z));
             sum += (noise * -2 + 1) * amp;
             amp *= Lerp(1.0f, 1 - noise, mWeightedStrength);
-
             x *= mLacunarity;
             y *= mLacunarity;
             z *= mLacunarity;
             amp *= mGain;
         }
-
         return sum;
     }
-
-
-    // Fractal PingPong 
-
+    
     template <typename FNfloat>
     float GenFractalPingPong(FNfloat x, FNfloat y) const
     {
         int seed = mSeed;
         float sum = 0;
         float amp = mFractalBounding;
-
         for (int i = 0; i < mOctaves; i++)
         {
             float noise = PingPong((GenNoiseSingle(seed++, x, y) + 1) * mPingPongStrength);
             sum += (noise - 0.5f) * 2 * amp;
             amp *= Lerp(1.0f, noise, mWeightedStrength);
-
             x *= mLacunarity;
             y *= mLacunarity;
             amp *= mGain;
         }
-
         return sum;
     }
-
     template <typename FNfloat>
     float GenFractalPingPong(FNfloat x, FNfloat y, FNfloat z) const
     {
         int seed = mSeed;
         float sum = 0;
         float amp = mFractalBounding;
-
         for (int i = 0; i < mOctaves; i++)
         {
             float noise = PingPong((GenNoiseSingle(seed++, x, y, z) + 1) * mPingPongStrength);
             sum += (noise - 0.5f) * 2 * amp;
             amp *= Lerp(1.0f, noise, mWeightedStrength);
-
             x *= mLacunarity;
             y *= mLacunarity;
             z *= mLacunarity;
             amp *= mGain;
         }
-
         return sum;
     }
-
-
-    // Simplex/OpenSimplex2 Noise
-
+    
     template <typename FNfloat>
     float SingleSimplex(int seed, FNfloat x, FNfloat y) const
     {
-        // 2D OpenSimplex2 case uses the same algorithm as ordinary Simplex.
-
+        
         const float SQRT3 = 1.7320508075688772935274463415059f;
         const float G2 = (3 - SQRT3) / 6;
-
         /*
          * --- Skew moved to TransformNoiseCoordinate method ---
          * const FNfloat F2 = 0.5f * (SQRT3 - 1);
          * FNfloat s = (x + y) * F2;
          * x += s; y += s;
         */
-
         int i = FastFloor(x);
         int j = FastFloor(y);
         float xi = (float)(x - i);
         float yi = (float)(y - j);
-
         float t = (xi + yi) * G2;
         float x0 = (float)(xi - t);
         float y0 = (float)(yi - t);
-
         i *= PrimeX;
         j *= PrimeY;
-
         float n0, n1, n2;
-
         float a = 0.5f - x0 * x0 - y0 * y0;
         if (a <= 0) n0 = 0;
         else
         {
             n0 = (a * a) * (a * a) * GradCoord(seed, i, j, x0, y0);
         }
-
         float c = (float)(2 * (1 - 2 * G2) * (1 / G2 - 2)) * t + ((float)(-2 * (1 - 2 * G2) * (1 - 2 * G2)) + a);
         if (c <= 0) n2 = 0;
         else
@@ -853,7 +717,6 @@ private:
             float y2 = y0 + (2 * (float)G2 - 1);
             n2 = (c * c) * (c * c) * GradCoord(seed, i + PrimeX, j + PrimeY, x2, y2);
         }
-
         if (y0 > x0)
         {
             float x1 = x0 + (float)G2;
@@ -876,10 +739,8 @@ private:
                 n1 = (b * b) * (b * b) * GradCoord(seed, i + PrimeX, j, x1, y1);
             }
         }
-
         return (n0 + n1 + n2) * 99.83685446303647f;
     }
-
     template <typename FNfloat>
     float SingleOpenSimplex2(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
@@ -889,29 +750,23 @@ private:
         float x0 = (float)(x - i);
         float y0 = (float)(y - j);
         float z0 = (float)(z - k);
-
         int xNSign = (int)(-1.0f - x0) | 1;
         int yNSign = (int)(-1.0f - y0) | 1;
         int zNSign = (int)(-1.0f - z0) | 1;
-
         float ax0 = xNSign * -x0;
         float ay0 = yNSign * -y0;
         float az0 = zNSign * -z0;
-
         i *= PrimeX;
         j *= PrimeY;
         k *= PrimeZ;
-
         float value = 0;
         float a = (0.6f - x0 * x0) - (y0 * y0 + z0 * z0);
-
         for (int l = 0; ; l++)
         {
             if (a > 0)
             {
                 value += (a * a) * (a * a) * GradCoord(seed, i, j, k, x0, y0, z0);
             }
-
             float b = a + 1;
             int i1 = i;
             int j1 = j;
@@ -919,7 +774,6 @@ private:
             float x1 = x0;
             float y1 = y0;
             float z1 = z0;
-
             if (ax0 >= ay0 && ax0 >= az0)
             {
                 x1 += xNSign;
@@ -938,72 +792,53 @@ private:
                 b -= zNSign * 2 * z1;
                 k1 -= zNSign * PrimeZ;
             }
-
             if (b > 0)
             {
                 value += (b * b) * (b * b) * GradCoord(seed, i1, j1, k1, x1, y1, z1);
             }
-
             if (l == 1) break;
-
             ax0 = 0.5f - ax0;
             ay0 = 0.5f - ay0;
             az0 = 0.5f - az0;
-
             x0 = xNSign * ax0;
             y0 = yNSign * ay0;
             z0 = zNSign * az0;
-
             a += (0.75f - ax0) - (ay0 + az0);
-
             i += (xNSign >> 1) & PrimeX;
             j += (yNSign >> 1) & PrimeY;
             k += (zNSign >> 1) & PrimeZ;
-
             xNSign = -xNSign;
             yNSign = -yNSign;
             zNSign = -zNSign;
-
             seed = ~seed;
         }
-
         return value * 32.69428253173828125f;
     }
-
-
-    // OpenSimplex2S Noise
-
+    
     template <typename FNfloat>
     float SingleOpenSimplex2S(int seed, FNfloat x, FNfloat y) const
     {
-        // 2D OpenSimplex2S case is a modified 2D simplex noise.
-
+        
         const FNfloat SQRT3 = (FNfloat)1.7320508075688772935274463415059;
         const FNfloat G2 = (3 - SQRT3) / 6;
-
         int i = FastFloor(x);
         int j = FastFloor(y);
         float xi = (float)(x - i);
         float yi = (float)(y - j);
-
         i *= PrimeX;
         j *= PrimeY;
         int i1 = i + PrimeX;
         int j1 = j + PrimeY;
-
         float t = (xi + yi) * (float)G2;
         float x0 = xi - t;
         float y0 = yi - t;
-
         float a0 = (2.0f / 3.0f) - x0 * x0 - y0 * y0;
         float value = (a0 * a0) * (a0 * a0) * GradCoord(seed, i, j, x0, y0);
-
         float a1 = (float)(2 * (1 - 2 * G2) * (1 / G2 - 2)) * t + ((float)(-2 * (1 - 2 * G2) * (1 - 2 * G2)) + a0);
         float x1 = x0 - (float)(1 - 2 * G2);
         float y1 = y0 - (float)(1 - 2 * G2);
         value += (a1 * a1) * (a1 * a1) * GradCoord(seed, i1, j1, x1, y1);
-
-        // Nested conditionals were faster than compact bit logic/arithmetic.
+        
         float xmyi = xi - yi;
         if (t > G2)
         {
@@ -1027,7 +862,6 @@ private:
                     value += (a2 * a2) * (a2 * a2) * GradCoord(seed, i, j + PrimeY, x2, y2);
                 }
             }
-
             if (yi - xmyi > 1)
             {
                 float x3 = x0 + (float)(3 * G2 - 1);
@@ -1071,7 +905,6 @@ private:
                     value += (a2 * a2) * (a2 * a2) * GradCoord(seed, i + PrimeX, j, x2, y2);
                 }
             }
-
             if (yi < xmyi)
             {
                 float x2 = x0 - (float)G2;
@@ -1093,51 +926,42 @@ private:
                 }
             }
         }
-
         return value * 18.24196194486065f;
     }
-
     template <typename FNfloat>
     float SingleOpenSimplex2S(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
-
         int i = FastFloor(x);
         int j = FastFloor(y);
         int k = FastFloor(z);
         float xi = (float)(x - i);
         float yi = (float)(y - j);
         float zi = (float)(z - k);
-
         i *= PrimeX;
         j *= PrimeY;
         k *= PrimeZ;
         int seed2 = seed + 1293373;
-
         int xNMask = (int)(-0.5f - xi);
         int yNMask = (int)(-0.5f - yi);
         int zNMask = (int)(-0.5f - zi);
-
         float x0 = xi + xNMask;
         float y0 = yi + yNMask;
         float z0 = zi + zNMask;
         float a0 = 0.75f - x0 * x0 - y0 * y0 - z0 * z0;
         float value = (a0 * a0) * (a0 * a0) * GradCoord(seed,
                                                         i + (xNMask & PrimeX), j + (yNMask & PrimeY), k + (zNMask & PrimeZ), x0, y0, z0);
-
         float x1 = xi - 0.5f;
         float y1 = yi - 0.5f;
         float z1 = zi - 0.5f;
         float a1 = 0.75f - x1 * x1 - y1 * y1 - z1 * z1;
         value += (a1 * a1) * (a1 * a1) * GradCoord(seed2,
                                                    i + PrimeX, j + PrimeY, k + PrimeZ, x1, y1, z1);
-
         float xAFlipMask0 = ((xNMask | 1) << 1) * x1;
         float yAFlipMask0 = ((yNMask | 1) << 1) * y1;
         float zAFlipMask0 = ((zNMask | 1) << 1) * z1;
         float xAFlipMask1 = (-2 - (xNMask << 2)) * x1 - 1.0f;
         float yAFlipMask1 = (-2 - (yNMask << 2)) * y1 - 1.0f;
         float zAFlipMask1 = (-2 - (zNMask << 2)) * z1 - 1.0f;
-
         bool skip5 = false;
         float a2 = xAFlipMask0 + a0;
         if (a2 > 0)
@@ -1159,7 +983,6 @@ private:
                 value += (a3 * a3) * (a3 * a3) * GradCoord(seed,
                                                            i + (xNMask & PrimeX), j + (~yNMask & PrimeY), k + (~zNMask & PrimeZ), x3, y3, z3);
             }
-
             float a4 = xAFlipMask1 + a1;
             if (a4 > 0)
             {
@@ -1171,7 +994,6 @@ private:
                 skip5 = true;
             }
         }
-
         bool skip9 = false;
         float a6 = yAFlipMask0 + a0;
         if (a6 > 0)
@@ -1193,7 +1015,6 @@ private:
                 value += (a7 * a7) * (a7 * a7) * GradCoord(seed,
                                                            i + (~xNMask & PrimeX), j + (yNMask & PrimeY), k + (~zNMask & PrimeZ), x7, y7, z7);
             }
-
             float a8 = yAFlipMask1 + a1;
             if (a8 > 0)
             {
@@ -1205,7 +1026,6 @@ private:
                 skip9 = true;
             }
         }
-
         bool skipD = false;
         float aA = zAFlipMask0 + a0;
         if (aA > 0)
@@ -1227,7 +1047,6 @@ private:
                 value += (aB * aB) * (aB * aB) * GradCoord(seed,
                                                            i + (~xNMask & PrimeX), j + (~yNMask & PrimeY), k + (zNMask & PrimeZ), xB, yB, zB);
             }
-
             float aC = zAFlipMask1 + a1;
             if (aC > 0)
             {
@@ -1239,7 +1058,6 @@ private:
                 skipD = true;
             }
         }
-
         if (!skip5)
         {
             float a5 = yAFlipMask1 + zAFlipMask1 + a1;
@@ -1252,7 +1070,6 @@ private:
                                                            i + PrimeX, j + (yNMask & (PrimeY << 1)), k + (zNMask & (PrimeZ << 1)), x5, y5, z5);
             }
         }
-
         if (!skip9)
         {
             float a9 = xAFlipMask1 + zAFlipMask1 + a1;
@@ -1265,7 +1082,6 @@ private:
                                                            i + (xNMask & (PrimeX * 2)), j + PrimeY, k + (zNMask & (PrimeZ << 1)), x9, y9, z9);
             }
         }
-
         if (!skipD)
         {
             float aD = xAFlipMask1 + yAFlipMask1 + a1;
@@ -1278,28 +1094,20 @@ private:
                                                            i + (xNMask & (PrimeX << 1)), j + (yNMask & (PrimeY << 1)), k + PrimeZ, xD, yD, zD);
             }
         }
-
         return value * 9.046026385208288f;
     }
-
-
-    // Cellular Noise
-
+    
     template <typename FNfloat>
     float SingleCellular(int seed, FNfloat x, FNfloat y) const
     {
         int xr = FastRound(x);
         int yr = FastRound(y);
-
         float distance0 = 1e10f;
         float distance1 = 1e10f;
         int closestHash = 0;
-
         float cellularJitter = 0.43701595f * mCellularJitterModifier;
-
         int xPrimed = (xr - 1) * PrimeX;
         int yPrimedBase = (yr - 1) * PrimeY;
-
         switch (mCellularDistanceFunction)
         {
         default:
@@ -1308,17 +1116,13 @@ private:
             for (int xi = xr - 1; xi <= xr + 1; xi++)
             {
                 int yPrimed = yPrimedBase;
-
                 for (int yi = yr - 1; yi <= yr + 1; yi++)
                 {
                     int hash = Hash(seed, xPrimed, yPrimed);
                     int idx = hash & (255 << 1);
-
                     float vecX = (float)(xi - x) + Lookup<float>::RandVecs2D[idx] * cellularJitter;
                     float vecY = (float)(yi - y) + Lookup<float>::RandVecs2D[idx | 1] * cellularJitter;
-
                     float newDistance = vecX * vecX + vecY * vecY;
-
                     distance1 = FastMax(FastMin(distance1, newDistance), distance0);
                     if (newDistance < distance0)
                     {
@@ -1334,17 +1138,13 @@ private:
             for (int xi = xr - 1; xi <= xr + 1; xi++)
             {
                 int yPrimed = yPrimedBase;
-
                 for (int yi = yr - 1; yi <= yr + 1; yi++)
                 {
                     int hash = Hash(seed, xPrimed, yPrimed);
                     int idx = hash & (255 << 1);
-
                     float vecX = (float)(xi - x) + Lookup<float>::RandVecs2D[idx] * cellularJitter;
                     float vecY = (float)(yi - y) + Lookup<float>::RandVecs2D[idx | 1] * cellularJitter;
-
                     float newDistance = FastAbs(vecX) + FastAbs(vecY);
-
                     distance1 = FastMax(FastMin(distance1, newDistance), distance0);
                     if (newDistance < distance0)
                     {
@@ -1360,17 +1160,13 @@ private:
             for (int xi = xr - 1; xi <= xr + 1; xi++)
             {
                 int yPrimed = yPrimedBase;
-
                 for (int yi = yr - 1; yi <= yr + 1; yi++)
                 {
                     int hash = Hash(seed, xPrimed, yPrimed);
                     int idx = hash & (255 << 1);
-
                     float vecX = (float)(xi - x) + Lookup<float>::RandVecs2D[idx] * cellularJitter;
                     float vecY = (float)(yi - y) + Lookup<float>::RandVecs2D[idx | 1] * cellularJitter;
-
                     float newDistance = (FastAbs(vecX) + FastAbs(vecY)) + (vecX * vecX + vecY * vecY);
-
                     distance1 = FastMax(FastMin(distance1, newDistance), distance0);
                     if (newDistance < distance0)
                     {
@@ -1383,17 +1179,14 @@ private:
             }
             break;
         }
-
         if (mCellularDistanceFunction == CellularDistanceFunction_Euclidean && mCellularReturnType >= CellularReturnType_Distance)
         {
             distance0 = FastSqrt(distance0);
-
             if (mCellularReturnType >= CellularReturnType_Distance2)
             {
                 distance1 = FastSqrt(distance1);
             }
         }
-
         switch (mCellularReturnType)
         {
         case CellularReturnType_CellValue:
@@ -1414,24 +1207,19 @@ private:
             return 0;
         }
     }
-
     template <typename FNfloat>
     float SingleCellular(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
         int xr = FastRound(x);
         int yr = FastRound(y);
         int zr = FastRound(z);
-
         float distance0 = 1e10f;
         float distance1 = 1e10f;
         int closestHash = 0;
-
         float cellularJitter = 0.39614353f * mCellularJitterModifier;
-
         int xPrimed = (xr - 1) * PrimeX;
         int yPrimedBase = (yr - 1) * PrimeY;
         int zPrimedBase = (zr - 1) * PrimeZ;
-
         switch (mCellularDistanceFunction)
         {
         case CellularDistanceFunction_Euclidean:
@@ -1439,22 +1227,17 @@ private:
             for (int xi = xr - 1; xi <= xr + 1; xi++)
             {
                 int yPrimed = yPrimedBase;
-
                 for (int yi = yr - 1; yi <= yr + 1; yi++)
                 {
                     int zPrimed = zPrimedBase;
-
                     for (int zi = zr - 1; zi <= zr + 1; zi++)
                     {
                         int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
                         int idx = hash & (255 << 2);
-
                         float vecX = (float)(xi - x) + Lookup<float>::RandVecs3D[idx] * cellularJitter;
                         float vecY = (float)(yi - y) + Lookup<float>::RandVecs3D[idx | 1] * cellularJitter;
                         float vecZ = (float)(zi - z) + Lookup<float>::RandVecs3D[idx | 2] * cellularJitter;
-
                         float newDistance = vecX * vecX + vecY * vecY + vecZ * vecZ;
-
                         distance1 = FastMax(FastMin(distance1, newDistance), distance0);
                         if (newDistance < distance0)
                         {
@@ -1472,22 +1255,17 @@ private:
             for (int xi = xr - 1; xi <= xr + 1; xi++)
             {
                 int yPrimed = yPrimedBase;
-
                 for (int yi = yr - 1; yi <= yr + 1; yi++)
                 {
                     int zPrimed = zPrimedBase;
-
                     for (int zi = zr - 1; zi <= zr + 1; zi++)
                     {
                         int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
                         int idx = hash & (255 << 2);
-
                         float vecX = (float)(xi - x) + Lookup<float>::RandVecs3D[idx] * cellularJitter;
                         float vecY = (float)(yi - y) + Lookup<float>::RandVecs3D[idx | 1] * cellularJitter;
                         float vecZ = (float)(zi - z) + Lookup<float>::RandVecs3D[idx | 2] * cellularJitter;
-
                         float newDistance = FastAbs(vecX) + FastAbs(vecY) + FastAbs(vecZ);
-
                         distance1 = FastMax(FastMin(distance1, newDistance), distance0);
                         if (newDistance < distance0)
                         {
@@ -1505,22 +1283,17 @@ private:
             for (int xi = xr - 1; xi <= xr + 1; xi++)
             {
                 int yPrimed = yPrimedBase;
-
                 for (int yi = yr - 1; yi <= yr + 1; yi++)
                 {
                     int zPrimed = zPrimedBase;
-
                     for (int zi = zr - 1; zi <= zr + 1; zi++)
                     {
                         int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
                         int idx = hash & (255 << 2);
-
                         float vecX = (float)(xi - x) + Lookup<float>::RandVecs3D[idx] * cellularJitter;
                         float vecY = (float)(yi - y) + Lookup<float>::RandVecs3D[idx | 1] * cellularJitter;
                         float vecZ = (float)(zi - z) + Lookup<float>::RandVecs3D[idx | 2] * cellularJitter;
-
                         float newDistance = (FastAbs(vecX) + FastAbs(vecY) + FastAbs(vecZ)) + (vecX * vecX + vecY * vecY + vecZ * vecZ);
-
                         distance1 = FastMax(FastMin(distance1, newDistance), distance0);
                         if (newDistance < distance0)
                         {
@@ -1537,17 +1310,14 @@ private:
         default:
             break;
         }
-
         if (mCellularDistanceFunction == CellularDistanceFunction_Euclidean && mCellularReturnType >= CellularReturnType_Distance)
         {
             distance0 = FastSqrt(distance0);
-
             if (mCellularReturnType >= CellularReturnType_Distance2)
             {
                 distance1 = FastSqrt(distance1);
             }
         }
-
         switch (mCellularReturnType)
         {
         case CellularReturnType_CellValue:
@@ -1568,83 +1338,63 @@ private:
             return 0;
         }
     }
-
-
-    // Perlin Noise
-
+    
     template <typename FNfloat>
     float SinglePerlin(int seed, FNfloat x, FNfloat y) const
     {
         int x0 = FastFloor(x);
         int y0 = FastFloor(y);
-
         float xd0 = (float)(x - x0);
         float yd0 = (float)(y - y0);
         float xd1 = xd0 - 1;
         float yd1 = yd0 - 1;
-
         float xs = InterpQuintic(xd0);
         float ys = InterpQuintic(yd0);
-
         x0 *= PrimeX;
         y0 *= PrimeY;
         int x1 = x0 + PrimeX;
         int y1 = y0 + PrimeY;
-
         float xf0 = Lerp(GradCoord(seed, x0, y0, xd0, yd0), GradCoord(seed, x1, y0, xd1, yd0), xs);
         float xf1 = Lerp(GradCoord(seed, x0, y1, xd0, yd1), GradCoord(seed, x1, y1, xd1, yd1), xs);
-
         return Lerp(xf0, xf1, ys) * 1.4247691104677813f;
     }
-
     template <typename FNfloat>
     float SinglePerlin(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
         int x0 = FastFloor(x);
         int y0 = FastFloor(y);
         int z0 = FastFloor(z);
-
         float xd0 = (float)(x - x0);
         float yd0 = (float)(y - y0);
         float zd0 = (float)(z - z0);
         float xd1 = xd0 - 1;
         float yd1 = yd0 - 1;
         float zd1 = zd0 - 1;
-
         float xs = InterpQuintic(xd0);
         float ys = InterpQuintic(yd0);
         float zs = InterpQuintic(zd0);
-
         x0 *= PrimeX;
         y0 *= PrimeY;
         z0 *= PrimeZ;
         int x1 = x0 + PrimeX;
         int y1 = y0 + PrimeY;
         int z1 = z0 + PrimeZ;
-
         float xf00 = Lerp(GradCoord(seed, x0, y0, z0, xd0, yd0, zd0), GradCoord(seed, x1, y0, z0, xd1, yd0, zd0), xs);
         float xf10 = Lerp(GradCoord(seed, x0, y1, z0, xd0, yd1, zd0), GradCoord(seed, x1, y1, z0, xd1, yd1, zd0), xs);
         float xf01 = Lerp(GradCoord(seed, x0, y0, z1, xd0, yd0, zd1), GradCoord(seed, x1, y0, z1, xd1, yd0, zd1), xs);
         float xf11 = Lerp(GradCoord(seed, x0, y1, z1, xd0, yd1, zd1), GradCoord(seed, x1, y1, z1, xd1, yd1, zd1), xs);
-
         float yf0 = Lerp(xf00, xf10, ys);
         float yf1 = Lerp(xf01, xf11, ys);
-
         return Lerp(yf0, yf1, zs) * 0.964921414852142333984375f;
     }
-
-
-    // Value Cubic Noise
-
+    
     template <typename FNfloat>
     float SingleValueCubic(int seed, FNfloat x, FNfloat y) const
     {
         int x1 = FastFloor(x);
         int y1 = FastFloor(y);
-
         float xs = (float)(x - x1);
         float ys = (float)(y - y1);
-
         x1 *= PrimeX;
         y1 *= PrimeY;
         int x0 = x1 - PrimeX;
@@ -1653,7 +1403,6 @@ private:
         int y2 = y1 + PrimeY;
         int x3 = x1 + (int)((long)PrimeX << 1);
         int y3 = y1 + (int)((long)PrimeY << 1);
-
         return CubicLerp(
             CubicLerp(ValCoord(seed, x0, y0), ValCoord(seed, x1, y0), ValCoord(seed, x2, y0), ValCoord(seed, x3, y0),
                       xs),
@@ -1665,22 +1414,18 @@ private:
                       xs),
             ys) * (1 / (1.5f * 1.5f));
     }
-
     template <typename FNfloat>
     float SingleValueCubic(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
         int x1 = FastFloor(x);
         int y1 = FastFloor(y);
         int z1 = FastFloor(z);
-
         float xs = (float)(x - x1);
         float ys = (float)(y - y1);
         float zs = (float)(z - z1);
-
         x1 *= PrimeX;
         y1 *= PrimeY;
         z1 *= PrimeZ;
-
         int x0 = x1 - PrimeX;
         int y0 = y1 - PrimeY;
         int z0 = z1 - PrimeZ;
@@ -1690,8 +1435,6 @@ private:
         int x3 = x1 + (int)((long)PrimeX << 1);
         int y3 = y1 + (int)((long)PrimeY << 1);
         int z3 = z1 + (int)((long)PrimeZ << 1);
-
-
         return CubicLerp(
             CubicLerp(
                 CubicLerp(ValCoord(seed, x0, y0, z0), ValCoord(seed, x1, y0, z0), ValCoord(seed, x2, y0, z0), ValCoord(seed, x3, y0, z0), xs),
@@ -1719,62 +1462,46 @@ private:
                 ys),
             zs) * (1 / (1.5f * 1.5f * 1.5f));
     }
-
-
-    // Value Noise
-
+    
     template <typename FNfloat>
     float SingleValue(int seed, FNfloat x, FNfloat y) const
     {
         int x0 = FastFloor(x);
         int y0 = FastFloor(y);
-
         float xs = InterpHermite((float)(x - x0));
         float ys = InterpHermite((float)(y - y0));
-
         x0 *= PrimeX;
         y0 *= PrimeY;
         int x1 = x0 + PrimeX;
         int y1 = y0 + PrimeY;
-
         float xf0 = Lerp(ValCoord(seed, x0, y0), ValCoord(seed, x1, y0), xs);
         float xf1 = Lerp(ValCoord(seed, x0, y1), ValCoord(seed, x1, y1), xs);
-
         return Lerp(xf0, xf1, ys);
     }
-
     template <typename FNfloat>
     float SingleValue(int seed, FNfloat x, FNfloat y, FNfloat z) const
     {
         int x0 = FastFloor(x);
         int y0 = FastFloor(y);
         int z0 = FastFloor(z);
-
         float xs = InterpHermite((float)(x - x0));
         float ys = InterpHermite((float)(y - y0));
         float zs = InterpHermite((float)(z - z0));
-
         x0 *= PrimeX;
         y0 *= PrimeY;
         z0 *= PrimeZ;
         int x1 = x0 + PrimeX;
         int y1 = y0 + PrimeY;
         int z1 = z0 + PrimeZ;
-
         float xf00 = Lerp(ValCoord(seed, x0, y0, z0), ValCoord(seed, x1, y0, z0), xs);
         float xf10 = Lerp(ValCoord(seed, x0, y1, z0), ValCoord(seed, x1, y1, z0), xs);
         float xf01 = Lerp(ValCoord(seed, x0, y0, z1), ValCoord(seed, x1, y0, z1), xs);
         float xf11 = Lerp(ValCoord(seed, x0, y1, z1), ValCoord(seed, x1, y1, z1), xs);
-
         float yf0 = Lerp(xf00, xf10, ys);
         float yf1 = Lerp(xf01, xf11, ys);
-
         return Lerp(yf0, yf1, zs);
     }
-
-
-    // Domain Warp
-
+    
     template <typename FNfloat>
     void DoSingleDomainWarp(int seed, float amp, float freq, FNfloat x, FNfloat y, FNfloat& xr, FNfloat& yr) const
     {
@@ -1791,7 +1518,6 @@ private:
             break;
         }
     }
-
     template <typename FNfloat>
     void DoSingleDomainWarp(int seed, float amp, float freq, FNfloat x, FNfloat y, FNfloat z, FNfloat& xr, FNfloat& yr, FNfloat& zr) const
     {
@@ -1808,109 +1534,84 @@ private:
             break;
         }
     }
-
-
-    // Domain Warp Single Wrapper
-
+    
     template <typename FNfloat>
     void DomainWarpSingle(FNfloat& x, FNfloat& y) const
     {
         int seed = mSeed;
         float amp = mDomainWarpAmp * mFractalBounding;
         float freq = mFrequency;
-
         FNfloat xs = x;
         FNfloat ys = y;
         TransformDomainWarpCoordinate(xs, ys);
-
         DoSingleDomainWarp(seed, amp, freq, xs, ys, x, y);
     }
-
     template <typename FNfloat>
     void DomainWarpSingle(FNfloat& x, FNfloat& y, FNfloat& z) const
     {
         int seed = mSeed;
         float amp = mDomainWarpAmp * mFractalBounding;
         float freq = mFrequency;
-
         FNfloat xs = x;
         FNfloat ys = y;
         FNfloat zs = z;
         TransformDomainWarpCoordinate(xs, ys, zs);
-
         DoSingleDomainWarp(seed, amp, freq, xs, ys, zs, x, y, z);
     }
-
-
-    // Domain Warp Fractal Progressive
-
+    
     template <typename FNfloat>
     void DomainWarpFractalProgressive(FNfloat& x, FNfloat& y) const
     {
         int seed = mSeed;
         float amp = mDomainWarpAmp * mFractalBounding;
         float freq = mFrequency;
-
         for (int i = 0; i < mOctaves; i++)
         {
             FNfloat xs = x;
             FNfloat ys = y;
             TransformDomainWarpCoordinate(xs, ys);
-
             DoSingleDomainWarp(seed, amp, freq, xs, ys, x, y);
-
             seed++;
             amp *= mGain;
             freq *= mLacunarity;
         }
     }
-
     template <typename FNfloat>
     void DomainWarpFractalProgressive(FNfloat& x, FNfloat& y, FNfloat& z) const
     {
         int seed = mSeed;
         float amp = mDomainWarpAmp * mFractalBounding;
         float freq = mFrequency;
-
         for (int i = 0; i < mOctaves; i++)
         {
             FNfloat xs = x;
             FNfloat ys = y;
             FNfloat zs = z;
             TransformDomainWarpCoordinate(xs, ys, zs);
-
             DoSingleDomainWarp(seed, amp, freq, xs, ys, zs, x, y, z);
-
             seed++;
             amp *= mGain;
             freq *= mLacunarity;
         }
     }
-
-
-    // Domain Warp Fractal Independant
-
+    
     template <typename FNfloat>
     void DomainWarpFractalIndependent(FNfloat& x, FNfloat& y) const
     {
         FNfloat xs = x;
         FNfloat ys = y;
         TransformDomainWarpCoordinate(xs, ys);
-
         int seed = mSeed;
         float amp = mDomainWarpAmp * mFractalBounding;
         float freq = mFrequency;
-
         for (int i = 0; i < mOctaves; i++)
         {
             DoSingleDomainWarp(seed, amp, freq, xs, ys, x, y);
-
             seed++;
             amp *= mGain;
             freq *= mLacunarity;
         }
     }
-
     template <typename FNfloat>
     void DomainWarpFractalIndependent(FNfloat& x, FNfloat& y, FNfloat& z) const
     {
@@ -1918,143 +1619,106 @@ private:
         FNfloat ys = y;
         FNfloat zs = z;
         TransformDomainWarpCoordinate(xs, ys, zs);
-
         int seed = mSeed;
         float amp = mDomainWarpAmp * mFractalBounding;
         float freq = mFrequency;
-
         for (int i = 0; i < mOctaves; i++)
         {
             DoSingleDomainWarp(seed, amp, freq, xs, ys, zs, x, y, z);
-
             seed++;
             amp *= mGain;
             freq *= mLacunarity;
         }
     }
-
-
-    // Domain Warp Basic Grid
-
+    
     template <typename FNfloat>
     void SingleDomainWarpBasicGrid(int seed, float warpAmp, float frequency, FNfloat x, FNfloat y, FNfloat& xr, FNfloat& yr) const
     {
         FNfloat xf = x * frequency;
         FNfloat yf = y * frequency;
-
         int x0 = FastFloor(xf);
         int y0 = FastFloor(yf);
-
         float xs = InterpHermite((float)(xf - x0));
         float ys = InterpHermite((float)(yf - y0));
-
         x0 *= PrimeX;
         y0 *= PrimeY;
         int x1 = x0 + PrimeX;
         int y1 = y0 + PrimeY;
-
         int hash0 = Hash(seed, x0, y0) & (255 << 1);
         int hash1 = Hash(seed, x1, y0) & (255 << 1);
-
         float lx0x = Lerp(Lookup<float>::RandVecs2D[hash0], Lookup<float>::RandVecs2D[hash1], xs);
         float ly0x = Lerp(Lookup<float>::RandVecs2D[hash0 | 1], Lookup<float>::RandVecs2D[hash1 | 1], xs);
-
         hash0 = Hash(seed, x0, y1) & (255 << 1);
         hash1 = Hash(seed, x1, y1) & (255 << 1);
-
         float lx1x = Lerp(Lookup<float>::RandVecs2D[hash0], Lookup<float>::RandVecs2D[hash1], xs);
         float ly1x = Lerp(Lookup<float>::RandVecs2D[hash0 | 1], Lookup<float>::RandVecs2D[hash1 | 1], xs);
-
         xr += Lerp(lx0x, lx1x, ys) * warpAmp;
         yr += Lerp(ly0x, ly1x, ys) * warpAmp;
     }
-
     template <typename FNfloat>
     void SingleDomainWarpBasicGrid(int seed, float warpAmp, float frequency, FNfloat x, FNfloat y, FNfloat z, FNfloat& xr, FNfloat& yr, FNfloat& zr) const
     {
         FNfloat xf = x * frequency;
         FNfloat yf = y * frequency;
         FNfloat zf = z * frequency;
-
         int x0 = FastFloor(xf);
         int y0 = FastFloor(yf);
         int z0 = FastFloor(zf);
-
         float xs = InterpHermite((float)(xf - x0));
         float ys = InterpHermite((float)(yf - y0));
         float zs = InterpHermite((float)(zf - z0));
-
         x0 *= PrimeX;
         y0 *= PrimeY;
         z0 *= PrimeZ;
         int x1 = x0 + PrimeX;
         int y1 = y0 + PrimeY;
         int z1 = z0 + PrimeZ;
-
         int hash0 = Hash(seed, x0, y0, z0) & (255 << 2);
         int hash1 = Hash(seed, x1, y0, z0) & (255 << 2);
-
         float lx0x = Lerp(Lookup<float>::RandVecs3D[hash0], Lookup<float>::RandVecs3D[hash1], xs);
         float ly0x = Lerp(Lookup<float>::RandVecs3D[hash0 | 1], Lookup<float>::RandVecs3D[hash1 | 1], xs);
         float lz0x = Lerp(Lookup<float>::RandVecs3D[hash0 | 2], Lookup<float>::RandVecs3D[hash1 | 2], xs);
-
         hash0 = Hash(seed, x0, y1, z0) & (255 << 2);
         hash1 = Hash(seed, x1, y1, z0) & (255 << 2);
-
         float lx1x = Lerp(Lookup<float>::RandVecs3D[hash0], Lookup<float>::RandVecs3D[hash1], xs);
         float ly1x = Lerp(Lookup<float>::RandVecs3D[hash0 | 1], Lookup<float>::RandVecs3D[hash1 | 1], xs);
         float lz1x = Lerp(Lookup<float>::RandVecs3D[hash0 | 2], Lookup<float>::RandVecs3D[hash1 | 2], xs);
-
         float lx0y = Lerp(lx0x, lx1x, ys);
         float ly0y = Lerp(ly0x, ly1x, ys);
         float lz0y = Lerp(lz0x, lz1x, ys);
-
         hash0 = Hash(seed, x0, y0, z1) & (255 << 2);
         hash1 = Hash(seed, x1, y0, z1) & (255 << 2);
-
         lx0x = Lerp(Lookup<float>::RandVecs3D[hash0], Lookup<float>::RandVecs3D[hash1], xs);
         ly0x = Lerp(Lookup<float>::RandVecs3D[hash0 | 1], Lookup<float>::RandVecs3D[hash1 | 1], xs);
         lz0x = Lerp(Lookup<float>::RandVecs3D[hash0 | 2], Lookup<float>::RandVecs3D[hash1 | 2], xs);
-
         hash0 = Hash(seed, x0, y1, z1) & (255 << 2);
         hash1 = Hash(seed, x1, y1, z1) & (255 << 2);
-
         lx1x = Lerp(Lookup<float>::RandVecs3D[hash0], Lookup<float>::RandVecs3D[hash1], xs);
         ly1x = Lerp(Lookup<float>::RandVecs3D[hash0 | 1], Lookup<float>::RandVecs3D[hash1 | 1], xs);
         lz1x = Lerp(Lookup<float>::RandVecs3D[hash0 | 2], Lookup<float>::RandVecs3D[hash1 | 2], xs);
-
         xr += Lerp(lx0y, Lerp(lx0x, lx1x, ys), zs) * warpAmp;
         yr += Lerp(ly0y, Lerp(ly0x, ly1x, ys), zs) * warpAmp;
         zr += Lerp(lz0y, Lerp(lz0x, lz1x, ys), zs) * warpAmp;
     }
-
-
-    // Domain Warp Simplex/OpenSimplex2
-
+    
     template <typename FNfloat>
     void SingleDomainWarpSimplexGradient(int seed, float warpAmp, float frequency, FNfloat x, FNfloat y, FNfloat& xr, FNfloat& yr, bool outGradOnly) const
     {
         const float SQRT3 = 1.7320508075688772935274463415059f;
         const float G2 = (3 - SQRT3) / 6;
-
         x *= frequency;
         y *= frequency;
-
         int i = FastFloor(x);
         int j = FastFloor(y);
         float xi = (float)(x - i);
         float yi = (float)(y - j);
-
         float t = (xi + yi) * G2;
         float x0 = (float)(xi - t);
         float y0 = (float)(yi - t);
-
         i *= PrimeX;
         j *= PrimeY;
-
         float vx, vy;
         vx = vy = 0;
-
         float a = 0.5f - x0 * x0 - y0 * y0;
         if (a > 0)
         {
@@ -2067,7 +1731,6 @@ private:
             vx += aaaa * xo;
             vy += aaaa * yo;
         }
-
         float c = (float)(2 * (1 - 2 * G2) * (1 / G2 - 2)) * t + ((float)(-2 * (1 - 2 * G2) * (1 - 2 * G2)) + a);
         if (c > 0)
         {
@@ -2082,7 +1745,6 @@ private:
             vx += cccc * xo;
             vy += cccc * yo;
         }
-
         if (y0 > x0)
         {
             float x1 = x0 + (float)G2;
@@ -2117,40 +1779,32 @@ private:
                 vy += bbbb * yo;
             }
         }
-
         xr += vx * warpAmp;
         yr += vy * warpAmp;
     }
-
     template <typename FNfloat>
     void SingleDomainWarpOpenSimplex2Gradient(int seed, float warpAmp, float frequency, FNfloat x, FNfloat y, FNfloat z, FNfloat& xr, FNfloat& yr, FNfloat& zr, bool outGradOnly) const
     {
         x *= frequency;
         y *= frequency;
         z *= frequency;
-
         int i = FastRound(x);
         int j = FastRound(y);
         int k = FastRound(z);
         float x0 = (float)x - i;
         float y0 = (float)y - j;
         float z0 = (float)z - k;
-
         int xNSign = (int)(-x0 - 1.0f) | 1;
         int yNSign = (int)(-y0 - 1.0f) | 1;
         int zNSign = (int)(-z0 - 1.0f) | 1;
-
         float ax0 = xNSign * -x0;
         float ay0 = yNSign * -y0;
         float az0 = zNSign * -z0;
-
         i *= PrimeX;
         j *= PrimeY;
         k *= PrimeZ;
-
         float vx, vy, vz;
         vx = vy = vz = 0;
-
         float a = (0.6f - x0 * x0) - (y0 * y0 + z0 * z0);
         for (int l = 0; l < 2; l++)
         {
@@ -2166,7 +1820,6 @@ private:
                 vy += aaaa * yo;
                 vz += aaaa * zo;
             }
-
             float b = a + 1;
             int i1 = i;
             int j1 = j;
@@ -2174,7 +1827,6 @@ private:
             float x1 = x0;
             float y1 = y0;
             float z1 = z0;
-
             if (ax0 >= ay0 && ax0 >= az0)
             {
                 x1 += xNSign;
@@ -2193,7 +1845,6 @@ private:
                 b -= zNSign * 2 * z1;
                 k1 -= zNSign * PrimeZ;
             }
-
             if (b > 0)
             {
                 float bbbb = (b * b) * (b * b);
@@ -2206,43 +1857,33 @@ private:
                 vy += bbbb * yo;
                 vz += bbbb * zo;
             }
-
             if (l == 1) break;
-
             ax0 = 0.5f - ax0;
             ay0 = 0.5f - ay0;
             az0 = 0.5f - az0;
-
             x0 = xNSign * ax0;
             y0 = yNSign * ay0;
             z0 = zNSign * az0;
-
             a += (0.75f - ax0) - (ay0 + az0);
-
             i += (xNSign >> 1) & PrimeX;
             j += (yNSign >> 1) & PrimeY;
             k += (zNSign >> 1) & PrimeZ;
-
             xNSign = -xNSign;
             yNSign = -yNSign;
             zNSign = -zNSign;
-
             seed += 1293373;
         }
-
         xr += vx * warpAmp;
         yr += vy * warpAmp;
         zr += vz * warpAmp;
     }
 };
-
 template <>
 struct FastNoiseLite::Arguments_must_be_floating_point_values<float> {};
 template <>
 struct FastNoiseLite::Arguments_must_be_floating_point_values<double> {};
 template <>
 struct FastNoiseLite::Arguments_must_be_floating_point_values<long double> {};
-
 template <typename T>
 const T FastNoiseLite::Lookup<T>::Gradients2D[] =
 {
@@ -2279,7 +1920,6 @@ const T FastNoiseLite::Lookup<T>::Gradients2D[] =
     0.38268343236509f, 0.923879532511287f, 0.923879532511287f, 0.38268343236509f, 0.923879532511287f, -0.38268343236509f, 0.38268343236509f, -0.923879532511287f,
     -0.38268343236509f, -0.923879532511287f, -0.923879532511287f, -0.38268343236509f, -0.923879532511287f, 0.38268343236509f, -0.38268343236509f, 0.923879532511287f,
 };
-
 template <typename T>
 const T FastNoiseLite::Lookup<T>::RandVecs2D[] =
 {
@@ -2316,7 +1956,6 @@ const T FastNoiseLite::Lookup<T>::RandVecs2D[] =
     0.4037327978f, -0.9148769469f, 0.9944263371f, 0.1054336766f, -0.1624711654f, 0.9867132919f, -0.9949487814f, -0.100383875f, -0.6995302564f, 0.7146029809f, 0.5263414922f, -0.85027327f, -0.5395221479f, 0.841971408f, 0.6579370318f, 0.7530729462f,
     0.01426758847f, -0.9998982128f, -0.6734383991f, 0.7392433447f, 0.639412098f, -0.7688642071f, 0.9211571421f, 0.3891908523f, -0.146637214f, -0.9891903394f, -0.782318098f, 0.6228791163f, -0.5039610839f, -0.8637263605f, -0.7743120191f, -0.6328039957f,
 };
-
 template <typename T>
 const T FastNoiseLite::Lookup<T>::Gradients3D[] =
 {
@@ -2337,7 +1976,6 @@ const T FastNoiseLite::Lookup<T>::Gradients3D[] =
     1, 1, 0, 0, -1, 1, 0, 0,  1,-1, 0, 0, -1,-1, 0, 0,
     1, 1, 0, 0,  0,-1, 1, 0, -1, 1, 0, 0,  0,-1,-1, 0
 };
-
 template <typename T>
 const T FastNoiseLite::Lookup<T>::RandVecs3D[] =
 {
@@ -2374,5 +2012,4 @@ const T FastNoiseLite::Lookup<T>::RandVecs3D[] =
     0.2178065647f, -0.9698322841f, -0.1094789531f, 0, -0.1518031304f, -0.7788918132f, -0.6085091231f, 0, -0.2600384876f, -0.4755398075f, -0.8403819825f, 0, 0.572313509f, -0.7474340931f, -0.3373418503f, 0, -0.7174141009f, 0.1699017182f, -0.6756111411f, 0, -0.684180784f, 0.02145707593f, -0.7289967412f, 0, -0.2007447902f, 0.06555605789f, -0.9774476623f, 0, -0.1148803697f, -0.8044887315f, 0.5827524187f, 0,
     -0.7870349638f, 0.03447489231f, 0.6159443543f, 0, -0.2015596421f, 0.6859872284f, 0.6991389226f, 0, -0.08581082512f, -0.10920836f, -0.9903080513f, 0, 0.5532693395f, 0.7325250401f, -0.396610771f, 0, -0.1842489331f, -0.9777375055f, -0.1004076743f, 0, 0.0775473789f, -0.9111505856f, 0.4047110257f, 0, 0.1399838409f, 0.7601631212f, -0.6344734459f, 0, 0.4484419361f, -0.845289248f, 0.2904925424f, 0
 };
-
 #endif

@@ -8,7 +8,7 @@ Still in development! Shared so you guys can look at my code!
 -----------THIRD-PARTY-DEPENDENCIES---------
 
 GLM - https://github.com/icaven/glm
-GLFW - https://www.glfw.org/download
+GLFW - https://www.glfw.org/download (modified)
 VULKAN - https://vulkan.lunarg.com/sdk/home
 STB-LIBRARIES - https://github.com/nothings/stb
 FASTNOISELITE - https://github.com/Auburn/FastNoiseLite
