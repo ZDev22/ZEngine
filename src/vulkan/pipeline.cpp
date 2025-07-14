@@ -1,4 +1,5 @@
 ﻿#include "pipeline.hpp"
+#include "texture.hpp"
 #include "global.hpp"
 #include "../program/functions/math.hpp"
 #include "../program/functions/string.hpp"
@@ -257,6 +258,23 @@ int Pipeline::switchTexture(Sprite& sprite, int textureID) {
     return textureID;
 }
 
+void Pipeline::createSprite(std::shared_ptr<Model> model, Texture* texture, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, int textureIndex) {
+    Sprite sprite;
+    SpriteData spriteData;
+
+    sprite.model = quadModel;
+    sprite.texture = spriteTextures[0].get();
+
+    spriteData.position = glm::vec2(0.f, 0.f);
+    spriteData.scale = glm::vec2(.1f, .1f);
+    spriteData.rotation = 0.f;
+    spriteData.color = glm::vec4(1.0f);
+    spriteData.textureIndex = 0;
+
+    sprites.push_back(spriteData);
+    spriteCPU.push_back(sprite);
+}
+
 void Pipeline::loadSprites() {
     std::cout << "Starting sprite loading...\n";
     spriteTextures.reserve(texturePaths.size());
@@ -267,7 +285,7 @@ void Pipeline::loadSprites() {
     sprites.clear();
     spriteCPU.clear();
 
-    auto quadModel = makeModel({
+    quadModel = makeModel({
         {-0.5f, -0.5f}, // Bottom-Left  (Vertex 0)
         { 0.5f, -0.5f}, // Bottom-Right (Vertex 1)
         {-0.5f,  0.5f}, // Top-Right    (Vertex 2)

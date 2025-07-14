@@ -18,13 +18,14 @@ public:
     Pipeline(const Pipeline&) = delete;
     Pipeline& operator=(const Pipeline&) = delete;
 
-    void bind(VkCommandBuffer commandBuffer);
     void loadSprites();
+    void bind(VkCommandBuffer commandBuffer);
     VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
     VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; } 
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);
+    void createSprite(std::shared_ptr<Model> model, Texture* texture, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, int textureIndex);
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
@@ -43,4 +44,5 @@ private:
 
     std::vector<std::string> texturePaths = { "images/FlappyBird.png", "images/pipe.png"};
     std::vector<std::unique_ptr<Texture>> spriteTextures;
+    std::shared_ptr<Model> quadModel;
 };
