@@ -5,10 +5,8 @@
 
 #include <glm/glm.hpp>
 
-struct Sprite {
-    std::shared_ptr<Model> model;
-    Texture* texture;
-};
+#include <vector>
+#include <variant>
 
 struct alignas(16) SpriteData {
     glm::vec2 position;
@@ -20,4 +18,10 @@ struct alignas(16) SpriteData {
     float rotation;
 
     void setRotationMatrix() { rotationMatrix = glm::mat2(cos(glm::radians(rotation)), -sin(glm::radians(rotation)), sin(glm::radians(rotation)), cos(glm::radians(rotation))); }
+};
+
+struct Sprite {
+    std::shared_ptr<Model> model;
+    Texture* texture;
+    std::vector<std::variant<Sprite, SpriteData>> clones;
 };
