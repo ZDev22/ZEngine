@@ -25,7 +25,7 @@ std::vector<unsigned char> loadTTF(const std::string& filepath) {
 
 std::unique_ptr<Texture> createFontTexture(Device& device, Pipeline& pipeline, const std::string& ttfPath, float pixelHeight, int atlasSize, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
     std::vector<unsigned char> ttfData = loadTTF(ttfPath);
-    std::vector<unsigned char> grayscale(atlasSize * 2);
+    std::vector<unsigned char> grayscale(atlasSize * atlasSize);
     stbtt_bakedchar charData[96];
 
     int result = stbtt_BakeFontBitmap(ttfData.data(), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData);
