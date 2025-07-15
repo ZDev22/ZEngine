@@ -14,7 +14,7 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, VkDescriptorSetLayout descriptorSetLayout);
+    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, Push& push, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
     RenderSystem(const RenderSystem&) = delete;
@@ -33,10 +33,11 @@ private:
 
     Device& device;
     AppWindow& window;
-    Global& global;
     Keyboard& keyboard;
     Program& program;
     Renderer& renderer;
+    Global& global;
+    Push& push;
     std::unique_ptr<Pipeline> pipeline;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;

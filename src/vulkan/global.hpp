@@ -23,8 +23,6 @@ public:
 
     float getAspectRatio() const { return aspectRatio; }
 
-    Push push{};
-
 private:
     VkExtent2D extent;
     float aspectRatio;

@@ -15,7 +15,7 @@ uint32_t instanceCount;
 
 using namespace std;
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), keyboard(keyboard), renderer(renderer), program(program), global(global), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), keyboard(keyboard), renderer(renderer), program(program), global(global), push(push), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
     createPipeline();
     cout << "RenderSystem created" << endl;
@@ -125,9 +125,9 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     pipeline->bind(commandBuffer);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
 
-    global.push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-    global.push.camera = glm::vec2(0.f);
-    vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &global.push);
+    push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    push.camera = glm::vec2(0.f);
+    vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     unordered_map<shared_ptr<Model>, vector<size_t>> batches;
     for (size_t i = 0; i < spriteCPU.size(); ++i) {
