@@ -14,7 +14,7 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, VkDescriptorSetLayout descriptorSetLayout, Global& global);
+    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
     RenderSystem(const RenderSystem&) = delete;

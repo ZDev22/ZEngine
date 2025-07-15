@@ -7,7 +7,11 @@
 extern float deltaTime;
 extern uint16_t imageCount;
 
-struct Push { glm::mat4 projection; };
+struct Push { 
+    glm::mat4 projection; 
+    glm::vec2 camera;
+};
+
 class Global {
 public:
     Global(AppWindow& window) : window(window), aspectRatio(1.0f) { setAspectRatio();  }
@@ -18,6 +22,8 @@ public:
     }
 
     float getAspectRatio() const { return aspectRatio; }
+
+    Push push{};
 
 private:
     VkExtent2D extent;

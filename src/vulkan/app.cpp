@@ -17,7 +17,7 @@ App::App() {
     pipeline = std::make_unique<Pipeline>(device, *renderSystem, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
     pipeline->loadSprites();
     global = std::make_unique<Global>(window);
-    renderSystem = std::make_unique<RenderSystem>(device, window, keyboard, program, renderer, pipeline->getDescriptorSetLayout(), *global);
+    renderSystem = std::make_unique<RenderSystem>(device, window, keyboard, program, renderer, *global, pipeline->getDescriptorSetLayout());
     renderSystem->initialize();
 }
 

@@ -30,5 +30,5 @@ private:
     std::unique_ptr<Pipeline> pipeline;
     std::unique_ptr<Global> global; 
     std::unique_ptr<RenderSystem> renderSystem;
-    Program program{keyboard, *pipeline};
+    Program program{keyboard, *pipeline, *global.push};
 };

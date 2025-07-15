@@ -11,7 +11,7 @@
 #include <vector>
 #include <string>
 
-Program::Program(Keyboard& keyboard, Pipeline& pipeline) : keyboard(keyboard), pipeline(pipeline) {}
+Program::Program(Keyboard& keyboard, Pipeline& pipeline, Push& push) : keyboard(keyboard), pipeline(pipeline), push(push) {}
 
 float speedY = 0.f;
 bool dead = false;
@@ -60,6 +60,7 @@ void Program::tick() {
         speedY = 0.f;
         dead = false;
     }
+    push.camera.x += 0.05f;
 
     //Reset stuff for next frame
     keyboard.resetKeys();

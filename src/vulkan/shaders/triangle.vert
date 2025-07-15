@@ -16,12 +16,15 @@ struct SpriteData {
     float rotation;
 };
 
-layout(push_constant) uniform PushConstants { mat4 projection; } push;
+layout(push_constant) uniform PushConstants { 
+    mat4 projection;
+    vec2 camera;
+} push;
 layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[]; };
 
 void main() {
     float rotation = radians(sprites[gl_InstanceIndex].rotation);
-    vec2 transformedPos = sprites[gl_InstanceIndex].rotationMatrix * (inPosition * sprites[gl_InstanceIndex].scale) + sprites[gl_InstanceIndex].position;
+    vec2 transformedPos = sprites[gl_InstanceIndex].rotationMatrix * ((inPosition + push.camera) * sprites[gl_InstanceIndex].scale) + sprites[gl_InstanceIndex].position;
 
     gl_Position = push.projection * vec4(transformedPos, 0.0, 1.0);
     fragColor = sprites[gl_InstanceIndex].color;
