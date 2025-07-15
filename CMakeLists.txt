@@ -23,7 +23,7 @@ set(GLFW_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/glfw)
 set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR})
 
 set(FREETYPE_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/freeType)
-set(FREETYPE_INCLUDE_DIR ${FREETYPE_BASE_DIR}/include)
+set(FREETYPE_INCLUDE_DIR ${FREETYPE_BASE_DIR} ${FREETYPE_BASE_DIR}/freetype2)
 
 # Select GLFW and FreeType libraries based on platform
 if(WIN32)
