@@ -101,6 +101,68 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 }
 
 Texture::Texture(Device& device, const std::vector<std::string>& filepaths, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(true) { createTextureArray(filepaths); }
+Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(false), arrayLayers(1), texChannels(1) {
+    VkDeviceSize imageSize = size * 8;
+
+    std::vector<unsigned char> rgbaPixels(imageSize);
+    for (int i = 0; i < size * 2; ++i) {
+        unsigned char gray = pixelData[i];
+        rgbaPixels[i * 4 + 0] = 255;
+        rgbaPixels[i * 4 + 1] = 255;
+        rgbaPixels[i * 4 + 2] = 255;
+        rgbaPixels[i * 4 + 3] = gray;
+    }
+
+    imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
+
+    device.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+    void* data;
+    vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
+    memcpy(data, rgbaPixels.data(), static_cast<size_t>(imageSize));
+    vkUnmapMemory(device.device(), stagingBufferMemory);
+
+    VkImageCreateInfo imageInfo{};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.extent.width = static_cast<uint32_t>(size);
+    imageInfo.extent.height = static_cast<uint32_t>(size);
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.format = imageFormat;
+    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+
+    device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
+
+    transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(size), static_cast<uint32_t>(size), 1);
+    transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
+    vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
+
+    VkImageViewCreateInfo viewInfo{};
+    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewInfo.image = image;
+    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewInfo.format = imageFormat;
+    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    viewInfo.subresourceRange.baseMipLevel = 0;
+    viewInfo.subresourceRange.levelCount = 1;
+    viewInfo.subresourceRange.baseArrayLayer = 0;
+    viewInfo.subresourceRange.layerCount = 1;
+
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw std::runtime_error("failed to create font texture image view!"); }
+
+    createTextureSampler(device, sampler);
+    createDescriptorSet(descriptorSetLayout, descriptorPool);
+}
+
 Texture::~Texture() {
     vkDestroySampler(device.device(), sampler, nullptr); sampler = VK_NULL_HANDLE;
     vkDestroyImageView(device.device(), imageView, nullptr); imageView = VK_NULL_HANDLE;

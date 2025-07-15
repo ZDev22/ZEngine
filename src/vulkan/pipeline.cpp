@@ -1,8 +1,7 @@
 ﻿#include "pipeline.hpp"
 #include "renderSystem.hpp"
 #include "renderer.hpp"
-#include "texture.hpp"
-#include "global.hpp"
+#include "font.hpp"
 #include "../program/functions/math.hpp"
 #include "../program/functions/string.hpp"
 
@@ -284,6 +283,7 @@ void Pipeline::loadSprites() {
     for (size_t f = 0; f < texturePaths.size(); f++) { 
         spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[f], descriptorSetLayout, descriptorPool, *this));
     }
+    //spriteTextures.push_back(createFontTexture(device, *this, "fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool));
 
     sprites.clear();
     spriteCPU.clear();

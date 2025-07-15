@@ -1,3 +1,5 @@
+#ifndef STB_TRUETYPE_H
+#define STB_TRUETYPE_H
 #if 0
 #define STB_TRUETYPE_IMPLEMENTATION  
 #include "stb_truetype.h"
@@ -3479,5 +3481,6 @@ STBTT_DEF int stbtt_CompareUTF8toUTF16_bigendian(const char *s1, int len1, const
 }
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
 #endif
 #endif
