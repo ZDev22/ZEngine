@@ -102,16 +102,11 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
 Texture::Texture(Device& device, const std::vector<std::string>& filepaths, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(true) { createTextureArray(filepaths); }
 Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(false), arrayLayers(1), texChannels(1) {
-    VkDeviceSize imageSize = size * 8;
+    VkDeviceSize imageSize = size * size * 4;
 
     std::vector<unsigned char> rgbaPixels(imageSize);
-    for (int i = 0; i < size * 2; ++i) {
-        unsigned char gray = pixelData[i];
-        rgbaPixels[i * 4 + 0] = 255;
-        rgbaPixels[i * 4 + 1] = 255;
-        rgbaPixels[i * 4 + 2] = 255;
-        rgbaPixels[i * 4 + 3] = gray;
-    }
+    std::memset(rgbaPixels.data(), 255, size * size * 4);
+    for (int i = 0; i < size * size; ++i) { rgbaPixels[i * 4 + 3] = pixelData[i]; }
 
     imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
 
