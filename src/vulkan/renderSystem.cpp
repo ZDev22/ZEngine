@@ -59,6 +59,8 @@ void RenderSystem::initializeSpriteData() {
     spriteDataBuffer = make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);
     spriteDataBuffer->map();
     spriteDataBuffer->writeToBuffer(sprites.data(), bufferSize);
+    push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    push.camera = glm::vec2(0.f);
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
@@ -121,12 +123,9 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     global.setAspectRatio();
-
     pipeline->bind(commandBuffer);
+    
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
-
-    push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-    push.camera = glm::vec2(0.f);
     vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     unordered_map<shared_ptr<Model>, vector<size_t>> batches;
