@@ -1,122 +1,132 @@
 cmake_minimum_required(VERSION 3.10)
 project(VulkanProject)
 
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG")
 
-# Set output directory based on platform and build type
+
+# Set output directories
 if(WIN32)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
 elseif(UNIX AND NOT APPLE)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/linux/Debug)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/linux/Release)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/linux/Debug)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/linux/Release)
 else()
-    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
+   message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
 
-# Define paths to local dependencies
+
+# Local dependencies
 set(GLFW_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/glfw)
 set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR})
 
-set(FREETYPE_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/freeType)
-set(FREETYPE_INCLUDE_DIR ${FREETYPE_BASE_DIR} ${FREETYPE_BASE_DIR}/freetype2)
 
-# Select GLFW and FreeType libraries based on platform
 if(WIN32)
-    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/windows.a)
+   set(GLFW_LIBRARY ${GLFW_BASE_DIR}/windows.a)
 elseif(UNIX AND NOT APPLE)
-    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/linux.a)
+   set(GLFW_LIBRARY ${GLFW_BASE_DIR}/linux.a)
 else()
-    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
+   message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
+
 
 set(GLM_DIR ${CMAKE_SOURCE_DIR}/src/deps/glm)
-
-# Select Vulkan include directory based on platform
-if(UNIX AND NOT APPLE)
-    set(VULKAN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includelinux)
-elseif(WIN32)
-    set(VULKAN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows)
-else()
-    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
-endif()
-
-# GLM is header-only
 set(GLM_INCLUDE_DIR ${GLM_DIR})
 
-# Collect all source files under src/, EXCLUDING src/deps/
-file(GLOB_RECURSE ALL_CPP_SOURCES "src/*.cpp")
-file(GLOB_RECURSE ALL_C_SOURCES "src/*.c")
 
-set(EXCLUDED_DIRS "src/deps/")
+# Vulkan paths
+set(VULKAN_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan)
+
+
+if(WIN32)
+   set(VULKAN_INCLUDE_DIR ${VULKAN_BASE_DIR}/includewindows)
+   set(VULKAN_LIBRARY_PATH ${VULKAN_BASE_DIR}/includewindows/vulkan-1.lib)
+elseif(UNIX AND NOT APPLE)
+   set(VULKAN_INCLUDE_DIR ${VULKAN_BASE_DIR}/includelinux)
+   set(VULKAN_LIBRARY_PATH ${VULKAN_BASE_DIR}/includelinux/libvulkan.so.1.4.321)
+else()
+   message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
+endif()
+
+
+# Define Vulkan imported library target properly
+if(UNIX AND NOT APPLE)
+   add_library(VulkanLocal SHARED IMPORTED GLOBAL)
+   set_target_properties(VulkanLocal PROPERTIES
+       IMPORTED_LOCATION "${VULKAN_LIBRARY_PATH}"
+       INTERFACE_INCLUDE_DIRECTORIES "${VULKAN_INCLUDE_DIR}"
+   )
+elseif(WIN32)
+   add_library(VulkanLocal STATIC IMPORTED GLOBAL)
+   set_target_properties(VulkanLocal PROPERTIES
+       IMPORTED_LOCATION "${VULKAN_LIBRARY_PATH}"
+       INTERFACE_INCLUDE_DIRECTORIES "${VULKAN_INCLUDE_DIR}"
+   )
+endif()
+
+
+# Gather sources excluding src/deps
+file(GLOB_RECURSE ALL_CPP_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
+file(GLOB_RECURSE ALL_C_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c")
+
 
 set(SOURCES "")
 foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
-    set(EXCLUDE_THIS_FILE FALSE)
-    foreach(EXCLUDED_DIR ${EXCLUDED_DIRS})
-        string(FIND "${F}" "${EXCLUDED_DIR}" EXCLUDED_FOUND)
-        if(NOT EXCLUDED_FOUND EQUAL -1)
-            set(EXCLUDE_THIS_FILE TRUE)
-        endif()
-    endforeach()
-    if(NOT EXCLUDE_THIS_FILE)
-        list(APPEND SOURCES "${F}")
-    endif()
+   if(NOT F MATCHES "^src/deps/")
+       list(APPEND SOURCES "${F}")
+   endif()
 endforeach()
 
-# Ensure global.cpp is included (if needed)
+
 list(APPEND SOURCES src/vulkan/global.cpp)
+
 
 message(STATUS "Sources: ${SOURCES}")
 
+
 if(NOT SOURCES)
-    message(FATAL_ERROR "No source files found in src/ directory")
+   message(FATAL_ERROR "No source files found in src/ directory")
 endif()
 
-# Define the executable
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+
 add_executable(main ${SOURCES})
 
-# Include directories
+
 target_include_directories(main PRIVATE
-    ${VULKAN_INCLUDE_DIR}
-    ${GLM_INCLUDE_DIR}
-    ${GLFW_INCLUDE_DIR}
-    ${FREETYPE_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/include
+   "${VULKAN_INCLUDE_DIR}"
+   "${GLM_INCLUDE_DIR}"
+   "${GLFW_INCLUDE_DIR}"
+   "${CMAKE_SOURCE_DIR}/src"
+   "${CMAKE_SOURCE_DIR}/src/include"
 )
 
-# Link libraries
-if(WIN32)
-    target_link_libraries(main PRIVATE
-        ${GLFW_LIBRARY}
-        ${FREETYPE_LIBRARY}
-        opengl32
-        gdi32
-        user32
-        shell32
-        ${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib
-    )
-    add_custom_command(TARGET main POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/src/deps/vulkan/includewindows/vulkan-1.lib"
-        $<TARGET_FILE_DIR:main>/vulkan-1.lib
-    )
-elseif(UNIX AND NOT APPLE)
-    find_package(Vulkan REQUIRED)
-    target_link_libraries(main PRIVATE
-        ${GLFW_LIBRARY}
-        ${FREETYPE_LIBRARY}
-        Vulkan::Vulkan
-        dl
-        pthread
-    )
+
+# Link ONLY the imported VulkanLocal target â€” NOT the raw path!
+target_link_libraries(main PRIVATE
+   "${GLFW_LIBRARY}"
+   VulkanLocal
+   dl
+   pthread
+)
+
+
+# Copy Vulkan .so for runtime on Linux
+if(UNIX AND NOT APPLE)
+   add_custom_command(TARGET main POST_BUILD
+       COMMAND ${CMAKE_COMMAND} -E copy_if_different
+       "${VULKAN_LIBRARY_PATH}"
+       $<TARGET_FILE_DIR:main>/libvulkan.so.1.4.321
+   )
 endif()
 
-# Set the executable properties
+
 set_target_properties(main PROPERTIES WIN32_EXECUTABLE FALSE)

@@ -23,7 +23,7 @@ public:
     void render();
 
 private:
-    AppWindow window{1280, 720};
+    AppWindow window{720, 480};
     Push push{};
     Device device{window};
     Renderer renderer{window, device};
