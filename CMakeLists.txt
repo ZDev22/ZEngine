@@ -1,14 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 project(VulkanProject)
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG")
-
 
 # Set output directories
 if(WIN32)
@@ -21,11 +18,9 @@ else()
    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
 
-
 # Local dependencies
 set(GLFW_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/glfw)
 set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR})
-
 
 if(WIN32)
    set(GLFW_LIBRARY ${GLFW_BASE_DIR}/windows.a)
@@ -35,14 +30,11 @@ else()
    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
 
-
 set(GLM_DIR ${CMAKE_SOURCE_DIR}/src/deps/glm)
 set(GLM_INCLUDE_DIR ${GLM_DIR})
 
-
 # Vulkan paths
 set(VULKAN_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan)
-
 
 if(WIN32)
    set(VULKAN_INCLUDE_DIR ${VULKAN_BASE_DIR}/includewindows)
@@ -53,7 +45,6 @@ elseif(UNIX AND NOT APPLE)
 else()
    message(FATAL_ERROR "Unsupported platform for Vulkan or GLFW")
 endif()
-
 
 # Define Vulkan imported library target properly
 if(UNIX AND NOT APPLE)
@@ -70,11 +61,9 @@ elseif(WIN32)
    )
 endif()
 
-
 # Gather sources excluding src/deps
 file(GLOB_RECURSE ALL_CPP_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
 file(GLOB_RECURSE ALL_C_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c")
-
 
 set(SOURCES "")
 foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
@@ -83,23 +72,15 @@ foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    endif()
 endforeach()
 
-
 list(APPEND SOURCES src/vulkan/global.cpp)
-
-
 message(STATUS "Sources: ${SOURCES}")
-
 
 if(NOT SOURCES)
    message(FATAL_ERROR "No source files found in src/ directory")
 endif()
 
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
-
 add_executable(main ${SOURCES})
-
 
 target_include_directories(main PRIVATE
    "${VULKAN_INCLUDE_DIR}"
@@ -109,15 +90,12 @@ target_include_directories(main PRIVATE
    "${CMAKE_SOURCE_DIR}/src/include"
 )
 
-
-# Link ONLY the imported VulkanLocal target â€” NOT the raw path!
 target_link_libraries(main PRIVATE
    "${GLFW_LIBRARY}"
    VulkanLocal
    dl
    pthread
 )
-
 
 # Copy Vulkan .so for runtime on Linux
 if(UNIX AND NOT APPLE)
@@ -127,6 +105,4 @@ if(UNIX AND NOT APPLE)
        $<TARGET_FILE_DIR:main>/libvulkan.so.1.4.321
    )
 endif()
-
-
 set_target_properties(main PROPERTIES WIN32_EXECUTABLE FALSE)

@@ -4,7 +4,7 @@ Still in development! Shared so you guys can look at my code!
 -----------------HOW-TO-USE-----------------
 
 WINDOWS:
-Requires mingw64 from MSYS2 and CMake in your systems's PATH.
+Requires mingw64 from MSYS2, VulkanSDK bin folder and CMake in your systems's PATH.
 
 LINUX: (type 'y' on all promps)
 sudo apt update
@@ -16,7 +16,7 @@ sudo apt install libx11-dev
 sudo apt update
 sudo apt install gdb
 
-- Set up GLSLC in your evironmental variabels (methods may vary, recommended - use the one included with vulkanSDK 1.4.321.0)
+- Include the bin folder from https://vulkan.lunarg.com/sdk/home in you environmental variables
 
 -----------THIRD-PARTY-DEPENDENCIES---------
 
@@ -39,5 +39,7 @@ cmake --preset linux
 cmake --build --preset linux
 
 or use "linuxrelease" for release builds
+
+-------------------GITHUB-------------------
 
 Get the latest github changes: git fetch origin

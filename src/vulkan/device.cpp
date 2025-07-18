@@ -17,8 +17,6 @@
 
 using namespace std;
 
-bool enableValidationLayers = true;
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -62,15 +60,6 @@ Device::~Device() {
 }
 
 void Device::createInstance() {
-    cout << "[Device] instance function called" << std::endl;
-    if (enableValidationLayers) {
-        cout << "[Device] Checking validation support" << std::endl;
-        if (!checkValidationLayerSupport()) {
-            std::cerr << "[Device] Warning: Validation layers requested but not available. Continuing without them." << std::endl;
-            enableValidationLayers = false;
-        } 
-        else { cout << "[Device] Validation layer check successful" << std::endl; }
-    }
     cout << "[Device] Creating app info..." << std::endl;
 
     VkApplicationInfo appInfo{};
@@ -94,14 +83,6 @@ void Device::createInstance() {
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (enableValidationLayers) {
-        cout << "[Device] Enabling validation layers (" << validationLayers.size() << "):" << std::endl;
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
-        for (const char* layer : validationLayers) { cout << "  - " << layer << endl; }
-        populateDebugMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = &debugCreateInfo;
-    }
     cout << "[Device] Creating Vulkan instance (vkCreateInstance)..." << std::endl;
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) { throw std::runtime_error("[Device] Failed to create Vulkan instance"); }
     cout << "[Device] Vulkan instance created successfully!" << std::endl;
@@ -110,7 +91,6 @@ void Device::createInstance() {
 }
 
 void Device::setupDebugMessenger() {
-    if (!enableValidationLayers) { cout << "[Device] Validation layers disabled, skipping debug messenger" << std::endl; return; }
     cout << "[Device] Setting up debug messenger..." << std::endl;
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
@@ -188,14 +168,7 @@ void Device::createLogicalDevice() {
     for (const auto* ext : updatedDeviceExtensions) { cout << "  - " << ext << endl; }
     createInfo.enabledExtensionCount = static_cast<uint32_t>(updatedDeviceExtensions.size());
     createInfo.ppEnabledExtensionNames = updatedDeviceExtensions.data();
-
-    if (enableValidationLayers) {
-        cout << "[Device] Enabling validation layers for logical device (" << validationLayers.size() << "):" << std::endl;
-        for (const char* layer : validationLayers) { cout << "  - " << layer << endl; }
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
-    } 
-    else { createInfo.enabledLayerCount = 0; }
+    createInfo.enabledLayerCount = 0;
 
     cout << "[Device] Creating logical device..." << std::endl;
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw std::runtime_error("[Device] failed to create logical device!"); }
@@ -238,43 +211,6 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
     return suitable;
 }
 
-bool Device::checkValidationLayerSupport() {
-    uint32_t layerCount;
-    cout << "[Device] Calling 'vkEnumerateInstanceLayerProperties'" << std::endl;
-    VkResult result = vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-    if (result != VK_SUCCESS) {
-        std::cerr << "[Device] Failed to enumerate instance layer properties: " << result << std::endl;
-        return false;
-    }
-
-    std::vector<VkLayerProperties> availableLayers(layerCount);
-    cout << "[Device] Calling 'vkEnumerateInstanceLayerProperties' (again)" << std::endl;
-    result = vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-    if (result != VK_SUCCESS) {
-        std::cerr << "[Device] Failed to enumerate instance layer properties: " << result << std::endl;
-        return false;
-    }
-
-    std::cout << "[Device] Available validation layers (" << layerCount << "):" << std::endl;
-    for (const auto& layerProperties : availableLayers) { std::cout << "  - " << layerProperties.layerName << std::endl; }
-
-    if (validationLayers.empty()) { std::cerr << "[Device] No validation layers requested." << std::endl; return false; }
-
-    std::cout << "[Device] Requested validation layers:" << std::endl;
-    for (const char* layerName : validationLayers) {
-        if (!layerName) {
-            std::cerr << "[Device]  - Invalid (null) layer name!" << std::endl;
-            return false;
-        }
-        std::cout << "  - " << layerName << std::endl;
-        bool layerFound = false;
-        for (const auto& layerProperties : availableLayers) { if (strcmp(layerName, layerProperties.layerName) == 0) { layerFound = true; break; } }
-        if (!layerFound) { std::cout << "[Device] Validation layer not found: " << layerName << std::endl; return false; }
-    }
-    std::cout << "[Device] All requested validation layers are supported." << std::endl;
-    return true;
-}
-
 std::vector<const char*> Device::getRequiredExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -289,7 +225,7 @@ std::vector<const char*> Device::getRequiredExtensions() {
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-    if (enableValidationLayers) { extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); }
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
     std::cout << "[Device] Extensions found via GLFW (" << extensions.size() << "):" << std::endl;
     for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
