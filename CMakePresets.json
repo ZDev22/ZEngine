@@ -1,63 +1,36 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 21
-  },
-  "configurePresets": [
-    {
+  "cmakeMinimumRequired": {"major": 3,"minor": 21},
+  "configurePresets": [{
       "name": "linux",
       "displayName": "Linux GCC Debug",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/linux/gcc-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    }, {
       "name": "linuxrelease",
       "displayName": "Linux GCC Release",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/linux/gcc-release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}
+    }, {
       "name": "windows",
       "displayName": "Windows MinGW Debug",
       "generator": "MinGW Makefiles",
       "binaryDir": "${sourceDir}/build/windows/mingw-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    }, {
       "name": "windowsrelease",
       "displayName": "Windows MinGW Release",
       "generator": "MinGW Makefiles",
       "binaryDir": "${sourceDir}/build/windows/mingw-release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}
     }
   ],
   "buildPresets": [
-    {
-      "name": "linux",
-      "configurePreset": "linux"
-    },
-    {
-      "name": "linuxrelease",
-      "configurePreset": "linuxrelease"
-    },
-    {
-      "name": "windows",
-      "configurePreset": "windows"
-    },
-    {
-      "name": "windowsrelease",
-      "configurePreset": "windowsrelease"
-    }
+    {"name": "linux","configurePreset": "linux"},
+    {"name": "linuxrelease","configurePreset": "linuxrelease"},
+    {"name": "windows","configurePreset": "windows"},
+    {"name": "windowsrelease","configurePreset": "windowsrelease"}
   ]
 }

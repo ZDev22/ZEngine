@@ -4,7 +4,7 @@ Still in development! Shared so you guys can look at my code!
 -----------------HOW-TO-USE-----------------
 
 WINDOWS:
-Requires mingw64 from MSYS2, VulkanSDK bin folder and CMake in your systems's PATH.
+Add mingw64 from MSYS2, and CMake to your system PATH.
 
 LINUX: (type 'y' on all promps)
 sudo apt update
@@ -16,7 +16,7 @@ sudo apt install libx11-dev
 sudo apt update
 sudo apt install gdb
 
-- Include the bin folder from https://vulkan.lunarg.com/sdk/home in you environmental variables
+- Include the bin folder from https://vulkan.lunarg.com/sdk/home in you environmental variables if you wish to edit shaders!
 
 -----------THIRD-PARTY-DEPENDENCIES---------
 
