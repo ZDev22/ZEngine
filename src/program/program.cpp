@@ -60,7 +60,7 @@ void Program::tick() {
         speedY = 0.f;
         dead = false;
     }
-    // push.camera.x += 1.f * deltaTime;
+    push.camera.x += .1f * deltaTime;
 
     //Reset stuff for next frame
     keyboard.resetKeys();
