@@ -289,10 +289,10 @@ void Pipeline::loadSprites() {
     spriteCPU.clear();
 
     quadModel = makeModel({
-        {-0.5f, -0.5f}, // Bottom-Left  (Vertex 0)
-        { 0.5f, -0.5f}, // Bottom-Right (Vertex 1)
-        {-0.5f,  0.5f}, // Top-Right    (Vertex 2)
-        { 0.5f,  0.5f}  // Top-Left     (Vertex 3)
+        {-0.5f, -0.5f}, // Bottom-Left
+        { 0.5f, -0.5f}, // Bottom-Right
+        {-0.5f,  0.5f}, // Top-Right
+        { 0.5f,  0.5f}  // Top-Left
     });
     
     createSprite(/*Model*/ quadModel, /*Texture Index*/ 0, /*Position*/ glm::vec2(-.7f, -.2f), /*Scale*/ glm::vec2(.1f, .1f), /*Rotation*/ 0.f, /*Color*/ glm::vec4(1.f));
