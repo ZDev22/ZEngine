@@ -16,6 +16,7 @@ sudo apt install libx11-dev
 sudo apt update
 sudo apt install gdb
 
+
 - Include the bin folder from https://vulkan.lunarg.com/sdk/home in you environmental variables if you wish to edit shaders!
 
 -----------THIRD-PARTY-DEPENDENCIES---------
@@ -39,7 +40,3 @@ cmake --preset linux
 cmake --build --preset linux
 
 or use "linuxrelease" for release builds
-
--------------------GITHUB-------------------
-
-Get the latest github changes: git fetch origin

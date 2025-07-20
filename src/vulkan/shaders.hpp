@@ -7,10 +7,8 @@
 inline bool compileShader(const std::string& inputFile, const std::string& outputFile, const std::string& stage) {
     std::string command = "glslc -fshader-stage=" + stage + " " + inputFile + " -o " + outputFile;
     int result = std::system(command.c_str());
-    if (result == 0) {
-        std::cout << "Compiled: " << inputFile << std::endl;
-        return true;
-    } else {
+    if (result == 0) { return true; } 
+    else {
         std::cerr << "Failed to compile " << inputFile << " (exit code: " << result << ")" << std::endl;
         return false;
     }
@@ -47,5 +45,6 @@ inline bool compile() {
         success &= compileShader(inputFile, outputFile, it->second);
     }
 
+    std::cout << "All shaders compiled successfully!" << std::endl;
     return success;
 }
