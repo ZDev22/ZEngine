@@ -17,7 +17,7 @@ sudo apt update
 sudo apt install gdb
 
 
-- Include the bin folder from https://vulkan.lunarg.com/sdk/home in you environmental variables if you wish to edit shaders!
+- Include the bin folder from VULKAN in you environmental variables if you want to edit shaders!
 
 -----------THIRD-PARTY-DEPENDENCIES---------
 
