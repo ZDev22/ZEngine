@@ -13,7 +13,7 @@
 static void createTextureSampler(const Device& device, VkSampler& sampler) {
     VkSamplerCreateInfo samplerInfo{};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_NEAREST; // Changed to NEAREST for sharp pixels
+    samplerInfo.magFilter = VK_FILTER_NEAREST;
     samplerInfo.minFilter = VK_FILTER_NEAREST;
     samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -24,7 +24,7 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
     samplerInfo.unnormalizedCoordinates = VK_FALSE;
     samplerInfo.compareEnable = VK_FALSE;
     samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
     if (vkCreateSampler(device.device(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS) { throw std::runtime_error("failed to create texture sampler!"); }
 }
@@ -35,13 +35,10 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
     stbi_uc* pixels = stbi_load(filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if (!pixels) { throw std::runtime_error("failed to load texture image: " + filepath); }
-
     if (texWidth == 0 || texHeight == 0) {
         stbi_image_free(pixels);
         throw std::runtime_error("Image has invalid size (zero width or height): " + filepath);
     }
-
-    std::cout << "Texture loaded: " << filepath << ", Width: " << texWidth << ", Height: " << texHeight << ", Channels: " << texChannels << std::endl;
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
     if (imageSize == 0) {
@@ -76,10 +73,8 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
     device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
-
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1);
-
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
@@ -133,7 +128,6 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
     device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
-
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(size), static_cast<uint32_t>(size), 1);
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -159,7 +153,6 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
 }
 
 Texture::~Texture() {}
-
 void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     stagingBuffer = VK_NULL_HANDLE;
     VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
@@ -316,7 +309,6 @@ void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkD
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
     if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor sets!"); }
-    std::cout << "Texture descriptor set allocated: " << descriptorSet << std::endl;
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -331,7 +323,7 @@ void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkD
     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pImageInfo = &imageInfo;
-
+    
     vkUpdateDescriptorSets(device.device(), 1, &descriptorWrite, 0, nullptr);
 }
 
