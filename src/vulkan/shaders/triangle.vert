@@ -7,21 +7,21 @@ layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) flat out uint textureID;
 
-struct SpriteData {
-    vec2 position;
-    vec2 scale;
-    mat2 rotationMatrix;
-    vec4 color;
-    uint textureIndex;
-    float rotation;
-};
-
 layout(push_constant) uniform PushConstants { 
     mat4 projection;
     vec2 camera;
 } push;
 
-layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[]; };
+layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { 
+        struct SpriteData {
+        vec2 position;
+        vec2 scale;
+        mat2 rotationMatrix;
+        vec4 color;
+        uint textureIndex;
+        float rotation;
+    } sprites[];
+};
 
 void main() {
     float rotation = radians(sprites[gl_InstanceIndex].rotation);
