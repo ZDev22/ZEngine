@@ -55,10 +55,10 @@ void RenderSystem::createPipelineLayout() {
 
 void RenderSystem::createPipeline() { pipeline = make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv"); }
 void RenderSystem::initializeSpriteData() {
-    VkDeviceSize bufferSize = sizeof(SpriteData) * sprites.size();
+    VkDeviceSize bufferSize = sizeof(SpriteData) * getMaxSprites();
     spriteDataBuffer = make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);
     spriteDataBuffer->map();
-    spriteDataBuffer->writeToBuffer(sprites.data(), bufferSize);
+    if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
     push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     push.camera = glm::vec2(0.f);
 }
@@ -93,7 +93,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
     bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(SpriteData) * sprites.size();
+    bufferInfo.range = sizeof(SpriteData) * getMaxSprites();
 
     VkWriteDescriptorSet bufferWrite{};
     bufferWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -118,7 +118,9 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     cout << "Combined texture array descriptor set created: " << spriteDataDescriptorSet << endl;
 
-    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
+    if (!sprites.empty()) {
+        spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
+    }
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {

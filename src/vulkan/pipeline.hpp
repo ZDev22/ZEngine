@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+extern std::vector<std::unique_ptr<Texture>> spriteTextures;
+
 class RenderSystem;
 class Renderer;
 class Pipeline {
@@ -47,6 +49,5 @@ private:
     VkDescriptorPool descriptorPool;
 
     std::vector<std::string> texturePaths = { "images/FlappyBird.png", "images/pipe.png"};
-    std::vector<std::unique_ptr<Texture>> spriteTextures;
     std::shared_ptr<Model> quadModel;
 };

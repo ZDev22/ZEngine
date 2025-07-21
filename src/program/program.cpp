@@ -26,13 +26,7 @@ void Program::tick() {
         sprites[0].rotation = 60.f;
         sprites[0].textureIndex = 0;
 
-        // pipeline.createSprite(pipeline.makeModel({
-        //     {-0.5f, -0.5f}, // Bottom-Left  (Vertex 0)
-        //     { 0.5f, -0.5f}, // Bottom-Right (Vertex 1)
-        //     {-0.5f,  0.5f}, // Top-Right    (Vertex 2)
-        //     { 0.5f,  0.5f}  // Top-Left     (Vertex 3)
-        // }),
-        // 1, glm::vec2(0.f, 0.f), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
+        pipeline.createSprite(spriteCPU[1].model, 1, glm::vec2(0.f, 0.f), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
     }
 
     for (size_t i = 1; i < (sprites.size()) / 2; i++) {
@@ -49,7 +43,7 @@ void Program::tick() {
             dead = true;
             speedY = -1.5f;
             sprites[0].rotation = 60.f;
-            sprites[0].textureIndex = pipeline.switchTexture(spriteCPU[0], 1);
+            sprites[0].textureIndex = 1;
         }
     }
 
@@ -60,7 +54,6 @@ void Program::tick() {
         speedY = 0.f;
         dead = false;
     }
-    push.camera.x += .1f * deltaTime;
 
     //Reset stuff for next frame
     keyboard.resetKeys();

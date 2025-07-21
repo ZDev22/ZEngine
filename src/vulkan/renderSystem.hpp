@@ -25,6 +25,8 @@ public:
     void renderSprites(VkCommandBuffer commandBuffer);
     void updateSprites();
 
+    static uint16_t getMaxSprites() { return 1000; }
+
 private:
     void createPipeline();
     void createPipelineLayout();

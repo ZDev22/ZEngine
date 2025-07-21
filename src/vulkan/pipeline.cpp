@@ -12,6 +12,8 @@
 #include <cassert>
 #include <array>
 
+std::vector<std::unique_ptr<Texture>> spriteTextures;
+
 Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(vertFilepath, fragFilepath); }
 Pipeline::~Pipeline() {
     vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
@@ -249,20 +251,15 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
     return std::make_shared<Model>(device, vertices, indices);
 }
 
-int Pipeline::switchTexture(Sprite& sprite, int textureID) {
-    // int index = 0;
-    // auto texture = std::make_unique<Texture>(device, texturePaths[index], descriptorSetLayout, descriptorPool, *this);
-    // sprite.texture = texture.get();
-    // spriteTextures.push_back(std::move(texture));
-    // sprite.texture = spriteTextures[textureID].get();
-    return textureID;
-}
-
 void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color) {
+    if (sprites.size() >= renderSystem.getMaxSprites()) { throw std::runtime_error("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
 
     sprite.model = model;
+    if (!spriteTextures[textureIndex]) {
+        throw std::runtime_error("Invalid texture at index " + std::to_string(textureIndex));
+    }
     sprite.texture = spriteTextures[textureIndex].get();
 
     spriteData.position = position;
@@ -273,8 +270,6 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
-
-    //renderSystem.reset(getDescriptorSetLayout());
 }
 
 void Pipeline::loadSprites() {
