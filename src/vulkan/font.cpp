@@ -30,7 +30,7 @@ std::unique_ptr<Texture> createFontTexture(Device& device, Pipeline& pipeline, c
     int result = stbtt_BakeFontBitmap(ttfData.data(), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData);
     if (result <= 0) { throw std::runtime_error("Failed to bake font bitmap."); }
 
-    outCharData.assign(charData, charData + 96); // Store character data
+    outCharData.assign(charData, charData + 96);
 
     return std::make_unique<Texture>(device, grayscale.data(), atlasSize, descriptorSetLayout, descriptorPool, pipeline);
 }
