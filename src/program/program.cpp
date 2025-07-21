@@ -25,8 +25,6 @@ void Program::tick() {
         speedY = -1.3f;
         sprites[0].rotation = 60.f;
         sprites[0].textureIndex = 0;
-
-        pipeline.createSprite(spriteCPU[1].model, 1, glm::vec2(0.f, 0.f), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
     }
 
     for (size_t i = 1; i < (sprites.size()) / 2; i++) {

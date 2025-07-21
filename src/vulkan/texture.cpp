@@ -158,12 +158,7 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     createDescriptorSet(descriptorSetLayout, descriptorPool);
 }
 
-Texture::~Texture() {
-    vkDestroySampler(device.device(), sampler, nullptr); sampler = VK_NULL_HANDLE;
-    vkDestroyImageView(device.device(), imageView, nullptr); imageView = VK_NULL_HANDLE;
-    vkDestroyImage(device.device(), image, nullptr); image = VK_NULL_HANDLE;
-    vkFreeMemory(device.device(), imageMemory, nullptr); imageMemory = VK_NULL_HANDLE;
-}
+Texture::~Texture() {}
 
 void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     stagingBuffer = VK_NULL_HANDLE;
