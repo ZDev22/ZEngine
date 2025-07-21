@@ -25,6 +25,9 @@ public:
     uint32_t getArrayLayers() const { return arrayLayers; }
     void createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
 
+    int getTexWidth() const { return texWidth; }
+    int getTexHeight() const { return texHeight; }
+
 private:
     void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
     void createTextureArray(const std::vector<std::string>& filepaths);

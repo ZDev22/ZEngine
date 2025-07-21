@@ -4,6 +4,7 @@
 #include "sprite.hpp"
 #include "texture.hpp"
 #include "global.hpp"
+#include "../deps/stb_truetype.h"
 
 #include <vulkan/vulkan.h>
 #include <memory>
@@ -25,12 +26,13 @@ public:
     void loadSprites();
     void bind(VkCommandBuffer commandBuffer);
     VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
-    VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; } 
+    VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);
     std::shared_ptr<Model> makeModel(const std::vector<glm::vec2>& positions);
-    void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color);
+    void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset = glm::vec2(0.f), glm::vec2 uvScale = glm::vec2(1.f));
+    void createTextSprites(const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color, int fontTextureIndex);
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
@@ -48,6 +50,7 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    std::vector<std::string> texturePaths = { "images/FlappyBird.png", "images/pipe.png"};
+    std::vector<std::string> texturePaths = { "images/FlappyBird.png", "images/pipe.png" };
     std::shared_ptr<Model> quadModel;
+    std::vector<stbtt_bakedchar> fontCharData;
 };

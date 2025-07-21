@@ -251,7 +251,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
     return std::make_shared<Model>(device, vertices, indices);
 }
 
-void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color) {
+void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset, glm::vec2 uvScale) {
     if (sprites.size() >= renderSystem.getMaxSprites()) { throw std::runtime_error("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
@@ -267,18 +267,46 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     spriteData.rotation = rotation;
     spriteData.color = color;
     spriteData.textureIndex = textureIndex;
+    spriteData.uvOffset = uvOffset;
+    spriteData.uvScale = uvScale;
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
 }
 
+void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color, int fontTextureIndex) {
+    Texture* fontTexture = spriteTextures[fontTextureIndex].get();
+    int atlasSize = fontTexture->getTexWidth();
+    float pixelHeight = 32.f;
+    float scaleFactor = fontSize / pixelHeight;
+    float cursorX = position.x;
+    float cursorY = position.y;
+
+    for (char c : text) {
+        if (c < 32 || c > 127) continue;
+        int charIndex = c - 32;
+        stbtt_bakedchar& cd = fontCharData[charIndex];
+        float xoff = cd.xoff * scaleFactor;
+        float yoff = cd.yoff * scaleFactor;
+        float width = (cd.x1 - cd.x0) * scaleFactor;
+        float height = (cd.y1 - cd.y0) * scaleFactor;
+        glm::vec2 pos = glm::vec2(cursorX + xoff + width / 2, cursorY + yoff + height / 2);
+        glm::vec2 scale = glm::vec2(width, height);
+        glm::vec2 uvOffset = glm::vec2(cd.x0 / (float)atlasSize, cd.y0 / (float)atlasSize);
+        glm::vec2 uvScale = glm::vec2((cd.x1 - cd.x0) / (float)atlasSize, (cd.y1 - cd.y0) / (float)atlasSize);
+
+        createSprite(quadModel, fontTextureIndex, pos, scale, 0.f, color, uvOffset, uvScale);
+        cursorX += cd.xadvance * scaleFactor;
+    }
+}
+
 void Pipeline::loadSprites() {
     std::cout << "Starting sprite loading...\n";
     spriteTextures.reserve(texturePaths.size());
-    for (size_t f = 0; f < texturePaths.size(); f++) { 
+    for (size_t f = 0; f < texturePaths.size(); f++) {
         spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[f], descriptorSetLayout, descriptorPool, *this));
     }
-    spriteTextures.push_back(createFontTexture(device, *this, "fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool));
+    spriteTextures.push_back(createFontTexture(device, *this, "fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
 
     sprites.clear();
     spriteCPU.clear();
@@ -289,16 +317,16 @@ void Pipeline::loadSprites() {
         {-0.5f,  0.5f}, // Top-Right
         { 0.5f,  0.5f}  // Top-Left
     });
-    
-    createSprite(/*Model*/ quadModel, /*Texture Index*/ 0, /*Position*/ glm::vec2(-.7f, -.2f), /*Scale*/ glm::vec2(.1f, .1f), /*Rotation*/ 0.f, /*Color*/ glm::vec4(1.f));
 
-    //Pipes
+    createSprite(quadModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+
     for (float i = 1.f; i < 5.f; i++) {
         float y = randomFloat(.4f, 1.4f);
-
         createSprite(quadModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
         createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
+
+    //createTextSprites("Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f), spriteTextures.size() - 1);
 
     std::cout << "Sprites created: " << sprites.size() << std::endl;
 }

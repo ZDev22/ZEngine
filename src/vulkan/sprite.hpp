@@ -13,6 +13,8 @@ struct alignas(16) SpriteData {
     glm::vec2 scale;
     glm::mat2 rotationMatrix;
     glm::vec4 color;
+    glm::vec2 uvOffset;
+    glm::vec2 uvScale;
 
     uint32_t textureIndex;
     float rotation;
