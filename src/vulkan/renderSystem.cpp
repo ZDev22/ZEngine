@@ -118,9 +118,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     cout << "Combined texture array descriptor set created: " << spriteDataDescriptorSet << endl;
 
-    if (!sprites.empty()) {
-        spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
-    }
+    if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {

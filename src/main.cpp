@@ -7,6 +7,11 @@
 
 #include "deps/glfw/glfw3.h"
 
+
+// Compile these to test for errors:
+#include "program/functions/string.hpp"
+#include "program/functions/noise.hpp"
+
 void error_callback(int error, const char* description) { std::cerr << "GLFW Error (" << error << "): " << description << std::endl; }
 int main() {
     compile();
