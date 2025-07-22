@@ -25,6 +25,8 @@ void Program::tick() {
         speedY = -1.3f;
         sprites[0].rotation = 60.f;
         sprites[0].textureIndex = 0;
+
+        audio.play("chirp.mp3");
     }
 
     for (size_t i = 1; i < (sprites.size()) / 2; i++) {
