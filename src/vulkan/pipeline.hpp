@@ -47,7 +47,7 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    std::vector<std::string> texturePaths = { "images/FlappyBird.png", "images/pipe.png" };
+    std::vector<std::string> texturePaths = { "assets/images/FlappyBird.png", "assets/images/pipe.png" };
     std::shared_ptr<Model> quadModel;
     std::vector<stbtt_bakedchar> fontCharData;
 };

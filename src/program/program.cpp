@@ -1,3 +1,6 @@
+#define AUDIOPLAYER_IMPLEMENTATION
+#include "functions/audio.hpp"
+
 #include "program.hpp"
 #include "../vulkan/global.hpp"
 #include "../vulkan/pipeline.hpp"

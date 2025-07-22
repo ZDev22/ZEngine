@@ -6,6 +6,7 @@
 #include "../vulkan/pipeline.hpp"
 #include "../vulkan/global.hpp"
 
+class AudioPlayer;
 class Program {
 public:
     Program(Keyboard& keyboard, Pipeline& pipeline, Push& push);

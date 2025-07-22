@@ -283,7 +283,7 @@ void Pipeline::loadSprites() {
     for (const auto& path : texturePaths) { futures.push_back(std::async(std::launch::async, [this, &path]() { return std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this); })); }
     for (auto& fut : futures) { spriteTextures.push_back(fut.get()); }
 
-    spriteTextures.push_back(createFontTexture(device, *this, "fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
+    spriteTextures.push_back(createFontTexture(device, *this, "assets/fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
 
     sprites.clear();
     spriteCPU.clear();
