@@ -1,8 +1,8 @@
 #include "program.hpp"
 #include "../vulkan/global.hpp"
 #include "../vulkan/pipeline.hpp"
-#include "functions/keyboard.hpp"
 #include "functions/math.hpp"
+#include "functions/keyboard.hpp"
 #include "functions/collision.hpp"
 
 #include <glm/glm.hpp>
@@ -28,7 +28,7 @@ void Program::tick() {
     }
 
     for (size_t i = 1; i < (sprites.size()) / 2; i++) {
-        size_t index = ((i - 1) * 2) + 1; // A reliable method of searching every other index in a list! (You can multiply by 3 for every third item, and so on)
+        size_t index = ((i - 1) * 2) + 1;
         sprites[index].position.x -= .5f * deltaTime;
         if (sprites[index].position.x < -1.5f) {
             sprites[index].position.x = 1.5f;
