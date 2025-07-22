@@ -15,9 +15,6 @@ public:
     Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
     ~Texture();
 
-    Texture(const Texture&) = delete;
-    Texture& operator=(const Texture&) = delete;
-
     VkImageView getImageView() { return imageView; }
     VkSampler getSampler() { return sampler; }
     VkImageLayout getImageLayout() { return imageLayout; }

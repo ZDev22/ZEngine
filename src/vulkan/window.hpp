@@ -12,9 +12,6 @@ public:
     AppWindow(int w, int h);
     ~AppWindow();
 
-    AppWindow(const AppWindow&) = delete;
-    AppWindow& operator=(const AppWindow&) = delete;
-
     bool shouldClose() { return glfwWindowShouldClose(window); }
     VkExtent2D getExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
     bool wasWindowResized() { return framebufferResized; }

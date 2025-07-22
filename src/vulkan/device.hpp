@@ -24,11 +24,6 @@ public:
     Device(AppWindow& window);
     ~Device();
 
-    Device(const Device&) = delete;
-    Device& operator=(const Device&) = delete;
-    Device(Device&&) = delete;
-    Device& operator=(Device&&) = delete;
-
     VkCommandPool getCommandPool() const { return commandPool; }
     VkDevice device() const { return device_; }
     VkSurfaceKHR surface() const { return surface_; }

@@ -20,9 +20,6 @@ public:
     Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath);
     ~Pipeline();
 
-    Pipeline(const Pipeline&) = delete;
-    Pipeline& operator=(const Pipeline&) = delete;
-
     void loadSprites();
     void bind(VkCommandBuffer commandBuffer);
     VkPipelineLayout getPipelineLayout() { return pipelineLayout; }

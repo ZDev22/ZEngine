@@ -17,9 +17,6 @@ public:
     RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, Push& push, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
-    RenderSystem(const RenderSystem&) = delete;
-    RenderSystem& operator=(const RenderSystem&) = delete;
-
     void initialize();
     void reset(VkDescriptorSetLayout newDescriptorSetLayout);
     void renderSprites(VkCommandBuffer commandBuffer);
