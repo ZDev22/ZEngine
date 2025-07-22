@@ -15,31 +15,12 @@
 
 class AudioPlayer {
 public:
-    inline AudioPlayer() {
-        ma_result result = ma_engine_init(nullptr, &engine);
-        if (result != MA_SUCCESS) {
-            std::cerr << "Failed to initialize audio engine: " << result << std::endl;
-        }
-    }
+    inline AudioPlayer() { ma_engine_init(nullptr, &engine); }
+    inline ~AudioPlayer() { ma_engine_uninit(&engine); }
 
-    inline ~AudioPlayer() {
-        ma_engine_uninit(&engine);
-    }
-
-    inline void play(const std::string& filepath) {
-        std::string full_path = "assets/sounds/" + filepath;
-        if (!std::filesystem::exists(full_path)) {
-            std::cerr << "Audio file not found: " << full_path << std::endl;
-            return;
-        }
-        ma_result result = ma_engine_play_sound(&engine, full_path.c_str(), nullptr);
-        if (result != MA_SUCCESS) {
-            std::cerr << "Failed to play sound: " << result << std::endl;
-        }
-    }
-
+    inline void play(const std::string& filepath) { ma_result result = ma_engine_play_sound(&engine, ("assets/sounds/" + filepath).c_str(), nullptr); }
 private:
     ma_engine engine;
 };
 
-#endif // AUDIO_HPP
+#endif
