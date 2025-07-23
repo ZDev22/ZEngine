@@ -18,7 +18,7 @@ public:
     inline AudioPlayer() { ma_engine_init(nullptr, &engine); }
     inline ~AudioPlayer() { ma_engine_uninit(&engine); }
 
-    inline void play(const std::string& filepath) { ma_result result = ma_engine_play_sound(&engine, ("assets/sounds/" + filepath).c_str(), nullptr); }
+    inline void play(const std::string& filepath) { ma_engine_play_sound(&engine, ("assets/sounds/" + filepath).c_str(), nullptr); }
 private:
     ma_engine engine;
 };

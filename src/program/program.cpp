@@ -47,6 +47,8 @@ void Program::tick() {
             speedY = -1.5f;
             sprites[0].rotation = 60.f;
             sprites[0].textureIndex = 1;
+
+            audio.play("hit.mp3");
         }
     }
 

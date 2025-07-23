@@ -49,14 +49,14 @@ float easeOutExpo(float t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
 float easeInOutExpo(float t) {
     if (t == 0) return 0;
     if (t == 1) return 1;
-    if (t < 0.5f) return pow(2, 20 * t - 10) / 2;
+    if (t < .5f) return pow(2, 20 * t - 10) / 2;
     return (2 - pow(2, -20 * t + 10)) / 2;
 }
 
 float easeInCirc(float t) { return 1 - sqrt(1 - t * t); }
 float easeOutCirc(float t) { return sqrt(1 - (t - 1) * (t - 1)); }
 float easeInOutCirc(float t) {
-    if (t < 0.5f) return (1 - sqrt(1 - 4 * t * t)) / 2;
+    if (t < .5f) return (1 - sqrt(1 - 4 * t * t)) / 2;
     return (sqrt(1 - pow(-2 * t + 2, 2)) + 1) / 2;
 }
 
