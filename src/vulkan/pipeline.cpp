@@ -16,14 +16,7 @@
 std::vector<std::unique_ptr<Texture>> spriteTextures;
 
 Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(vertFilepath, fragFilepath); }
-Pipeline::~Pipeline() {
-    vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
-    vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
-    vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
-    vkDestroyDescriptorSetLayout(device.device(), descriptorSetLayout, nullptr);
-    vkDestroyDescriptorPool(device.device(), descriptorPool, nullptr);
-}
+Pipeline::~Pipeline() {}
 
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 std::vector<char> Pipeline::readFile(const std::string& filepath) {
@@ -279,10 +272,7 @@ void Pipeline::loadSprites() {
     spriteTextures.clear();
     spriteTextures.reserve(texturePaths.size() + 1);
 
-    std::vector<std::future<std::unique_ptr<Texture>>> futures;
-    for (const auto& path : texturePaths) { futures.push_back(std::async(std::launch::async, [this, &path]() { return std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this); })); }
-    for (auto& fut : futures) { spriteTextures.push_back(fut.get()); }
-
+    for (size_t t = 0; t < texturePaths.size(); t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
     spriteTextures.push_back(createFontTexture(device, *this, "assets/fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
 
     sprites.clear();
