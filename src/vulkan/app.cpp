@@ -7,9 +7,9 @@
 #include <string>
 #include <thread>
 
-static std::chrono::high_resolution_clock::time_point lastTime;
-static float timeAccumulator = 0.f;
-static float titleUpdateAccumulator = 0.f;
+static std::chrono::high_resolution_clock::time_point CPSlastTime;
+static std::chrono::high_resolution_clock::time_point CPScurrentTime;
+static float CPSupdateAccumulator = 0.f;
 
 bool shouldClose = false;
 
@@ -22,21 +22,20 @@ App::App() {
 }
 
 void App::run() {
-    lastTime = std::chrono::high_resolution_clock::now();
-
     std::thread update(&App::render, this);
     update.detach();
 
+    CPSlastTime = std::chrono::high_resolution_clock::now();
     while (!shouldClose) {
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<float> elapsed = currentTime - lastTime;
-        deltaTime = elapsed.count();
-        lastTime = currentTime;
-        titleUpdateAccumulator += deltaTime;
+        CPScurrentTime = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> CPSelapsed = CPScurrentTime - CPSlastTime;
+        deltaTime = CPSelapsed.count();
+        CPSlastTime = CPScurrentTime;
+        CPSupdateAccumulator += deltaTime;
 
-        if (titleUpdateAccumulator > 1.f) {
-            window.setWindowName("vulkan - " + std::to_string(1 / deltaTime));
-            titleUpdateAccumulator = .0f;
+        if (CPSupdateAccumulator > 1.f) {
+            window.setWindowName("vulkan - CPS: " + std::to_string(1 / deltaTime));
+            CPSupdateAccumulator = 0.f;
         }
 
         glfwPollEvents();

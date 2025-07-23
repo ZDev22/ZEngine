@@ -3,15 +3,10 @@
 #include "renderer.hpp"
 #include "font.hpp"
 #include "../program/functions/math.hpp"
-#include "../program/functions/string.hpp"
 
 #include <filesystem>
-#include <stdexcept>
-#include <iostream>
 #include <fstream>
-#include <cassert>
 #include <array>
-#include <future> // Added for std::async
 
 std::vector<std::unique_ptr<Texture>> spriteTextures;
 
