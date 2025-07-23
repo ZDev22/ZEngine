@@ -9,7 +9,14 @@
 
 static std::chrono::high_resolution_clock::time_point CPSlastTime;
 static std::chrono::high_resolution_clock::time_point CPScurrentTime;
-static float CPSupdateAccumulator = 0.f;
+static std::chrono::duration<float> CPSelapsed;
+
+static std::chrono::high_resolution_clock::time_point FPSlastTime;
+static std::chrono::high_resolution_clock::time_point FPScurrentTime;
+static std::chrono::duration<float> FPSelapsed;
+static float FPSdelta = 0.f;
+
+static float updateAccumulator = 0.f;
 
 bool shouldClose = false;
 
@@ -28,14 +35,14 @@ void App::run() {
     CPSlastTime = std::chrono::high_resolution_clock::now();
     while (!shouldClose) {
         CPScurrentTime = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<float> CPSelapsed = CPScurrentTime - CPSlastTime;
+        CPSelapsed = CPScurrentTime - CPSlastTime;
         deltaTime = CPSelapsed.count();
         CPSlastTime = CPScurrentTime;
-        CPSupdateAccumulator += deltaTime;
 
-        if (CPSupdateAccumulator > 1.f) {
-            window.setWindowName("vulkan - CPS: " + std::to_string(1 / deltaTime));
-            CPSupdateAccumulator = 0.f;
+        updateAccumulator += deltaTime;
+        if (updateAccumulator > 1.f) {
+            window.setWindowName("CPS: " + std::to_string(static_cast<int>(1.f / deltaTime)) + " - FPS: " + std::to_string(static_cast<int>(1.f / FPSdelta)));
+            updateAccumulator = 0.f;
         }
 
         glfwPollEvents();
@@ -47,7 +54,12 @@ void App::run() {
 }
 
 void App::render() {
+    FPSlastTime = std::chrono::high_resolution_clock::now();
     while (!shouldClose) {
+        FPScurrentTime = std::chrono::high_resolution_clock::now();
+        FPSelapsed = FPScurrentTime - FPSlastTime;
+        FPSdelta = FPSelapsed.count();
+        FPSlastTime = FPScurrentTime;
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
             renderSystem->renderSprites(commandBuffer);
