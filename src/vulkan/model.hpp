@@ -50,7 +50,7 @@ private:
 
     Device& device;
     std::unique_ptr<Buffer> vertexBuffer;
-    std::vector<Vertex> vertices; // Store vertices for access
+    std::vector<Vertex> vertices;
     uint32_t vertexCount;
     std::unique_ptr<Buffer> indexBuffer;
     uint32_t indexCount;
