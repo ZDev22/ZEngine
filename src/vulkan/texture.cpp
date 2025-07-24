@@ -17,7 +17,6 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
     samplerInfo.minFilter = VK_FILTER_NEAREST;
     samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.anisotropyEnable = VK_TRUE;
     samplerInfo.maxAnisotropy = device.properties.limits.maxSamplerAnisotropy;
     samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -26,13 +25,10 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
     samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
     samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
-    if (vkCreateSampler(device.device(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS) { throw std::runtime_error("failed to create texture sampler!"); }
+    vkCreateSampler(device.device(), &samplerInfo, nullptr, &sampler);
 }
 
-Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED),
-    image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE),
-    sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(false), arrayLayers(1) {
-
+Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED),image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(false), arrayLayers(1) {
     stbi_uc* pixels = stbi_load(filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if (!pixels) { throw std::runtime_error("failed to load texture image: " + filepath); }
     if (texWidth == 0 || texHeight == 0) {
@@ -91,10 +87,9 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw std::runtime_error("failed to create texture image view!"); }
+    vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView);
     createTextureSampler(device, sampler);
 }
-
 Texture::Texture(Device& device, const std::vector<std::string>& filepaths, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(true) { createTextureArray(filepaths); }
 Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(false), arrayLayers(1), texChannels(1) {
     VkDeviceSize imageSize = size * size * 4;
@@ -151,8 +146,8 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     createTextureSampler(device, sampler);
     createDescriptorSet(descriptorSetLayout, descriptorPool);
 }
-
 Texture::~Texture() {}
+
 void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     stagingBuffer = VK_NULL_HANDLE;
     VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
@@ -167,7 +162,7 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     int texWidth = 0, texHeight = 0, maxWidth = 0, maxHeight = 0;
     for (const auto& filepath : filepaths) {
         int width = 0, height = 0, channels = 0;
-        if (!stbi_info(filepath.c_str(), &width, &height, &channels)) { throw std::runtime_error("Failed to query image info: " + filepath); }
+        stbi_info(filepath.c_str(), &width, &height, &channels);
         if (width > maxWidth) maxWidth = width;
         if (height > maxHeight) maxHeight = height;
     }
@@ -190,8 +185,6 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
             throw std::runtime_error("Failed to load or invalid texture: " + absolutePath);
         }
 
-        std::cout << "Loaded texture: " << absolutePath << ", Width: " << width << ", Height: " << height << ", Channels: " << channels << std::endl;
-
         if (i == 0) { texWidth = maxWidth; texHeight = maxHeight; }
         if (width == maxWidth && height == maxHeight) { pixelsArray[i] = loaded; } 
         else {
@@ -200,7 +193,6 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
             pixelsArray[i] = paddedPixels;
             padded[i] = true;
             stbi_image_free(loaded);
-            std::cout << "Padded texture: " << absolutePath << " to " << maxWidth << "x" << maxHeight << std::endl;
         }
     }
 
@@ -269,13 +261,7 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
-    result = device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
-    if (result != VK_SUCCESS) {
-        vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-        vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-        throw std::runtime_error("Failed to create image: VkResult " + std::to_string(result));
-    }
-
+    device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), arrayLayers);
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -352,13 +338,12 @@ void Texture::transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLa
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     } 
-    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    else {
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
         sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    } 
-    else { throw std::invalid_argument("unsupported layout transition!"); }
+    }
 
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     device.endSingleTimeCommands(commandBuffer);
