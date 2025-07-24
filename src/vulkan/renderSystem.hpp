@@ -12,6 +12,8 @@
 #include <memory>
 #include <vector>
 
+#define MAX_SPRITES 1000
+
 class RenderSystem {
 public:
     RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
@@ -19,11 +21,9 @@ public:
 
     void initialize();
     void reset(VkDescriptorSetLayout newDescriptorSetLayout);
-    void renderSprites(VkCommandBuffer commandBuffer);
+    void renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
     void updateSprites();
-
-    static uint16_t getMaxSprites() { return 1000; }
-
+    
 private:
     void createPipeline();
     void createPipelineLayout();

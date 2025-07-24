@@ -25,7 +25,6 @@ GLM - https://github.com/icaven/glm
 GLFW - https://www.glfw.org/download
 VULKAN - https://vulkan.lunarg.com/sdk/home
 STB-LIBRARIES - https://github.com/nothings/stb
-FASTNOISELITE - https://github.com/Auburn/FastNoiseLite
 
 -------------------COMMANDS-----------------
 

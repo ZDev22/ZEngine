@@ -54,7 +54,7 @@ void RenderSystem::createPipelineLayout() {
 
 void RenderSystem::createPipeline() { pipeline = make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv"); }
 void RenderSystem::initializeSpriteData() {
-    VkDeviceSize bufferSize = sizeof(SpriteData) * getMaxSprites();
+    VkDeviceSize bufferSize = sizeof(SpriteData) * MAX_SPRITES;
     spriteDataBuffer = make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);
     spriteDataBuffer->map();
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
@@ -92,7 +92,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
     bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(SpriteData) * getMaxSprites();
+    bufferInfo.range = sizeof(SpriteData) * MAX_SPRITES;
 
     VkWriteDescriptorSet bufferWrite{};
     bufferWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -120,11 +120,11 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
 }
 
-void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
+void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
     pipeline->bind(commandBuffer);
     
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
-    vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
+    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     for (size_t i = 0; i < spriteCPU.size(); i++) {
         sprites[i].setRotationMatrix();

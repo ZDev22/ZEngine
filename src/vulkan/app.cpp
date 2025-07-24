@@ -61,7 +61,7 @@ void App::render() {
         FPSlastTime = FPScurrentTime;
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
-            renderSystem->renderSprites(commandBuffer);
+            renderSystem->renderSprites(commandBuffer, pipeline->getPipelineLayout());
             renderer.endSwapChainRenderPass(commandBuffer);
             renderer.endFrame();
         }

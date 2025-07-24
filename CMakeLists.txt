@@ -52,10 +52,6 @@ endforeach()
 list(APPEND SOURCES src/vulkan/global.cpp)
 message(STATUS "Sources: ${SOURCES}")
 
-if(NOT SOURCES)
-   message(FATAL_ERROR "No source files found in src/ directory")
-endif()
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 add_executable(main ${SOURCES})
 

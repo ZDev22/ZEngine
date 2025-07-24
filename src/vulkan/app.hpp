@@ -15,11 +15,11 @@
 class App {
 public:
     App();
-
     void run();
-    void render();
 
 private:
+    void render();
+    
     AppWindow window{720, 480};
     Push push{};
     Device device{window};
