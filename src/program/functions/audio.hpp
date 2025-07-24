@@ -10,7 +10,6 @@
 #ifdef AUDIOPLAYER_IMPLEMENTATION
 #define MINIAUDIO_IMPLEMENTATION
 #endif
-
 #include "deps/miniaudio.h"
 
 class AudioPlayer {

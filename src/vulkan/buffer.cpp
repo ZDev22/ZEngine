@@ -1,6 +1,5 @@
 #include "buffer.hpp"
 
-#include <stdexcept>
 #include <cstring>
 
 Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment) : device{ device }, bufferSize{ instanceSize * instanceCount } {
@@ -12,8 +11,7 @@ Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount
     bufferInfo.usage = usageFlags;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(device.device(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) { throw std::runtime_error("failed to create buffer!"); }
-
+    vkCreateBuffer(device.device(), &bufferInfo, nullptr, &buffer);
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device.device(), buffer, &memRequirements);
 
@@ -22,8 +20,7 @@ Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
 
-    if (vkAllocateMemory(device.device(), &allocInfo, nullptr, &memory) != VK_SUCCESS) { throw std::runtime_error("failed to allocate buffer memory!"); }
-
+    vkAllocateMemory(device.device(), &allocInfo, nullptr, &memory);
     vkBindBufferMemory(device.device(), buffer, memory, 0);
 }
 
