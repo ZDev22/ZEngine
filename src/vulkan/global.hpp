@@ -11,20 +11,3 @@ struct Push {
     glm::mat4 projection; 
     glm::vec2 camera;
 };
-
-class Global {
-public:
-    Global(AppWindow& window) : window(window), aspectRatio(1.0f) { setAspectRatio();  }
-
-    void setAspectRatio() {
-        extent = window.getExtent();
-        aspectRatio = static_cast<float>(extent.width) / extent.height;
-    }
-
-    float getAspectRatio() const { return aspectRatio; }
-
-private:
-    VkExtent2D extent;
-    float aspectRatio;
-    AppWindow& window;
-};

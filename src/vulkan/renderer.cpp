@@ -49,15 +49,12 @@ void Renderer::freeCommandBuffers() {
 }
 
 VkCommandBuffer Renderer::beginFrame() {
-    auto result = swapChain->acquireNextImage(&currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) { recreateSwapChain(); return nullptr; }
-
-    isFrameStarted = true;
-    auto commandBuffer = getCurrentCommandBuffer();
+    if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR) { recreateSwapChain(); return nullptr; }
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
+    auto commandBuffer = getCurrentCommandBuffer();
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
     return commandBuffer;
 }
@@ -71,8 +68,6 @@ void Renderer::endFrame() {
         window.resetWindowResizedFlag();
         recreateSwapChain();
     }
-
-    isFrameStarted = false;
 }
 
 void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
@@ -99,15 +94,6 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-    VkRect2D scissor{};
-    scissor.offset = { 0, 0 };
-    scissor.extent = swapChain->getSwapChainExtent();
-    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) {
-    assert(isFrameStarted && "Can't call this function frame while frame is not in progress");
-    assert(commandBuffer == getCurrentCommandBuffer() && "Can't end renderpass on a commandbuffer from a different frame");
-    vkCmdEndRenderPass(commandBuffer);
-}
+void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) { vkCmdEndRenderPass(commandBuffer); }

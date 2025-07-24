@@ -15,10 +15,9 @@ uint32_t instanceCount;
 
 using namespace std;
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Global& global, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), keyboard(keyboard), renderer(renderer), program(program), global(global), push(push), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), keyboard(keyboard), renderer(renderer), program(program), push(push), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
     createPipeline();
-    cout << "RenderSystem created" << endl;
 }
 
 RenderSystem::~RenderSystem() {
@@ -122,23 +121,15 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
-    global.setAspectRatio();
     pipeline->bind(commandBuffer);
     
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
-    unordered_map<shared_ptr<Model>, vector<size_t>> batches;
-    for (size_t i = 0; i < spriteCPU.size(); ++i) {
+    for (size_t i = 0; i < spriteCPU.size(); i++) {
         sprites[i].setRotationMatrix();
-        batches[spriteCPU[i].model].push_back(i);
-    }
-
-    uint32_t baseInstance = 0;
-    for (const auto& [modelPtr, indices] : batches) {
-        modelPtr->bind(commandBuffer);
-        modelPtr->draw(commandBuffer, static_cast<uint32_t>(indices.size()), baseInstance);
-        baseInstance += indices.size();
+        spriteCPU[i].model->bind(commandBuffer);
+        spriteCPU[i].model->draw(commandBuffer, 1, i);
     }
 }
 
