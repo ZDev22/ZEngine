@@ -37,21 +37,16 @@ public:
         }
     };
 
-    Model(Device& device, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+    Model(Device& device, const std::vector<Vertex>& vertices);
 
     void bind(VkCommandBuffer commandBuffer);
-    void draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t baseInstance = 0);
+    void draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t firstInstance = 0);
 
     const std::vector<Vertex>& getVertices() const { return vertices; }
 
 private:
-    void createVertexBuffers(const std::vector<Vertex>& vertices);
-    void createIndexBuffers(const std::vector<uint32_t>& indices);
-
     Device& device;
     std::unique_ptr<Buffer> vertexBuffer;
     std::vector<Vertex> vertices;
     uint32_t vertexCount;
-    std::unique_ptr<Buffer> indexBuffer;
-    uint32_t indexCount;
 };

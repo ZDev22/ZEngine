@@ -199,18 +199,12 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
 
 void Pipeline::setTexture(int textureID) { spriteTextures[textureID] = std::make_unique<Texture>(device, texturePaths, descriptorSetLayout, descriptorPool, *this); }
 std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positions) {
-    glm::vec2 baseMin = {-0.5f, -0.5f};
-    glm::vec2 baseSize = {1.0f, 1.0f};
 
     std::vector<Model::Vertex> vertices;
-    for (const auto& pos : positions) {
-        glm::vec2 uv = (pos - baseMin) / baseSize;
-        vertices.push_back({ pos, uv });
-    }
+    vertices.reserve(positions.size());
+    for (size_t i = 0; i < positions.size(); i++) { vertices.emplace_back(positions[i], glm::vec2(positions[i] + glm::vec2(0.5f))); }
 
-    std::vector<uint32_t> indices(positions.size());
-    for (uint32_t i = 0; i < positions.size(); ++i) { indices[i] = i; }
-    return std::make_shared<Model>(device, vertices, indices);
+    return std::make_shared<Model>(device, vertices);
 }
 
 void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset, glm::vec2 uvScale) {
@@ -263,7 +257,6 @@ void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, fl
 }
 
 void Pipeline::loadSprites() {
-    std::cout << "Starting sprite loading...\n";
     spriteTextures.clear();
     spriteTextures.reserve(texturePaths.size() + 1);
 
@@ -289,5 +282,4 @@ void Pipeline::loadSprites() {
     }
 
     //createTextSprites("Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f), spriteTextures.size() - 1);
-    std::cout << "Sprites created: " << sprites.size() << std::endl;
 }
