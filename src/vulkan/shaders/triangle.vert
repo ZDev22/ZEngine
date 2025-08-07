@@ -23,7 +23,7 @@ layout(push_constant) uniform PushConstants {
     vec2 camera;
 } push;
 
-layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[]; };
+layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[1000]; };
 
 void main() {
     float rotation = radians(sprites[gl_InstanceIndex].rotation);
@@ -31,6 +31,6 @@ void main() {
 
     gl_Position = push.projection * vec4(transformedPos, 0.0, 1.0);
     fragColor = sprites[gl_InstanceIndex].color;
-    fragTexCoord = spriteData.data[instanceIndex].uvOffset + inTexCoord * spriteData.data[instanceIndex].uvScale;
+    fragTexCoord = sprites[gl_InstanceIndex].uvOffset + inTexCoord * sprites[gl_InstanceIndex].uvScale;
     fragTextureIndex = sprites[gl_InstanceIndex].textureIndex;
 }

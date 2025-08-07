@@ -30,12 +30,12 @@ STB-LIBRARIES - https://github.com/nothings/stb
 
 WINDOWS BUILD:
 cmake --preset windows
-cmake --build --preset windows
+cmake --build --preset windows -- -j16
 
 or use "windowsrelease" for release builds
 
 LINUX BUILD:
 cmake --preset linux
-cmake --build --preset linux
+cmake --build --preset linux -- -j16
 
 or use "linuxrelease" for release builds

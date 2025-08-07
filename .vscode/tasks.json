@@ -8,7 +8,9 @@
       "args": [
         "--build",
         "--preset",
-        "windows-debug"
+        "windows-debug",
+        "--",
+        "-j16"
       ],
       "group": {
         "kind": "build",
@@ -23,7 +25,9 @@
       "args": [
         "--build",
         "--preset",
-        "windows-release"
+        "windows-release",
+        "--",
+        "-j16"
       ],
       "group": "build",
       "problemMatcher": []
@@ -35,7 +39,9 @@
       "args": [
         "--build",
         "--preset",
-        "linux-debug"
+        "linux-debug",
+        "--",
+        "-j16"
       ],
       "group": "build",
       "problemMatcher": []
@@ -47,7 +53,9 @@
       "args": [
         "--build",
         "--preset",
-        "linux-release"
+        "linux-release",
+        "--",
+        "-j16"
       ],
       "group": "build",
       "problemMatcher": []

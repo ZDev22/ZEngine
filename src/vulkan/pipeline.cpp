@@ -114,7 +114,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     VkDescriptorSetLayoutBinding imageBinding{};
     imageBinding.binding = 1;
     imageBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageBinding.descriptorCount = texturePaths.size();
+    imageBinding.descriptorCount = MAX_TEXTURES;
     imageBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     std::array<VkDescriptorSetLayoutBinding, 2> bindings = { bufferBinding, imageBinding };
@@ -149,7 +149,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     poolSizes[0].descriptorCount = 1;
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = texturePaths.size();
+    poolSizes[1].descriptorCount = MAX_TEXTURES;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

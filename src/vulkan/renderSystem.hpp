@@ -12,8 +12,6 @@
 #include <memory>
 #include <vector>
 
-#define MAX_SPRITES 1000
-
 class RenderSystem {
 public:
     RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);

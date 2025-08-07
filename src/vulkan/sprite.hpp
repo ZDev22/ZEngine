@@ -8,6 +8,9 @@
 #include <vector>
 #include <variant>
 
+#define MAX_SPRITES 1000
+#define MAX_TEXTURES 2
+
 struct alignas(16) SpriteData {
     glm::vec2 position;
     glm::vec2 scale;
