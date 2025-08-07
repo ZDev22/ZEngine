@@ -1,10 +1,6 @@
 #include "vulkan/app.hpp"
 #include "vulkan/shaders.hpp"
 
-#include <cstdlib>
-#include <iostream>
-#include <stdexcept>
-
 #include "deps/glfw/glfw3.h"
 
 #include "program/functions/string.hpp"
@@ -14,8 +10,7 @@ int main() {
     compile();
     
     glfwSetErrorCallback(error_callback);
-    if (!glfwInit()) { std::cout << "GLFW failed to initialize!" << std::endl; return 1; }
-    std::cout << "GLFW initialized successfully!" << std::endl;
+    if (!glfwInit()) { throw("GLFW failed to initialize!"); }
 
     App app{};
     app.run();

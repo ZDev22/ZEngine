@@ -8,8 +8,6 @@
 #include <fstream>
 #include <array>
 
-std::vector<std::unique_ptr<Texture>> spriteTextures;
-
 Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(vertFilepath, fragFilepath); }
 Pipeline::~Pipeline() {}
 
@@ -100,10 +98,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
-    if (texturePaths.empty()) {
-        std::cerr << "[Pipeline][ERROR] texturePaths is empty! Cannot create descriptor set layout." << std::endl;
-        throw std::runtime_error("No textures provided for pipeline!");
-    }
+    if (texturePaths.empty()) { throw("No textures provided for pipeline!"); }
 
     VkDescriptorSetLayoutBinding bufferBinding{};
     bufferBinding.binding = 0;
@@ -124,10 +119,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-        std::cerr << "[Pipeline][ERROR] Failed to create descriptor set layout! VkResult:" << std::endl;
-        throw std::runtime_error("failed to create descriptor set layout!");
-    }
+    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw("failed to create descriptor set layout!"); }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -140,10 +132,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        std::cerr << "[Pipeline][ERROR] Failed to create pipeline layout! VkResult:" << std::endl;
-        throw std::runtime_error("failed to create pipeline layout!");
-    }
+    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 
     std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -157,10 +146,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     poolInfo.pPoolSizes = poolSizes.data();
     poolInfo.maxSets = 1;
 
-    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-        std::cerr << "[Pipeline][ERROR] Failed to create descriptor pool! VkResult:" << std::endl;
-        throw std::runtime_error("failed to create descriptor pool!");
-    }
+    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -179,11 +165,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-        std::cerr << "[Pipeline][ERROR] Failed to create graphics pipeline!" << std::endl;
-        throw std::runtime_error("failed to create graphics pipeline!");
-    }
-    std::cout << "[Pipeline] Graphics pipeline created successfully." << std::endl;
+    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw("failed to create graphics pipeline!"); }
 }
 
 VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
@@ -213,9 +195,7 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     SpriteData spriteData;
 
     sprite.model = model;
-    if (!spriteTextures[textureIndex]) {
-        throw std::runtime_error("Invalid texture at index " + std::to_string(textureIndex));
-    }
+    if (!spriteTextures[textureIndex]) { throw std::runtime_error("Invalid texture at index " + std::to_string(textureIndex)); }
     sprite.texture = spriteTextures[textureIndex].get();
 
     spriteData.position = position;

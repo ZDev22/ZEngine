@@ -3,6 +3,7 @@
 
 std::vector<SpriteData> sprites;
 std::vector<Sprite> spriteCPU;
+std::vector<std::unique_ptr<Texture>> spriteTextures;
 
 float deltaTime = .0f;
 

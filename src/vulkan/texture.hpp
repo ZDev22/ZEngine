@@ -36,7 +36,6 @@ private:
     VkDeviceMemory imageMemory;
     VkImageView imageView;
     VkSampler sampler;
-    VkFormat imageFormat;
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
     VkDescriptorSet descriptorSet{};
