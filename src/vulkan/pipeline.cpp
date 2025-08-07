@@ -195,7 +195,7 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     SpriteData spriteData;
 
     sprite.model = model;
-    if (!spriteTextures[textureIndex]) { throw std::runtime_error("Invalid texture at index " + std::to_string(textureIndex)); }
+    if (textureIndex < 0 || textureIndex >= spriteTextures.size()) { throw("Out of bounds texture!"); }
     sprite.texture = spriteTextures[textureIndex].get();
 
     spriteData.position = position;
@@ -219,7 +219,7 @@ void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, fl
     float cursorY = position.y;
 
     for (char c : text) {
-        if (c < 32 || c > 127) continue;
+        if (c < 32 || c > 127) { continue; }
         int charIndex = c - 32;
         stbtt_bakedchar& cd = fontCharData[charIndex];
         float xoff = cd.xoff * scaleFactor;
