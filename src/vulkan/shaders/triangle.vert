@@ -22,7 +22,6 @@ struct SpriteData {
 layout(push_constant) uniform PushConstants { 
     mat4 projection;
     vec2 camera;
-    uint textures;
 } push;
 
 layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[1000]; };
@@ -35,5 +34,4 @@ void main() {
     fragColor = sprites[gl_InstanceIndex].color;
     fragTexCoord = sprites[gl_InstanceIndex].uvOffset + inTexCoord * sprites[gl_InstanceIndex].uvScale;
     fragTextureIndex = sprites[gl_InstanceIndex].textureIndex;
-    fragTextureArraySize = push.textures;
 }

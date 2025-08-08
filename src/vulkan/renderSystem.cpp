@@ -63,20 +63,26 @@ void RenderSystem::initializeSpriteData() {
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    if (!spriteDataBuffer) { throw runtime_error("spriteDataBuffer is not initialized!"); }
+    if (!spriteDataBuffer) { throw("spriteDataBuffer is not initialized!"); }
 
-    vector<VkDescriptorImageInfo> imageInfos;
-    unordered_map<Texture*, uint32_t> textureToIndex;
+    std::vector<VkDescriptorImageInfo> imageInfos;
+    imageInfos.reserve(MAX_TEXTURES);  // optional, avoids reallocations
+
+    std::unordered_map<Texture*, uint32_t> textureToIndex;
     uint32_t textureIndex = 0;
 
-    for (auto& sprite : spriteCPU) {
-        Texture* texture = sprite.texture;
-        if (textureToIndex.find(texture) == textureToIndex.end()) {
+    for (size_t i = 0; i < MAX_TEXTURES; i++) {
+        Texture* texture = nullptr;
+        texture = (i < spriteTextures.size()) ? spriteTextures[i].get() : spriteTextures[0].get();
+
+        if (texture && textureToIndex.find(texture) == textureToIndex.end()) {
             textureToIndex[texture] = textureIndex++;
+
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             imageInfo.imageView = texture->getImageView();
             imageInfo.sampler = texture->getSampler();
+
             imageInfos.push_back(imageInfo);
         }
     }
@@ -122,7 +128,6 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
     pipeline->bind(commandBuffer);
-    push.textures = pipeline->textures();
     
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
