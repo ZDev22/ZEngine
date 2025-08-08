@@ -6,6 +6,7 @@ layout(location = 1) in vec2 inTexCoord;
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) flat out uint fragTextureIndex;
+layout(location = 3) flat out uint fragTextureArraySize;
 
 struct SpriteData {
     vec2 position;
@@ -21,6 +22,7 @@ struct SpriteData {
 layout(push_constant) uniform PushConstants { 
     mat4 projection;
     vec2 camera;
+    uint textures;
 } push;
 
 layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[1000]; };
@@ -33,4 +35,5 @@ void main() {
     fragColor = sprites[gl_InstanceIndex].color;
     fragTexCoord = sprites[gl_InstanceIndex].uvOffset + inTexCoord * sprites[gl_InstanceIndex].uvScale;
     fragTextureIndex = sprites[gl_InstanceIndex].textureIndex;
+    fragTextureArraySize = push.textures;
 }

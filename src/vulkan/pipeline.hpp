@@ -30,7 +30,7 @@ public:
     void createTextSprites(const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color, int fontTextureIndex);
 
     void addTexture(const std::string& texture);
-    int textures() { return textureAmount; }
+    uint16_t textures() { return textureAmount; }
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
@@ -47,7 +47,7 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    int textureAmount = 0;
+    uint16_t textureAmount = 0;
     std::string texturePaths[MAX_TEXTURES] = {};
     std::shared_ptr<Model> quadModel;
     std::vector<stbtt_bakedchar> fontCharData;
