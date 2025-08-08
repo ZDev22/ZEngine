@@ -11,8 +11,6 @@
 #include <vector>
 #include <string>
 
-extern std::vector<std::unique_ptr<Texture>> spriteTextures;
-
 class RenderSystem;
 class Renderer;
 class Pipeline {
@@ -31,11 +29,13 @@ public:
     void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset = glm::vec2(0.f), glm::vec2 uvScale = glm::vec2(1.f));
     void createTextSprites(const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color, int fontTextureIndex);
 
+    void addTexture(const std::string& texture);
+    int textures() { return textureAmount; }
+
 private:
     static std::vector<char> readFile(const std::string& filepath);
     void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath);
     VkShaderModule createShaderModule(const std::vector<char>& code);
-    void setTexture(int textureID);
 
     Device& device;
     RenderSystem& renderSystem;
@@ -47,7 +47,8 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    std::vector<std::string> texturePaths = { "assets/images/FlappyBird.png", "assets/images/pipe.png" };
+    int textureAmount = 0;
+    std::string texturePaths[MAX_TEXTURES] = {};
     std::shared_ptr<Model> quadModel;
     std::vector<stbtt_bakedchar> fontCharData;
 };

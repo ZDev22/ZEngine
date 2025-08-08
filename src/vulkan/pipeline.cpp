@@ -98,8 +98,6 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
-    if (texturePaths.empty()) { throw("No textures provided for pipeline!"); }
-
     VkDescriptorSetLayoutBinding bufferBinding{};
     bufferBinding.binding = 0;
     bufferBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -179,7 +177,11 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     return shaderModule;
 }
 
-void Pipeline::setTexture(int textureID) { spriteTextures[textureID] = std::make_unique<Texture>(device, texturePaths, descriptorSetLayout, descriptorPool, *this); }
+void Pipeline::addTexture(const std::string& texture) {
+    texturePaths[textureAmount] = ("assets/images/" + texture);
+    textureAmount++; 
+}
+
 std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positions) {
 
     std::vector<Model::Vertex> vertices;
@@ -190,12 +192,12 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
 }
 
 void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset, glm::vec2 uvScale) {
-    if (sprites.size() >= MAX_SPRITES) { throw std::runtime_error("Maximum number of sprites exceeded!"); }
+    if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
 
     sprite.model = model;
-    if (textureIndex < 0 || textureIndex >= spriteTextures.size()) { throw("Out of bounds texture!"); }
+    if (textureIndex < 0 || textureIndex >= textureAmount) { throw("Out of bounds texture!"); }
     sprite.texture = spriteTextures[textureIndex].get();
 
     spriteData.position = position;
@@ -237,10 +239,14 @@ void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, fl
 }
 
 void Pipeline::loadSprites() {
-    spriteTextures.clear();
-    spriteTextures.reserve(texturePaths.size() + 1);
 
-    for (size_t t = 0; t < texturePaths.size(); t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
+    addTexture("FlappyBird.png");
+    addTexture("pipe.png");
+
+    spriteTextures.clear();
+    spriteTextures.reserve(textureAmount);
+
+    for (size_t t = 0; t < textureAmount; t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
     spriteTextures.push_back(createFontTexture(device, *this, "assets/fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
 
     sprites.clear();
@@ -261,5 +267,5 @@ void Pipeline::loadSprites() {
         createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
 
-    //createTextSprites("Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f), spriteTextures.size() - 1);
+    //createTextSprites("Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f), textureAmount - 1);
 }

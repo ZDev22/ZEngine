@@ -33,3 +33,4 @@ struct Sprite {
 
 extern std::vector<SpriteData> sprites;
 extern std::vector<Sprite> spriteCPU;
+extern std::vector<std::unique_ptr<Texture>> spriteTextures;
