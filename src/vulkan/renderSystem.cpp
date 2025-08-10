@@ -72,8 +72,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     uint32_t textureIndex = 0;
 
     for (size_t i = 0; i < MAX_TEXTURES; i++) {
-        Texture* texture = nullptr;
-        texture = (i < spriteTextures.size()) ? spriteTextures[i].get() : spriteTextures[0].get();
+        Texture* texture = spriteTextures[i].get();
 
         if (texture && textureToIndex.find(texture) == textureToIndex.end()) {
             textureToIndex[texture] = textureIndex++;
@@ -120,10 +119,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     array<VkWriteDescriptorSet, 2> descriptorWrites = { bufferWrite, imageWrite };
     vkUpdateDescriptorSets(device.device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
-
-    cout << "Combined texture array descriptor set created: " << spriteDataDescriptorSet << endl;
-
-    if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
+    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {

@@ -177,11 +177,6 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     return shaderModule;
 }
 
-void Pipeline::addTexture(const std::string& texture) {
-    texturePaths[textureAmount] = ("assets/images/" + texture);
-    textureAmount++; 
-}
-
 std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positions) {
 
     std::vector<Model::Vertex> vertices;
@@ -197,7 +192,7 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     SpriteData spriteData;
 
     sprite.model = model;
-    if (textureIndex < 0 || textureIndex >= textureAmount) { throw("Out of bounds texture!"); }
+    if (textureIndex < 0 || textureIndex >= MAX_TEXTURES) { throw("Out of bounds texture!"); }
     sprite.texture = spriteTextures[textureIndex].get();
 
     spriteData.position = position;
@@ -240,13 +235,12 @@ void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, fl
 
 void Pipeline::loadSprites() {
 
-    addTexture("FlappyBird.png");
-    addTexture("pipe.png");
+    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back(texturePaths[0]); }
 
     spriteTextures.clear();
-    spriteTextures.reserve(textureAmount);
+    spriteTextures.reserve(MAX_TEXTURES);
 
-    for (size_t t = 0; t < textureAmount; t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
+    for (size_t t = 0; t < MAX_TEXTURES; t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
     spriteTextures.push_back(createFontTexture(device, *this, "assets/fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
 
     sprites.clear();
