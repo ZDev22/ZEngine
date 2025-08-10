@@ -29,17 +29,17 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
 }
 
 Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED),image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), isArray(false), arrayLayers(1) {
-    stbi_uc* pixels = stbi_load(filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-    if (!pixels) { throw std::runtime_error("failed to load texture image: " + filepath); }
+    stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    if (!pixels) { throw("failed to load texture image: " + filepath); }
     if (texWidth == 0 || texHeight == 0) {
         stbi_image_free(pixels);
-        throw std::runtime_error("Image has invalid size (zero width or height): " + filepath);
+        throw("Image has invalid size (zero width or height): " + filepath);
     }
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
     if (imageSize == 0) {
         stbi_image_free(pixels);
-        throw std::runtime_error("Image size is zero: " + filepath);
+        throw("Image size is zero: " + filepath);
     }
 
     device.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
@@ -137,7 +137,7 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw std::runtime_error("failed to create font texture image view!"); }
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture image view!"); }
 
     createTextureSampler(device, sampler);
     createDescriptorSet(descriptorSetLayout, descriptorPool);
@@ -150,21 +150,21 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     bool stagingBufferCreated = false;
 
     arrayLayers = static_cast<uint32_t>(filepaths.size());
-    if (arrayLayers == 0) { throw std::runtime_error("No texture file paths provided!"); }
-    if (arrayLayers > device.properties.limits.maxImageArrayLayers) { throw std::runtime_error("Texture array layers (" + std::to_string(arrayLayers) + ") exceed device limit (" + std::to_string(device.properties.limits.maxImageArrayLayers) + ")"); }
+    if (arrayLayers == 0) { throw("No texture file paths provided!"); }
+    if (arrayLayers > device.properties.limits.maxImageArrayLayers) { throw("Texture array layers (" + std::to_string(arrayLayers) + ") exceed device limit (" + std::to_string(device.properties.limits.maxImageArrayLayers) + ")"); }
 
     std::vector<stbi_uc*> pixelsArray(arrayLayers, nullptr);
     std::vector<bool> padded(arrayLayers, false);
     int texWidth = 0, texHeight = 0, maxWidth = 0, maxHeight = 0;
     for (const auto& filepath : filepaths) {
         int width = 0, height = 0, channels = 0;
-        stbi_info(filepath.c_str(), &width, &height, &channels);
+        stbi_info(("assets/images/" + filepath).c_str(), &width, &height, &channels);
         if (width > maxWidth) maxWidth = width;
         if (height > maxHeight) maxHeight = height;
     }
 
     for (uint32_t i = 0; i < arrayLayers; ++i) {
-        std::string absolutePath = std::filesystem::absolute(filepaths[i]).string();
+        std::string absolutePath = std::filesystem::absolute("assets/images/" + filepaths[i]).string();
         std::cout << "Loading texture: " << absolutePath << std::endl;
         stbi_set_flip_vertically_on_load(true);
         int width = 0, height = 0, channels = 0;
@@ -178,7 +178,7 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
                     else { stbi_image_free(pixelsArray[j]); }
                 }
             }
-            throw std::runtime_error("Failed to load or invalid texture: " + absolutePath);
+            throw("Failed to load or invalid texture: " + absolutePath);
         }
 
         if (i == 0) { texWidth = maxWidth; texHeight = maxHeight; }
@@ -211,7 +211,7 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
                 else { stbi_image_free(pixelsArray[i]); } 
             }
         }
-        throw std::runtime_error("Failed to create staging buffer: VkResult " + std::to_string(result));
+        throw("Failed to create staging buffer: VkResult " + std::to_string(result));
     }
     stagingBufferCreated = true;
 
@@ -226,7 +226,7 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
         }
         vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
         vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-        throw std::runtime_error("Failed to map staging buffer memory: VkResult " + std::to_string(result));
+        throw("Failed to map staging buffer memory: VkResult " + std::to_string(result));
     }
 
     for (uint32_t i = 0; i < arrayLayers; ++i) {
@@ -275,7 +275,7 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = arrayLayers;
 
-    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw std::runtime_error("Failed to create texture array image view!"); }
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("Failed to create texture array image view!"); }
     createTextureSampler(device, sampler);
 
     isArray = true;
@@ -288,7 +288,7 @@ void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkD
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor sets!"); }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor sets!"); }
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

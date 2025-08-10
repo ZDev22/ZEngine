@@ -9,7 +9,7 @@
 
 std::vector<unsigned char> loadTTF(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::binary);
-    if (!file) { throw std::runtime_error("Failed to open font file: " + filepath); }
+    if (!file) { throw("Failed to open font file: " + filepath); }
 
     file.seekg(0, std::ios::end);
     size_t fileSize = static_cast<size_t>(file.tellg());
@@ -28,7 +28,7 @@ std::unique_ptr<Texture> createFontTexture(Device& device, Pipeline& pipeline, c
     stbtt_bakedchar charData[96];
 
     int result = stbtt_BakeFontBitmap(ttfData.data(), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData);
-    if (result <= 0) { throw std::runtime_error("Failed to bake font bitmap."); }
+    if (result <= 0) { throw("Failed to bake font bitmap."); }
 
     outCharData.assign(charData, charData + 96);
 

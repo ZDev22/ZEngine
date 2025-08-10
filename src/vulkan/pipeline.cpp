@@ -14,7 +14,7 @@ Pipeline::~Pipeline() {}
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
-    if (!file.is_open()) { throw std::runtime_error("failed to open file: " + filepath); }
+    if (!file.is_open()) { throw("failed to open file: " + filepath); }
     size_t fileSize = static_cast<size_t>(file.tellg());
     std::vector<char> buffer(fileSize);
     file.seekg(0);
@@ -235,7 +235,7 @@ void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, fl
 
 void Pipeline::loadSprites() {
 
-    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back(texturePaths[0]); }
+    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
 
     spriteTextures.clear();
     spriteTextures.reserve(MAX_TEXTURES);
