@@ -207,30 +207,32 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     spriteCPU.push_back(sprite);
 }
 
-void Pipeline::createTextSprites(const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color, int fontTextureIndex) {
-    Texture* fontTexture = spriteTextures[fontTextureIndex].get();
-    int atlasSize = fontTexture->getTexWidth();
-    float pixelHeight = 32.f;
-    float scaleFactor = fontSize / pixelHeight;
-    float cursorX = position.x;
-    float cursorY = position.y;
+void Pipeline::createText(const std::string& file, const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color) {
+    if (spriteTextures.size() < MAX_TEXTURES) {
+        spriteTextures.push_back(createFontTexture(device, *this, file, 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
+        Texture* fontTexture = spriteTextures[spriteTextures.size() - 1].get();
+        int atlasSize = fontTexture->getTexWidth();
+        float pixelHeight = 32.f;
+        float scaleFactor = fontSize / pixelHeight;
 
-    for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
-        int charIndex = c - 32;
-        stbtt_bakedchar& cd = fontCharData[charIndex];
-        float xoff = cd.xoff * scaleFactor;
-        float yoff = cd.yoff * scaleFactor;
-        float width = (cd.x1 - cd.x0) * scaleFactor;
-        float height = (cd.y1 - cd.y0) * scaleFactor;
-        glm::vec2 pos = glm::vec2(cursorX + xoff + width / 2, cursorY + yoff + height / 2);
-        glm::vec2 scale = glm::vec2(width, height);
-        glm::vec2 uvOffset = glm::vec2(cd.x0 / (float)atlasSize, cd.y0 / (float)atlasSize);
-        glm::vec2 uvScale = glm::vec2((cd.x1 - cd.x0) / (float)atlasSize, (cd.y1 - cd.y0) / (float)atlasSize);
+        for (char c : text) {
+            if (c < 32 || c > 127) { continue; }
+            int charIndex = c - 32;
+            stbtt_bakedchar& cd = fontCharData[charIndex];
+            float xoff = cd.xoff * scaleFactor;
+            float yoff = cd.yoff * scaleFactor;
+            float width = (cd.x1 - cd.x0) * scaleFactor;
+            float height = (cd.y1 - cd.y0) * scaleFactor;
+            glm::vec2 pos = glm::vec2(position.x + xoff + width / 2, position.y + yoff + height / 2);
+            glm::vec2 scale = glm::vec2(width, height);
+            glm::vec2 uvOffset = glm::vec2(cd.x0 / (float)atlasSize, cd.y0 / (float)atlasSize);
+            glm::vec2 uvScale = glm::vec2((cd.x1 - cd.x0) / (float)atlasSize, (cd.y1 - cd.y0) / (float)atlasSize);
 
-        createSprite(quadModel, fontTextureIndex, pos, scale, 0.f, color, uvOffset, uvScale);
-        cursorX += cd.xadvance * scaleFactor;
+            createSprite(quadModel, spriteTextures.size() - 1, pos, scale, 0.f, color, uvOffset, uvScale);
+            position.x += cd.xadvance * scaleFactor;
+        }
     }
+    else { throw("There are too many textures to store this font!"); }
 }
 
 void Pipeline::loadSprites() {
@@ -240,8 +242,7 @@ void Pipeline::loadSprites() {
     spriteTextures.clear();
     spriteTextures.reserve(MAX_TEXTURES);
 
-    for (size_t t = 0; t < MAX_TEXTURES; t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
-    spriteTextures.push_back(createFontTexture(device, *this, "assets/fonts/Bullpen3D.ttf", 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
+    for (size_t t = 0; t < (MAX_TEXTURES - fonts.size()); t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
 
     sprites.clear();
     spriteCPU.clear();
@@ -261,5 +262,5 @@ void Pipeline::loadSprites() {
         createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
 
-    //createTextSprites("Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f), textureAmount - 1);
+    for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f)); }
 }

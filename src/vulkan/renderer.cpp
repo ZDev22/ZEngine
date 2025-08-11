@@ -87,8 +87,8 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f; 
+    viewport.x = 0.f;
+    viewport.y = 0.f; 
     viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
     viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height); 
     viewport.minDepth = 0.0f;

@@ -66,7 +66,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     if (!spriteDataBuffer) { throw("spriteDataBuffer is not initialized!"); }
 
     std::vector<VkDescriptorImageInfo> imageInfos;
-    imageInfos.reserve(MAX_TEXTURES);  // optional, avoids reallocations
+    imageInfos.reserve(MAX_TEXTURES);
 
     std::unordered_map<Texture*, uint32_t> textureToIndex;
     uint32_t textureIndex = 0;
