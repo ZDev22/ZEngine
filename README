@@ -1,12 +1,11 @@
-A sprite-based C++ Vulkan engine - supports WINDOWS, and can run on LINUX.
-Still in development! Shared so you guys can look at my code!
+A sprite-based C++ Vulkan engine that supports WINDOWS and LINUX || still in development!
 
------------------HOW-TO-USE-----------------
+**-----------------HOW-TO-USE-----------------**
 
 WINDOWS:
 Add mingw64 from MSYS2, and CMake to your system PATH.
 
-LINUX: (type 'y' on all promps)
+LINUX: *(type 'y' on all promps)*
 sudo apt update
 sudo apt install build-essential
 sudo apt update
@@ -17,25 +16,25 @@ sudo apt update
 sudo apt install gdb
 
 
-- Include the bin folder from VULKAN in you environmental variables if you want to edit shaders!
+- Include the bin folder from VULKAN in you environmental variables *if you want to edit shaders!*
 
------------THIRD-PARTY-DEPENDENCIES---------
+**-----------THIRD-PARTY-DEPENDENCIES---------**
 
 GLM - https://github.com/icaven/glm
 GLFW - https://www.glfw.org/download
 VULKAN - https://vulkan.lunarg.com/sdk/home
 STB-LIBRARIES - https://github.com/nothings/stb
 
--------------------COMMANDS-----------------
+**-------------------COMMANDS-----------------**
 
 WINDOWS BUILD:
 cmake --preset windows
 cmake --build --preset windows -- -j16
 
-or use "windowsrelease" for release builds
+*or use **windowsrelease** for release builds*
 
 LINUX BUILD:
 cmake --preset linux
 cmake --build --preset linux -- -j16
 
-or use "linuxrelease" for release builds
+*or use **linuxrelease** for release builds*
