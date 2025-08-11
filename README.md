@@ -31,7 +31,7 @@ STB-LIBRARIES - https://github.com/nothings/stb
 WINDOWS BUILD:
 ```bash
 cmake --preset windows
-cmake --build --preset windows -- -j16
+cmake --build --preset windows -- -j8
 ```
 
 *or use **windowsrelease** for release builds*
@@ -39,7 +39,9 @@ cmake --build --preset windows -- -j16
 LINUX BUILD:
 ```bash
 cmake --preset linux
-cmake --build --preset linux -- -j16
+cmake --build --preset linux -- -j8
 ```
 
 *or use **linuxrelease** for release builds*
+
+**Any number between 1-100 may be used instead of -j12**
