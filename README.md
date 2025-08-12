@@ -44,4 +44,4 @@ cmake --build --preset linux -- -j8
 
 *or use **linuxrelease** for release builds*
 
-**Any number between 1-100 may be used instead of -j12**
+**Any number between 1-100 may be used instead of -j8**
