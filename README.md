@@ -5,7 +5,7 @@ A sprite-based C++ Vulkan engine that supports WINDOWS and LINUX || still in dev
 WINDOWS:
 Add mingw64 from MSYS2, and CMake to your system PATH.
 
-LINUX: *(type 'y' on all promps)*
+LINUX: *(type 'y' on all promps), may take a couple of minutes*
 ```bash
 sudo apt update
 sudo apt install build-essential
@@ -17,6 +17,7 @@ sudo apt update
 sudo apt install gdb
 ```
 
+- Install **@category:debuggers cppdbg** to run the program in VSCode/VSCodium
 - Include the bin folder from VULKAN in you environmental variables *if you want to edit shaders!*
 
 **-----------THIRD-PARTY-DEPENDENCIES---------**
