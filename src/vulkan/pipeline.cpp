@@ -58,7 +58,7 @@ void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std
     rasterizer.depthClampEnable = VK_FALSE;
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.0f;
+    rasterizer.lineWidth = 1.f;
     rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
@@ -181,7 +181,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
 
     std::vector<Model::Vertex> vertices;
     vertices.reserve(positions.size());
-    for (size_t i = 0; i < positions.size(); i++) { vertices.emplace_back(positions[i], glm::vec2(positions[i] + glm::vec2(0.5f))); }
+    for (size_t i = 0; i < positions.size(); i++) { vertices.emplace_back(positions[i], glm::vec2(positions[i] + glm::vec2(.5f))); }
 
     return std::make_shared<Model>(device, vertices);
 }
@@ -248,10 +248,10 @@ void Pipeline::loadSprites() {
     spriteCPU.clear();
 
     quadModel = makeModel({
-        {-0.5f, -0.5f}, // Bottom-Left
-        { 0.5f, -0.5f}, // Bottom-Right
-        {-0.5f,  0.5f}, // Top-Right
-        { 0.5f,  0.5f}  // Top-Left
+        {-.5f, -.5f}, // Bottom-Left
+        { .5f, -.5f}, // Bottom-Right
+        {-.5f,  .5f}, // Top-Right
+        { .5f,  .5f}  // Top-Left
     });
 
     createSprite(quadModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
@@ -262,5 +262,5 @@ void Pipeline::loadSprites() {
         createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
 
-    for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(0.0f, 0.0f), 0.1f, glm::vec4(1.0f)); }
+    for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
 }
