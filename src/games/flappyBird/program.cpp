@@ -1,12 +1,12 @@
 #define AUDIOPLAYER_IMPLEMENTATION
-#include "functions/audio.hpp"
+#include "../functions/audio.hpp"
 
-#include "program.hpp"
-#include "../vulkan/global.hpp"
-#include "../vulkan/pipeline.hpp"
-#include "functions/math.hpp"
-#include "functions/keyboard.hpp"
-#include "functions/collision.hpp"
+#include "../program.hpp"
+#include "../../vulkan/global.hpp"
+#include "../../vulkan/pipeline.hpp"
+#include "../functions/math.hpp"
+#include "../functions/keyboard.hpp"
+#include "../functions/collision.hpp"
 
 #include <glm/glm.hpp>
 

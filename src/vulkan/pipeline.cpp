@@ -2,7 +2,7 @@
 #include "renderSystem.hpp"
 #include "renderer.hpp"
 #include "font.hpp"
-#include "../program/functions/math.hpp"
+#include "../games/functions/math.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -228,7 +228,7 @@ void Pipeline::createText(const std::string& file, const std::string& text, glm:
             glm::vec2 uvOffset = glm::vec2(cd.x0 / (float)atlasSize, cd.y0 / (float)atlasSize);
             glm::vec2 uvScale = glm::vec2((cd.x1 - cd.x0) / (float)atlasSize, (cd.y1 - cd.y0) / (float)atlasSize);
 
-            createSprite(quadModel, spriteTextures.size() - 1, pos, scale, 0.f, color, uvOffset, uvScale);
+            //createSprite(quadModel, spriteTextures.size() - 1, pos, scale, 0.f, color, uvOffset, uvScale);
             position.x += cd.xadvance * scaleFactor;
         }
     }

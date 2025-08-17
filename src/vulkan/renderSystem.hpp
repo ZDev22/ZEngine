@@ -6,8 +6,8 @@
 #include "buffer.hpp"
 #include "sprite.hpp"
 
-#include "../program/program.hpp"
-#include "../program/functions/keyboard.hpp"
+#include "../games/flappyBird/program.hpp"
+#include "../games/functions/keyboard.hpp"
 
 #include <memory>
 #include <vector>
