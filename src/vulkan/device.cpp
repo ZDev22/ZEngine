@@ -61,14 +61,13 @@ void Device::createInstance() {
     appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
     appInfo.apiVersion = VK_API_VERSION_1_2;
 
+    auto extensions = getRequiredExtensions();
+    std::cout << "Enabling extensions: " << extensions.size() << std::endl;
+    for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
+    
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
-
-    std::cout << "Getting extensions..." << std::endl;
-    auto extensions = getRequiredExtensions();
-    std::cout << "Enabling Vulkan instance extensions (" << extensions.size() << "):" << std::endl;
-    for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -89,19 +88,26 @@ void Device::setupDebugMessenger() {
 void Device::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-    std::cout << "Found " << deviceCount << " physical device(s)" << std::endl;
+    if (deviceCount == 0) { std::cout << "Found no GPUS!" << std::endl; }
+    else if (deviceCount == 1) { std::cout << "Found 1 GPU" << std::endl; }
+    else { std::cout << "Found " << deviceCount << " GPUs" << std::endl; }
 
     if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-    for (size_t i = 0; i < devices.size(); ++i) {
-        std::cout << "Checking device " << i << " for suitability..." << std::endl;
-        if (isDeviceSuitable(devices[i])) { physicalDevice = devices[i]; break; }
+    short highScore = 0;
+    for (size_t i = 0; i < devices.size(); ++i) { 
+        short newScore = isDeviceSuitable(devices[i]);
+        if (newScore > highScore) {
+            highScore = newScore;
+            physicalDevice = devices[i];
+            break;
+        }
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) { std::cerr << "Warning: No suitable GPU found, using first available" << std::endl; physicalDevice = devices[0]; }
+    if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; std::cout << "Selected GPU is unsupported! Expect bugs!"; }
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
     std::cout << "Selected GPU: " << properties.deviceName << std::endl;
 }
@@ -155,18 +161,21 @@ void Device::createCommandPool() {
 }
 
 bool Device::isDeviceSuitable(VkPhysicalDevice device) {
+    short points = 0;
     QueueFamilyIndices indices = findQueueFamilies(device);
     bool extensionsSupported = checkDeviceExtensionSupport(device);
     bool swapChainAdequate = false;
     if (extensionsSupported) {
+        points += 50;
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
+        points += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
     }
     VkPhysicalDeviceFeatures supportedFeatures;
     vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
-    bool suitable = indices.isComplete() && extensionsSupported && swapChainAdequate;
-    return suitable;
+    if (indices.isComplete() && extensionsSupported && swapChainAdequate) { return points; }
+    return 0;
 }
 
 std::vector<const char*> Device::getRequiredExtensions() {
