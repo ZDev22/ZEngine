@@ -5,8 +5,7 @@
 #include "texture.hpp"
 
 #include <vulkan/vulkan.h>
-#include <string>
-#include <vector>
+
 #include <memory>
 
 class Pipeline;

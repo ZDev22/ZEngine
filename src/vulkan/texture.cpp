@@ -5,7 +5,6 @@
 #define STBI_ASSERT(x)
 #include "../deps/stb_image.h"
 
-#include <stdexcept>
 #include <cstring>
 #include <iostream>
 #include <filesystem>

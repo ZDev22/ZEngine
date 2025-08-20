@@ -4,8 +4,6 @@
 #include "pipeline.hpp"
 #include <vector>
 #include <fstream>
-#include <iostream>
-#include <stdexcept>
 
 std::vector<unsigned char> loadTTF(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::binary);

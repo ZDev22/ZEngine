@@ -9,9 +9,6 @@
 #include "../games/flappyBird/program.hpp"
 #include "../games/functions/keyboard.hpp"
 
-#include <memory>
-#include <vector>
-
 class RenderSystem {
 public:
     RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);

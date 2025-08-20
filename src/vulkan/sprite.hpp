@@ -5,9 +5,6 @@
 
 #include <glm/glm.hpp>
 
-#include <vector>
-#include <variant>
-
 #define MAX_SPRITES 1000
 #define MAX_TEXTURES 66
 

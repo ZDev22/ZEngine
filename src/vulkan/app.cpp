@@ -1,10 +1,5 @@
 #include "app.hpp"
-#include "sprite.hpp"
-#include "global.hpp"
 
-#include <stdexcept>
-#include <chrono>
-#include <string>
 #include <thread>
 
 static std::chrono::high_resolution_clock::time_point CPSlastTime;

@@ -13,8 +13,6 @@
 
 #include "../games/functions/keyboard.hpp"
 
-#include <memory>
-
 class App {
 public:
     App();

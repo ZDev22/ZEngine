@@ -2,7 +2,6 @@
 
 #include "window.hpp"
 
-#include <string>
 #include <vector>
 
 struct SwapChainSupportDetails {

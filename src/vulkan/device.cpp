@@ -6,14 +6,10 @@
 
 #include "device.hpp"
 
-#include <cstring>
-#include <iostream>
-#include <vector>
-#include <unordered_set>
-#include <set>
-#include <stdexcept>
-
 #include <vulkan/vulkan.h>
+
+#include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -116,9 +112,12 @@ void Device::createLogicalDevice() {
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily, indices.presentFamily };
-
     float queuePriority = 1.0f;
+
+    std::vector<uint32_t> uniqueQueueFamilies;
+    uniqueQueueFamilies.push_back(indices.graphicsFamily);
+    if (indices.presentFamily != indices.graphicsFamily) { uniqueQueueFamilies.push_back(indices.presentFamily); }
+
     for (uint32_t queueFamily : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -142,7 +141,7 @@ void Device::createLogicalDevice() {
     createInfo.ppEnabledExtensionNames = updatedDeviceExtensions.data();
     createInfo.enabledLayerCount = 0;
 
-    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("[Device] failed to create logical device!"); }
+    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device!"); }
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 }
@@ -190,9 +189,13 @@ void Device::hasGflwRequiredInstanceExtensions() {
     std::vector<VkExtensionProperties> extensions(extensionCount);
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-    std::unordered_set<std::string> available;
-    for (const auto& ext : extensions) { available.insert(ext.extensionName); }
-    for (const auto& required : getRequiredExtensions()) { if (available.find(required) == available.end()) { std::cerr << "[Device] Warning: Missing required GLFW extension: " << required << std::endl; }  }
+    std::vector<const char*> requiredExtensions = getRequiredExtensions();
+
+    for (const char* required : requiredExtensions) {
+        bool found = false;
+        for (const auto& ext : extensions) { if (std::string(ext.extensionName) == required) { found = true; break; }}
+        if (!found) { std::cerr << "[Device] Warning: Missing required GLFW extension: " << required << std::endl; }
+    }
 }
 
 bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
@@ -201,12 +204,16 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-    std::vector<const char*> updatedDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-    std::set<std::string> requiredExtensions(updatedDeviceExtensions.begin(), updatedDeviceExtensions.end());
+    std::vector<const char*> requiredExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-    for (const auto& extension : availableExtensions) { requiredExtensions.erase(extension.extensionName); }
-    bool result = requiredExtensions.empty();
-    return result;
+    for (auto it = requiredExtensions.begin(); it != requiredExtensions.end();) {
+        bool found = false;
+        for (const auto& extension : availableExtensions) { if (std::string(extension.extensionName) == *it) { found = true; break; }}
+        if (found) { it = requiredExtensions.erase(it); } 
+        else { ++it; }
+    }
+
+    return requiredExtensions.empty();
 }
 
 QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
