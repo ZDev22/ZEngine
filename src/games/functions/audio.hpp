@@ -1,16 +1,12 @@
-#pragma once
-
 #ifndef AUDIO_HPP
 #define AUDIO_HPP
-
-#include <string>
-#include <filesystem>
-#include <iostream>
 
 #ifdef AUDIOPLAYER_IMPLEMENTATION
 #define MINIAUDIO_IMPLEMENTATION
 #endif
 #include "deps/miniaudio.h"
+
+#include <string>
 
 class AudioPlayer {
 public:

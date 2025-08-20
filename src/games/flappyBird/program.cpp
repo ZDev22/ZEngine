@@ -60,7 +60,7 @@ void Program::tick() {
             sprites[index + 1].position.x = sprites[index].position.x;
             sprites[index + 1].position.y = sprites[index].position.y - 2.f;
 
-            if (!dead && (checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
+            if (started && !dead && (checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
                 dead = true;
                 speedY = -1.5f;
                 sprites[0].rotation = 60.f;

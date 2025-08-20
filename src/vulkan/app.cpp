@@ -2,16 +2,13 @@
 
 #include <thread>
 
-static std::chrono::high_resolution_clock::time_point CPSlastTime;
-static std::chrono::high_resolution_clock::time_point CPScurrentTime;
-static std::chrono::duration<float> CPSelapsed;
+std::chrono::high_resolution_clock::time_point CPSlastTime;
+std::chrono::high_resolution_clock::time_point CPScurrentTime;
+std::chrono::duration<float> CPSelapsed;
 
-static std::chrono::high_resolution_clock::time_point FPSlastTime;
-static std::chrono::high_resolution_clock::time_point FPScurrentTime;
-static std::chrono::duration<float> FPSelapsed;
-static float FPSdelta = 0.f;
-
-static float updateAccumulator = 0.f;
+float timer = 0.f;
+int cps = 0;
+int fps = 0;
 
 bool shouldClose = false;
 
@@ -33,32 +30,32 @@ void App::run() {
         deltaTime = CPSelapsed.count();
         CPSlastTime = CPScurrentTime;
 
-        updateAccumulator += deltaTime;
-        if (updateAccumulator > 1.f) {
-            window.setWindowName("CPS: " + std::to_string(static_cast<int>(1.f / deltaTime)) + " - FPS: " + std::to_string(static_cast<int>(1.f / FPSdelta)));
-            updateAccumulator = 0.f;
+        timer += deltaTime;
+        if (timer > 1.f) {
+            window.setWindowName("CPS: " + std::to_string(cps) + " - FPS: " + std::to_string(fps));
+            timer = 0.f;
+            cps = 0;
+            fps = 0;
         }
 
         glfwPollEvents();
         renderSystem->updateSprites();
         shouldClose = window.shouldClose();
+
+        cps++;
     }
 
     vkDeviceWaitIdle(device.device());
 }
 
 void App::render() {
-    FPSlastTime = std::chrono::high_resolution_clock::now();
     while (!shouldClose) {
-        FPScurrentTime = std::chrono::high_resolution_clock::now();
-        FPSelapsed = FPScurrentTime - FPSlastTime;
-        FPSdelta = FPSelapsed.count();
-        FPSlastTime = FPScurrentTime;
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
             renderSystem->renderSprites(commandBuffer, pipeline->getPipelineLayout());
             renderer.endSwapChainRenderPass(commandBuffer);
             renderer.endFrame();
+            fps++;
         }
     }
 }

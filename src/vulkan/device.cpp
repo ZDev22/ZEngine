@@ -11,8 +11,6 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -38,12 +36,12 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 Device::Device(AppWindow& window) : window{ window } {
-    cout << "[Device] Creating instance..." << std::endl; createInstance();
-    cout << "[Device] Creating debug messenger..." << std::endl; setupDebugMessenger();
-    cout << "[Device] Creating surface..." << std::endl; window.createWindowSurface(instance, &surface_);
-    cout << "[Device] Creating physical device..." << std::endl; pickPhysicalDevice();
-    cout << "[Device] Creating logical device..." << std::endl; createLogicalDevice();
-    cout << "[Device] Creating command pool..." << std::endl; createCommandPool();
+    std::cout << "Creating instance..." << std::endl; createInstance();
+    std::cout << "Creating debug messenger..." << std::endl; setupDebugMessenger();
+    std::cout << "Creating surface..." << std::endl; window.createWindowSurface(instance, &surface_);
+    std::cout << "Creating physical device..." << std::endl; pickPhysicalDevice();
+    std::cout << "Creating logical device..." << std::endl; createLogicalDevice();
+    std::cout << "Creating command pool..." << std::endl; createCommandPool();
 }
 
 Device::~Device() {
@@ -67,15 +65,15 @@ void Device::createInstance() {
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    cout << "[Device] Getting extensions..." << std::endl;
+    std::cout << "Getting extensions..." << std::endl;
     auto extensions = getRequiredExtensions();
-    cout << "[Device] Enabling Vulkan instance extensions (" << extensions.size() << "):" << std::endl;
-    for (const auto* ext : extensions) { cout << "  - " << (ext ? ext : "<nullptr>") << endl; }
+    std::cout << "Enabling Vulkan instance extensions (" << extensions.size() << "):" << std::endl;
+    for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) { throw("[Device] Failed to create Vulkan instance"); }
+    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) { throw("Failed to create Vulkan instance"); }
     hasGflwRequiredInstanceExtensions();
 }
 
@@ -83,7 +81,7 @@ void Device::setupDebugMessenger() {
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
     if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-        std::cerr << "[Device] Warning: Failed to create debug messenger." << std::endl;
+        std::cerr << "Warning: Failed to create debug messenger." << std::endl;
         debugMessenger = VK_NULL_HANDLE;
     } 
 }
@@ -91,21 +89,21 @@ void Device::setupDebugMessenger() {
 void Device::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-    cout << "[Device] Found " << deviceCount << " physical device(s)" << std::endl;
+    std::cout << "Found " << deviceCount << " physical device(s)" << std::endl;
 
-    if (deviceCount == 0) { throw("[Device] No Vulkan-compatible GPUs found"); }
+    if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     for (size_t i = 0; i < devices.size(); ++i) {
-        cout << "[Device] Checking device " << i << " for suitability..." << std::endl;
+        std::cout << "Checking device " << i << " for suitability..." << std::endl;
         if (isDeviceSuitable(devices[i])) { physicalDevice = devices[i]; break; }
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) { std::cerr << "[Device] Warning: No suitable GPU found, using first available" << std::endl; physicalDevice = devices[0]; }
+    if (physicalDevice == VK_NULL_HANDLE) { std::cerr << "Warning: No suitable GPU found, using first available" << std::endl; physicalDevice = devices[0]; }
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-    std::cout << "[Device] Selected GPU: " << properties.deviceName << std::endl;
+    std::cout << "Selected GPU: " << properties.deviceName << std::endl;
 }
 
 void Device::createLogicalDevice() {
@@ -153,7 +151,7 @@ void Device::createCommandPool() {
     poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("[Device] failed to create command pool!"); }
+    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool!"); }
 }
 
 bool Device::isDeviceSuitable(VkPhysicalDevice device) {
@@ -161,10 +159,9 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
     bool extensionsSupported = checkDeviceExtensionSupport(device);
     bool swapChainAdequate = false;
     if (extensionsSupported) {
-        cout << "[Device] Device supports required extensions." << std::endl;
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-        cout << "[Device] SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << endl;
+        std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
     }
     VkPhysicalDeviceFeatures supportedFeatures;
     vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
@@ -176,7 +173,7 @@ std::vector<const char*> Device::getRequiredExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    if (!glfwExtensions || glfwExtensionCount == 0) { throw("[Device] GLFW: Failed to get required Vulkan instance extensions. Are your graphics drivers up to date?"); }
+    if (!glfwExtensions || glfwExtensionCount == 0) { throw("GLFW: Failed to get required Vulkan instance extensions. Are your graphics drivers up to date?"); }
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -194,7 +191,7 @@ void Device::hasGflwRequiredInstanceExtensions() {
     for (const char* required : requiredExtensions) {
         bool found = false;
         for (const auto& ext : extensions) { if (std::string(ext.extensionName) == required) { found = true; break; }}
-        if (!found) { std::cerr << "[Device] Warning: Missing required GLFW extension: " << required << std::endl; }
+        if (!found) { std::cerr << "Warning: Missing required GLFW extension: " << required << std::endl; }
     }
 }
 
@@ -266,7 +263,7 @@ VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidates, Vk
         if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
     }
-    throw("[Device] failed to find supported format!");
+    throw("failed to find supported format!");
 }
 
 uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
@@ -284,7 +281,7 @@ VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMem
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     VkResult result = vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
-    if (result != VK_SUCCESS) { throw("[Device] failed to create buffer! VkResult: " + std::to_string(result)); }
+    if (result != VK_SUCCESS) { throw("failed to create buffer! VkResult: " + std::to_string(result)); }
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
@@ -297,14 +294,14 @@ VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMem
     result = vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
     if (result != VK_SUCCESS) {
         vkDestroyBuffer(device_, buffer, nullptr);
-        throw("[Device] failed to allocate buffer memory! VkResult: " + std::to_string(result));
+        throw("failed to allocate buffer memory! VkResult: " + std::to_string(result));
     }
 
     result = vkBindBufferMemory(device_, buffer, bufferMemory, 0);
     if (result != VK_SUCCESS) {
         vkDestroyBuffer(device_, buffer, nullptr);
         vkFreeMemory(device_, bufferMemory, nullptr);
-        throw("[Device] failed to bind buffer memory! VkResult: " + std::to_string(result));
+        throw("failed to bind buffer memory! VkResult: " + std::to_string(result));
     }
     return VK_SUCCESS;
 }
@@ -369,7 +366,7 @@ void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, u
 
 VkResult Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
     VkResult result = vkCreateImage(device_, &imageInfo, nullptr, &image);
-    if (result != VK_SUCCESS) { throw("[Device] failed to create image! VkResult: " + std::to_string(result));  }
+    if (result != VK_SUCCESS) { throw("failed to create image! VkResult: " + std::to_string(result));  }
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(device_, image, &memRequirements);
@@ -382,14 +379,14 @@ VkResult Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemor
     result = vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory);
     if (result != VK_SUCCESS) {
         vkDestroyImage(device_, image, nullptr);
-        throw("[Device] failed to allocate image memory! VkResult: " + std::to_string(result));
+        throw("failed to allocate image memory! VkResult: " + std::to_string(result));
     }
 
     result = vkBindImageMemory(device_, image, imageMemory, 0);
     if (result != VK_SUCCESS) {
         vkDestroyImage(device_, image, nullptr);
         vkFreeMemory(device_, imageMemory, nullptr);
-        throw("[Device] failed to bind image memory! VkResult: " + std::to_string(result));
+        throw("failed to bind image memory! VkResult: " + std::to_string(result));
     }
     return VK_SUCCESS;
 }

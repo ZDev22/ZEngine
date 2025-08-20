@@ -3,11 +3,9 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 inline namespace {
 
-int vectorContainsString(const string& target, const vector<string>& list) {
+int vectorContainsString(const std::string& target, const std::vector<std::string>& list) {
     for (int i = 0; i < list.size(); i++) { if (list[i] == target) { return i; }}
     return 0;
 }
