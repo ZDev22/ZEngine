@@ -6,12 +6,11 @@
 #include "buffer.hpp"
 #include "sprite.hpp"
 
-#include "../games/flappyBird/program.hpp"
 #include "../games/functions/keyboard.hpp"
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
+    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
     void initialize();
@@ -27,8 +26,6 @@ private:
 
     Device& device;
     AppWindow& window;
-    Keyboard& keyboard;
-    Program& program;
     Renderer& renderer;
     Push& push;
     std::unique_ptr<Pipeline> pipeline;

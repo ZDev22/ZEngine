@@ -24,7 +24,7 @@ sudo apt install gdb
 
 - Make a new folder in src/games named whatever you want to name your game
 - Duplicate program.cpp and .hpp from games/flappyBird into your new folder.
-- Update the include paths in src/vulkan/app.hpp and renderSystem.hpp from #include "../games/flappyBird/program.hpp" to #include "../games/(your game's name)/program.hpp"
+- Update the last include path in src/vulkan/app.hpp to the path to your file 
 - Delete the tick() implementation and replace it with your own. *(if your game uses the keyboard, keep "keyboard.resetKeys();" at the bottom of the file)*
 - You may make other files and folders in the folder you created! You can now make a game!
 

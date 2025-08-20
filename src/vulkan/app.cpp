@@ -15,7 +15,7 @@ bool shouldClose = false;
 App::App() {
     pipeline = std::make_unique<Pipeline>(device, *renderSystem, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
     pipeline->loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, keyboard, program, renderer, push, pipeline->getDescriptorSetLayout());
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline->getDescriptorSetLayout());
     renderSystem->initialize();
 }
 
@@ -39,6 +39,8 @@ void App::run() {
         }
 
         glfwPollEvents();
+
+        program.tick();
         renderSystem->updateSprites();
         shouldClose = window.shouldClose();
 

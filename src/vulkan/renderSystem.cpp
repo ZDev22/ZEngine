@@ -3,12 +3,10 @@
 
 #include <iostream>
 #include <array>
-#include <algorithm>
-#include <execution>
 
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), keyboard(keyboard), renderer(renderer), program(program), push(push), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), push(push), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
     createPipeline();
 }
@@ -129,8 +127,6 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout
 }
 
 void RenderSystem::updateSprites() {
-    program.tick();
-
     VkDeviceSize bufferSize = sizeof(SpriteData) * sprites.size();
     spriteDataBuffer->writeToBuffer(sprites.data(), bufferSize);
 }

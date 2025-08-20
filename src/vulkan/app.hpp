@@ -7,11 +7,11 @@
 #include "renderSystem.hpp"
 #include "global.hpp" 
 
+#include "../games/functions/keyboard.hpp"
+
 #include "../games/flappyBird/program.hpp"
 //#include "../games/crossyRoad/program.hpp" - how this could work
 //#include "../games/RPG/program.hpp"
-
-#include "../games/functions/keyboard.hpp"
 
 class App {
 public:
