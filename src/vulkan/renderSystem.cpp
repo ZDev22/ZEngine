@@ -9,9 +9,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-const uint32_t batchSize = 100;
-uint32_t instanceCount;
-
 using namespace std;
 
 RenderSystem::RenderSystem(Device& device, AppWindow& window, Keyboard& keyboard, Program& program, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), keyboard(keyboard), renderer(renderer), program(program), push(push), descriptorSetLayout(descriptorSetLayout) {

@@ -5,14 +5,16 @@
 
 #include <glm/glm.hpp>
 
-#include <array>
-#include <limits>
-#include <vector>
-#include <algorithm>
+// Collision for square objects like textures
+bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+    dataA.setRotationMatrix();
+    dataB.setRotationMatrix();
 
-// Can run 30K times at 75 fps (with 4 vertex points)
+    return fabs(dataA.position.x - dataB.position.x) <= (fabs(dataA.rotationMatrix[0][0]) * (dataA.scale.x * .5f) + fabs(dataA.rotationMatrix[0][1]) * (dataA.scale.y * .5f) + fabs(dataB.rotationMatrix[0][0]) * (dataB.scale.x * .5f) + fabs(dataB.rotationMatrix[0][1]) * (dataB.scale.y * .5f)) && fabs(dataA.position.y - dataB.position.y) <= (fabs(dataA.rotationMatrix[0][1]) * (dataA.scale.x * .5f) + fabs(dataA.rotationMatrix[0][0]) * (dataA.scale.y * .5f) + fabs(dataB.rotationMatrix[0][1]) * (dataB.scale.x * .5f) + fabs(dataB.rotationMatrix[0][0]) * (dataB.scale.y * .5f));
+}
+
+// Can run 30k times at 75fps
 bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
-
     dataA.setRotationMatrix();
     dataB.setRotationMatrix();
 
@@ -26,54 +28,49 @@ bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spri
 
     if (verticesA.size() > verticesB.size()) {
         for (size_t i = 0; i < verticesA.size(); i++) {
-            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-            if (transformedA.x < aMin.x) { aMin.x = transformedA.x; }
-            if (transformedA.y < aMin.y) { aMin.y = transformedA.y; }
-            if (transformedA.x > aMax.x) { aMax.x = transformedA.x; }
-            if (transformedA.y > aMax.y) { aMax.y = transformedA.y; }
+            glm::vec2 transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
+            if (transformed.x < aMin.x) { aMin.x = transformed.x; }
+            if (transformed.y < aMin.y) { aMin.y = transformed.y; }
+            if (transformed.x > aMax.x) { aMax.x = transformed.x; }
+            if (transformed.y > aMax.y) { aMax.y = transformed.y; }
 
             if (i < verticesB.size()) {
-                glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
-                if (transformedB.x < bMin.x) { bMin.x = transformedB.x; }
-                if (transformedB.y < bMin.y) { bMin.y = transformedB.y; }
-                if (transformedB.x > bMax.x) { bMax.x = transformedB.x; }
-                if (transformedB.y > bMax.y) { bMax.y = transformedB.y; }
+                transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
+                if (transformed.x < bMin.x) { bMin.x = transformed.x; }
+                if (transformed.y < bMin.y) { bMin.y = transformed.y; }
+                if (transformed.x > bMax.x) { bMax.x = transformed.x; }
+                if (transformed.y > bMax.y) { bMax.y = transformed.y; }
             }
         }
-    }
-    else if (verticesA.size() < verticesB.size()) {
+    } else if (verticesA.size() < verticesB.size()) {
         for (size_t i = 0; i < verticesB.size(); i++) {
-            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
+            glm::vec2 transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
+            if (transformed.x < bMin.x) { bMin.x = transformed.x; }
+            if (transformed.y < bMin.y) { bMin.y = transformed.y; }
+            if (transformed.x > bMax.x) { bMax.x = transformed.x; }
+            if (transformed.y > bMax.y) { bMax.y = transformed.y; }
 
             if (i < verticesA.size()) {
-                glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-
-                if (transformedA.x < aMin.x) { aMin.x = transformedA.x; }
-                if (transformedA.y < aMin.y) { aMin.y = transformedA.y; }
-                if (transformedA.x > aMax.x) { aMax.x = transformedA.x; }
-                if (transformedA.y > aMax.y) { aMax.y = transformedA.y; }
+                transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
+                if (transformed.x < aMin.x) { aMin.x = transformed.x; }
+                if (transformed.y < aMin.y) { aMin.y = transformed.y; }
+                if (transformed.x > aMax.x) { aMax.x = transformed.x; }
+                if (transformed.y > aMax.y) { aMax.y = transformed.y; }
             }
-
-            if (transformedB.x < bMin.x) { bMin.x = transformedB.x; }
-            if (transformedB.y < bMin.y) { bMin.y = transformedB.y; }
-            if (transformedB.x > bMax.x) { bMax.x = transformedB.x; }
-            if (transformedB.y > bMax.y) { bMax.y = transformedB.y; }
         }
-    }
-    else {
+    } else {
         for (size_t i = 0; i < verticesA.size(); i++) {
-            glm::vec2 transformedA = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-            glm::vec2 transformedB = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
+            glm::vec2 transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
+            if (transformed.x < aMin.x) { aMin.x = transformed.x; }
+            if (transformed.y < aMin.y) { aMin.y = transformed.y; }
+            if (transformed.x > aMax.x) { aMax.x = transformed.x; }
+            if (transformed.y > aMax.y) { aMax.y = transformed.y; }
 
-            if (transformedA.x < aMin.x) { aMin.x = transformedA.x; }
-            if (transformedA.y < aMin.y) { aMin.y = transformedA.y; }
-            if (transformedA.x > aMax.x) { aMax.x = transformedA.x; }
-            if (transformedA.y > aMax.y) { aMax.y = transformedA.y; }
-
-            if (transformedB.x < bMin.x) { bMin.x = transformedB.x; }
-            if (transformedB.y < bMin.y) { bMin.y = transformedB.y; }
-            if (transformedB.x > bMax.x) { bMax.x = transformedB.x; }
-            if (transformedB.y > bMax.y) { bMax.y = transformedB.y; }
+            transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
+            if (transformed.x < bMin.x) { bMin.x = transformed.x; }
+            if (transformed.y < bMin.y) { bMin.y = transformed.y; }
+            if (transformed.x > bMax.x) { bMax.x = transformed.x; }
+            if (transformed.y > bMax.y) { bMax.y = transformed.y; }
         }
     }
     return (aMin.x <= bMax.x && aMax.x >= bMin.x) && (aMin.y <= bMax.y && aMax.y >= bMin.y);

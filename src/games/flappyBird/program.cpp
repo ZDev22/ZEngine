@@ -1,7 +1,7 @@
 #define AUDIOPLAYER_IMPLEMENTATION
 #include "../functions/audio.hpp"
 
-#include "../program.hpp"
+#include "program.hpp"
 #include "../../vulkan/global.hpp"
 #include "../../vulkan/pipeline.hpp"
 #include "../functions/math.hpp"
@@ -60,7 +60,7 @@ void Program::tick() {
             sprites[index + 1].position.x = sprites[index].position.x;
             sprites[index + 1].position.y = sprites[index].position.y - 2.f;
 
-            if (!dead && (checkCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
+            if (!dead && (checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
                 dead = true;
                 speedY = -1.5f;
                 sprites[0].rotation = 60.f;
