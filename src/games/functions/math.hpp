@@ -18,18 +18,22 @@
 inline namespace {
 
 // Global functions
-float clamp(float value, float minValue, float maxValue) { return std::max(minValue, std::min(maxValue, value)); }
+float clamp(float value, float minValue, float maxValue) {
+    if (value < minValue) { return minValue; }
+    if (value > maxValue) { return maxValue; }
+    return value;
+}
 
 // Interpolation
 float lerp(float a, float b, float t) { return a + (b - a) * t; }
 float smoothstep(float edge0, float edge1, float x) {
-    if (edge0 == edge1) return edge0;
+    if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * (3 - 2 * t);
 }
 
 float smootherstep(float edge0, float edge1, float x) {
-    if (edge0 == edge1) return edge0;
+    if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
@@ -40,15 +44,15 @@ float easeInOutSine(float t) { return -(cos(PI * t) - 1) / 2; }
 float easeInExpo(float t) { return (t == 0) ? 0 : pow(2, 10 * (t - 1)); }
 float easeOutExpo(float t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
 float easeInOutExpo(float t) {
-    if (t == 0 || t == 1) return t;
-    if (t < .5f) return pow(2, 20 * t - 10) / 2;
+    if (t == 0 || t == 1) { return t; }
+    if (t < .5f) { return pow(2, 20 * t - 10) / 2; }
     return (2 - pow(2, -20 * t + 10)) / 2;
 }
 
 float easeInCirc(float t) { return 1 - sqrt(1 - t * t); }
 float easeOutCirc(float t) { return sqrt(1 - (t - 1) * (t - 1)); }
 float easeInOutCirc(float t) {
-    if (t < .5f) return (1 - sqrt(1 - 4 * t * t)) / 2;
+    if (t < .5f) { return (1 - sqrt(1 - 4 * t * t)) / 2; }
     return (sqrt(1 - pow(-2 * t + 2, 2)) + 1) / 2;
 }
 
@@ -78,33 +82,33 @@ bool randomBool() { return (xorshift32() & 1) == 0; }
 
 // Averages
 short averageChar(std::vector<unsigned char>& chars) {
-    short average;
+    short average = 0;
     for (const short a : chars) { average += a; }
-    return { average / chars.size() };
+    return average / chars.size();
 }
 
 short averageShort(std::vector<short>& shorts) {
-    int average;
+    int average = 0;
     for (const short a : shorts) { average += a; }
-    return { average / shorts.size() };
+    return average / shorts.size();
 }
 
 int averageInt(std::vector<int>& ints) {
-    long long average;
+    long long average = 0;
     for (const int a : ints) { average += a; }
-    return { average / ints.size() };
+    return average / ints.size();
 }
 
 long long averageLong(std::vector<long long>& longs) {
-    long long average;
+    long long average = 0;
     for (const long long a : longs) { average += a; }
-    return { average / longs.size() };
+    return average / longs.size();
 }
 
 float averageFloat(std::vector<float>& floats) {
-    float average;
+    float average = 0;
     for (const float a : floats) { average += a; }
-    return { average / floats.size() };
+    return average / floats.size();
 }
 
 bool averageBool(const std::vector<bool>& bools) {
@@ -119,8 +123,8 @@ bool averageBool(const std::vector<bool>& bools) {
 }
 
 short averageMinMaxChar(const std::vector<unsigned char>& chars) {
-    unsigned char minVal = 0, maxVal = 0;
-    short sum;
+    unsigned char minVal = chars[0], maxVal = chars[0];
+    short sum = 0;
 
     for (const short a : chars) {
         if (a < minVal) { minVal = a; }
@@ -131,8 +135,8 @@ short averageMinMaxChar(const std::vector<unsigned char>& chars) {
 }
 
 short averageMinMaxShort(const std::vector<short>& shorts) {
-    short minVal = 0, maxVal = 0;
-    int sum;
+    short minVal = shorts[0], maxVal = shorts[0];
+    int sum = 0;
 
     for (const short a : shorts) {
         if (a < minVal) { minVal = a; }
@@ -143,8 +147,8 @@ short averageMinMaxShort(const std::vector<short>& shorts) {
 }
 
 int averageMinMaxInt(const std::vector<int>& ints) {
-    int minVal = 0, maxVal = 0;
-    long long sum;
+    int minVal = ints[0], maxVal = ints[0];
+    long long sum = 0;
 
     for (const int a : ints) {
         if (a < minVal) { minVal = a; }
@@ -155,7 +159,7 @@ int averageMinMaxInt(const std::vector<int>& ints) {
 }
 
 long long averageMinMaxLong(const std::vector<long long>& longs) {
-    long long minVal = 0, maxVal = 0, sum;
+    long long minVal = longs[0], maxVal = longs[0], sum = 0;
 
     for (const long long a : longs) {
         if (a < minVal) { minVal = a; }
@@ -166,7 +170,7 @@ long long averageMinMaxLong(const std::vector<long long>& longs) {
 }
 
 float averageMinMaxFloat(const std::vector<float>& floats) {
-    float minVal = 0.f, maxVal = 0.f, sum;
+    float minVal = floats[0], maxVal = floats[0], sum = 0;
 
     for (const float a : floats) {
         if (a < minVal) { minVal = a; }
@@ -177,19 +181,19 @@ float averageMinMaxFloat(const std::vector<float>& floats) {
 }
 
 // Values
-void setValuesInRangeChar(std::vector<unsigned char>& vec, const unsigned char value, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-void setValuesInRangeShort(std::vector<short>& vec, const short value, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-void setValuesInRangeInt(std::vector<int>& vec, const int value, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-void setValuesInRangeLong(std::vector<long long>& vec, const long long value, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-void setValuesInRangeFloat(std::vector<float>& vec, const float value, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
+void setValuesInRangeChar(std::vector<unsigned char>& vec, const unsigned char value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
+void setValuesInRangeShort(std::vector<short>& vec, const short value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
+void setValuesInRangeInt(std::vector<int>& vec, const int value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
+void setValuesInRangeLong(std::vector<long long>& vec, const long long value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
+void setValuesInRangeFloat(std::vector<float>& vec, const float value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
 void setZeroChar(std::vector<unsigned char>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count); }
 void setZeroShort(std::vector<short>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 2); }
 void setZeroInt(std::vector<int>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 4); }
 void setZeroLong(std::vector<long long>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 8); }
 void setZeroFloat(std::vector<float>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 4); }
 
-void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, true); }
-void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { fill(vec.begin() + minIndex, vec.begin() + maxIndex, false); }
+void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, true); }
+void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, false); }
 }
 
 #if defined(_MSC_VER)

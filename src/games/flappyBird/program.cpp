@@ -2,17 +2,10 @@
 #include "../functions/audio.hpp"
 
 #include "program.hpp"
-#include "../../vulkan/global.hpp"
-#include "../../vulkan/pipeline.hpp"
 #include "../functions/math.hpp"
-#include "../functions/keyboard.hpp"
 #include "../functions/collision.hpp"
 
 #include <glm/glm.hpp>
-
-#include <iostream>
-#include <vector>
-#include <string>
 
 Program::Program(Keyboard& keyboard, Pipeline& pipeline, Push& push) : keyboard(keyboard), pipeline(pipeline), push(push) {}
 
