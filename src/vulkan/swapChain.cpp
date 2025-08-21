@@ -32,8 +32,8 @@ void SwapChain::init() {
 }
 
 VkResult SwapChain::acquireNextImage(uint32_t* imageIndex) {
-    vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
-    return vkAcquireNextImageKHR(device.device(), swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex);
+    vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE, 18446744073709551615ULL);
+    return vkAcquireNextImageKHR(device.device(), swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex);
 }
 
 VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex) {
@@ -290,11 +290,13 @@ VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentMod
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
-    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) { return capabilities.currentExtent; }
-    else {
-        windowExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, windowExtent.width));
-        windowExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, windowExtent.height));
+    if (capabilities.currentExtent.width == 4294967295U) {
+        if (windowExtent.width < capabilities.minImageExtent.width) { windowExtent.width = capabilities.minImageExtent.width; }
+        if (windowExtent.width > capabilities.maxImageExtent.width) { windowExtent.width = capabilities.maxImageExtent.width; }
+        if (windowExtent.height < capabilities.minImageExtent.height) { windowExtent.height = capabilities.minImageExtent.height; }
+        if (windowExtent.height > capabilities.maxImageExtent.height) { windowExtent.height = capabilities.maxImageExtent.height; }
         return windowExtent;
     }
+    else { return capabilities.currentExtent; }
 }
 VkFormat SwapChain::findDepthFormat() { return device.findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT); }

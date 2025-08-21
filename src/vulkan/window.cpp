@@ -1,7 +1,5 @@
 #include "window.hpp"
 
-#include <stdexcept>
-
 AppWindow::AppWindow(int w, int h) : width{ w }, height{ h } { initWindow(); }
 AppWindow::~AppWindow() {
     glfwDestroyWindow(window);

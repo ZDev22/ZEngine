@@ -2,12 +2,9 @@
 
 #include "device.hpp"
 
-#include <memory>
-#include <limits>
-#include <string>
-#include <vector>
-
 #include <vulkan/vulkan.h>
+
+#include <memory>
 
 #define MAX_FRAMES_IN_FLIGHT 2
 
