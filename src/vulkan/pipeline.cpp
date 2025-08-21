@@ -186,7 +186,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
     return std::make_shared<Model>(device, vertices);
 }
 
-void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset, glm::vec2 uvScale) {
+void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color) {
     if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
@@ -200,8 +200,6 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     spriteData.rotation = rotation;
     spriteData.color = color;
     spriteData.textureIndex = textureIndex;
-    spriteData.uvOffset = uvOffset;
-    spriteData.uvScale = uvScale;
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);

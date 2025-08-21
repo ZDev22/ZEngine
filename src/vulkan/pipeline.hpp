@@ -26,7 +26,7 @@ public:
 
     int switchTexture(Sprite& sprite, int textureID);
     std::shared_ptr<Model> makeModel(const std::vector<glm::vec2>& positions);
-    void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color, glm::vec2 uvOffset = glm::vec2(0.f), glm::vec2 uvScale = glm::vec2(1.f));
+    void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color);
     void createText(const std::string& file, const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color);
 
 private:

@@ -13,8 +13,6 @@ struct SpriteData {
     vec2 scale;
     mat2 rotationMatrix;
     vec4 color;
-    vec2 uvOffset;
-    vec2 uvScale;
     uint textureIndex;
     float rotation;
 };
@@ -32,6 +30,6 @@ void main() {
 
     gl_Position = push.projection * vec4(transformedPos, 0.0, 1.0);
     fragColor = sprites[gl_InstanceIndex].color;
-    fragTexCoord = sprites[gl_InstanceIndex].uvOffset + inTexCoord * sprites[gl_InstanceIndex].uvScale;
+    fragTexCoord = inTexCoord;
     fragTextureIndex = sprites[gl_InstanceIndex].textureIndex;
 }
