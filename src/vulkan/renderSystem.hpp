@@ -19,7 +19,6 @@ public:
     void updateSprites();
     
 private:
-    void createPipeline();
     void createPipelineLayout();
     void initializeSpriteData();
     void createTextureArrayDescriptorSet();

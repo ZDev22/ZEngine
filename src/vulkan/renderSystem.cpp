@@ -8,7 +8,7 @@
 
 RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), push(push), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
-    createPipeline();
+    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
 }
 
 RenderSystem::~RenderSystem() {
@@ -17,7 +17,7 @@ RenderSystem::~RenderSystem() {
 }
 
 void RenderSystem::reset(VkDescriptorSetLayout newDescriptorSetLayout) {
-    createPipeline();
+    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
     descriptorSetLayout = newDescriptorSetLayout;
     initialize();
 }
@@ -43,7 +43,6 @@ void RenderSystem::createPipelineLayout() {
     if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 }
 
-void RenderSystem::createPipeline() { pipeline = std::make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv"); }
 void RenderSystem::initializeSpriteData() {
     VkDeviceSize bufferSize = sizeof(SpriteData) * MAX_SPRITES;
     spriteDataBuffer = std::make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);

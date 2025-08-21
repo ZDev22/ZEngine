@@ -55,7 +55,7 @@ void App::render() {
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
             renderSystem->renderSprites(commandBuffer, pipeline->getPipelineLayout());
-            renderer.endSwapChainRenderPass(commandBuffer);
+            vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
             fps++;
         }

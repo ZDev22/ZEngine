@@ -23,7 +23,6 @@ struct alignas(16) SpriteData {
 struct Sprite {
     std::shared_ptr<Model> model;
     Texture* texture;
-    std::vector<std::variant<Sprite, SpriteData>> clones;
 };
 
 extern std::vector<SpriteData> sprites;

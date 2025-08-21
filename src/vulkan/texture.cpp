@@ -158,8 +158,8 @@ void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
     for (const auto& filepath : filepaths) {
         int width = 0, height = 0, channels = 0;
         stbi_info(("assets/images/" + filepath).c_str(), &width, &height, &channels);
-        if (width > maxWidth) maxWidth = width;
-        if (height > maxHeight) maxHeight = height;
+        if (width > maxWidth) { maxWidth = width; }
+        if (height > maxHeight) { maxHeight = height; }
     }
 
     for (uint32_t i = 0; i < arrayLayers; ++i) {

@@ -100,5 +100,3 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
     scissor.extent = swapChain->getSwapChainExtent();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
-
-void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) { vkCmdEndRenderPass(commandBuffer); }
