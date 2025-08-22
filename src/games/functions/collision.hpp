@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 
 // Collision for square objects like textures
-bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+inline bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
     dataA.setRotationMatrix();
     dataB.setRotationMatrix();
 
@@ -14,7 +14,7 @@ bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite
 }
 
 // Can run 30k times at 75fps
-bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+inline bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
     dataA.setRotationMatrix();
     dataB.setRotationMatrix();
 

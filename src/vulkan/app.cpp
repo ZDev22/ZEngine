@@ -40,7 +40,8 @@ void App::run() {
 
         glfwPollEvents();
 
-        program.tick();
+        //flappyBird.tick();
+        slimeAttack.tick();
         renderSystem->updateSprites();
         shouldClose = window.shouldClose();
 

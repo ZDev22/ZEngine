@@ -9,9 +9,8 @@
 
 #include "../games/functions/keyboard.hpp"
 
-#include "../games/flappyBird/program.hpp"
-//#include "../games/crossyRoad/program.hpp" - how this could work
-//#include "../games/RPG/program.hpp"
+//#include "../games/flappyBird/flappyBird.hpp"
+#include "../games/slimeAttack/slimeAttack.hpp"
 
 class App {
 public:
@@ -28,5 +27,6 @@ private:
     Keyboard keyboard{window};
     std::unique_ptr<Pipeline> pipeline;
     std::unique_ptr<RenderSystem> renderSystem;
-    Program program{keyboard, *pipeline, push};
+    //FlappyBird flappyBird{keyboard, *pipeline, push};
+    SlimeAttack slimeAttack{keyboard, *pipeline, push};
 };
