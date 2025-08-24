@@ -17,7 +17,6 @@ public:
     bool wasWindowResized() { return framebufferResized; }
     void resetWindowResizedFlag() { framebufferResized = false; }
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-    void waitEvents() { glfwWaitEvents(); }
     void setWindowName(std::string name) { glfwSetWindowTitle(window, name.c_str()); }
     GLFWwindow* getWindow() { return window; }
 

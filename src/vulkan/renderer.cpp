@@ -14,10 +14,6 @@ Renderer::Renderer(AppWindow& window, Device& device) : window{ window }, device
 Renderer::~Renderer() { freeCommandBuffers(); }
 void Renderer::recreateSwapChain() {
     auto extent = window.getExtent();
-    while (extent.width == 0 || extent.height == 0) {
-        extent = window.getExtent();
-        glfwWaitEvents();
-    }
     vkDeviceWaitIdle(device.device());
 
     if (swapChain == nullptr) { swapChain = std::make_unique<SwapChain>(device, extent); }
