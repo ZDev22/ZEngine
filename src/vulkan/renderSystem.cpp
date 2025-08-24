@@ -8,7 +8,7 @@
 
 RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), push(push), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
-    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
+    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "texture");
 }
 
 RenderSystem::~RenderSystem() {
@@ -17,7 +17,7 @@ RenderSystem::~RenderSystem() {
 }
 
 void RenderSystem::reset(VkDescriptorSetLayout newDescriptorSetLayout) {
-    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
+    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "texture");
     descriptorSetLayout = newDescriptorSetLayout;
     initialize();
 }

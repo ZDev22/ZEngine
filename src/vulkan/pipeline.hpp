@@ -15,7 +15,7 @@ class RenderSystem;
 class Renderer;
 class Pipeline {
 public:
-    Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath);
+    Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& shader);
     ~Pipeline();
 
     void loadSprites();
@@ -31,7 +31,7 @@ public:
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
-    void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath);
+    void createGraphicsPipeline(const std::string& shader);
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
     void loadFlappyBird();

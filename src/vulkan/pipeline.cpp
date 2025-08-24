@@ -8,7 +8,7 @@
 #include <fstream>
 #include <array>
 
-Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& vertFilepath, const std::string& fragFilepath) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(vertFilepath, fragFilepath); }
+Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& shader) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(shader); }
 Pipeline::~Pipeline() {}
 
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
@@ -23,15 +23,15 @@ std::vector<char> Pipeline::readFile(const std::string& filepath) {
     return buffer;
 }
 
-void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath) {
+void Pipeline::createGraphicsPipeline(const std::string& shader) {
     VkPipelineShaderStageCreateInfo shaderStages[2] = {};
     shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    shaderStages[0].module = createShaderModule(readFile(vertFilepath));
+    shaderStages[0].module = createShaderModule(readFile("vulkan/shaders/" + shader + ".vert.spv"));
     shaderStages[0].pName = "main";
     shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    shaderStages[1].module = createShaderModule(readFile(fragFilepath));
+    shaderStages[1].module = createShaderModule(readFile("vulkan/shaders/" + shader + ".frag.spv"));
     shaderStages[1].pName = "main";
 
     VkVertexInputBindingDescription bindingDescription = Model::Vertex::getBindingDescription();

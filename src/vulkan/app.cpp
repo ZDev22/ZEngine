@@ -12,7 +12,7 @@ int fps = 0;
 bool shouldClose = false;
 
 App::App() {
-    pipeline = std::make_unique<Pipeline>(device, *renderSystem, renderer, "vulkan/shaders/triangle.vert.spv", "vulkan/shaders/triangle.frag.spv");
+    pipeline = std::make_unique<Pipeline>(device, *renderSystem, renderer, "texture");
     pipeline->loadSprites();
     renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline->getDescriptorSetLayout());
     renderSystem->initialize();
