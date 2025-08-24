@@ -34,6 +34,9 @@ private:
     void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath);
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
+    void loadFlappyBird();
+    void loadSlimeAttack();
+
     Device& device;
     RenderSystem& renderSystem;
     Renderer& renderer;

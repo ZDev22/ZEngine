@@ -3,14 +3,12 @@
 #include <string>
 #include <vector>
 
-inline namespace {
-
-int vectorContainsString(const std::string& target, const std::vector<std::string>& list) {
+inline int vectorContainsString(const std::string& target, const std::vector<std::string>& list) {
     for (int i = 0; i < list.size(); i++) { if (list[i] == target) { return i; }}
     return 0;
 }
 
-bool stringContainsItem(const std::string& str, const std::string& item) {
+inline bool stringContainsItem(const std::string& str, const std::string& item) {
     for (size_t i = 0; i < str.size() - item.size(); i++) {
         bool found = true;
         for (size_t j = 0; j < item.size(); j++) { if (str[i + j] != item[j]) { found = false; break; }}
@@ -19,13 +17,13 @@ bool stringContainsItem(const std::string& str, const std::string& item) {
     return false;
 }
 
-bool stringStartsWithItem(const std::string& str, const std::string& item) {
+inline bool stringStartsWithItem(const std::string& str, const std::string& item) {
     bool found = true;
     for (size_t i = 0; i < item.size(); i++) { if (str[0] != item[0]) { found = false; break; }}
     return found;
 }
 
-bool stringEndsWithItem(const std::string& str, const std::string& item) {
+inline bool stringEndsWithItem(const std::string& str, const std::string& item) {
     int start = str.size() - item.size();
     if (start < 0) { return 0; }
 
@@ -34,7 +32,7 @@ bool stringEndsWithItem(const std::string& str, const std::string& item) {
     return found;
 }
 
-int itemIndexInString(const std::string& str, const std::string& item) {
+inline int itemIndexInString(const std::string& str, const std::string& item) {
     bool found = false;
     int index = 0, collision = 0;
 
@@ -47,5 +45,4 @@ int itemIndexInString(const std::string& str, const std::string& item) {
         else { collision = 0; }
     }
     return index;
-}
 }

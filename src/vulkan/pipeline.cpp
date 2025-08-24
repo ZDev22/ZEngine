@@ -252,19 +252,22 @@ void Pipeline::loadSprites() {
         { .5f,  .5f}  // Top-Left
     });
 
-    // FLAPPY BIRD
-    // createSprite(quadModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
-
-    // for (float i = 1.f; i < 5.f; i++) {
-    //     float y = randomFloat(.4f, 1.4f);
-    //     createSprite(quadModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
-    //     createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
-    // }
-
-    // createSprite(quadModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
-
-    // NEW
-    createSprite(quadModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
+    //loadFlappyBird();
+    loadSlimeAttack();
 
     for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
+}
+
+void Pipeline::loadFlappyBird() {
+    createSprite(quadModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+
+    for (float i = 1.f; i < 5.f; i++) {
+        float y = randomFloat(.4f, 1.4f);
+        createSprite(quadModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
+        createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
+    }
+}
+
+void Pipeline::loadSlimeAttack() {
+    createSprite(quadModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
 }

@@ -2,6 +2,7 @@
 
 #include "../../vulkan/model.hpp"
 #include "../../vulkan/sprite.hpp"
+#include "math.hpp"
 
 #include <glm/glm.hpp>
 
@@ -10,7 +11,7 @@ inline bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const
     dataA.setRotationMatrix();
     dataB.setRotationMatrix();
 
-    return fabs(dataA.position.x - dataB.position.x) <= (fabs(dataA.rotationMatrix[0][0]) * (dataA.scale.x * .5f) + fabs(dataA.rotationMatrix[0][1]) * (dataA.scale.y * .5f) + fabs(dataB.rotationMatrix[0][0]) * (dataB.scale.x * .5f) + fabs(dataB.rotationMatrix[0][1]) * (dataB.scale.y * .5f)) && fabs(dataA.position.y - dataB.position.y) <= (fabs(dataA.rotationMatrix[0][1]) * (dataA.scale.x * .5f) + fabs(dataA.rotationMatrix[0][0]) * (dataA.scale.y * .5f) + fabs(dataB.rotationMatrix[0][1]) * (dataB.scale.x * .5f) + fabs(dataB.rotationMatrix[0][0]) * (dataB.scale.y * .5f));
+    return absoluteFloat(dataA.position.x - dataB.position.x) <= (absoluteFloat(dataA.rotationMatrix[0][0]) * (dataA.scale.x * .5f) + absoluteFloat(dataA.rotationMatrix[0][1]) * (dataA.scale.y * .5f) + absoluteFloat(dataB.rotationMatrix[0][0]) * (dataB.scale.x * .5f) + absoluteFloat(dataB.rotationMatrix[0][1]) * (dataB.scale.y * .5f)) && absoluteFloat(dataA.position.y - dataB.position.y) <= (absoluteFloat(dataA.rotationMatrix[0][1]) * (dataA.scale.x * .5f) + absoluteFloat(dataA.rotationMatrix[0][0]) * (dataA.scale.y * .5f) + absoluteFloat(dataB.rotationMatrix[0][1]) * (dataB.scale.x * .5f) + absoluteFloat(dataB.rotationMatrix[0][0]) * (dataB.scale.y * .5f));
 }
 
 // Can run 30k times at 75fps

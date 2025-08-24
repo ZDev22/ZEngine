@@ -9,7 +9,6 @@ std::chrono::duration<float> CPSelapsed;
 float timer = 0.f;
 int cps = 0;
 int fps = 0;
-
 bool shouldClose = false;
 
 App::App() {
