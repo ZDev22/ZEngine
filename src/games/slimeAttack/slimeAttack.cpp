@@ -14,13 +14,13 @@ bool touchingGround = false;
 void SlimeAttack::tick() {
 
     if(keyboard.keyPressed(GLFW_KEY_W)) { if (touchingGround) { 
-        speed.y = -.0001f; 
+        speed.y = -.00002f; 
         touchingGround = false; }
     }
     if(keyboard.keyPressed(GLFW_KEY_A)) { speed.x -= 5.f * deltaTime; }
     if(keyboard.keyPressed(GLFW_KEY_D)) { speed.x += 5.f * deltaTime; }
     speed.x *= .1f;
-    speed.y += .0005f * deltaTime;
+    speed.y += .0001f * deltaTime;
 
     sprites[0].position += speed;
 

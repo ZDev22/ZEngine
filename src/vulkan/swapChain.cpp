@@ -28,12 +28,12 @@ void SwapChain::init() {
     createSyncObjects();
 }
 
-VkResult SwapChain::acquireNextImage(uint* imageIndex) {
+VkResult SwapChain::acquireNextImage(uint32_t* imageIndex) {
     vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE, 18446744073709551615ULL);
     return vkAcquireNextImageKHR(device.device(), swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex);
 }
 
-VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, uint* imageIndex) {
+VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex) {
     if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
     imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
@@ -100,7 +100,7 @@ void SwapChain::createSwapChain() {
         else { extent = swapChainSupport.capabilities.currentExtent; }
     }
 
-    uint imageCount = swapChainSupport.capabilities.minImageCount + 1;
+    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) { imageCount = swapChainSupport.capabilities.maxImageCount; }
 
     VkSwapchainCreateInfoKHR createInfo = {};
@@ -115,7 +115,7 @@ void SwapChain::createSwapChain() {
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
-    uint queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
+    uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
 
     if (indices.graphicsFamily != indices.presentFamily) {
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -210,7 +210,7 @@ void SwapChain::createRenderPass() {
     std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = static_cast<uint>(attachments.size());
+    renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
     renderPassInfo.pAttachments = attachments.data();
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
@@ -229,7 +229,7 @@ void SwapChain::createFramebuffers() {
         VkFramebufferCreateInfo framebufferInfo = {};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = static_cast<uint>(attachments.size());
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
         framebufferInfo.pAttachments = attachments.data();
         framebufferInfo.width = swapChainExtent.width;
         framebufferInfo.height = swapChainExtent.height;
