@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../vulkan/model.hpp"
 #include "../../vulkan/sprite.hpp"
 #include "math.hpp"
 

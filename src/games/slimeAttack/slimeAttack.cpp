@@ -9,16 +9,27 @@
 SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Push& push) : keyboard(keyboard), pipeline(pipeline), push(push) {}
 
 glm::vec2 speed = glm::vec2(0.f);
+bool touchingGround = false;
 
 void SlimeAttack::tick() {
-    //speed.y += .05f * deltaTime;
 
-    if(keyboard.keyHit(GLFW_KEY_W)) { if (speed.y = 0) { speed.y = .3f; }}
+    if(keyboard.keyPressed(GLFW_KEY_W)) { if (touchingGround) { 
+        speed.y = -.0001f; 
+        touchingGround = false; }
+    }
     if(keyboard.keyPressed(GLFW_KEY_A)) { speed.x -= 5.f * deltaTime; }
     if(keyboard.keyPressed(GLFW_KEY_D)) { speed.x += 5.f * deltaTime; }
     speed.x *= .1f;
+    speed.y += .0005f * deltaTime;
 
     sprites[0].position += speed;
+
+    if (checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) { 
+        touchingGround = true;
+        sprites[0].position.y -= speed.y;
+        speed.y = 0;
+    }
+    else { touchingGround = false; }
     
     //Reset stuff for next frame
     keyboard.resetKeys();
