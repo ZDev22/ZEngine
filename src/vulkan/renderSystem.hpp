@@ -10,7 +10,7 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
+    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Pipeline& pipeline, Push& push, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
     void initialize();
@@ -26,8 +26,8 @@ private:
     Device& device;
     AppWindow& window;
     Renderer& renderer;
+    Pipeline& pipeline;
     Push& push;
-    std::unique_ptr<Pipeline> pipeline;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;

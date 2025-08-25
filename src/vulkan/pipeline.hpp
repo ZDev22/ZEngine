@@ -11,11 +11,10 @@
 #include <vector>
 #include <string>
 
-class RenderSystem;
 class Renderer;
 class Pipeline {
 public:
-    Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& shader);
+    Pipeline(Device& device, Renderer& renderer, const std::string& shader);
     ~Pipeline();
 
     void loadSprites();
@@ -38,7 +37,6 @@ private:
     void loadSlimeAttack();
 
     Device& device;
-    RenderSystem& renderSystem;
     Renderer& renderer;
     VkPipeline graphicsPipeline;
     VkShaderModule vertShaderModule;

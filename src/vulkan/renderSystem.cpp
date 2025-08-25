@@ -6,10 +6,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), push(push), descriptorSetLayout(descriptorSetLayout) {
-    createPipelineLayout();
-    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "texture");
-}
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Pipeline& pipeline, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), pipeline(pipeline), push(push), descriptorSetLayout(descriptorSetLayout) { createPipelineLayout(); }
 
 RenderSystem::~RenderSystem() {
     spriteDataBuffer->unmap();
@@ -17,7 +14,6 @@ RenderSystem::~RenderSystem() {
 }
 
 void RenderSystem::reset(VkDescriptorSetLayout newDescriptorSetLayout) {
-    pipeline = std::make_unique<Pipeline>(device, *this, renderer, "texture");
     descriptorSetLayout = newDescriptorSetLayout;
     initialize();
 }
@@ -78,7 +74,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = pipeline->getDescriptorPool();
+    allocInfo.descriptorPool = pipeline.getDescriptorPool();
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
@@ -113,7 +109,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
-    pipeline->bind(commandBuffer);
+    pipeline.bind(commandBuffer);
     
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);

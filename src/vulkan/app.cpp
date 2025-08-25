@@ -11,10 +11,9 @@ int cps = 0;
 int fps = 0;
 bool shouldClose = false;
 
-App::App() {
-    pipeline = std::make_unique<Pipeline>(device, *renderSystem, renderer, "texture");
-    pipeline->loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline->getDescriptorSetLayout());
+App::App() : pipeline(device, renderer, "texture") {
+    pipeline.loadSprites();
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, pipeline, push, pipeline.getDescriptorSetLayout());
     renderSystem->initialize();
 }
 
@@ -54,7 +53,7 @@ void App::render() {
     while (!shouldClose) {
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
-            renderSystem->renderSprites(commandBuffer, pipeline->getPipelineLayout());
+            renderSystem->renderSprites(commandBuffer, pipeline.getPipelineLayout());
             vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
             fps++;

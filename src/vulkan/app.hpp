@@ -25,8 +25,9 @@ private:
     Device device{window};
     Renderer renderer{window, device};
     Keyboard keyboard{window};
-    std::unique_ptr<Pipeline> pipeline;
+    Pipeline pipeline;
     std::unique_ptr<RenderSystem> renderSystem;
-    //FlappyBird flappyBird{keyboard, *pipeline, push};
-    SlimeAttack slimeAttack{keyboard, *pipeline, push};
+
+    //FlappyBird flappyBird{keyboard, pipeline, push};
+    SlimeAttack slimeAttack{keyboard, pipeline, push};
 };

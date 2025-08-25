@@ -1,5 +1,4 @@
 ﻿#include "pipeline.hpp"
-#include "renderSystem.hpp"
 #include "renderer.hpp"
 #include "font.hpp"
 #include "../games/functions/math.hpp"
@@ -8,7 +7,7 @@
 #include <fstream>
 #include <array>
 
-Pipeline::Pipeline(Device& device, RenderSystem& renderSystem, Renderer& renderer, const std::string& shader) : device(device), renderSystem(renderSystem), renderer(renderer) { createGraphicsPipeline(shader); }
+Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
 Pipeline::~Pipeline() {}
 
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
