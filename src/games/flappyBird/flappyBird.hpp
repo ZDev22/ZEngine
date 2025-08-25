@@ -1,5 +1,5 @@
-#ifndef PROGRAM_HPP
-#define PROGRAM_HPP
+#ifndef FLAPPYBIRD_HPP
+#define FLAPPYBIRD_HPP_HPP
 
 #include "../functions/audio.hpp"
 #include "../functions/keyboard.hpp"

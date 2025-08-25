@@ -1,6 +1,7 @@
 #include "../functions/audio.hpp"
 
 #include "slimeAttack.hpp"
+#include "enemies.hpp"
 #include "../functions/math.hpp"
 #include "../functions/collision.hpp"
 
@@ -13,15 +14,23 @@ bool touchingGround = false;
 
 void SlimeAttack::tick() {
 
-    if(keyboard.keyPressed(GLFW_KEY_W)) { if (touchingGround) { 
-        speed.y = -.00002f; 
-        touchingGround = false; }
+    simulateEnemies();
+    if (isTouchingEnemies()) {
+        // Damage player
     }
+
+    if(touchingGround) { 
+        if (keyboard.keyPressed(GLFW_KEY_W)) { 
+            speed.y = -.00002f;
+            touchingGround = false; 
+        }
+    }
+
     if(keyboard.keyPressed(GLFW_KEY_A)) { speed.x -= 5.f * deltaTime; }
     if(keyboard.keyPressed(GLFW_KEY_D)) { speed.x += 5.f * deltaTime; }
+
     speed.x *= .1f;
     speed.y += .0001f * deltaTime;
-
     sprites[0].position += speed;
 
     if (checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) { 

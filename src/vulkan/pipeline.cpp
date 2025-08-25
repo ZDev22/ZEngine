@@ -270,5 +270,5 @@ void Pipeline::loadFlappyBird() {
 
 void Pipeline::loadSlimeAttack() {
     createSprite(quadModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
-    createSprite(quadModel, 1, glm::vec2(0.f, .5f), glm::vec2(2.f, .15f), 0.f, glm::vec4(1.f));
+    createSprite(quadModel, 1, glm::vec2(0.f, .7f), glm::vec2(2.f, .15f), 0.f, glm::vec4(1.f));
 }

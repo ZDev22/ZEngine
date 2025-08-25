@@ -6,6 +6,7 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <cstring>
 
 #if defined(_MSC_VER)
     #pragma warning(push)

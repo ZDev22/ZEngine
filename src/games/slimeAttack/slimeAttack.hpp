@@ -1,5 +1,5 @@
-#ifndef PROGRAM_HPP
-#define PROGRAM_HPP
+#ifndef SLIMEATTACK_HPP
+#define SLIMEATTACK_HPP
 
 #include "../functions/audio.hpp"
 #include "../functions/keyboard.hpp"
