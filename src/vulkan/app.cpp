@@ -15,6 +15,9 @@ App::App() : pipeline(device, renderer, "texture") {
     pipeline.loadSprites();
     renderSystem = std::make_unique<RenderSystem>(device, window, renderer, pipeline, push, pipeline.getDescriptorSetLayout());
     renderSystem->initialize();
+
+    //flappyBird.init();
+    slimeAttack.init();
 }
 
 void App::run() {

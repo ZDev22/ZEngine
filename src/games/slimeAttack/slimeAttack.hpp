@@ -11,6 +11,7 @@ class SlimeAttack {
 public:
     SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Push& push);
 
+    void init();
     void tick();
 private:
     Keyboard& keyboard;

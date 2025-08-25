@@ -13,6 +13,7 @@ class FlappyBird {
 public:
     FlappyBird(Keyboard& keyboard, Pipeline& pipeline, Push& push);
 
+    void init();
     void tick();
 private:
     Keyboard& keyboard;

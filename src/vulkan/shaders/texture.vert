@@ -28,6 +28,7 @@ void main() {
     float rotation = radians(sprites[gl_InstanceIndex].rotation);
     vec2 transformedPos = sprites[gl_InstanceIndex].rotationMatrix * (inPosition * sprites[gl_InstanceIndex].scale) + (sprites[gl_InstanceIndex].position + push.camera);
 
+    //gl_Position = vec4(push.projection * vec3(transformedPos, 0.0), 1.0);
     gl_Position = push.projection * vec4(transformedPos, 0.0, 1.0);
     fragColor = sprites[gl_InstanceIndex].color;
     fragTexCoord = inTexCoord;

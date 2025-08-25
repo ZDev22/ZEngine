@@ -233,18 +233,10 @@ void Pipeline::createText(const std::string& file, const std::string& text, glm:
 }
 
 void Pipeline::loadSprites() {
-
-    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
-
-    spriteTextures.clear();
-    spriteTextures.reserve(MAX_TEXTURES);
-
-    for (size_t t = 0; t < (MAX_TEXTURES - fonts.size()); t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
-
     sprites.clear();
     spriteCPU.clear();
 
-    quadModel = makeModel({
+    squareModel = makeModel({
         {-.5f, -.5f}, // Bottom-Left
         { .5f, -.5f}, // Bottom-Right
         {-.5f,  .5f}, // Top-Right
@@ -257,17 +249,32 @@ void Pipeline::loadSprites() {
     for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
 }
 
+void Pipeline::loadTextures() {
+    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
+
+    spriteTextures.clear();
+    spriteTextures.reserve(MAX_TEXTURES);
+
+    for (size_t t = 0; t < (MAX_TEXTURES - fonts.size()); t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
+}
+
 void Pipeline::loadFlappyBird() {
-    createSprite(quadModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+    texturePaths = { "flappyBird.png", "pipe.png" };
+    loadTextures();
+
+    createSprite(squareModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
 
     for (float i = 1.f; i < 5.f; i++) {
         float y = randomFloat(.4f, 1.4f);
-        createSprite(quadModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
-        createSprite(quadModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
+        createSprite(squareModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
+        createSprite(squareModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
 }
 
 void Pipeline::loadSlimeAttack() {
-    createSprite(quadModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
-    createSprite(quadModel, 1, glm::vec2(0.f, .7f), glm::vec2(2.f, .15f), 0.f, glm::vec4(1.f));
+    texturePaths = { "flappyBird.png", "pipe.png" };
+    loadTextures();
+    
+    createSprite(squareModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
+    createSprite(squareModel, 1, glm::vec2(0.f, .7f), glm::vec2(2.f, .15f), 0.f, glm::vec4(1.f));
 }

@@ -1,5 +1,5 @@
 #include "slimeAttack.hpp"
-#include "enemies.hpp"
+#include "slimeAttackEnemies.hpp"
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
@@ -10,10 +10,14 @@ SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Push& push) : k
 glm::vec2 speed = glm::vec2(0.f);
 bool touchingGround = false;
 
+void SlimeAttack::init() {
+    slimeattack::slimeAttackEnemyInit();
+}
+
 void SlimeAttack::tick() {
 
-    simulateEnemies();
-    if (isTouchingEnemies()) {
+    slimeattack::slimeAttackSimulateEnemies();
+    if (slimeattack::slimeAttackIsTouchingEnemies()) {
         // Damage player
     }
 

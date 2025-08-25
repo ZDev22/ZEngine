@@ -19,13 +19,14 @@ inline bool compileShader(const std::string& inputFile, const std::string& outpu
     if (result == 0) {
         std::cout << "Compiled " << inputFile << " successfully." << std::endl;
         return true;
-    } else {
+    } 
+    else {
         std::cerr << "Failed to compile " << inputFile << " (error code " << result << ")" << std::endl;
         return false;
     }
 }
 
-inline bool compile() {
+inline bool compileShaders() {
     const char* extensions[] = { ".vert", ".frag", ".comp", ".geom", ".tesc", ".tese", ".rgen", ".rchit", ".rmiss" };
     const char* stages[]     = { "vert",  "frag",  "comp",  "geom",  "tesc",  "tese",  "rgen",  "rchit",  "rmiss" };
 

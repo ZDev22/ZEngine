@@ -27,12 +27,14 @@ public:
     std::shared_ptr<Model> makeModel(const std::vector<glm::vec2>& positions);
     void createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color);
     void createText(const std::string& file, const std::string& text, glm::vec2 position, float fontSize, glm::vec4 color);
+    std::shared_ptr<Model> getSquareModel() { return squareModel; }
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
     void createGraphicsPipeline(const std::string& shader);
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
+    void loadTextures();
     void loadFlappyBird();
     void loadSlimeAttack();
 
@@ -45,8 +47,8 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
 
-    std::vector<std::string> texturePaths = { "flappyBird.png", "pipe.png" };
+    std::vector<std::string> texturePaths;
     std::vector<std::string> fonts = { "Bullpen3D.ttf" };
-    std::shared_ptr<Model> quadModel;
+    std::shared_ptr<Model> squareModel;
     std::vector<stbtt_bakedchar> fontCharData;
 };
