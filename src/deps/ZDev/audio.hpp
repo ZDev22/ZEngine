@@ -4,7 +4,7 @@
 #ifdef AUDIOPLAYER_IMPLEMENTATION
 #define MINIAUDIO_IMPLEMENTATION
 #endif
-#include "deps/miniaudio.h"
+#include "../miniaudio.h"
 
 #include <string>
 

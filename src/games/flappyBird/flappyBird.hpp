@@ -1,8 +1,10 @@
 #ifndef FLAPPYBIRD_HPP
 #define FLAPPYBIRD_HPP_HPP
 
-#include "../functions/audio.hpp"
-#include "../functions/keyboard.hpp"
+#define AUDIOPLAYER_IMPLEMENTATION
+#include "../../deps/ZDev/audio.hpp"
+
+#include "../../deps/ZDev/keyboard.hpp"
 #include "../../vulkan/pipeline.hpp"
 #include "../../vulkan/global.hpp"
 

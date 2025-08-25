@@ -6,7 +6,7 @@
 #include "buffer.hpp"
 #include "sprite.hpp"
 
-#include "../games/functions/keyboard.hpp"
+#include "../deps/ZDev/keyboard.hpp"
 
 class RenderSystem {
 public:

@@ -3,7 +3,7 @@
 
 #include "deps/glfw/glfw3.h"
 
-#include "games/functions/string.hpp"
+#include "deps/ZDev/string.hpp"
 
 void error_callback(int error, const char* description) { std::cerr << "GLFW Error (" << error << "): " << description << std::endl; }
 int main() {

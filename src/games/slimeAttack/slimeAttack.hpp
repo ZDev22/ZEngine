@@ -1,8 +1,8 @@
 #ifndef SLIMEATTACK_HPP
 #define SLIMEATTACK_HPP
 
-#include "../functions/audio.hpp"
-#include "../functions/keyboard.hpp"
+#include "../../deps/ZDev/audio.hpp"
+#include "../../deps/ZDev/keyboard.hpp"
 #include "../../vulkan/pipeline.hpp"
 #include "../../vulkan/global.hpp"
 

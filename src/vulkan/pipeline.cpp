@@ -1,7 +1,7 @@
 ﻿#include "pipeline.hpp"
 #include "renderer.hpp"
 #include "font.hpp"
-#include "../games/functions/math.hpp"
+#include "../deps/ZDev/math.hpp"
 
 #include <filesystem>
 #include <fstream>

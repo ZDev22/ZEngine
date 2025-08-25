@@ -7,7 +7,7 @@
 #include "renderSystem.hpp"
 #include "global.hpp" 
 
-#include "../games/functions/keyboard.hpp"
+#include "../deps/ZDev/keyboard.hpp"
 
 //#include "../games/flappyBird/flappyBird.hpp"
 #include "../games/slimeAttack/slimeAttack.hpp"

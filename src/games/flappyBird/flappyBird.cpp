@@ -1,9 +1,6 @@
-#define AUDIOPLAYER_IMPLEMENTATION
-#include "../functions/audio.hpp"
-
 #include "flappyBird.hpp"
-#include "../functions/math.hpp"
-#include "../functions/collision.hpp"
+#include "../../deps/ZDev/math.hpp"
+#include "../../deps/ZDev/collision.hpp"
 
 #include <glm/glm.hpp>
 
