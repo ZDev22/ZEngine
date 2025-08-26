@@ -17,7 +17,7 @@ public:
     void renderSprites(VkCommandBuffer commandBuffer);
     void updateSprites();
 
-    Pipeline& getPipeline() { return *pipeline; }
+    Pipeline& getPipeline() { return pipeline; }
 
 private:
     void createPipelineLayout();
@@ -27,7 +27,7 @@ private:
     Device& device;
     AppWindow& window;
     Renderer& renderer;
-    std::unique_ptr<Pipeline> pipeline;
+    Pipeline pipeline;
     Push& push;
     VkPipelineLayout pipelineLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;

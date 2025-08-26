@@ -14,15 +14,11 @@ int cps = 0;
 int fps = 0;
 bool shouldClose = false;
 
-App::App() {
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push);
-    renderSystem->initialize();
-}
-
+App::App() : renderSystem(device, window, renderer, push) { renderSystem.initialize(); }
 void App::run() {
 
-    //FlappyBird flappyBird{keyboard, renderSystem->getPipeline(), push};
-    SlimeAttack slimeAttack{keyboard, renderSystem->getPipeline(), push};
+    //FlappyBird flappyBird{keyboard, renderSystem.getPipeline(), push};
+    SlimeAttack slimeAttack{keyboard, renderSystem.getPipeline(), push};
 
     //flappyBird.init();
     slimeAttack.init();
@@ -49,7 +45,8 @@ void App::run() {
 
         //flappyBird.tick();
         slimeAttack.tick();
-        renderSystem->updateSprites();
+
+        renderSystem.updateSprites();
         shouldClose = window.shouldClose();
 
         cps++;
@@ -62,7 +59,7 @@ void App::render() {
     while (!shouldClose) {
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
-            renderSystem->renderSprites(commandBuffer);
+            renderSystem.renderSprites(commandBuffer);
             vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
             fps++;

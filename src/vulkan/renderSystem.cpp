@@ -1,8 +1,7 @@
 #include "renderSystem.hpp"
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push) : device(device), window(window), renderer(renderer), push(push) {
-    pipeline = std::make_unique<Pipeline>(device, renderer, "texture");
-    pipeline->loadSprites();
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push) : device(device), window(window), renderer(renderer), push(push), pipeline(device, renderer, "texture") {
+    pipeline.loadSprites();
     createPipelineLayout(); 
 }
 
@@ -25,7 +24,7 @@ void RenderSystem::createPipelineLayout() {
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &pipeline->getDescriptorSetLayout();
+    pipelineLayoutInfo.pSetLayouts = &pipeline.getDescriptorSetLayout();
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
@@ -66,9 +65,9 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = pipeline->getDescriptorPool();
+    allocInfo.descriptorPool = pipeline.getDescriptorPool();
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &pipeline->getDescriptorSetLayout();
+    allocInfo.pSetLayouts = &pipeline.getDescriptorSetLayout();
 
     if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor set!"); }
 
@@ -101,10 +100,10 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
-    pipeline->bind(commandBuffer);
+    pipeline.bind(commandBuffer);
     
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
-    vkCmdPushConstants(commandBuffer, pipeline->getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
+    vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     for (size_t i = 0; i < spriteCPU.size(); i++) {
         sprites[i].setRotationMatrix();
