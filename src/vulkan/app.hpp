@@ -9,9 +9,6 @@
 
 #include "../deps/ZDev/keyboard.hpp"
 
-//#include "../games/flappyBird/flappyBird.hpp"
-#include "../games/slimeAttack/slimeAttack.hpp"
-
 class App {
 public:
     App();
@@ -25,9 +22,5 @@ private:
     Device device{window};
     Renderer renderer{window, device};
     Keyboard keyboard{window};
-    Pipeline pipeline;
     std::unique_ptr<RenderSystem> renderSystem;
-
-    //FlappyBird flappyBird{keyboard, pipeline, push};
-    SlimeAttack slimeAttack{keyboard, pipeline, push};
 };

@@ -20,7 +20,7 @@ public:
     void loadSprites();
     void bind(VkCommandBuffer commandBuffer);
     VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
-    VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
+    VkDescriptorSetLayout& getDescriptorSetLayout() { return descriptorSetLayout; }
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);

@@ -10,14 +10,15 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Pipeline& pipeline, Push& push, VkDescriptorSetLayout descriptorSetLayout);
+    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push);
     ~RenderSystem();
 
     void initialize();
-    void reset(VkDescriptorSetLayout newDescriptorSetLayout);
-    void renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+    void renderSprites(VkCommandBuffer commandBuffer);
     void updateSprites();
-    
+
+    Pipeline& getPipeline() { return *pipeline; }
+
 private:
     void createPipelineLayout();
     void initializeSpriteData();
@@ -26,10 +27,9 @@ private:
     Device& device;
     AppWindow& window;
     Renderer& renderer;
-    Pipeline& pipeline;
+    std::unique_ptr<Pipeline> pipeline;
     Push& push;
     VkPipelineLayout pipelineLayout;
-    VkDescriptorSetLayout descriptorSetLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;
     VkDescriptorSet spriteDataDescriptorSet;
     VkDescriptorSet textureArrayDescriptorSet;

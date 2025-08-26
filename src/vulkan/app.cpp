@@ -2,6 +2,9 @@
 
 #include <thread>
 
+//#include "../games/flappyBird/flappyBird.hpp"
+#include "../games/slimeAttack/slimeAttack.hpp"
+
 std::chrono::high_resolution_clock::time_point CPSlastTime;
 std::chrono::high_resolution_clock::time_point CPScurrentTime;
 std::chrono::duration<float> CPSelapsed;
@@ -11,16 +14,19 @@ int cps = 0;
 int fps = 0;
 bool shouldClose = false;
 
-App::App() : pipeline(device, renderer, "texture") {
-    pipeline.loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, pipeline, push, pipeline.getDescriptorSetLayout());
+App::App() {
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push);
     renderSystem->initialize();
-
-    //flappyBird.init();
-    slimeAttack.init();
 }
 
 void App::run() {
+
+    //FlappyBird flappyBird{keyboard, renderSystem->getPipeline(), push};
+    SlimeAttack slimeAttack{keyboard, renderSystem->getPipeline(), push};
+
+    //flappyBird.init();
+    slimeAttack.init();
+    
     std::thread update(&App::render, this);
     update.detach();
 
@@ -56,7 +62,7 @@ void App::render() {
     while (!shouldClose) {
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
-            renderSystem->renderSprites(commandBuffer, pipeline.getPipelineLayout());
+            renderSystem->renderSprites(commandBuffer);
             vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
             fps++;
