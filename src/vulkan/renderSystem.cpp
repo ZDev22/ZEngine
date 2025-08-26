@@ -1,7 +1,5 @@
 #include "renderSystem.hpp"
 
-#include <glm/gtc/matrix_transform.hpp> // Looking to remove this in favor of a custom 2D approach
-
 RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Pipeline& pipeline, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), pipeline(pipeline), push(push), descriptorSetLayout(descriptorSetLayout) { createPipelineLayout(); }
 
 RenderSystem::~RenderSystem() {
@@ -35,25 +33,11 @@ void RenderSystem::createPipelineLayout() {
     if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 }
 
-glm::mat3 RenderSystem::ortho2D(float left, float right, float bottom, float top) {
-    glm::mat3 result(1.0f);
-
-    result[0][0] = 2.f / (right - left);
-    result[1][1] = 2.f / (top - bottom);
-    result[2][0] = -(right + left) / (right - left);
-    result[2][1] = -(top + bottom) / (top - bottom);
-    result[2][2] = 1.f;
-
-    return result;
-}
-
 void RenderSystem::initializeSpriteData() {
     VkDeviceSize bufferSize = sizeof(SpriteData) * MAX_SPRITES;
     spriteDataBuffer = std::make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);
     spriteDataBuffer->map();
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
-    //push.projection = ortho2D(-1.0f, 1.0f, -1.0f, 1.0f);
-    push.projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     push.camera = glm::vec2(0.f);
 }
 

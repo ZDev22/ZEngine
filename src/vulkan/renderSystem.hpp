@@ -17,8 +17,6 @@ public:
     void reset(VkDescriptorSetLayout newDescriptorSetLayout);
     void renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
     void updateSprites();
-
-    glm::mat3 ortho2D(float left, float right, float bottom, float top);
     
 private:
     void createPipelineLayout();
