@@ -5,14 +5,12 @@
 
 #include <glm/glm.hpp>
 
-SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Push& push) : keyboard(keyboard), pipeline(pipeline), push(push) {}
+SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Push& push) : keyboard(keyboard), pipeline(pipeline), push(push) {
+    slimeattack::slimeAttackEnemyInit();
+}
 
 glm::vec2 speed = glm::vec2(0.f);
 bool touchingGround = false;
-
-void SlimeAttack::init() {
-    slimeattack::slimeAttackEnemyInit();
-}
 
 void SlimeAttack::tick() {
 

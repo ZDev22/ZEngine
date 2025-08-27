@@ -22,5 +22,6 @@ private:
     Device device{window};
     Renderer renderer{window, device};
     Keyboard keyboard{window};
-    RenderSystem renderSystem;
+    Pipeline pipeline;
+    std::unique_ptr<RenderSystem> renderSystem;
 };

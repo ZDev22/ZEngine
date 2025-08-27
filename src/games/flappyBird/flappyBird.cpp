@@ -11,8 +11,6 @@ bool dead = false;
 bool started = false;
 int score = 0;
 
-void FlappyBird::init() {}
-
 void FlappyBird::tick() {
     if (started) {
         speedY += 3.8f * deltaTime;

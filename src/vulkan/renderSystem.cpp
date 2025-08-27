@@ -1,18 +1,15 @@
 #include "renderSystem.hpp"
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push) : device(device), window(window), renderer(renderer), push(push), pipeline(device, renderer, "texture") {
-    pipeline.loadSprites();
-    createPipelineLayout(); 
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : device(device), window(window), renderer(renderer), push(push), descriptorSetLayout(descriptorSetLayout) {
+    createPipelineLayout();
+    createPipeline();
+    initializeSpriteData();
+    createTextureArrayDescriptorSet();
 }
 
 RenderSystem::~RenderSystem() {
     spriteDataBuffer->unmap();
     vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
-}
-
-void RenderSystem::initialize() {
-    initializeSpriteData();
-    createTextureArrayDescriptorSet();
 }
 
 void RenderSystem::createPipelineLayout() {
@@ -24,13 +21,14 @@ void RenderSystem::createPipelineLayout() {
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &pipeline.getDescriptorSetLayout();
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
     if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 }
 
+void RenderSystem::createPipeline() { pipeline = std::make_unique<Pipeline>(device, renderer, "texture"); }
 void RenderSystem::initializeSpriteData() {
     VkDeviceSize bufferSize = sizeof(SpriteData) * MAX_SPRITES;
     spriteDataBuffer = std::make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, device.properties.limits.minStorageBufferOffsetAlignment);
@@ -65,9 +63,9 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = pipeline.getDescriptorPool();
+    allocInfo.descriptorPool = pipeline->getDescriptorPool();
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &pipeline.getDescriptorSetLayout();
+    allocInfo.pSetLayouts = &descriptorSetLayout;
 
     if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor set!"); }
 
@@ -99,11 +97,11 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
 }
 
-void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
-    pipeline.bind(commandBuffer);
+void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
+    pipeline->bind(commandBuffer);
     
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
-    vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
+    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     for (size_t i = 0; i < spriteCPU.size(); i++) {
         sprites[i].setRotationMatrix();
