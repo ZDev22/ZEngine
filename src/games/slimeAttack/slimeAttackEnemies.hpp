@@ -12,6 +12,9 @@ namespace slimeattack { // Namespace and obscure names to not interfere with oth
         uint16_t health;
         uint16_t coinDrop;
         uint16_t defence;
+        float cooldown;
+        glm::vec2 speed;
+        bool skip;
     };
     
     void slimeAttackEnemyInit();

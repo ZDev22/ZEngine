@@ -9,6 +9,7 @@ namespace slimeattack {
     void slimeAttackEnemyInit() {
         while (slimeAttackEnemyVector.size() < sprites.size()) {
             SlimeAttackEnemyStruct enemy;
+            enemy.skip = true;
             slimeAttackEnemyVector.push_back(enemy);
         }
     }
@@ -24,6 +25,8 @@ namespace slimeattack {
             slime.health = 2;
             slime.coinDrop = 1;
             slime.defence = 0;
+            slime.cooldown = 0.f;
+            slime.skip = false;
 
             slimeAttackEnemyVector.push_back(slime);
             break;
@@ -33,9 +36,11 @@ namespace slimeattack {
             pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
             
             SlimeAttackEnemyStruct bat;
-            slime.health = 3;
-            slime.coinDrop = 4;
-            slime.defence = 0;
+            bat.health = 3;
+            bat.coinDrop = 4;
+            bat.defence = 0;
+            bat.cooldown = 0.f;
+            bat.skip = false;
 
             slimeAttackEnemyVector.push_back(bat);
             break;
@@ -45,9 +50,11 @@ namespace slimeattack {
             pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
             
             SlimeAttackEnemyStruct ogre;
-            slime.health = 6;
-            slime.coinDrop = 8;
-            slime.defence = 1;
+            ogre.health = 6;
+            ogre.coinDrop = 8;
+            ogre.defence = 1;
+            ogre.cooldown = 0.f;
+            ogre.skip = false;
 
             slimeAttackEnemyVector.push_back(ogre);
             break;
@@ -56,14 +63,25 @@ namespace slimeattack {
     
     void slimeAttackSimulateEnemies() {
         for (size_t i = 0; i < sprites.size(); i++) {
-            switch(sprites[i].textureIndex) {
+            if (!slimeAttackEnemyVector[i].skip) {
+                slimeAttackEnemyVector[i].cooldown += 1.f * deltaTime;
 
-            case SLIMEATTACK_ENEMY_TYPE_SLIME:
-                break;
-            case SLIMEATTACK_ENEMY_TYPE_BAT:
-                break;
-            case SLIMEATTACK_ENEMY_TYPE_OGRE:
-                break;
+                switch(sprites[i].textureIndex) {
+
+                case SLIMEATTACK_ENEMY_TYPE_SLIME:
+                    if (slimeAttackEnemyVector[i].cooldown > 2.5f) {
+                        slimeAttackEnemyVector[i].speed = glm::vec2(.01f);
+                        slimeAttackEnemyVector[i].cooldown = 0.f;
+                    }
+                    slimeAttackEnemyVector[i].speed.y -= .01f * deltaTime;
+                    slimeAttackEnemyVector[i].speed.y *= .8f * deltaTime;
+                    sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime);
+                    break;
+                case SLIMEATTACK_ENEMY_TYPE_BAT:
+                    break;
+                case SLIMEATTACK_ENEMY_TYPE_OGRE:
+                    break;
+                }
             }
         }
     }
