@@ -26,7 +26,7 @@ void SlimeAttack::tick() {
         }
     }
 
-    if (keyboard.keyPressed(GLFW_KEY_Q)) { slimeattack::slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline); }
+    if (keyboard.keyHit(GLFW_KEY_Q)) { slimeattack::slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline); }
     if(keyboard.keyPressed(GLFW_KEY_A)) { speed.x -= 5.f * deltaTime; }
     if(keyboard.keyPressed(GLFW_KEY_D)) { speed.x += 5.f * deltaTime; }
 

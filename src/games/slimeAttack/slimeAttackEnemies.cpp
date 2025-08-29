@@ -26,6 +26,7 @@ namespace slimeattack {
             slime.coinDrop = 1;
             slime.defence = 0;
             slime.cooldown = 0.f;
+            slime.speed = glm::vec2(0.f);
             slime.skip = false;
 
             slimeAttackEnemyVector.push_back(slime);
@@ -40,6 +41,7 @@ namespace slimeattack {
             bat.coinDrop = 4;
             bat.defence = 0;
             bat.cooldown = 0.f;
+            slime.speed = glm::vec2(0.f);
             bat.skip = false;
 
             slimeAttackEnemyVector.push_back(bat);
@@ -54,6 +56,7 @@ namespace slimeattack {
             ogre.coinDrop = 8;
             ogre.defence = 1;
             ogre.cooldown = 0.f;
+            slime.speed = glm::vec2(0.f);
             ogre.skip = false;
 
             slimeAttackEnemyVector.push_back(ogre);
@@ -74,8 +77,7 @@ namespace slimeattack {
                         slimeAttackEnemyVector[i].cooldown = 0.f;
                     }
                     slimeAttackEnemyVector[i].speed.y -= .01f * deltaTime;
-                    slimeAttackEnemyVector[i].speed.y *= .8f * deltaTime;
-                    sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime);
+                    sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime); 
                     break;
                 case SLIMEATTACK_ENEMY_TYPE_BAT:
                     break;

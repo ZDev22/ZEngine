@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-#define MAX_SPRITES 1000
+#define MAX_SPRITES 100000
 #define MAX_TEXTURES 66
 
 struct alignas(16) SpriteData {
