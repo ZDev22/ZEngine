@@ -6,11 +6,11 @@
 
 class Buffer {
 public:
-    Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment = 1);
+    Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
 
     VkBuffer getBuffer() const { return buffer; }
     void map();
-    void writeToBuffer(const void* data, VkDeviceSize size, VkDeviceSize offset = 0);
+    void writeToBuffer(const void* data, VkDeviceSize size);
     void unmap();
 
 private:

@@ -1,12 +1,9 @@
 #pragma once
 
-#include "device.hpp"
 #include "buffer.hpp"
 
-#include <vector>
 #include <memory>
 
-#include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 
 class Model {
@@ -48,5 +45,4 @@ private:
     Device& device;
     std::unique_ptr<Buffer> vertexBuffer;
     std::vector<Vertex> vertices;
-    uint32_t vertexCount;
 };

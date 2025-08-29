@@ -2,12 +2,10 @@
 
 #include <cstring>
 
-Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment) : device{ device }, bufferSize{ instanceSize * instanceCount } {
-    bufferSize = ((instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1)) * instanceCount;
-
+Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : device(device), bufferSize(instanceSize * instanceCount) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = bufferSize;
+    bufferInfo.size = instanceSize;
     bufferInfo.usage = usageFlags;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -25,7 +23,7 @@ Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount
 }
 
 void Buffer::map() { vkMapMemory(device.device(), memory, 0, bufferSize, 0, &mapped); }
-void Buffer::writeToBuffer(const void* data, VkDeviceSize size, VkDeviceSize offset) { std::memcpy(static_cast<char*>(mapped) + offset, data, static_cast<size_t>(size)); }
+void Buffer::writeToBuffer(const void* data, VkDeviceSize size) { std::memcpy(static_cast<char*>(mapped), data, static_cast<size_t>(size)); }
 
 void Buffer::unmap() {
     if (mapped) {

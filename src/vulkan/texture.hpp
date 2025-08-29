@@ -18,7 +18,6 @@ public:
     VkImageView getImageView() { return imageView; }
     VkSampler getSampler() { return sampler; }
     VkImageLayout getImageLayout() { return imageLayout; }
-    bool getIsArray() const { return isArray; }
     uint32_t getArrayLayers() const { return arrayLayers; }
     void createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
 
@@ -39,8 +38,7 @@ private:
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
     VkDescriptorSet descriptorSet{};
-    bool isArray{ false };
-    uint32_t arrayLayers{ 1 };
+    uint32_t arrayLayers {1};
     int texWidth, texHeight, texChannels;
     std::vector<void*> pixelsArray;
 };
