@@ -29,17 +29,12 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
 
 Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED),image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
     stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-    if (!pixels) { throw("failed to load texture image: " + filepath); }
-    if (texWidth == 0 || texHeight == 0) {
-        stbi_image_free(pixels);
-        throw("Image has invalid size (zero width or height): " + filepath);
+    if (!pixels) { 
+        std::cout << filepath;
+        throw("failed to load texture"); 
     }
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
-    if (imageSize == 0) {
-        stbi_image_free(pixels);
-        throw("Image size is zero: " + filepath);
-    }
 
     device.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
@@ -87,7 +82,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView);
     createTextureSampler(device, sampler);
 }
-Texture::Texture(Device& device, const std::vector<std::string>& filepaths, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE) { createTextureArray(filepaths); }
+
 Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
     VkDeviceSize imageSize = size * size * 4;
 
@@ -136,147 +131,13 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture image view!"); }
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture view"); }
 
     createTextureSampler(device, sampler);
     createDescriptorSet(descriptorSetLayout, descriptorPool);
 }
+
 Texture::~Texture() {}
-
-void Texture::createTextureArray(const std::vector<std::string>& filepaths) {
-    stagingBuffer = VK_NULL_HANDLE;
-    VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
-    bool stagingBufferCreated = false;
-
-    arrayLayers = static_cast<uint32_t>(filepaths.size());
-    if (arrayLayers == 0) { throw("No texture file paths provided!"); }
-    if (arrayLayers > device.properties.limits.maxImageArrayLayers) { throw("Texture array layers (" + std::to_string(arrayLayers) + ") exceed device limit (" + std::to_string(device.properties.limits.maxImageArrayLayers) + ")"); }
-
-    std::vector<stbi_uc*> pixelsArray(arrayLayers, nullptr);
-    std::vector<bool> padded(arrayLayers, false);
-    int texWidth = 0, texHeight = 0, maxWidth = 0, maxHeight = 0;
-    for (const auto& filepath : filepaths) {
-        int width = 0, height = 0, channels = 0;
-        stbi_info(("assets/images/" + filepath).c_str(), &width, &height, &channels);
-        if (width > maxWidth) { maxWidth = width; }
-        if (height > maxHeight) { maxHeight = height; }
-    }
-
-    for (uint32_t i = 0; i < arrayLayers; ++i) {
-        std::string absolutePath = std::filesystem::absolute("assets/images/" + filepaths[i]).string();
-        std::cout << "Loading texture: " << absolutePath << std::endl;
-        stbi_set_flip_vertically_on_load(true);
-        int width = 0, height = 0, channels = 0;
-        stbi_uc* loaded = stbi_load(absolutePath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-
-        if (!loaded || width <= 0 || height <= 0) {
-            std::cerr << "Failed to load or invalid texture: " << absolutePath << std::endl;
-            for (uint32_t j = 0; j < i; ++j) {
-                if (pixelsArray[j]) {
-                    if (padded[j]) { delete[] pixelsArray[j]; }
-                    else { stbi_image_free(pixelsArray[j]); }
-                }
-            }
-            throw("Failed to load or invalid texture: " + absolutePath);
-        }
-
-        if (i == 0) { texWidth = maxWidth; texHeight = maxHeight; }
-        if (width == maxWidth && height == maxHeight) { pixelsArray[i] = loaded; } 
-        else {
-            stbi_uc* paddedPixels = new stbi_uc[maxWidth * maxHeight * 4]();
-            for (int row = 0; row < height; ++row) { memcpy(paddedPixels + row * maxWidth * 4, loaded + row * width * 4, width * 4); }
-            pixelsArray[i] = paddedPixels;
-            padded[i] = true;
-            stbi_image_free(loaded);
-        }
-    }
-
-    VkDeviceSize imageSize = static_cast<VkDeviceSize>(texWidth) * texHeight * 4 * arrayLayers;
-    if (imageSize == 0) {
-        for (uint32_t i = 0; i < arrayLayers; ++i) {
-            if (pixelsArray[i]) {
-                if (padded[i]) { delete[] pixelsArray[i]; }
-                else { stbi_image_free(pixelsArray[i]); }
-            }
-        }
-        throw("Calculated image size is zero!");
-    }
-
-    VkResult result = device.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-    if (result != VK_SUCCESS) {
-        for (uint32_t i = 0; i < arrayLayers; ++i) {
-            if (pixelsArray[i]) {
-                if (padded[i]) { delete[] pixelsArray[i]; }
-                else { stbi_image_free(pixelsArray[i]); } 
-            }
-        }
-        throw("Failed to create staging buffer: VkResult " + std::to_string(result));
-    }
-    stagingBufferCreated = true;
-
-    void* data;
-    result = vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
-    if (result != VK_SUCCESS) {
-        for (uint32_t i = 0; i < arrayLayers; ++i) {
-            if (pixelsArray[i]) {
-                if (padded[i]) { delete[] pixelsArray[i]; }
-                else { stbi_image_free(pixelsArray[i]); }
-            }
-        }
-        vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-        vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-        throw("Failed to map staging buffer memory: VkResult " + std::to_string(result));
-    }
-
-    for (uint32_t i = 0; i < arrayLayers; ++i) {
-        size_t expectedSize = static_cast<size_t>(texWidth) * texHeight * 4;
-        memcpy(static_cast<char*>(data) + i * expectedSize, pixelsArray[i], expectedSize);
-        if (pixelsArray[i]) {
-            if (padded[i]) { delete[] pixelsArray[i]; }
-            else { stbi_image_free(pixelsArray[i]); }
-            pixelsArray[i] = nullptr;
-        }
-    }
-    vkUnmapMemory(device.device(), stagingBufferMemory);
-
-    VkImageCreateInfo imageInfo{};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<uint32_t>(texWidth);
-    imageInfo.extent.height = static_cast<uint32_t>(texHeight);
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = 1;
-    imageInfo.arrayLayers = arrayLayers;
-    imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-
-    device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
-    transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), arrayLayers);
-    transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
-    vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
-    stagingBufferCreated = false;
-
-    VkImageViewCreateInfo viewInfo{};
-    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    viewInfo.image = image;
-    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-    viewInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    viewInfo.subresourceRange.baseMipLevel = 0;
-    viewInfo.subresourceRange.levelCount = 1;
-    viewInfo.subresourceRange.baseArrayLayer = 0;
-    viewInfo.subresourceRange.layerCount = arrayLayers;
-
-    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("Failed to create texture array image view!"); }
-    createTextureSampler(device, sampler);
-}
 
 void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -285,7 +146,7 @@ void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkD
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor sets!"); }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor sets"); }
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

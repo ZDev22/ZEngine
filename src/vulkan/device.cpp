@@ -11,11 +11,7 @@
 #include <iostream>
 #include <string>
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* pUserData) {
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,void* pUserData) {
     std::cerr << "[Validation Layer] " << pCallbackData->pMessage << std::endl;
     return VK_FALSE;
 }
@@ -32,7 +28,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
     VkDebugUtilsMessengerEXT debugMessenger,
     const VkAllocationCallbacks* pAllocator) {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-    if (func) func(instance, debugMessenger, pAllocator);
+    if (func) { func(instance, debugMessenger, pAllocator); }
 }
 
 Device::Device(AppWindow& window) : window{ window } {
@@ -42,6 +38,7 @@ Device::Device(AppWindow& window) : window{ window } {
     std::cout << "Creating physical device..." << std::endl; pickPhysicalDevice();
     std::cout << "Creating logical device..." << std::endl; createLogicalDevice();
     std::cout << "Creating command pool..." << std::endl; createCommandPool();
+    std::cout << "Getting project ready..." << std::endl;
 }
 
 Device::~Device() {
@@ -145,7 +142,7 @@ void Device::createLogicalDevice() {
     createInfo.ppEnabledExtensionNames = updatedDeviceExtensions.data();
     createInfo.enabledLayerCount = 0;
 
-    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device!"); }
+    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 }
@@ -157,7 +154,7 @@ void Device::createCommandPool() {
     poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool!"); }
+    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool"); }
 }
 
 bool Device::isDeviceSuitable(VkPhysicalDevice device) {
@@ -182,7 +179,7 @@ std::vector<const char*> Device::getRequiredExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    if (!glfwExtensions || glfwExtensionCount == 0) { throw("GLFW: Failed to get required Vulkan instance extensions. Are your graphics drivers up to date?"); }
+    if (!glfwExtensions || glfwExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -272,25 +269,24 @@ VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidates, Vk
         if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
     }
-    throw("failed to find supported format!");
+    throw("failed to find supported format");
 }
 
 uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }}
-    throw("Failed to find suitable memory type!");
+    throw("Failed to find suitable memory type");
 }
 
-VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    VkResult result = vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
-    if (result != VK_SUCCESS) { throw("failed to create buffer! VkResult: " + std::to_string(result)); }
+    vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
@@ -300,19 +296,8 @@ VkResult Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMem
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    result = vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
-    if (result != VK_SUCCESS) {
-        vkDestroyBuffer(device_, buffer, nullptr);
-        throw("failed to allocate buffer memory! VkResult: " + std::to_string(result));
-    }
-
-    result = vkBindBufferMemory(device_, buffer, bufferMemory, 0);
-    if (result != VK_SUCCESS) {
-        vkDestroyBuffer(device_, buffer, nullptr);
-        vkFreeMemory(device_, bufferMemory, nullptr);
-        throw("failed to bind buffer memory! VkResult: " + std::to_string(result));
-    }
-    return VK_SUCCESS;
+    vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
+    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
 VkCommandBuffer Device::beginSingleTimeCommands() {
@@ -373,9 +358,8 @@ void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, u
     endSingleTimeCommands(commandBuffer);
 }
 
-VkResult Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
-    VkResult result = vkCreateImage(device_, &imageInfo, nullptr, &image);
-    if (result != VK_SUCCESS) { throw("failed to create image! VkResult: " + std::to_string(result));  }
+void Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
+    vkCreateImage(device_, &imageInfo, nullptr, &image);
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(device_, image, &memRequirements);
@@ -385,19 +369,8 @@ VkResult Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemor
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    result = vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory);
-    if (result != VK_SUCCESS) {
-        vkDestroyImage(device_, image, nullptr);
-        throw("failed to allocate image memory! VkResult: " + std::to_string(result));
-    }
-
-    result = vkBindImageMemory(device_, image, imageMemory, 0);
-    if (result != VK_SUCCESS) {
-        vkDestroyImage(device_, image, nullptr);
-        vkFreeMemory(device_, imageMemory, nullptr);
-        throw("failed to bind image memory! VkResult: " + std::to_string(result));
-    }
-    return VK_SUCCESS;
+    vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory);
+    vkBindImageMemory(device_, image, imageMemory, 0);
 }
 
 void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
