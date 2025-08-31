@@ -8,7 +8,10 @@ SwapChain::~SwapChain() {
     for (auto imageView : swapChainImageViews) { vkDestroyImageView(device.device(), imageView, nullptr); }
     swapChainImageViews.clear();
 
-    if (swapChain != nullptr) { vkDestroySwapchainKHR(device.device(), swapChain, nullptr); swapChain = nullptr;}
+    if (swapChain != nullptr) {
+        vkDestroySwapchainKHR(device.device(), swapChain, nullptr);
+        swapChain = nullptr;
+    }
     for (int i = 0; i < depthImages.size(); i++) {
         vkDestroyImageView(device.device(), depthImageViews[i], nullptr);
         vkDestroyImage(device.device(), depthImages[i], nullptr);
@@ -17,6 +20,12 @@ SwapChain::~SwapChain() {
 
     for (auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
     vkDestroyRenderPass(device.device(), renderPass, nullptr);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        if (imageAvailableSemaphores[i] != VK_NULL_HANDLE) { vkDestroySemaphore(device.device(), imageAvailableSemaphores[i], nullptr); }
+        if (renderFinishedSemaphores[i] != VK_NULL_HANDLE) { vkDestroySemaphore(device.device(), renderFinishedSemaphores[i], nullptr); }
+        if (inFlightFences[i] != VK_NULL_HANDLE) { vkDestroyFence(device.device(), inFlightFences[i], nullptr); }
+    }
 }
 
 void SwapChain::init() {

@@ -8,7 +8,13 @@
 #include <array>
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
-Pipeline::~Pipeline() {}
+Pipeline::~Pipeline() {
+    if (graphicsPipeline != VK_NULL_HANDLE) { vkDestroyPipeline(device.device(), graphicsPipeline, nullptr); }
+    if (fragShaderModule != VK_NULL_HANDLE) { vkDestroyShaderModule(device.device(), fragShaderModule, nullptr); }
+    if (pipelineLayout != VK_NULL_HANDLE) { vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr); }
+    if (descriptorSetLayout != VK_NULL_HANDLE) { vkDestroyDescriptorSetLayout(device.device(), descriptorSetLayout, nullptr); }
+    if (descriptorPool != VK_NULL_HANDLE) { vkDestroyDescriptorPool(device.device(), descriptorPool, nullptr); }
+}
 
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 std::vector<char> Pipeline::readFile(const std::string& filepath) {

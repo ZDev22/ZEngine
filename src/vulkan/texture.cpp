@@ -137,8 +137,6 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     createDescriptorSet(descriptorSetLayout, descriptorPool);
 }
 
-Texture::~Texture() {}
-
 void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

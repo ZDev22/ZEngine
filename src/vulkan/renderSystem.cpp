@@ -10,6 +10,7 @@ RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer
 RenderSystem::~RenderSystem() {
     spriteDataBuffer->unmap();
     vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+    if (spriteDataDescriptorSet != VK_NULL_HANDLE) { vkFreeDescriptorSets(device.device(), pipeline->getDescriptorPool(), 1, &spriteDataDescriptorSet); }
 }
 
 void RenderSystem::createPipelineLayout() {

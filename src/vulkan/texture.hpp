@@ -12,7 +12,6 @@ class Texture {
 public:
     Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
     Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
-    ~Texture();
 
     VkImageView getImageView() { return imageView; }
     VkSampler getSampler() { return sampler; }
@@ -25,7 +24,6 @@ public:
 
 private:
     void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
-    void createTextureArray(const std::vector<std::string>& filepaths);
 
     Device& device;
     Pipeline& pipeline;
