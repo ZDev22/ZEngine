@@ -9,7 +9,7 @@
 class AudioPlayer;
 class SlimeAttack {
 public:
-    SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Push& push);
+    SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push);
 
     void tick();
 private:
@@ -17,7 +17,7 @@ private:
     Pipeline& pipeline;
     Push& push;
 
-    AudioPlayer audio;
+    AudioPlayer& audio;
 };
 
 #endif

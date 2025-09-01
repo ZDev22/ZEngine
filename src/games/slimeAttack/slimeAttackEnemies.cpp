@@ -80,7 +80,7 @@ namespace slimeattack {
                     slimeAttackEnemyVector[i].speed.x *= .8f * deltaTime;
 
                     if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { slimeAttackEnemyVector[i].speed = glm::vec2(0.f); }
-                    sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime); 
+                    sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime);
                     break;
                 case SLIMEATTACK_ENEMY_TYPE_BAT:
                     break;
