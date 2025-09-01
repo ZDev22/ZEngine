@@ -63,9 +63,8 @@ void TerminalCalculator::terminalCalculatorRun() {
             std::cout << std::endl << "Operation: ";
             std::cin >> operationStr;
 
-            if (operationStr == "factorial") { answer = bigInts::toString(factorial(std::stoi(num1))); }
+            if (operationStr == "factorial") { answer = bigInts::toString8192(factorial8192(std::stoi(num1))); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(std::sqrt(std::stof(num1))); }
-            
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:

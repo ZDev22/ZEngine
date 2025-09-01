@@ -196,11 +196,39 @@ inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
 
 // bigInts.hpp
-inline constexpr bigInts::uint128_t factorial(const int i) {
+inline constexpr bigInts::uint128_t factorial128(const int i) {
     bigInts::uint128_t factorial = bigInts::uint128_t(1);
-    for (int z = i; z > 0; z--) {
-        factorial *= static_cast<bigInts::uint128_t>(z);
-    }
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint128_t>(z); }
+    return factorial;
+}
+inline constexpr bigInts::uint256_t factorial256(const int i) {
+    bigInts::uint256_t factorial = bigInts::uint256_t(1);
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint256_t>(z); }
+    return factorial;
+}
+inline constexpr bigInts::uint512_t factorial512(const int i) {
+    bigInts::uint512_t factorial = bigInts::uint512_t(1);
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint512_t>(z); }
+    return factorial;
+}
+inline constexpr bigInts::uint1024_t factorial1024(const int i) {
+    bigInts::uint1024_t factorial = bigInts::uint1024_t(1);
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint1024_t>(z); }
+    return factorial;
+}
+inline constexpr bigInts::uint2048_t factorial2048(const int i) {
+    bigInts::uint2048_t factorial = bigInts::uint2048_t(1);
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint2048_t>(z); }
+    return factorial;
+}
+inline constexpr bigInts::uint4096_t factorial4096(const int i) {
+    bigInts::uint4096_t factorial = bigInts::uint4096_t(1);
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint4096_t>(z); }
+    return factorial;
+}
+inline constexpr bigInts::uint8192_t factorial8192(const int i) {
+    bigInts::uint8192_t factorial = bigInts::uint8192_t(1);
+    for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint8192_t>(z); }
     return factorial;
 }
 
