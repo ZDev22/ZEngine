@@ -198,6 +198,7 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm:
     sprite.model = model;
     if (textureIndex < 0 || textureIndex >= MAX_TEXTURES) { throw("Out of bounds texture!"); }
     sprite.texture = spriteTextures[textureIndex].get();
+    sprite.visible = true;
 
     spriteData.position = position;
     spriteData.scale = scale;

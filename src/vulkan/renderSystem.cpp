@@ -103,9 +103,11 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
     for (size_t i = 0; i < spriteCPU.size(); i++) {
-        sprites[i].setRotationMatrix();
-        spriteCPU[i].model->bind(commandBuffer);
-        spriteCPU[i].model->draw(commandBuffer, 1, i);
+        if (spriteCPU[i].visible) {
+            sprites[i].setRotationMatrix();
+            spriteCPU[i].model->bind(commandBuffer);
+            spriteCPU[i].model->draw(commandBuffer, 1, i);
+        }
     }
 }
 

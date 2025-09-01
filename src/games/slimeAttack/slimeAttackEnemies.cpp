@@ -4,7 +4,8 @@
 
 namespace slimeattack {
 
-    std::vector<SlimeAttackEnemyStruct> slimeAttackEnemyVector;
+    std::vector<SlimeAttackEnemyStruct> slimeAttackEnemyVector = {};
+    uint8_t wave = 1;
 
     void slimeAttackEnemyInit() {
         while (slimeAttackEnemyVector.size() < sprites.size()) {
@@ -13,7 +14,30 @@ namespace slimeattack {
             slimeAttackEnemyVector.push_back(enemy);
         }
     }
-    
+
+    void slimeAttackSpawnNewWave(Pipeline& pipeline) {
+        for (int i = sprites.size(); i > 0; i--) {
+            
+        }
+        switch (wave) {
+        case 1:
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline);
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_BAT, pipeline);
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_OGRE, pipeline);
+            break;
+        case 2:
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline);
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_BAT, pipeline);
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_OGRE, pipeline);
+            break;
+        case 3:
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline);
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_BAT, pipeline);
+            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_OGRE, pipeline);
+            break;
+        }
+    }
+
     void slimeAttackSpawnEnemy(const int type, Pipeline& pipeline) {
         switch(type) {
 
@@ -97,5 +121,18 @@ namespace slimeattack {
             }
         }
         return false;
+    }
+
+    void slimeAttackDamageEnemies() {
+        for (size_t i = 0; i < sprites.size(); i++) {
+            if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) {
+                slimeAttackEnemyVector[i].health--;
+                if (slimeAttackEnemyVector[i].health <= 0) { 
+                    slimeAttackEnemyVector[i].skip = true;
+                    sprites[i].textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
+                    spriteCPU[i].visible = false;
+                }
+            }
+        }
     }
 }

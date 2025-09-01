@@ -21,6 +21,8 @@ struct alignas(16) SpriteData {
 struct Sprite {
     std::shared_ptr<Model> model;
     Texture* texture;
+
+    bool visible;
 };
 
 extern std::vector<SpriteData> sprites;

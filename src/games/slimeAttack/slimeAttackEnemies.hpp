@@ -3,9 +3,10 @@
 
 #include "slimeAttack.hpp"
 
-#define SLIMEATTACK_ENEMY_TYPE_SLIME 3
-#define SLIMEATTACK_ENEMY_TYPE_BAT 4
-#define SLIMEATTACK_ENEMY_TYPE_OGRE 5
+#define SLIMEATTACK_ENEMY_TYPE_DEATH 3
+#define SLIMEATTACK_ENEMY_TYPE_SLIME 4
+#define SLIMEATTACK_ENEMY_TYPE_BAT 5
+#define SLIMEATTACK_ENEMY_TYPE_OGRE 6
 
 namespace slimeattack { // Namespace and obscure names to not interfere with other projects
     struct SlimeAttackEnemyStruct { 
@@ -18,9 +19,11 @@ namespace slimeattack { // Namespace and obscure names to not interfere with oth
     };
     
     void slimeAttackEnemyInit();
+    void slimeAttackSpawnNewWave(Pipeline& pipeline);
     void slimeAttackSpawnEnemy(const int type, Pipeline& pipeline);
     void slimeAttackSimulateEnemies();
     bool slimeAttackIsTouchingEnemies();
+    void slimeAttackDamageEnemies();
 }
 
 #endif

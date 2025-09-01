@@ -12,33 +12,40 @@ SlimeAttack::SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipel
 glm::vec2 slimeAttackSpeed = glm::vec2(0.f);
 bool slimeAttackTouchingGround = false;
 bool slimeAttackIsDead = false;
-float slimeAttacktimer = 0.f;
+float slimeAttackTimer = 0.f;
+float slimeAttackAttackTimer = 0.f;
 
 void SlimeAttack::tick() {
 
+    //slimeattack::slimeAttackSpawnNewWave(pipeline);
     slimeattack::slimeAttackSimulateEnemies();
 
     if (slimeAttackIsDead) {
         slimeAttackSpeed.y += .00015f * deltaTime;
         sprites[0].position += slimeAttackSpeed;
 
-        slimeAttacktimer += deltaTime;
+        slimeAttackTimer += deltaTime;
 
-        if (slimeAttacktimer >= 1.5f) {
+        if (slimeAttackTimer >= 1.5f) {
             slimeAttackIsDead = false;
-            slimeAttacktimer = 0.f;
+            slimeAttackTimer = 0.f;
             slimeAttackSpeed = glm::vec2(0.f);
             sprites[0].position = glm::vec2(0.f, -.5f);
         }
     }
     else {
-        if (slimeattack::slimeAttackIsTouchingEnemies()) { 
+
+        if (keyboard.keyPressed(GLFW_KEY_SPACE)) { slimeAttackAttackTimer += deltaTime; }
+        else { slimeAttackAttackTimer = 0.f; }
+
+        if (slimeAttackAttackTimer > 0.f && slimeAttackAttackTimer < .5f) { slimeattack::slimeAttackDamageEnemies(); }
+        else if (slimeattack::slimeAttackIsTouchingEnemies()) {
             slimeAttackIsDead = true;
             slimeAttackSpeed = glm::vec2(0.f, .5f);
         }
 
-        if(slimeAttackTouchingGround) { 
-            if (keyboard.keyPressed(GLFW_KEY_W)) { 
+        if(slimeAttackTouchingGround) {
+            if (keyboard.keyPressed(GLFW_KEY_W)) {
                 slimeAttackSpeed.y = -.00002f;
                 slimeAttackTouchingGround = false; 
             }
@@ -52,7 +59,7 @@ void SlimeAttack::tick() {
         slimeAttackSpeed.y += .0001f * deltaTime;
         sprites[0].position += slimeAttackSpeed;
     
-        if (checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) { 
+        if (checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) {
             slimeAttackTouchingGround = true;
             sprites[0].position.y -= slimeAttackSpeed.y;
             slimeAttackSpeed.y = 0;
