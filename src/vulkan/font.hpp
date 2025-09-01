@@ -4,8 +4,6 @@
 #include "device.hpp"
 #include "texture.hpp"
 
-#include <vulkan/vulkan.h>
-
 #include <memory>
 
 class Pipeline;
