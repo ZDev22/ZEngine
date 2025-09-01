@@ -8,13 +8,13 @@
 //#include "../games/flappyBird/flappyBird.hpp"
 #include "../games/slimeAttack/slimeAttack.hpp"
 
-std::chrono::high_resolution_clock::time_point CPSlastTime;
-std::chrono::high_resolution_clock::time_point CPScurrentTime;
-std::chrono::duration<float> CPSelapsed;
+std::chrono::high_resolution_clock::time_point appcpslastTime;
+std::chrono::high_resolution_clock::time_point appcpscurrentTime;
+std::chrono::duration<float> appcpselapsed;
 
-float timer = 0.f;
-int cps = 0;
-int fps = 0;
+float apptimer = 0.f;
+int appcps = 0;
+int appfps = 0;
 
 bool shouldClose = false;
 
@@ -33,19 +33,19 @@ void App::run() {
     std::thread update(&App::render, this);
     update.detach();
 
-    CPSlastTime = std::chrono::high_resolution_clock::now();
+    appcpslastTime = std::chrono::high_resolution_clock::now();
     while (!shouldClose) {
-        CPScurrentTime = std::chrono::high_resolution_clock::now();
-        CPSelapsed = CPScurrentTime - CPSlastTime;
-        deltaTime = CPSelapsed.count();
-        CPSlastTime = CPScurrentTime;
+        appcpscurrentTime = std::chrono::high_resolution_clock::now();
+        appcpselapsed = appcpscurrentTime - appcpslastTime;
+        deltaTime = appcpselapsed.count();
+        appcpslastTime = appcpscurrentTime;
 
-        timer += deltaTime;
-        if (timer > 1.f) {
-            window.setWindowName("CPS: " + std::to_string(cps) + " - FPS: " + std::to_string(fps));
-            timer = 0.f;
-            cps = 0;
-            fps = 0;
+        apptimer += deltaTime;
+        if (apptimer > 1.f) {
+            window.setWindowName("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps));
+            apptimer = 0.f;
+            appcps = 0;
+            appfps = 0;
         }
 
         glfwPollEvents();
@@ -56,7 +56,7 @@ void App::run() {
         renderSystem->updateSprites();
         shouldClose = window.shouldClose();
 
-        cps++;
+        appcps++;
     }
 
     vkDeviceWaitIdle(device.device());
@@ -69,7 +69,7 @@ void App::render() {
             renderSystem->renderSprites(commandBuffer, pipeline.getPipelineLayout());
             vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
-            fps++;
+            appfps++;
         }
     }
 }

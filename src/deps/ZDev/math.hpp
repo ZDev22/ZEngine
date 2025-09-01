@@ -8,14 +8,6 @@
 #include <vector>
 #include <cstring>
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable : 4244)
-#elif defined(__GNUC__) || defined(__clang__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wnarrowing"
-#endif
-
 // Global functions
 inline float clamp(float value, float minValue, float maxValue) {
     if (value < minValue) { return minValue; }
@@ -199,11 +191,5 @@ inline constexpr short absoluteShort(const short i) { return (i < 0) ? -i : i; }
 inline constexpr int absoluteInt(const int i) { return (i < 0) ? -i : i; }
 inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i : i; }
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#elif defined(__GNUC__) || defined(__clang__)
-    #pragma GCC diagnostic pop
-#endif
 
 #endif

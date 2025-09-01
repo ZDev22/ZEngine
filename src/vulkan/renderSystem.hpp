@@ -1,10 +1,7 @@
 #pragma once
 
-#include "device.hpp"
 #include "pipeline.hpp"
-#include "global.hpp"
 #include "buffer.hpp"
-#include "sprite.hpp"
 
 #include "../deps/ZDev/keyboard.hpp"
 

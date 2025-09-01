@@ -1,11 +1,6 @@
 #include "renderer.hpp"
 #include "pipeline.hpp"
 
-#include <array>
-#include <cassert>
-#include <stdexcept>
-#include <iostream>
-
 Renderer::Renderer(AppWindow& window, Device& device) : window{ window }, device{ device } {
     recreateSwapChain();
     createCommandBuffers();
