@@ -250,7 +250,8 @@ void Pipeline::loadSprites() {
     });
 
     //loadFlappyBird();
-    loadSlimeAttack();
+    //loadSlimeAttack();
+    loadTerminalCalculator();
 
     for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
 }
@@ -283,4 +284,11 @@ void Pipeline::loadSlimeAttack() {
     
     createSprite(squareModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
     createSprite(squareModel, 1, glm::vec2(0.f, .7f), glm::vec2(2.f, .15f), 0.f, glm::vec4(1.f));
+}
+
+void Pipeline::loadTerminalCalculator() {
+    texturePaths = { "terminalCalculator.png" };
+    loadTextures();
+    
+    createSprite(squareModel, 0, glm::vec2(0.f), glm::vec2(2.f, 1.f), 0.f, glm::vec4(1.f));
 }

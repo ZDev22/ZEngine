@@ -31,6 +31,7 @@ private:
     void loadTextures();
     void loadFlappyBird();
     void loadSlimeAttack();
+    void loadTerminalCalculator();
 
     Device& device;
     Renderer& renderer;

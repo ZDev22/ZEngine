@@ -1,5 +1,5 @@
 #ifndef FLAPPYBIRD_HPP
-#define FLAPPYBIRD_HPP_HPP
+#define FLAPPYBIRD_HPP
 
 #include "../../deps/ZDev/audio.hpp"
 #include "../../deps/ZDev/keyboard.hpp"

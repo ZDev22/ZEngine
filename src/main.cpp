@@ -3,8 +3,6 @@
 
 #include "deps/glfw/glfw3.h"
 
-#include "deps/ZDev/string.hpp"
-
 int main() {
     compileShaders();
     glfwInit();

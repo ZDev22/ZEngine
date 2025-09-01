@@ -7,6 +7,9 @@
 #include <array>
 #include <vector>
 #include <cstring>
+#include <cstdint>
+
+#include "bigInts.hpp"
 
 // Global functions
 inline float clamp(float value, float minValue, float maxValue) {
@@ -191,5 +194,14 @@ inline constexpr short absoluteShort(const short i) { return (i < 0) ? -i : i; }
 inline constexpr int absoluteInt(const int i) { return (i < 0) ? -i : i; }
 inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i : i; }
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
+
+// bigInts.hpp
+inline constexpr bigInts::uint128_t factorial(const int i) {
+    bigInts::uint128_t factorial = bigInts::uint128_t(1);
+    for (int z = i; z > 0; z--) {
+        factorial *= static_cast<bigInts::uint128_t>(z);
+    }
+    return factorial;
+}
 
 #endif
