@@ -6,7 +6,6 @@
 #include "../deps/stb_image.h"
 
 #include <cstring>
-#include <iostream>
 #include <filesystem>
 
 static void createTextureSampler(const Device& device, VkSampler& sampler) {
@@ -29,10 +28,7 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
 
 Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED),image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
     stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-    if (!pixels) { 
-        std::cout << filepath;
-        throw("failed to load texture"); 
-    }
+    if (!pixels) { throw("failed to load texture") + filepath; }
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 

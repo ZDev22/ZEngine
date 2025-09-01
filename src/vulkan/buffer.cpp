@@ -1,9 +1,7 @@
 #include "buffer.hpp"
 #include <cstring>
 
-Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount,
-               VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags)
-    : device(device), bufferSize(instanceSize * instanceCount) {
+Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : device(device), bufferSize(instanceSize * instanceCount) {
     
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -31,7 +29,7 @@ void Buffer::map() {
     mapped = static_cast<char*>(temp);
 }
 
-void Buffer::writeToBuffer(const void* data, VkDeviceSize size) { std::memcpy(mapped, data, static_cast<size_t>(size)); }
+void Buffer::writeToBuffer(const void* data, size_t size) { std::memcpy(mapped, data, size); }
 void Buffer::unmap() {
     if (mapped) {
         vkUnmapMemory(device.device(), memory);

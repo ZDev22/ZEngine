@@ -73,10 +73,13 @@ namespace slimeattack {
 
                 case SLIMEATTACK_ENEMY_TYPE_SLIME:
                     if (slimeAttackEnemyVector[i].cooldown > 2.5f) {
-                        slimeAttackEnemyVector[i].speed = glm::vec2(.01f);
+                        slimeAttackEnemyVector[i].speed += glm::vec2(.3f, -.5f);
                         slimeAttackEnemyVector[i].cooldown = 0.f;
                     }
-                    slimeAttackEnemyVector[i].speed.y -= .01f * deltaTime;
+                    slimeAttackEnemyVector[i].speed.y += .3f * deltaTime;
+                    slimeAttackEnemyVector[i].speed.x *= .8f * deltaTime;
+
+                    if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { slimeAttackEnemyVector[i].speed = glm::vec2(0.f); }
                     sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime); 
                     break;
                 case SLIMEATTACK_ENEMY_TYPE_BAT:

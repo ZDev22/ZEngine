@@ -2,14 +2,8 @@
 
 #include "device.hpp"
 #include "sprite.hpp"
-#include "texture.hpp"
 #include "global.hpp"
 #include "../deps/stb_truetype.h"
-
-#include <vulkan/vulkan.h>
-#include <memory>
-#include <vector>
-#include <string>
 
 class Renderer;
 class Pipeline {

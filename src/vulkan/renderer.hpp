@@ -3,11 +3,6 @@
 #include "device.hpp"
 #include "model.hpp"
 #include "swapChain.hpp"
-#include "window.hpp"
-
-#include <memory>
-#include <vector>
-#include <cassert>
 
 class Renderer {
 public:

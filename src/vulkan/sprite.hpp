@@ -3,8 +3,6 @@
 #include "model.hpp"
 #include "texture.hpp"
 
-#include <glm/glm.hpp>
-
 #define MAX_SPRITES 100000
 #define MAX_TEXTURES 66
 

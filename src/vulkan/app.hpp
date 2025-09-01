@@ -3,11 +3,7 @@
 #include "window.hpp"
 #include "device.hpp"
 #include "renderer.hpp"
-#include "pipeline.hpp"
 #include "renderSystem.hpp"
-#include "global.hpp" 
-
-#include "../deps/ZDev/keyboard.hpp"
 
 class App {
 public:

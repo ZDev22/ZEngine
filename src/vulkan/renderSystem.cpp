@@ -39,8 +39,6 @@ void RenderSystem::initializeSpriteData() {
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    if (!spriteDataBuffer) { throw("spriteDataBuffer is not initialized!"); }
-
     std::vector<VkDescriptorImageInfo> imageInfos;
     imageInfos.reserve(MAX_TEXTURES);
 
@@ -100,7 +98,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
     pipeline->bind(commandBuffer);
-    
+
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
 
@@ -111,7 +109,4 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout
     }
 }
 
-void RenderSystem::updateSprites() {
-    VkDeviceSize bufferSize = sizeof(SpriteData) * sprites.size();
-    spriteDataBuffer->writeToBuffer(sprites.data(), bufferSize);
-}
+void RenderSystem::updateSprites() { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
