@@ -45,9 +45,8 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     std::unordered_map<Texture*, uint32_t> textureToIndex;
     uint32_t textureIndex = 0;
 
-    for (size_t i = 0; i < MAX_TEXTURES; i++) {
+    for (size_t i = 0; i < spriteTextures.size(); ++i) {
         Texture* texture = spriteTextures[i].get();
-
         if (texture && textureToIndex.find(texture) == textureToIndex.end()) {
             textureToIndex[texture] = textureIndex++;
 
@@ -59,6 +58,9 @@ void RenderSystem::createTextureArrayDescriptorSet() {
             imageInfos.push_back(imageInfo);
         }
     }
+
+    size_t numUnique = imageInfos.size();
+    for (size_t i = numUnique; i < MAX_TEXTURES; ++i) { imageInfos.push_back(imageInfos[0]); }
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -88,7 +90,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     imageWrite.dstBinding = 1;
     imageWrite.dstArrayElement = 0;
     imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = static_cast<uint32_t>(imageInfos.size());
+    imageWrite.descriptorCount = MAX_TEXTURES;
     imageWrite.pImageInfo = imageInfos.data();
 
     std::array<VkWriteDescriptorSet, 2> descriptorWrites = { bufferWrite, imageWrite };

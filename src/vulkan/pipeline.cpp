@@ -257,12 +257,12 @@ void Pipeline::loadSprites() {
 }
 
 void Pipeline::loadTextures() {
-    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
-
     spriteTextures.clear();
-    spriteTextures.reserve(MAX_TEXTURES);
+    spriteTextures.reserve(texturePaths.size());
 
-    for (size_t t = 0; t < (MAX_TEXTURES - fonts.size()); t++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[t], descriptorSetLayout, descriptorPool, *this)); }
+    for (const auto& path : texturePaths) {
+        spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this));
+    }
 }
 
 void Pipeline::loadFlappyBird() {
