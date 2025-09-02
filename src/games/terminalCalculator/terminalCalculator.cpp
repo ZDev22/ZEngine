@@ -1,3 +1,4 @@
+
 #include "terminalCalculator.hpp"
 #include "../../deps/ZDev/math.hpp"
 
@@ -11,6 +12,7 @@ std::string num1 = "0";
 char operation = '+';
 std::string operationStr = "";
 std::string num2 = "0";
+std::string num3 = "0";
 std::string answer = "0";
 
 TerminalCalculator::TerminalCalculator() {
@@ -28,7 +30,7 @@ void TerminalCalculator::terminalCalculatorRun() {
         std::cin >> operationType;
 
         if (operationType == "help") {
-            std::cout << "basic (+-/*%^)\n" << "advanced (sqrt, lerp, factorial, etc.)\n" << "binary (&<<>>)\n";
+            std::cout << "basic (+-/*%^)\n" << "advanced (sqrt, lerp, factorial)\n" << "binary (&)\n";
             selectedOperation = 0;
         }
         else if (operationType == "basic") { selectedOperation = 1; }
@@ -65,11 +67,46 @@ void TerminalCalculator::terminalCalculatorRun() {
 
             if (operationStr == "factorial") { answer = bigInts::toString8192(factorial8192(std::stoi(num1))); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(std::sqrt(std::stof(num1))); }
+            else if (operationStr == "lerp") {
+                std::cout << "\nsmoothStep\nsmootherStep\nlerp\neaseInSine\neaseOutSine\neaseInOutSine\neaseInExpo\neaseOutExpo\neaseInOutExpo\neaseInCirc\neaseOutCirc\neaseInOutCirc\neaseOutBounce\n\nChoose one: ";
+                std::cin >> operationStr;
+                if (operationStr == "smoothStep") {
+                    std::cout << "Num2: ";
+                    std::cin >> num2;
+                    std::cout << "Num3: ";
+                    std::cin >> num3;
+                    answer = smoothStep(std::stof(num1), std::stof(num2), std::stof(num3));
+                }
+                else if (operationStr == "smootherStep") {
+                    std::cout << "Num2: ";
+                    std::cin >> num2;
+                    std::cout << "Num3: ";
+                    std::cin >> num3;
+                    answer = smootherStep(std::stof(num1), std::stof(num2), std::stof(num3));
+                }
+                else if (operationStr == "lerp") {
+                    std::cout << "Num2: ";
+                    std::cin >> num2;
+                    std::cout << "Num3: ";
+                    std::cin >> num3;
+                    answer = linearInterpolate(std::stof(num1), std::stof(num2), std::stof(num3));
+                }
+                else if (operationStr == "easeInSine") { answer = std::to_string(easeInSine(std::stof(num1))); }
+                else if (operationStr == "easeOutSine") { answer = std::to_string(easeOutSine(std::stof(num1))); }
+                else if (operationStr == "easeInOutSine") { answer = std::to_string(easeInOutSine(std::stof(num1))); }
+                else if (operationStr == "easeInExpo") { answer = std::to_string(easeInExpo(std::stof(num1))); }
+                else if (operationStr == "easeOutExpo") { answer = std::to_string(easeOutExpo(std::stof(num1))); }
+                else if (operationStr == "easeInOutExpo") { answer = std::to_string(easeInOutExpo(std::stof(num1))); }
+                else if (operationStr == "easeInCirc") { answer = std::to_string(easeInCirc(std::stof(num1))); }
+                else if (operationStr == "easeOutCirc") { answer = std::to_string(easeOutCirc(std::stof(num1))); }
+                else if (operationStr == "easeInOutCirc") { answer = std::to_string(easeInOutCirc(std::stof(num1))); }
+                else if (operationStr == "easeOutBounce") { answer = std::to_string(easeOutBounce(std::stof(num1))); }
+                }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:
             switch (operation) {
-                case '&': answer = std::to_string(std::stoi(num1) & std::stoi(num2)); break;
+            case '&': answer = std::to_string(std::stoi(num1) & std::stoi(num2)); break;
             }
             break;
         }

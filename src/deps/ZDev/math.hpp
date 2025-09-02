@@ -19,13 +19,13 @@ inline float clamp(float value, float minValue, float maxValue) {
 }
 
 // Interpolation
-inline float smoothstep(const float edge0, const float edge1, const float x) {
+inline float smoothStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * (3 - 2 * t);
 }
 
-inline float smootherstep(const float edge0, const float edge1, const float x) {
+inline float smootherStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * t * (t * (t * 6 - 15) + 10);
@@ -189,13 +189,13 @@ inline void setZeroFloat(std::vector<float>& vec, size_t startIndex, size_t coun
 inline void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, true); }
 inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, false); }
 
-// cmath debloated functions
+// Cmath debloated functions
 inline constexpr short absoluteShort(const short i) { return (i < 0) ? -i : i; }
 inline constexpr int absoluteInt(const int i) { return (i < 0) ? -i : i; }
 inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i : i; }
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
 
-// bigInts.hpp
+// Factorials
 inline constexpr bigInts::uint128_t factorial128(const int i) {
     bigInts::uint128_t factorial = bigInts::uint128_t(1);
     for (int z = i; z > 0; z--) { factorial *= static_cast<bigInts::uint128_t>(z); }
