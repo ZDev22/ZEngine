@@ -1,5 +1,4 @@
-#ifndef AUDIO_HPP
-#define AUDIO_HPP
+#pragma once
 
 #ifdef AUDIOPLAYER_IMPLEMENTATION
 #define MINIAUDIO_IMPLEMENTATION
@@ -18,5 +17,3 @@ public:
 private:
     ma_engine engine;
 };
-
-#endif

@@ -1,9 +1,4 @@
 module;
-
-// #define GLM_GTC_INLINE_NAMESPACE to inline glm::gtc into glm
-// #define GLM_EXT_INLINE_NAMESPACE to inline glm::ext into glm
-// #define GLM_GTX_INLINE_NAMESPACE to inline glm::gtx into glm
-
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
@@ -2666,10 +2661,3 @@ export namespace glm {
 	}
 #   endif
 }
-
-#if defined(_MSC_VER) // Workaround
-// Partial template specialization doesn't need to be exported explicitly, but this may not work otherwise on MSVC.
-export namespace std {
-	using std::hash; // See GLM_GTX_hash
-}
-#endif

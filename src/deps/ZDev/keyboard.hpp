@@ -1,5 +1,4 @@
-#ifndef KEYBOARD_HPP
-#define KEYBOARD_HPP
+#pragma once
 
 #define KEY_IDLE 0
 #define KEY_HIT 2
@@ -65,5 +64,3 @@ private:
     };
     std::array<unsigned char, 244> keys;
 };
-
-#endif

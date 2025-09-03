@@ -1,5 +1,4 @@
-#ifndef SLIMEATTACKENEMIES_HPP
-#define SLIMEATTACKENEMIES_HPP
+#pragma once
 
 #include "slimeAttack.hpp"
 
@@ -8,7 +7,7 @@
 #define SLIMEATTACK_ENEMY_TYPE_BAT 5
 #define SLIMEATTACK_ENEMY_TYPE_OGRE 6
 
-namespace slimeattack { // Namespace and obscure names to not interfere with other projects
+namespace slimeattack {
     struct SlimeAttackEnemyStruct { 
         uint16_t health;
         uint16_t coinDrop;
@@ -25,5 +24,3 @@ namespace slimeattack { // Namespace and obscure names to not interfere with oth
     bool slimeAttackIsTouchingEnemies();
     void slimeAttackDamageEnemies();
 }
-
-#endif

@@ -672,4 +672,4 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #ifdef __cplusplus
 }
 #endif
-#endif /* _glfw3_h_ */
+#endif

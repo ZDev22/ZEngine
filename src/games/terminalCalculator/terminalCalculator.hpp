@@ -1,5 +1,4 @@
-#ifndef TERMINALCALCULATOR_HPP
-#define TERMINALCALCULATOR_HPP
+#pragma once
 
 class TerminalCalculator {
 public:
@@ -9,5 +8,3 @@ public:
 private:
     void terminalCalculatorRun();
 };
-
-#endif

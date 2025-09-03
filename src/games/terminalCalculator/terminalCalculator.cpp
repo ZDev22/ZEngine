@@ -1,4 +1,3 @@
-
 #include "terminalCalculator.hpp"
 #include "../../deps/ZDev/math.hpp"
 
@@ -65,7 +64,7 @@ void TerminalCalculator::terminalCalculatorRun() {
             std::cout << std::endl << "Operation: ";
             std::cin >> operationStr;
 
-            if (operationStr == "factorial") { answer = bigInts::toString8192(factorial8192(std::stoi(num1))); }
+            if (operationStr == "factorial") { answer = bigInts::toString8192(bigInts::uint8192(std::stoi(num1)) ! std::stoi(num1)); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(std::sqrt(std::stof(num1))); }
             else if (operationStr == "lerp") {
                 std::cout << "\nsmoothStep\nsmootherStep\nlerp\neaseInSine\neaseOutSine\neaseInOutSine\neaseInExpo\neaseOutExpo\neaseInOutExpo\neaseInCirc\neaseOutCirc\neaseInOutCirc\neaseOutBounce\n\nChoose one: ";

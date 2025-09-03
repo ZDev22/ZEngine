@@ -1,5 +1,4 @@
-#ifndef FLAPPYBIRD_HPP
-#define FLAPPYBIRD_HPP
+#pragma once
 
 #include "../../deps/ZDev/audio.hpp"
 #include "../../deps/ZDev/keyboard.hpp"
@@ -19,5 +18,3 @@ private:
 
     AudioPlayer& audio;
 };
-
-#endif
