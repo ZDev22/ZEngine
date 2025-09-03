@@ -266,5 +266,35 @@ inline constexpr bigInts::uint8192_t factorial8192(int n) {
     for (; i <= n; ++i) { result *= bigInts::uint8192_t(i); }
     return result;
 }
+inline constexpr bigInts::uint16384_t factorial16384(int n) {
+    bigInts::uint16384_t result = bigInts::uint16384_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint16384_t(i) * bigInts::uint16384_t(i + 1);
+        result *= bigInts::uint16384_t(i + 2) * bigInts::uint16384_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint16384_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint32768_t factorial32768(int n) {
+    bigInts::uint32768_t result = bigInts::uint32768_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint32768_t(i) * bigInts::uint32768_t(i + 1);
+        result *= bigInts::uint32768_t(i + 2) * bigInts::uint32768_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint32768_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint65536_t factorial65536(int n) {
+    bigInts::uint65536_t result = bigInts::uint65536_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint65536_t(i) * bigInts::uint65536_t(i + 1);
+        result *= bigInts::uint65536_t(i + 2) * bigInts::uint65536_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint65536_t(i); }
+    return result;
+}
 
 #endif

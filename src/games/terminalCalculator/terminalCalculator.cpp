@@ -101,7 +101,12 @@ void TerminalCalculator::terminalCalculatorRun() {
                 else if (operationStr == "easeOutCirc") { answer = std::to_string(easeOutCirc(std::stof(num1))); }
                 else if (operationStr == "easeInOutCirc") { answer = std::to_string(easeInOutCirc(std::stof(num1))); }
                 else if (operationStr == "easeOutBounce") { answer = std::to_string(easeOutBounce(std::stof(num1))); }
-                }
+            }
+            else if (operationStr == "+128") { 
+                std::cout << "Num2: ";
+                std::cin >> num2;
+                answer = bigInts::toString128(bigInts::uint128_t(std::stoi(num1)) + bigInts::uint128_t(std::stoi(num2)));
+            }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:
