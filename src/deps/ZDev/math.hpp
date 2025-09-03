@@ -24,6 +24,8 @@
 #include <cstring>
 #include <cstdint>
 
+#include "../../deps/ZDev/bigInts.hpp"
+
 // Global functions
 inline float clamp(float value, float minValue, float maxValue) {
     if (value < minValue) { return minValue; }
@@ -207,3 +209,105 @@ inline constexpr short absoluteShort(const short i) { return (i < 0) ? -i : i; }
 inline constexpr int absoluteInt(const int i) { return (i < 0) ? -i : i; }
 inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i : i; }
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
+
+// Factorials
+inline constexpr bigInts::uint128_t factorial128(int n) {
+    bigInts::uint128_t result = bigInts::uint128_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint128_t(i) * bigInts::uint128_t(i + 1);
+        result *= bigInts::uint128_t(i + 2) * bigInts::uint128_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint128_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint256_t factorial256(int n) {
+    bigInts::uint256_t result = bigInts::uint256_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint256_t(i) * bigInts::uint256_t(i + 1);
+        result *= bigInts::uint256_t(i + 2) * bigInts::uint256_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint256_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint512_t factorial512(int n) {
+    bigInts::uint512_t result = bigInts::uint512_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint512_t(i) * bigInts::uint512_t(i + 1);
+        result *= bigInts::uint512_t(i + 2) * bigInts::uint512_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint512_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint1024_t factorial1024(int n) {
+    bigInts::uint1024_t result = bigInts::uint1024_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint1024_t(i) * bigInts::uint1024_t(i + 1);
+        result *= bigInts::uint1024_t(i + 2) * bigInts::uint1024_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint1024_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint2048_t factorial2048(int n) {
+    bigInts::uint2048_t result = bigInts::uint2048_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint2048_t(i) * bigInts::uint2048_t(i + 1);
+        result *= bigInts::uint2048_t(i + 2) * bigInts::uint2048_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint2048_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint4096_t factorial4096(int n) {
+    bigInts::uint4096_t result = bigInts::uint4096_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint4096_t(i) * bigInts::uint4096_t(i + 1);
+        result *= bigInts::uint4096_t(i + 2) * bigInts::uint4096_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint4096_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint8192_t factorial8192(int n) {
+    bigInts::uint8192_t result = bigInts::uint8192_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint8192_t(i) * bigInts::uint8192_t(i + 1);
+        result *= bigInts::uint8192_t(i + 2) * bigInts::uint8192_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint8192_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint16384_t factorial16384(int n) {
+    bigInts::uint16384_t result = bigInts::uint16384_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint16384_t(i) * bigInts::uint16384_t(i + 1);
+        result *= bigInts::uint16384_t(i + 2) * bigInts::uint16384_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint16384_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint32768_t factorial32768(int n) {
+    bigInts::uint32768_t result = bigInts::uint32768_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint32768_t(i) * bigInts::uint32768_t(i + 1);
+        result *= bigInts::uint32768_t(i + 2) * bigInts::uint32768_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint32768_t(i); }
+    return result;
+}
+inline constexpr bigInts::uint65536_t factorial65536(int n) {
+    bigInts::uint65536_t result = bigInts::uint65536_t(1);
+    int i = 2;
+    for (; i + 3 <= n; i += 4) {
+        result *= bigInts::uint65536_t(i) * bigInts::uint65536_t(i + 1);
+        result *= bigInts::uint65536_t(i + 2) * bigInts::uint65536_t(i + 3);
+    }
+    for (; i <= n; ++i) { result *= bigInts::uint65536_t(i); }
+    return result;
+}

@@ -27,9 +27,6 @@ struct uint128_t {
     constexpr uint128_t() = default;
     constexpr explicit uint128_t(uint64_t v) : low(v), high(0) {}
     constexpr uint128_t(uint64_t lo, uint64_t hi) : low(lo), high(hi) {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint128_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr uint128_t operator+(const uint128_t& rhs) const { return uint128_t(low + rhs.low, high + rhs.high + ((low + rhs.low < low) ? 1 : 0)); }
     constexpr uint128_t& operator+=(const uint128_t& rhs) { *this = *this + rhs; return *this; }
@@ -60,16 +57,6 @@ struct uint128_t {
     constexpr uint128_t operator^(const uint128_t& rhs) const { return uint128_t(low ^ rhs.low, high ^ rhs.high); }
     constexpr uint128_t& operator^=(const uint128_t& rhs) { *this = *this ^ rhs; return *this; }
     constexpr uint128_t operator%(const uint128_t& rhs) const { if (rhs == uint128_t(0)) { return *this; } return *this - (*this / rhs) * rhs; }
-    constexpr uint128_t operator!(const int rhs) { 
-        bigInts::uint128_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint128_t(i) * bigInts::uint128_t(i + 1);
-            result *= bigInts::uint128_t(i + 2) * bigInts::uint128_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint128_t(i); }
-        return result;
-    }
 
     constexpr uint128_t operator<<(int n) const {
         uint128_t tmp = *this;
@@ -193,9 +180,6 @@ struct uint256_t {
     constexpr uint256_t() = default;
     constexpr explicit uint256_t(uint64_t v) : words{{v,0,0,0}} {}
     constexpr uint256_t(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) : words{{w0,w1,w2,w3}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint256_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const { return words[0]==0 && words[1]==0 && words[2]==0 && words[3]==0; }
     constexpr bool operator==(const uint256_t& rhs) const { return words == rhs.words; }
@@ -355,17 +339,6 @@ struct uint256_t {
         return remainder;
     }
 
-    constexpr uint256_t operator!(const int rhs) { 
-        bigInts::uint256_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint256_t(i) * bigInts::uint256_t(i + 1);
-            result *= bigInts::uint256_t(i + 2) * bigInts::uint256_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint256_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -430,9 +403,6 @@ struct uint512_t {
     constexpr uint512_t() = default;
     constexpr explicit uint512_t(uint64_t v) : words{{v,0,0,0,0,0,0,0}} {}
     constexpr uint512_t(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3, uint64_t w4, uint64_t w5, uint64_t w6, uint64_t w7) : words{{w0,w1,w2,w3,w4,w5,w6,w7}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint512_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 8; ++i) if (words[i] != 0) return false;
@@ -602,17 +572,6 @@ struct uint512_t {
         return remainder;
     }
 
-    constexpr uint512_t operator!(const int rhs) { 
-        bigInts::uint512_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint512_t(i) * bigInts::uint512_t(i + 1);
-            result *= bigInts::uint512_t(i + 2) * bigInts::uint512_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint128_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -670,9 +629,6 @@ struct uint1024_t {
 
     constexpr uint1024_t() = default;
     constexpr explicit uint1024_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint1024_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 16; ++i) if (words[i] != 0) return false;
@@ -844,17 +800,6 @@ struct uint1024_t {
         return remainder;
     }
 
-    constexpr uint1024_t operator!(const int rhs) { 
-        bigInts::uint1024_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint1024_t(i) * bigInts::uint1024_t(i + 1);
-            result *= bigInts::uint1024_t(i + 2) * bigInts::uint1024_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint1024_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -920,9 +865,6 @@ struct uint2048_t {
 
     constexpr uint2048_t() = default;
     constexpr explicit uint2048_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint2048_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 32; ++i) if (words[i] != 0) return false;
@@ -1094,17 +1036,6 @@ struct uint2048_t {
         return remainder;
     }
 
-    constexpr uint2048_t operator!(const int rhs) { 
-        bigInts::uint2048_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint2048_t(i) * bigInts::uint2048_t(i + 1);
-            result *= bigInts::uint2048_t(i + 2) * bigInts::uint2048_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint2048_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -1176,9 +1107,6 @@ struct uint4096_t {
 
     constexpr uint4096_t() = default;
     constexpr explicit uint4096_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint4096_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 64; ++i) if (words[i] != 0) return false; return true; }
 
@@ -1347,17 +1275,6 @@ struct uint4096_t {
         return remainder;
     }
 
-    constexpr uint4096_t operator!(const int rhs) { 
-        bigInts::uint4096_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint4096_t(i) * bigInts::uint4096_t(i + 1);
-            result *= bigInts::uint4096_t(i + 2) * bigInts::uint4096_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint4096_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -1429,9 +1346,6 @@ struct uint8192_t {
 
     constexpr uint8192_t() = default;
     constexpr explicit uint8192_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint8192_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 128; ++i) if (words[i] != 0) return false; return true; }
 
@@ -1600,17 +1514,6 @@ struct uint8192_t {
         return remainder;
     }
 
-    constexpr uint8192_t operator!(const int rhs) { 
-        bigInts::uint8192_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint8192_t(i) * bigInts::uint8192_t(i + 1);
-            result *= bigInts::uint8192_t(i + 2) * bigInts::uint8192_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint8192_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -1682,9 +1585,6 @@ struct uint16384_t {
 
     constexpr uint16384_t() = default;
     constexpr explicit uint16384_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint16384_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 256; ++i) if (words[i] != 0) return false; return true; }
 
@@ -1824,17 +1724,6 @@ struct uint16384_t {
         return remainder;
     }
 
-    constexpr uint16384_t operator!(const int rhs) { 
-        bigInts::uint16384_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint16384_t(i) * bigInts::uint16384_t(i + 1);
-            result *= bigInts::uint16384_t(i + 2) * bigInts::uint16384_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint16384_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -1909,9 +1798,6 @@ struct uint32768_t {
 
     constexpr uint32768_t() = default;
     constexpr explicit uint32768_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint32768_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 512; ++i) if (words[i] != 0) return false; return true; }
 
@@ -2051,17 +1937,6 @@ struct uint32768_t {
         return remainder;
     }
 
-    constexpr uint32768_t operator!(const int rhs) { 
-        bigInts::uint32768_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint32768_t(i) * bigInts::uint32768_t(i + 1);
-            result *= bigInts::uint32768_t(i + 2) * bigInts::uint32768_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint32768_t(i); }
-        return result;
-    }
-
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
         if (m == 0) return 0;
@@ -2136,9 +2011,6 @@ struct uint65536_t {
 
     constexpr uint65536_t() = default;
     constexpr explicit uint65536_t(uint64_t v) : words{{v}} {}
-    template <typename T,
-              typename = std::enable_if_t<std::is_unsigned_v<T>>>
-    constexpr uint65536_t(T v) noexcept : low(static_cast<uint64_t>(v)), high(0) {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 1024; ++i) if (words[i] != 0) return false; return true; }
 
@@ -2278,17 +2150,6 @@ struct uint65536_t {
             }
         }
         return remainder;
-    }
-
-    constexpr uint65536_t operator!(const int rhs) { 
-        bigInts::uint65536_t result = 1;
-        int i = 2;
-        for (; i + 3 <= n; i += 4) {
-            result *= bigInts::uint65536_t(i) * bigInts::uint65536_t(i + 1);
-            result *= bigInts::uint65536_t(i + 2) * bigInts::uint65536_t(i + 3);
-        }
-        for (; i <= n; ++i) { result *= bigInts::uint65536_t(i); }
-        return result;
     }
 
 #if defined(__SIZEOF_INT128__)
