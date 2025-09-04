@@ -5,16 +5,16 @@
 #include "../../vulkan/pipeline.hpp"
 #include "../../vulkan/global.hpp"
 
+#include "slimeAttackEnemies.hpp"
+
 class AudioPlayer;
 class SlimeAttack {
 public:
     SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push);
 
     void tick();
-    void knockBack(float origin);
 private:
-    std::unique_ptr<SlimeAttackEnemies> slimeAttackEnemies;
-
+    SlimeAttackEnemies slimeAttackEnemies{*this};
     Keyboard& keyboard;
     Pipeline& pipeline;
     Push& push;

@@ -1,3 +1,6 @@
+/// @ref core
+/// @file glm/detail/func_exponential.inl
+
 #include "../vector_relational.hpp"
 #include "_vectorize.hpp"
 #include <limits>
@@ -61,6 +64,9 @@ namespace detail
 			return tmp;
 		}
 	};
+}//namespace detail
+
+	// pow
 	using std::pow;
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> pow(vec<L, T, Q> const& base, vec<L, T, Q> const& exponent)
@@ -68,6 +74,7 @@ namespace detail
 		return detail::functor2<vec, L, T, Q>::call(pow, base, exponent);
 	}
 
+	// exp
 	using std::exp;
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> exp(vec<L, T, Q> const& x)
@@ -75,6 +82,7 @@ namespace detail
 		return detail::functor1<vec, L, T, T, Q>::call(exp, x);
 	}
 
+	// log
 	using std::log;
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> log(vec<L, T, Q> const& x)
@@ -85,6 +93,7 @@ namespace detail
 #   if GLM_HAS_CXX11_STL
     using std::exp2;
 #   else
+	//exp2, ln2 = 0.69314718055994530941723212145818f
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType exp2(genType x)
 	{
@@ -100,6 +109,7 @@ namespace detail
 		return detail::functor1<vec, L, T, T, Q>::call(exp2, x);
 	}
 
+	// log2, ln2 = 0.69314718055994530941723212145818f
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType log2(genType x)
 	{
@@ -112,6 +122,7 @@ namespace detail
 		return detail::compute_log2<L, T, Q, std::numeric_limits<T>::is_iec559, detail::is_aligned<Q>::value>::call(x);
 	}
 
+	// sqrt
 	using std::sqrt;
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> sqrt(vec<L, T, Q> const& x)
@@ -120,6 +131,7 @@ namespace detail
 		return detail::compute_sqrt<L, T, Q, detail::is_aligned<Q>::value>::call(x);
 	}
 
+	// inversesqrt
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType inversesqrt(genType x)
 	{
@@ -132,7 +144,7 @@ namespace detail
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559 || GLM_CONFIG_UNRESTRICTED_FLOAT, "'inversesqrt' only accept floating-point inputs");
 		return detail::compute_inversesqrt<L, T, Q, detail::is_aligned<Q>::value>::call(x);
 	}
-}
+}//namespace glm
 
 #if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_exponential_simd.inl"

@@ -1,3 +1,6 @@
+/// @ref core
+/// @file glm/detail/func_exponential_simd.inl
+
 #include "../simd/exponential.h"
 
 #if GLM_ARCH & GLM_ARCH_SSE2_BIT
@@ -28,7 +31,7 @@ namespace detail
 		}
 	};
 #	endif
-}
-}
+}//namespace detail
+}//namespace glm
 
-#endif
+#endif//GLM_ARCH & GLM_ARCH_SSE2_BIT

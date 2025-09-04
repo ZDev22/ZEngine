@@ -47,9 +47,9 @@ public:
         return true;
     }
 
-    void simulateKey(int key, int keyState) {
+    void simulateKey(int key, int newKeyState) {
         auto keyState = keyIndexMap.find(key);
-        keys[keyState->second] = keyState;
+        keys[keyState->second] = newKeyState;
         keys[keyState->second + 122] = 0;
     }
 

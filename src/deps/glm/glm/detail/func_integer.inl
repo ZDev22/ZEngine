@@ -1,8 +1,10 @@
+/// @ref core
+
 #include "_vectorize.hpp"
 #if(GLM_ARCH & GLM_ARCH_X86 && GLM_COMPILER & GLM_COMPILER_VC)
 #	include <intrin.h>
 #	pragma intrinsic(_BitScanReverse)
-#endif
+#endif//(GLM_ARCH & GLM_ARCH_X86 && GLM_COMPILER & GLM_COMPILER_VC)
 #include <limits>
 
 #if !GLM_HAS_EXTENDED_INTEGER_TYPE
@@ -97,7 +99,7 @@ namespace detail
 			}
 		};
 #		endif
-#	endif
+#	endif//GLM_HAS_BITSCAN_WINDOWS
 
 	template<length_t L, typename T, qualifier Q, bool EXEC = true>
 	struct compute_findMSB_step_vec
@@ -169,8 +171,10 @@ namespace detail
 			}
 		};
 #		endif
-#	endif
+#	endif//GLM_HAS_BITSCAN_WINDOWS
+}//namespace detail
 
+	// uaddCarry
 	GLM_FUNC_QUALIFIER uint uaddCarry(uint const& x, uint const& y, uint & Carry)
 	{
 		detail::uint64 const Value64(static_cast<detail::uint64>(x) + static_cast<detail::uint64>(y));
@@ -188,6 +192,7 @@ namespace detail
 		return vec<L, uint, Q>(Value64 % (Max32 + static_cast<detail::uint64>(1)));
 	}
 
+	// usubBorrow
 	GLM_FUNC_QUALIFIER uint usubBorrow(uint const& x, uint const& y, uint & Borrow)
 	{
 		Borrow = x >= y ? static_cast<uint>(0) : static_cast<uint>(1);
@@ -206,6 +211,7 @@ namespace detail
 		return mix(XgeY, YgeX, greaterThanEqual(y, x));
 	}
 
+	// umulExtended
 	GLM_FUNC_QUALIFIER void umulExtended(uint const& x, uint const& y, uint & msb, uint & lsb)
 	{
 		detail::uint64 Value64 = static_cast<detail::uint64>(x) * static_cast<detail::uint64>(y);
@@ -221,6 +227,7 @@ namespace detail
 		lsb = vec<L, uint, Q>(Value64);
 	}
 
+	// imulExtended
 	GLM_FUNC_QUALIFIER void imulExtended(int x, int y, int& msb, int& lsb)
 	{
 		detail::int64 Value64 = static_cast<detail::int64>(x) * static_cast<detail::int64>(y);
@@ -236,6 +243,7 @@ namespace detail
 		msb = vec<L, int, Q>((Value64 >> static_cast<detail::int64>(32)) & static_cast<detail::int64>(0xFFFFFFFF));
 	}
 
+	// bitfieldExtract
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER genIUType bitfieldExtract(genIUType Value, int Offset, int Bits)
 	{
@@ -250,6 +258,7 @@ namespace detail
 		return (Value >> static_cast<T>(Offset)) & static_cast<T>(detail::mask(Bits));
 	}
 
+	// bitfieldInsert
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER genIUType bitfieldInsert(genIUType const& Base, genIUType const& Insert, int Offset, int Bits)
 	{
@@ -272,6 +281,7 @@ namespace detail
 #	pragma warning(disable : 4309)
 #endif
 
+	// bitfieldReverse
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER genIUType bitfieldReverse(genIUType x)
 	{
@@ -299,6 +309,7 @@ namespace detail
 #			pragma warning(pop)
 #		endif
 
+	// bitCount
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER int bitCount(genIUType x)
 	{
@@ -314,7 +325,7 @@ namespace detail
 
 #		if GLM_COMPILER & GLM_COMPILER_VC
 #			pragma warning(push)
-#			pragma warning(disable : 4310)
+#			pragma warning(disable : 4310) //cast truncates constant value
 #		endif
 
 		vec<L, typename detail::make_unsigned<T>::type, Q> x(v);
@@ -331,6 +342,7 @@ namespace detail
 #		endif
 	}
 
+	// findLSB
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER int findLSB(genIUType Value)
 	{
@@ -347,6 +359,7 @@ namespace detail
 		return detail::functor1<vec, L, int, T, Q>::call(findLSB, x);
 	}
 
+	// findMSB
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER int findMSB(genIUType v)
 	{
@@ -362,7 +375,7 @@ namespace detail
 
 		return detail::compute_findMSB_vec<L, T, Q, static_cast<int>(sizeof(T) * 8)>::call(v);
 	}
-}
+}//namespace glm
 
 #if !GLM_HAS_EXTENDED_INTEGER_TYPE
 #	if GLM_COMPILER & GLM_COMPILER_GCC
@@ -376,3 +389,4 @@ namespace detail
 #if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_integer_simd.inl"
 #endif
+

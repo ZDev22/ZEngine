@@ -42,7 +42,7 @@ namespace detail
 			return add0;
 		}
 	};
-}
+}//namespace detail
 
 #	if GLM_ARCH & GLM_ARCH_AVX_BIT
 	template<>
@@ -57,9 +57,9 @@ namespace detail
 	{
 		return static_cast<int>(_mm_popcnt_u64(x));
 	}
-#	endif
-#	endif
+#	endif//GLM_MODEL
+#	endif//GLM_ARCH
 
-}
+}//namespace glm
 
-#endif
+#endif//GLM_ARCH & GLM_ARCH_SSE2_BIT

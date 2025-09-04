@@ -314,7 +314,7 @@ inline constexpr bigInts::uint65536_t factorial65536(int n) {
 }
 
 // Points
-inline constexpr float slopeOf(glm::vec2& point1, gl::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
+inline constexpr float slopeOf(glm::vec2& point1, glm::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
 inline glm::vec2 averagePoint(std::vector<glm::vec2> points) {
     glm::vec2 averagePoint = glm::vec2(0.f);
     for (int i = 0; i < points.size(); i++) { averagePoint += points[i]; }
