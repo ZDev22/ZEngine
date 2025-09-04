@@ -56,7 +56,7 @@ void Device::createInstance() {
     appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
     appInfo.pEngineName = "Z";
     appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
-    appInfo.apiVersion = VK_API_VERSION_1_2;
+    appInfo.apiVersion = VK_API_VERSION_1_4;
 
     auto extensions = getRequiredExtensions();
     std::cout << "Enabling extensions: " << extensions.size() << std::endl;

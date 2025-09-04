@@ -25,22 +25,23 @@
 #include <cstdint>
 
 #include "../../deps/ZDev/bigInts.hpp"
+#include <glm/glm.hpp>
 
 // Global functions
-inline float clamp(float value, float minValue, float maxValue) {
+inline constexpr float clamp(float value, float minValue, float maxValue) {
     if (value < minValue) { return minValue; }
     if (value > maxValue) { return maxValue; }
     return value;
 }
 
 // Interpolation
-inline float smoothStep(const float edge0, const float edge1, const float x) {
+inline constexpr float smoothStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * (3 - 2 * t);
 }
 
-inline float smootherStep(const float edge0, const float edge1, const float x) {
+inline constexpr float smootherStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * t * (t * (t * 6 - 15) + 10);
@@ -310,4 +311,12 @@ inline constexpr bigInts::uint65536_t factorial65536(int n) {
     }
     for (; i <= n; ++i) { result *= bigInts::uint65536_t(i); }
     return result;
+}
+
+// Points
+inline constexpr float slopeOf(glm::vec2& point1, gl::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
+inline glm::vec2 averagePoint(std::vector<glm::vec2> points) {
+    glm::vec2 averagePoint = glm::vec2(0.f);
+    for (int i = 0; i < points.size(); i++) { averagePoint += points[i]; }
+    return averagePoint / glm::vec2(points.size());
 }

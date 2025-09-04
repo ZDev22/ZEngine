@@ -7,20 +7,28 @@
 #define SLIMEATTACK_ENEMY_TYPE_BAT 5
 #define SLIMEATTACK_ENEMY_TYPE_OGRE 6
 
-namespace slimeattack {
-    struct SlimeAttackEnemyStruct { 
+class SlimeAttackEnemies {
+public:
+
+    SlimeAttackEnemies(SlimeAttack& slimeAttack);
+    void spawnNewWave(Pipeline& pipeline);
+    void spawnEnemy(const int type, Pipeline& pipeline);
+    void simulateEnemies();
+    bool isTouchingEnemies();
+    void damageEnemies();
+
+private:
+
+    struct Enemies {
         uint16_t health;
         uint16_t coinDrop;
         uint16_t defence;
         float cooldown;
+        float spawnTimer;
         glm::vec2 speed;
         bool skip;
     };
-    
-    void slimeAttackEnemyInit();
-    void slimeAttackSpawnNewWave(Pipeline& pipeline);
-    void slimeAttackSpawnEnemy(const int type, Pipeline& pipeline);
-    void slimeAttackSimulateEnemies();
-    bool slimeAttackIsTouchingEnemies();
-    void slimeAttackDamageEnemies();
+
+    SlimeAttack& slimeAttack;
+
 }

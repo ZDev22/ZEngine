@@ -1,6 +1,3 @@
-/// @ref core
-/// @file glm/detail/func_packing.inl
-
 #include "../common.hpp"
 #include "type_half.hpp"
 
@@ -181,7 +178,7 @@ namespace glm
 			detail::toFloat32(u.out[0]),
 			detail::toFloat32(u.out[1]));
 	}
-}//namespace glm
+}
 
 #if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_packing_simd.inl"

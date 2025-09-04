@@ -1,4 +1,4 @@
-# A C++ Vulkan engine supporting **windows** and **linux**
+# A C++ Vulkan engine supporting windows and linux
 
 ## How to use:
 
@@ -11,8 +11,8 @@ sudo apt install cmake
 sudo apt install libx11-dev
 sudo apt install gdb
 ```
-#### - Install **@category:debuggers cppdbg** to run the program in VSCode/VSCodium
-#### - Include the bin folder from VULKAN in you environmental variables *if you want to edit shaders!*
+- Install **@category:debuggers cppdbg** to run the program in VSCode/VSCodium 
+- Include the bin folder from VULKAN in you environmental variables *if you want to edit shaders!*
 
 ## How do make your own games:
 

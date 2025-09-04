@@ -24,20 +24,19 @@ public:
 
     unsigned char updateKeyState(int key) {
         auto keyState = keyIndexMap.find(key);
-        size_t index = keyState->second;
 
-        if (keys[index + 122] == 0) {
+        if (keys[keyState->second + 122] == 0) {
             if (glfwGetKey(window, key) == GLFW_PRESS) {
-                if (keys[index] == KEY_IDLE) { keys[index] = KEY_HIT; }
-                else { keys[index] = KEY_PRESSED; }
+                if (keys[keyState->second] == KEY_IDLE) { keys[keyState->second] = KEY_HIT; }
+                else { keys[keyState->second] = KEY_PRESSED; }
             }
             else {
-                if (keys[index] >= KEY_HIT) { keys[index] = KEY_RELEASED; }
-                else { keys[index] = KEY_IDLE; }
+                if (keys[keyState->second] >= KEY_HIT) { keys[keyState->second] = KEY_RELEASED; }
+                else { keys[keyState->second] = KEY_IDLE; }
             }
-            keys[index + 122] = 1;
+            keys[keyState->second + 122] = 1;
         }
-        return keys[index];
+        return keys[keyState->second];
     }
 
     bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
@@ -46,6 +45,12 @@ public:
     bool keysPressed(std::vector<int>& keys) {
         for (size_t k = 0; k < keys.size(); k++) { if (!glfwGetKey(window, keys[k]) == GLFW_PRESS) { return false; } }
         return true;
+    }
+
+    void simulateKey(int key, int keyState) {
+        auto keyState = keyIndexMap.find(key);
+        keys[keyState->second] = keyState;
+        keys[keyState->second + 122] = 0;
     }
 
     void resetKeys() { std::memset(keys.data() + 122, 0, (122)); }

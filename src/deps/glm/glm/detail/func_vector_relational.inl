@@ -80,7 +80,7 @@ namespace glm
 			Result[i] = !v[i];
 		return Result;
 	}
-}//namespace glm
+}
 
 #if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_vector_relational_simd.inl"

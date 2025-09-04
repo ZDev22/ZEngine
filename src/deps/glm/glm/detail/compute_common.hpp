@@ -6,7 +6,7 @@
 namespace glm{
 namespace detail
 {
-	template<typename genFIType, bool /*signed*/>
+	template<typename genFIType, bool>
 	struct compute_abs
 	{};
 
@@ -20,7 +20,6 @@ namespace detail
 				"'abs' only accept floating-point and integer scalar or vector inputs");
 
 			return x >= genFIType(0) ? x : -x;
-			// TODO, perf comp with: *(((int *) &x) + 1) &= 0x7fffffff;
 		}
 	};
 
@@ -46,5 +45,5 @@ namespace detail
 			return x;
 		}
 	};
-}//namespace detail
-}//namespace glm
+}
+}

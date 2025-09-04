@@ -2,28 +2,35 @@
 
 #include "../../deps/ZDev/collision.hpp"
 
-namespace slimeattack {
+std::vector<Enemies> enemies = {};
+uint8_t wave = 1;
 
-    std::vector<SlimeAttackEnemyStruct> slimeAttackEnemyVector = {};
-    uint8_t wave = 1;
-
-    void slimeAttackEnemyInit() {
-        while (slimeAttackEnemyVector.size() < sprites.size()) {
-            SlimeAttackEnemyStruct enemy;
-            enemy.skip = true;
-            slimeAttackEnemyVector.push_back(enemy);
-        }
+SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack) : slimeAttack(slimeAttack) {
+    while (enemies.size() < sprites.size()) {
+        Enemies enemy;
+        enemy.skip = true;
+        enemies.push_back(enemy);
     }
+}
 
-    void slimeAttackSpawnNewWave(Pipeline& pipeline) {
-        for (int i = sprites.size(); i > 0; i--) {
-            
+void SlimeAttackEnemies::spawnNewWave(Pipeline& pipeline) {
+    int i = sprites.size();
+    for (; i > 0; i--) { if (!sprites[i].visible) { break; }}
+
+    if (i < sprites.size()) {
+        while (true) {
+            i = sprites.size();
+            if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) { 
+                sprites.erase(i);
+                spriteCPU.erase(i);
+                enemies.erase(i);
+            }
+            else { break; }
         }
+
         switch (wave) {
         case 1:
             slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline);
-            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_BAT, pipeline);
-            slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_OGRE, pipeline);
             break;
         case 2:
             slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline);
@@ -36,102 +43,118 @@ namespace slimeattack {
             slimeAttackSpawnEnemy(SLIMEATTACK_ENEMY_TYPE_OGRE, pipeline);
             break;
         }
+        wave++;
     }
+}
 
-    void slimeAttackSpawnEnemy(const int type, Pipeline& pipeline) {
-        switch(type) {
+void SlimeAttackEnemies::spawnEnemy(const int type, Pipeline& pipeline) {
+    float x = randomBool() ? -.9f : .9f;
+    switch(type) {
 
-        case SLIMEATTACK_ENEMY_TYPE_SLIME:
+    case SLIMEATTACK_ENEMY_TYPE_SLIME:
 
-            pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+        sprites[sprites.size() - 1].visible = false;
 
-            SlimeAttackEnemyStruct slime;
-            slime.health = 2;
-            slime.coinDrop = 1;
-            slime.defence = 0;
-            slime.cooldown = 0.f;
-            slime.speed = glm::vec2(0.f);
-            slime.skip = false;
+        Enemies slime;
+        slime.health = 2;
+        slime.coinDrop = 1;
+        slime.defence = 0;
+        slime.cooldown = 0.f;
+        slime.spawnTimer = randomFloat(0.f, 3.f);
+        slime.speed = glm::vec2(0.f);
+        slime.skip = false;
 
-            slimeAttackEnemyVector.push_back(slime);
-            break;
+        enemies.push_back(slime);
+        break;
 
-        case SLIMEATTACK_ENEMY_TYPE_BAT:
+    case SLIMEATTACK_ENEMY_TYPE_BAT:
 
-            pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
-            
-            SlimeAttackEnemyStruct bat;
-            bat.health = 3;
-            bat.coinDrop = 4;
-            bat.defence = 0;
-            bat.cooldown = 0.f;
-            slime.speed = glm::vec2(0.f);
-            bat.skip = false;
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+        sprites[sprites.size() - 1].visible = false;
 
-            slimeAttackEnemyVector.push_back(bat);
-            break;
+        Enemies bat;
+        bat.health = 3;
+        bat.coinDrop = 4;
+        bat.defence = 0;
+        bat.cooldown = 0.f;
+        bat.spawnTimer = randomFloat(0.f, 3.f);
+        bat.speed = glm::vec2(0.f);
+        bat.skip = false;
 
-        case SLIMEATTACK_ENEMY_TYPE_OGRE:
+        enemies.push_back(bat);
+        break;
 
-            pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
-            
-            SlimeAttackEnemyStruct ogre;
-            ogre.health = 6;
-            ogre.coinDrop = 8;
-            ogre.defence = 1;
-            ogre.cooldown = 0.f;
-            slime.speed = glm::vec2(0.f);
-            ogre.skip = false;
+    case SLIMEATTACK_ENEMY_TYPE_OGRE:
 
-            slimeAttackEnemyVector.push_back(ogre);
-            break;
-        }
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, 0.f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
+        sprites[sprites.size() - 1].visible = false;
+
+        Enemies ogre;
+        ogre.health = 6;
+        ogre.coinDrop = 8;
+        ogre.defence = 1;
+        ogre.cooldown = 0.f;
+        ogre.spawnTimer = randomFloat(0.f, 3.f);
+        ogre.speed = glm::vec2(0.f);
+        ogre.skip = false;
+
+        enemies.push_back(ogre);
+        break;
     }
-    
-    void slimeAttackSimulateEnemies() {
-        for (size_t i = 0; i < sprites.size(); i++) {
-            if (!slimeAttackEnemyVector[i].skip) {
-                slimeAttackEnemyVector[i].cooldown += 1.f * deltaTime;
+}
 
-                switch(sprites[i].textureIndex) {
+void SlimeAttackEnemies::simulateEnemies() {
+    for (size_t i = 0; i < sprites.size(); i++) {
+        if (!enemies[i].skip) {
+            enemies[i].cooldown += 1.f * deltaTime;
 
-                case SLIMEATTACK_ENEMY_TYPE_SLIME:
-                    if (slimeAttackEnemyVector[i].cooldown > 2.5f) {
-                        slimeAttackEnemyVector[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .2f : -.2f, -1.2f);
-                        slimeAttackEnemyVector[i].cooldown = 0.f;
-                    }
-                    slimeAttackEnemyVector[i].speed.y += 1.5f * deltaTime;
-                    sprites[i].position += slimeAttackEnemyVector[i].speed * glm::vec2(deltaTime);
+            switch(sprites[i].textureIndex) {
 
-                    if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { slimeAttackEnemyVector[i].speed = glm::vec2(0.f); }
-                    break;
-                case SLIMEATTACK_ENEMY_TYPE_BAT:
-                    break;
-                case SLIMEATTACK_ENEMY_TYPE_OGRE:
-                    break;
+            case SLIMEATTACK_ENEMY_TYPE_SLIME:
+                if (enemies[i].cooldown > 2.5f) {
+                    enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .2f : -.2f, -1.2f);
+                    enemies[i].cooldown = 0.f;
                 }
-            }
-        }
-    }
-    
-    bool slimeAttackIsTouchingEnemies() {
-        for (size_t i = 0; i < sprites.size(); i++) {
-            if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
-                if (checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) { return true; }
-            }
-        }
-        return false;
-    }
+                enemies[i].speed.y += 1.5f * deltaTime;
+                break;
+            case SLIMEATTACK_ENEMY_TYPE_BAT:
+                if (enemies[i].cooldown > 2.f) {
+                    enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .5f : -.5f, 1.5f);
+                    enemies[i].speed.y -=  1.f * deltaTime;
 
-    void slimeAttackDamageEnemies() {
-        for (size_t i = 0; i < sprites.size(); i++) {
-            if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) {
-                slimeAttackEnemyVector[i].health--;
-                if (slimeAttackEnemyVector[i].health <= 0) { 
-                    slimeAttackEnemyVector[i].skip = true;
-                    sprites[i].textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
-                    spriteCPU[i].visible = false;
+                    if (absoulteFloat(sprites[i].position.x) >= .9f) { enemies[i].speed.x = 0.f; }
                 }
+                break;
+            case SLIMEATTACK_ENEMY_TYPE_OGRE:
+                if (enemies[i].cooldown > 2.5f) { if (absoluteFloat(sprites[0].position - sprites[i].position) <= .2f) { slimeAttack.knockBack(sprites[i].position.x); }}
+                enemies[i].speed.x += (sprites[0].position.x >= sprites[i].position.x ? -.1f : .1f) * deltaTime;
+                break;
+            }
+
+            sprites[i].position += enemies[i].speed * glm::vec2(deltaTime);
+            if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { enemies[i].speed = glm::vec2(0.f); }
+        }
+    }
+}
+
+bool SlimeAttackEnemies::isTouchingEnemies() {
+    for (size_t i = 0; i < sprites.size(); i++) {
+        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
+            if (checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) { return true; }
+        }
+    }
+    return false;
+}
+
+void SlimeAttackEnemies::damageEnemies() {
+    for (size_t i = 0; i < sprites.size(); i++) {
+        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) {
+            enemies[i].health--;
+            if (enemies[i].health <= 0) { 
+                enemies[i].skip = true;
+                sprites[i].textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
+                spriteCPU[i].visible = false;
             }
         }
     }

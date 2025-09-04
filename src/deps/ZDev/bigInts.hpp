@@ -182,16 +182,11 @@ struct uint256_t {
     constexpr uint256_t(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) : words{{w0,w1,w2,w3}} {}
 
     constexpr bool is_zero() const { return words[0]==0 && words[1]==0 && words[2]==0 && words[3]==0; }
-    constexpr bool operator==(const uint256_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint256_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint256_t& rhs) const {
-        for (int i = 3; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 3; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
 
-    constexpr bool operator>=(const uint256_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint256_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint256_t& rhs) const { return !(*this > rhs); }
     constexpr uint256_t operator+(const uint256_t& rhs) const {
         uint256_t res;
         unsigned __int128 carry = 0;
@@ -224,6 +219,83 @@ struct uint256_t {
     }
 
     constexpr uint256_t& operator-=(const uint256_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint256_t operator*(const uint256_t& rhs) const {
+        uint64_t res_words[4] = {0,0,0,0};
+#if defined(__SIZEOF_INT128__)
+        __uint128_t tmp[8] = {0,0,0,0,0,0,0,0};
+        for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 4; ++i) {
+            tmp[i] += carry;
+            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
+        }
+#else
+        unsigned __int128 acc[8] = {0,0,0,0,0,0,0,0};
+        for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i+j] += lo;
+            acc[i+j+1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 4; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+#endif
+        return {res_words[0], res_words[1], res_words[2], res_words[3]};
+    }
+
+    constexpr uint256_t& operator*=(const uint256_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint256_t operator/(const uint256_t& divisor) const {
+        if (divisor.is_zero()) return uint256_t(0);
+        uint256_t quotient(0);
+        uint256_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint256_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+
+    constexpr uint256_t& operator/=(const uint256_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint256_t operator%(const uint256_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint256_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint256_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint256_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint256_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint256_t& rhs) const {
+        for (int i = 3; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint256_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint256_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint256_t& rhs) const { return !(*this > rhs); }
     constexpr uint256_t operator<<(int n) const { uint256_t res = *this; res <<= n; return res; }
     constexpr uint256_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -265,79 +337,6 @@ struct uint256_t {
     }
 
     constexpr uint256_t& operator|=(const uint256_t& rhs) { words[0] |= rhs.words[0]; words[1] |= rhs.words[1]; words[2] |= rhs.words[2]; words[3] |= rhs.words[3]; return *this; }
-    constexpr uint256_t operator*(const uint256_t& rhs) const {
-        uint64_t res_words[4] = {0,0,0,0};
-#if defined(__SIZEOF_INT128__)
-        __uint128_t tmp[8] = {0,0,0,0,0,0,0,0};
-        for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 4; ++i) {
-            tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
-            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
-        }
-#else
-        unsigned __int128 acc[8] = {0,0,0,0,0,0,0,0};
-        for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i+j] += lo;
-            acc[i+j+1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 4; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-#endif
-        return {res_words[0], res_words[1], res_words[2], res_words[3]};
-    }
-
-    constexpr uint256_t& operator*=(const uint256_t& rhs) { *this = *this * rhs; return *this; }
-
-    constexpr int bit_width() const {
-        for (int i = 3; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-
-    constexpr uint256_t operator/(const uint256_t& divisor) const {
-        if (divisor.is_zero()) return uint256_t(0);
-        uint256_t quotient(0);
-        uint256_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint256_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-
-    constexpr uint256_t& operator/=(const uint256_t& rhs) { *this = *this / rhs; return *this; }
-
-    constexpr uint256_t operator%(const uint256_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint256_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint256_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
-    }
 
 #if defined(__SIZEOF_INT128__)
     uint64_t div_mod_uint64(uint64_t m) {
@@ -408,17 +407,11 @@ struct uint512_t {
         for (size_t i = 0; i < 8; ++i) if (words[i] != 0) return false;
         return true;
     }
-
-    constexpr bool operator==(const uint512_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint512_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint512_t& rhs) const {
-        for (int i = 7; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 7; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
 
-    constexpr bool operator>=(const uint512_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint512_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint512_t& rhs) const { return !(*this > rhs); }
     constexpr uint512_t operator+(const uint512_t& rhs) const {
         uint512_t res;
         unsigned __int128 carry = 0;
@@ -451,6 +444,83 @@ struct uint512_t {
     }
 
     constexpr uint512_t& operator-=(const uint512_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint512_t operator*(const uint512_t& rhs) const {
+        uint64_t res_words[8] = {0,0,0,0,0,0,0,0};
+#if defined(__SIZEOF_INT128__)
+        __uint128_t tmp[16] = {0};
+        for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 8; ++i) {
+            tmp[i] += carry;
+            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
+        }
+#else
+        unsigned __int128 acc[16] = {0};
+        for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i+j] += lo;
+            acc[i+j+1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 8; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+#endif
+        return {res_words[0], res_words[1], res_words[2], res_words[3], res_words[4], res_words[5], res_words[6], res_words[7]};
+    }
+
+    constexpr uint512_t& operator*=(const uint512_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint512_t operator/(const uint512_t& divisor) const {
+        if (divisor.is_zero()) return uint512_t(0);
+        uint512_t quotient(0);
+        uint512_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint512_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+
+    constexpr uint512_t& operator/=(const uint512_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint512_t operator%(const uint512_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint512_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint512_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint512_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint512_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint512_t& rhs) const {
+        for (int i = 7; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint512_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint512_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint512_t& rhs) const { return !(*this > rhs); }
     constexpr uint512_t operator<<(int n) const { uint512_t res = *this; res <<= n; return res; }
     constexpr uint512_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -496,80 +566,6 @@ struct uint512_t {
     constexpr uint512_t& operator|=(const uint512_t& rhs) {
         for (size_t i=0;i<8;++i) words[i] |= rhs.words[i];
         return *this;
-    }
-
-    constexpr uint512_t operator*(const uint512_t& rhs) const {
-        uint64_t res_words[8] = {0,0,0,0,0,0,0,0};
-#if defined(__SIZEOF_INT128__)
-        __uint128_t tmp[16] = {0};
-        for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 8; ++i) {
-            tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
-            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
-        }
-#else
-        unsigned __int128 acc[16] = {0};
-        for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i+j] += lo;
-            acc[i+j+1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 8; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-#endif
-        return {res_words[0], res_words[1], res_words[2], res_words[3], res_words[4], res_words[5], res_words[6], res_words[7]};
-    }
-
-    constexpr uint512_t& operator*=(const uint512_t& rhs) { *this = *this * rhs; return *this; }
-
-    constexpr int bit_width() const {
-        for (int i = 7; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-
-    constexpr uint512_t operator/(const uint512_t& divisor) const {
-        if (divisor.is_zero()) return uint512_t(0);
-        uint512_t quotient(0);
-        uint512_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint512_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-
-    constexpr uint512_t& operator/=(const uint512_t& rhs) { *this = *this / rhs; return *this; }
-
-    constexpr uint512_t operator%(const uint512_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint512_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint512_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -634,17 +630,11 @@ struct uint1024_t {
         for (size_t i = 0; i < 16; ++i) if (words[i] != 0) return false;
         return true;
     }
-
-    constexpr bool operator==(const uint1024_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint1024_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint1024_t& rhs) const {
-        for (int i = 15; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 15; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
 
-    constexpr bool operator>=(const uint1024_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint1024_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint1024_t& rhs) const { return !(*this > rhs); }
     constexpr uint1024_t operator+(const uint1024_t& rhs) const {
         uint1024_t res;
         unsigned __int128 carry = 0;
@@ -677,6 +667,85 @@ struct uint1024_t {
     }
 
     constexpr uint1024_t& operator-=(const uint1024_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint1024_t operator*(const uint1024_t& rhs) const {
+        uint64_t res_words[16] = {0};
+#if defined(__SIZEOF_INT128__)
+        __uint128_t tmp[32] = {0};
+        for (int i = 0; i < 16; ++i) for (int j = 0; j < 16; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 16; ++i) {
+            tmp[i] += carry;
+            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
+        }
+#else
+        unsigned __int128 acc[32] = {0};
+        for (int i = 0; i < 16; ++i) for (int j = 0; j < 16; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i+j] += lo;
+            acc[i+j+1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 16; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+#endif
+        uint1024_t res;
+        for (int i = 0; i < 16; ++i) res.words[i] = res_words[i];
+        return res;
+    }
+
+    constexpr uint1024_t& operator*=(const uint1024_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint1024_t operator/(const uint1024_t& divisor) const {
+        if (divisor.is_zero()) return uint1024_t(0);
+        uint1024_t quotient(0);
+        uint1024_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint1024_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+
+    constexpr uint1024_t& operator/=(const uint1024_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint1024_t operator%(const uint1024_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint1024_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint1024_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint1024_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint1024_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint1024_t& rhs) const {
+        for (int i = 15; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint1024_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint1024_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint1024_t& rhs) const { return !(*this > rhs); }
     constexpr uint1024_t operator<<(int n) const { uint1024_t res = *this; res <<= n; return res; }
     constexpr uint1024_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -722,82 +791,6 @@ struct uint1024_t {
     constexpr uint1024_t& operator|=(const uint1024_t& rhs) {
         for (size_t i=0;i<16;++i) words[i] |= rhs.words[i];
         return *this;
-    }
-
-    constexpr uint1024_t operator*(const uint1024_t& rhs) const {
-        uint64_t res_words[16] = {0};
-#if defined(__SIZEOF_INT128__)
-        __uint128_t tmp[32] = {0};
-        for (int i = 0; i < 16; ++i) for (int j = 0; j < 16; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 16; ++i) {
-            tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
-            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
-        }
-#else
-        unsigned __int128 acc[32] = {0};
-        for (int i = 0; i < 16; ++i) for (int j = 0; j < 16; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i+j] += lo;
-            acc[i+j+1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 16; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-#endif
-        uint1024_t res;
-        for (int i = 0; i < 16; ++i) res.words[i] = res_words[i];
-        return res;
-    }
-
-    constexpr uint1024_t& operator*=(const uint1024_t& rhs) { *this = *this * rhs; return *this; }
-
-    constexpr int bit_width() const {
-        for (int i = 15; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-
-    constexpr uint1024_t operator/(const uint1024_t& divisor) const {
-        if (divisor.is_zero()) return uint1024_t(0);
-        uint1024_t quotient(0);
-        uint1024_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint1024_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-
-    constexpr uint1024_t& operator/=(const uint1024_t& rhs) { *this = *this / rhs; return *this; }
-
-    constexpr uint1024_t operator%(const uint1024_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint1024_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint1024_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -870,17 +863,11 @@ struct uint2048_t {
         for (size_t i = 0; i < 32; ++i) if (words[i] != 0) return false;
         return true;
     }
-
-    constexpr bool operator==(const uint2048_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint2048_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint2048_t& rhs) const {
-        for (int i = 31; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 31; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
 
-    constexpr bool operator>=(const uint2048_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint2048_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint2048_t& rhs) const { return !(*this > rhs); }
     constexpr uint2048_t operator+(const uint2048_t& rhs) const {
         uint2048_t res;
         unsigned __int128 carry = 0;
@@ -913,6 +900,86 @@ struct uint2048_t {
     }
 
     constexpr uint2048_t& operator-=(const uint2048_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint2048_t operator*(const uint2048_t& rhs) const {
+        uint64_t res_words[32] = {0};
+#if defined(__SIZEOF_INT128__)
+        __uint128_t tmp[64] = {0};
+        for (int i = 0; i < 32; ++i) for (int j = 0; j < 32; ++j) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 32; ++i) {
+            tmp[i] += carry;
+            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
+        }
+#else
+        unsigned __int128 acc[64] = {0};
+        for (int i = 0; i < 32; ++i) for (int j = 0; j < 32; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i + j] += lo;
+            acc[i + j + 1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 32; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+#endif
+        uint2048_t res;
+        for (int i = 0; i < 32; ++i) res.words[i] = res_words[i];
+        return res;
+    }
+
+    constexpr uint2048_t& operator*=(const uint2048_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint2048_t operator/(const uint2048_t& divisor) const {
+        if (divisor.is_zero()) return uint2048_t(0);
+        uint2048_t quotient(0);
+        uint2048_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint2048_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+
+    constexpr uint2048_t& operator/=(const uint2048_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint2048_t operator%(const uint2048_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint2048_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint2048_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint2048_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint2048_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint2048_t& rhs) const {
+        for (int i = 31; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint2048_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint2048_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint2048_t& rhs) const { return !(*this > rhs); }
+
     constexpr uint2048_t operator<<(int n) const { uint2048_t res = *this; res <<= n; return res; }
     constexpr uint2048_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -958,82 +1025,6 @@ struct uint2048_t {
     constexpr uint2048_t& operator|=(const uint2048_t& rhs) {
         for (size_t i = 0; i < 32; ++i) words[i] |= rhs.words[i];
         return *this;
-    }
-
-    constexpr uint2048_t operator*(const uint2048_t& rhs) const {
-        uint64_t res_words[32] = {0};
-#if defined(__SIZEOF_INT128__)
-        __uint128_t tmp[64] = {0};
-        for (int i = 0; i < 32; ++i) for (int j = 0; j < 32; ++j) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 32; ++i) {
-            tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
-            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
-        }
-#else
-        unsigned __int128 acc[64] = {0};
-        for (int i = 0; i < 32; ++i) for (int j = 0; j < 32; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i + j] += lo;
-            acc[i + j + 1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 32; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-#endif
-        uint2048_t res;
-        for (int i = 0; i < 32; ++i) res.words[i] = res_words[i];
-        return res;
-    }
-
-    constexpr uint2048_t& operator*=(const uint2048_t& rhs) { *this = *this * rhs; return *this; }
-
-    constexpr int bit_width() const {
-        for (int i = 31; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-
-    constexpr uint2048_t operator/(const uint2048_t& divisor) const {
-        if (divisor.is_zero()) return uint2048_t(0);
-        uint2048_t quotient(0);
-        uint2048_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint2048_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-
-    constexpr uint2048_t& operator/=(const uint2048_t& rhs) { *this = *this / rhs; return *this; }
-
-    constexpr uint2048_t operator%(const uint2048_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint2048_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint2048_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -1109,17 +1100,11 @@ struct uint4096_t {
     constexpr explicit uint4096_t(uint64_t v) : words{{v}} {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 64; ++i) if (words[i] != 0) return false; return true; }
-
-    constexpr bool operator==(const uint4096_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint4096_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint4096_t& rhs) const {
-        for (int i = 63; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 63; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
 
-    constexpr bool operator>=(const uint4096_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint4096_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint4096_t& rhs) const { return !(*this > rhs); }
     constexpr uint4096_t operator+(const uint4096_t& rhs) const {
         uint4096_t res;
         unsigned __int128 carry = 0;
@@ -1152,6 +1137,85 @@ struct uint4096_t {
     }
 
     constexpr uint4096_t& operator-=(const uint4096_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint4096_t operator*(const uint4096_t& rhs) const {
+        uint64_t res_words[64] = {0};
+#if defined(__SIZEOF_INT128__)
+        __uint128_t tmp[128] = {0};
+        for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 64; ++i) {
+            tmp[i] += carry;
+            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
+        }
+#else
+        unsigned __int128 acc[128] = {0};
+        for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i + j] += lo;
+            acc[i + j + 1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 64; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+#endif
+        uint4096_t res;
+        for (int i = 0; i < 64; ++i) res.words[i] = res_words[i];
+        return res;
+    }
+
+    constexpr uint4096_t& operator*=(const uint4096_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint4096_t operator/(const uint4096_t& divisor) const {
+        if (divisor.is_zero()) return uint4096_t(0);
+        uint4096_t quotient(0);
+        uint4096_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint4096_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+
+    constexpr uint4096_t& operator/=(const uint4096_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint4096_t operator%(const uint4096_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint4096_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint4096_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint4096_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint4096_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint4096_t& rhs) const {
+        for (int i = 63; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint4096_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint4096_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint4096_t& rhs) const { return !(*this > rhs); }
     constexpr uint4096_t operator<<(int n) const { uint4096_t res = *this; res <<= n; return res; }
     constexpr uint4096_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -1197,82 +1261,6 @@ struct uint4096_t {
     constexpr uint4096_t& operator|=(const uint4096_t& rhs) {
         for (size_t i = 0; i < 64; ++i) words[i] |= rhs.words[i];
         return *this;
-    }
-
-    constexpr uint4096_t operator*(const uint4096_t& rhs) const {
-        uint64_t res_words[64] = {0};
-#if defined(__SIZEOF_INT128__)
-        __uint128_t tmp[128] = {0};
-        for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 64; ++i) {
-            tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
-            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
-        }
-#else
-        unsigned __int128 acc[128] = {0};
-        for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i + j] += lo;
-            acc[i + j + 1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 64; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-#endif
-        uint4096_t res;
-        for (int i = 0; i < 64; ++i) res.words[i] = res_words[i];
-        return res;
-    }
-
-    constexpr uint4096_t& operator*=(const uint4096_t& rhs) { *this = *this * rhs; return *this; }
-
-    constexpr int bit_width() const {
-        for (int i = 63; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-
-    constexpr uint4096_t operator/(const uint4096_t& divisor) const {
-        if (divisor.is_zero()) return uint4096_t(0);
-        uint4096_t quotient(0);
-        uint4096_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint4096_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-
-    constexpr uint4096_t& operator/=(const uint4096_t& rhs) { *this = *this / rhs; return *this; }
-
-    constexpr uint4096_t operator%(const uint4096_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint4096_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint4096_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -1348,17 +1336,11 @@ struct uint8192_t {
     constexpr explicit uint8192_t(uint64_t v) : words{{v}} {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 128; ++i) if (words[i] != 0) return false; return true; }
-
-    constexpr bool operator==(const uint8192_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint8192_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint8192_t& rhs) const {
-        for (int i = 127; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 127; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
 
-    constexpr bool operator>=(const uint8192_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint8192_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint8192_t& rhs) const { return !(*this > rhs); }
     constexpr uint8192_t operator+(const uint8192_t& rhs) const {
         uint8192_t res;
         unsigned __int128 carry = 0;
@@ -1391,6 +1373,85 @@ struct uint8192_t {
     }
 
     constexpr uint8192_t& operator-=(const uint8192_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint8192_t operator*(const uint8192_t& rhs) const {
+        uint64_t res_words[128] = {0};
+#if defined(__SIZEOF_INT128__)
+        __uint128_t tmp[256] = {0};
+        for (int i = 0; i < 128; ++i) for (int j = 0; j < 128; ++j) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 128; ++i) {
+            tmp[i] += carry;
+            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
+        }
+#else
+        unsigned __int128 acc[256] = {0};
+        for (int i = 0; i < 128; ++i) for (int j = 0; j < 128; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i + j] += lo;
+            acc[i + j + 1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 128; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+#endif
+        uint8192_t res;
+        for (int i = 0; i < 128; ++i) res.words[i] = res_words[i];
+        return res;
+    }
+
+    constexpr uint8192_t& operator*=(const uint8192_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint8192_t operator/(const uint8192_t& divisor) const {
+        if (divisor.is_zero()) return uint8192_t(0);
+        uint8192_t quotient(0);
+        uint8192_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint8192_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+
+    constexpr uint8192_t& operator/=(const uint8192_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint8192_t operator%(const uint8192_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint8192_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint8192_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint8192_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint8192_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint8192_t& rhs) const {
+        for (int i = 127; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint8192_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint8192_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint8192_t& rhs) const { return !(*this > rhs); }
     constexpr uint8192_t operator<<(int n) const { uint8192_t res = *this; res <<= n; return res; }
     constexpr uint8192_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -1436,82 +1497,6 @@ struct uint8192_t {
     constexpr uint8192_t& operator|=(const uint8192_t& rhs) {
         for (size_t i = 0; i < 128; ++i) words[i] |= rhs.words[i];
         return *this;
-    }
-
-    constexpr uint8192_t operator*(const uint8192_t& rhs) const {
-        uint64_t res_words[128] = {0};
-#if defined(__SIZEOF_INT128__)
-        __uint128_t tmp[256] = {0};
-        for (int i = 0; i < 128; ++i) for (int j = 0; j < 128; ++j) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 128; ++i) {
-            tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
-            carry = static_cast<unsigned __int128>(tmp[i] >> 64);
-        }
-#else
-        unsigned __int128 acc[256] = {0};
-        for (int i = 0; i < 128; ++i) for (int j = 0; j < 128; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i + j] += lo;
-            acc[i + j + 1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 128; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-#endif
-        uint8192_t res;
-        for (int i = 0; i < 128; ++i) res.words[i] = res_words[i];
-        return res;
-    }
-
-    constexpr uint8192_t& operator*=(const uint8192_t& rhs) { *this = *this * rhs; return *this; }
-
-    constexpr int bit_width() const {
-        for (int i = 127; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-
-    constexpr uint8192_t operator/(const uint8192_t& divisor) const {
-        if (divisor.is_zero()) return uint8192_t(0);
-        uint8192_t quotient(0);
-        uint8192_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint8192_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-
-    constexpr uint8192_t& operator/=(const uint8192_t& rhs) { *this = *this / rhs; return *this; }
-
-    constexpr uint8192_t operator%(const uint8192_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint8192_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint8192_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -1588,15 +1573,6 @@ struct uint16384_t {
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 256; ++i) if (words[i] != 0) return false; return true; }
 
-    constexpr bool operator==(const uint16384_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint16384_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint16384_t& rhs) const {
-        for (int i = 255; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
-    }
-    constexpr bool operator>=(const uint16384_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint16384_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint16384_t& rhs) const { return !(*this > rhs); }
     constexpr uint16384_t operator+(const uint16384_t& rhs) const {
         uint16384_t res;
         unsigned __int128 carry = 0;
@@ -1621,49 +1597,6 @@ struct uint16384_t {
         return res;
     }
     constexpr uint16384_t& operator-=(const uint16384_t& rhs) { *this = *this - rhs; return *this; }
-    constexpr uint16384_t operator<<(int n) const { uint16384_t res = *this; res <<= n; return res; }
-    constexpr uint16384_t& operator<<=(int n) {
-        if (n <= 0) return *this;
-        if (n >= 16384) { words.fill(0); return *this; }
-        int word_shift = n / 64;
-        int bit_shift = n % 64;
-        std::array<uint64_t, 256> nw{{0}};
-        for (int i = 255; i >= 0; --i) {
-            int ni = i + word_shift;
-            if (ni > 255) continue;
-            uint64_t part = words[i];
-            nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
-            if (ni + 1 <= 255 && bit_shift != 0) nw[ni + 1] |= part >> (64 - bit_shift);
-        }
-        words = nw;
-        return *this;
-    }
-    constexpr uint16384_t operator>>(int n) const { uint16384_t res = *this; res >>= n; return res; }
-    constexpr uint16384_t& operator>>=(int n) {
-        if (n <= 0) return *this;
-        if (n >= 16384) { words.fill(0); return *this; }
-        int word_shift = n / 64;
-        int bit_shift = n % 64;
-        std::array<uint64_t, 256> nw{{0}};
-        for (int i = 0; i < 256; ++i) {
-            int ni = i - word_shift;
-            if (ni < 0) continue;
-            uint64_t part = words[i];
-            nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
-            if (ni - 1 >= 0 && bit_shift != 0) nw[ni - 1] |= part << (64 - bit_shift);
-        }
-        words = nw;
-        return *this;
-    }
-    constexpr uint16384_t operator|(const uint16384_t& rhs) const {
-        uint16384_t r;
-        for (size_t i = 0; i < 256; ++i) r.words[i] = words[i] | rhs.words[i];
-        return r;
-    }
-    constexpr uint16384_t& operator|=(const uint16384_t& rhs) {
-        for (size_t i = 0; i < 256; ++i) words[i] |= rhs.words[i];
-        return *this;
-    }
     constexpr uint16384_t operator*(const uint16384_t& rhs) const {
         uint64_t res_words[256] = {0};
         unsigned __int128 acc[512] = {0};
@@ -1722,6 +1655,59 @@ struct uint16384_t {
             }
         }
         return remainder;
+    }
+
+    constexpr bool operator==(const uint16384_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint16384_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint16384_t& rhs) const {
+        for (int i = 255; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+    constexpr bool operator>=(const uint16384_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint16384_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint16384_t& rhs) const { return !(*this > rhs); }
+    constexpr uint16384_t operator<<(int n) const { uint16384_t res = *this; res <<= n; return res; }
+    constexpr uint16384_t& operator<<=(int n) {
+        if (n <= 0) return *this;
+        if (n >= 16384) { words.fill(0); return *this; }
+        int word_shift = n / 64;
+        int bit_shift = n % 64;
+        std::array<uint64_t, 256> nw{{0}};
+        for (int i = 255; i >= 0; --i) {
+            int ni = i + word_shift;
+            if (ni > 255) continue;
+            uint64_t part = words[i];
+            nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
+            if (ni + 1 <= 255 && bit_shift != 0) nw[ni + 1] |= part >> (64 - bit_shift);
+        }
+        words = nw;
+        return *this;
+    }
+    constexpr uint16384_t operator>>(int n) const { uint16384_t res = *this; res >>= n; return res; }
+    constexpr uint16384_t& operator>>=(int n) {
+        if (n <= 0) return *this;
+        if (n >= 16384) { words.fill(0); return *this; }
+        int word_shift = n / 64;
+        int bit_shift = n % 64;
+        std::array<uint64_t, 256> nw{{0}};
+        for (int i = 0; i < 256; ++i) {
+            int ni = i - word_shift;
+            if (ni < 0) continue;
+            uint64_t part = words[i];
+            nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
+            if (ni - 1 >= 0 && bit_shift != 0) nw[ni - 1] |= part << (64 - bit_shift);
+        }
+        words = nw;
+        return *this;
+    }
+    constexpr uint16384_t operator|(const uint16384_t& rhs) const {
+        uint16384_t r;
+        for (size_t i = 0; i < 256; ++i) r.words[i] = words[i] | rhs.words[i];
+        return r;
+    }
+    constexpr uint16384_t& operator|=(const uint16384_t& rhs) {
+        for (size_t i = 0; i < 256; ++i) words[i] |= rhs.words[i];
+        return *this;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -1800,16 +1786,11 @@ struct uint32768_t {
     constexpr explicit uint32768_t(uint64_t v) : words{{v}} {}
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 512; ++i) if (words[i] != 0) return false; return true; }
-
-    constexpr bool operator==(const uint32768_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint32768_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint32768_t& rhs) const {
-        for (int i = 511; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
+    constexpr int bit_width() const {
+        for (int i = 511; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
+        return 0;
     }
-    constexpr bool operator>=(const uint32768_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint32768_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint32768_t& rhs) const { return !(*this > rhs); }
+
     constexpr uint32768_t operator+(const uint32768_t& rhs) const {
         uint32768_t res;
         unsigned __int128 carry = 0;
@@ -1834,6 +1815,71 @@ struct uint32768_t {
         return res;
     }
     constexpr uint32768_t& operator-=(const uint32768_t& rhs) { *this = *this - rhs; return *this; }
+    constexpr uint32768_t operator*(const uint32768_t& rhs) const {
+        uint64_t res_words[512] = {0};
+        unsigned __int128 acc[1024] = {0};
+        for (int i = 0; i < 512; ++i) for (int j = 0; j < 512; ++j) {
+            uint64_t lo = words[i] * rhs.words[j];
+            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            acc[i + j] += lo;
+            acc[i + j + 1] += hi;
+        }
+        unsigned __int128 carry = 0;
+        for (int i = 0; i < 512; ++i) {
+            acc[i] += carry;
+            res_words[i] = static_cast<uint64_t>(acc[i]);
+            carry = acc[i] >> 64;
+        }
+        uint32768_t res;
+        for (int i = 0; i < 512; ++i) res.words[i] = res_words[i];
+        return res;
+    }
+    constexpr uint32768_t& operator*=(const uint32768_t& rhs) { *this = *this * rhs; return *this; }
+    constexpr uint32768_t operator/(const uint32768_t& divisor) const {
+        if (divisor.is_zero()) return uint32768_t(0);
+        uint32768_t quotient(0);
+        uint32768_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint32768_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                int word_idx = i / 64;
+                int bit_idx = i % 64;
+                quotient.words[word_idx] |= 1ULL << bit_idx;
+            }
+        }
+        return quotient;
+    }
+    constexpr uint32768_t& operator/=(const uint32768_t& rhs) { *this = *this / rhs; return *this; }
+    constexpr uint32768_t operator%(const uint32768_t& rhs) const {
+        if (rhs.is_zero()) return *this;
+        uint32768_t remainder(0);
+        int bw = bit_width();
+        if (bw == 0) return uint32768_t(0);
+        for (int i = bw - 1; i >= 0; --i) {
+            remainder <<= 1;
+            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            remainder.words[0] |= bit;
+            if (remainder >= rhs) {
+                remainder -= rhs;
+            }
+        }
+        return remainder;
+    }
+
+    constexpr bool operator==(const uint32768_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint32768_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint32768_t& rhs) const {
+        for (int i = 511; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+    constexpr bool operator>=(const uint32768_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint32768_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint32768_t& rhs) const { return !(*this > rhs); }
     constexpr uint32768_t operator<<(int n) const { uint32768_t res = *this; res <<= n; return res; }
     constexpr uint32768_t& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -1876,65 +1922,6 @@ struct uint32768_t {
     constexpr uint32768_t& operator|=(const uint32768_t& rhs) {
         for (size_t i = 0; i < 512; ++i) words[i] |= rhs.words[i];
         return *this;
-    }
-    constexpr uint32768_t operator*(const uint32768_t& rhs) const {
-        uint64_t res_words[512] = {0};
-        unsigned __int128 acc[1024] = {0};
-        for (int i = 0; i < 512; ++i) for (int j = 0; j < 512; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
-            acc[i + j] += lo;
-            acc[i + j + 1] += hi;
-        }
-        unsigned __int128 carry = 0;
-        for (int i = 0; i < 512; ++i) {
-            acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
-            carry = acc[i] >> 64;
-        }
-        uint32768_t res;
-        for (int i = 0; i < 512; ++i) res.words[i] = res_words[i];
-        return res;
-    }
-    constexpr uint32768_t& operator*=(const uint32768_t& rhs) { *this = *this * rhs; return *this; }
-    constexpr int bit_width() const {
-        for (int i = 511; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
-        return 0;
-    }
-    constexpr uint32768_t operator/(const uint32768_t& divisor) const {
-        if (divisor.is_zero()) return uint32768_t(0);
-        uint32768_t quotient(0);
-        uint32768_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint32768_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
-            }
-        }
-        return quotient;
-    }
-    constexpr uint32768_t& operator/=(const uint32768_t& rhs) { *this = *this / rhs; return *this; }
-    constexpr uint32768_t operator%(const uint32768_t& rhs) const {
-        if (rhs.is_zero()) return *this;
-        uint32768_t remainder(0);
-        int bw = bit_width();
-        if (bw == 0) return uint32768_t(0);
-        for (int i = bw - 1; i >= 0; --i) {
-            remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
-            remainder.words[0] |= bit;
-            if (remainder >= rhs) {
-                remainder -= rhs;
-            }
-        }
-        return remainder;
     }
 
 #if defined(__SIZEOF_INT128__)
@@ -2014,16 +2001,6 @@ struct uint65536_t {
 
     constexpr bool is_zero() const { for (size_t i = 0; i < 1024; ++i) if (words[i] != 0) return false; return true; }
 
-    constexpr bool operator==(const uint65536_t& rhs) const { return words == rhs.words; }
-    constexpr bool operator!=(const uint65536_t& rhs) const { return !(*this == rhs); }
-    constexpr bool operator>(const uint65536_t& rhs) const {
-        for (int i = 1023; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
-        return false;
-    }
-
-    constexpr bool operator>=(const uint65536_t& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const uint65536_t& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const uint65536_t& rhs) const { return !(*this > rhs); }
     constexpr uint65536_t operator+(const uint65536_t& rhs) const {
         uint65536_t res;
         unsigned __int128 carry = 0;
@@ -2049,49 +2026,6 @@ struct uint65536_t {
         return res;
     }
     constexpr uint65536_t& operator-=(const uint65536_t& rhs) { *this = *this - rhs; return *this; }
-    constexpr uint65536_t operator<<(int n) const { uint65536_t res = *this; res <<= n; return res; }
-    constexpr uint65536_t& operator<<=(int n) {
-        if (n <= 0) return *this;
-        if (n >= 65536) { words.fill(0); return *this; }
-        int word_shift = n / 64;
-        int bit_shift = n % 64;
-        std::array<uint64_t, 1024> nw{{0}};
-        for (int i = 1023; i >= 0; --i) {
-            int ni = i + word_shift;
-            if (ni > 1023) continue;
-            uint64_t part = words[i];
-            nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
-            if (ni + 1 <= 1023 && bit_shift != 0) nw[ni + 1] |= part >> (64 - bit_shift);
-        }
-        words = nw;
-        return *this;
-    }
-    constexpr uint65536_t operator>>(int n) const { uint65536_t res = *this; res >>= n; return res; }
-    constexpr uint65536_t& operator>>=(int n) {
-        if (n <= 0) return *this;
-        if (n >= 65536) { words.fill(0); return *this; }
-        int word_shift = n / 64;
-        int bit_shift = n % 64;
-        std::array<uint64_t, 1024> nw{{0}};
-        for (int i = 0; i < 1024; ++i) {
-            int ni = i - word_shift;
-            if (ni < 0) continue;
-            uint64_t part = words[i];
-            nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
-            if (ni - 1 >= 0 && bit_shift != 0) nw[ni - 1] |= part << (64 - bit_shift);
-        }
-        words = nw;
-        return *this;
-    }
-    constexpr uint65536_t operator|(const uint65536_t& rhs) const {
-        uint65536_t r;
-        for (size_t i = 0; i < 1024; ++i) r.words[i] = words[i] | rhs.words[i];
-        return r;
-    }
-    constexpr uint65536_t& operator|=(const uint65536_t& rhs) {
-        for (size_t i = 0; i < 1024; ++i) words[i] |= rhs.words[i];
-        return *this;
-    }
     constexpr uint65536_t operator*(const uint65536_t& rhs) const {
         uint64_t res_words[1024] = {0};
         unsigned __int128 acc[2048] = {0};
@@ -2150,6 +2084,60 @@ struct uint65536_t {
             }
         }
         return remainder;
+    }
+
+    constexpr bool operator==(const uint65536_t& rhs) const { return words == rhs.words; }
+    constexpr bool operator!=(const uint65536_t& rhs) const { return !(*this == rhs); }
+    constexpr bool operator>(const uint65536_t& rhs) const {
+        for (int i = 1023; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
+        return false;
+    }
+
+    constexpr bool operator>=(const uint65536_t& rhs) const { return (*this > rhs) || (*this == rhs); }
+    constexpr bool operator<(const uint65536_t& rhs) const { return rhs > *this; }
+    constexpr bool operator<=(const uint65536_t& rhs) const { return !(*this > rhs); }
+    constexpr uint65536_t operator<<(int n) const { uint65536_t res = *this; res <<= n; return res; }
+    constexpr uint65536_t& operator<<=(int n) {
+        if (n <= 0) return *this;
+        if (n >= 65536) { words.fill(0); return *this; }
+        int word_shift = n / 64;
+        int bit_shift = n % 64;
+        std::array<uint64_t, 1024> nw{{0}};
+        for (int i = 1023; i >= 0; --i) {
+            int ni = i + word_shift;
+            if (ni > 1023) continue;
+            uint64_t part = words[i];
+            nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
+            if (ni + 1 <= 1023 && bit_shift != 0) nw[ni + 1] |= part >> (64 - bit_shift);
+        }
+        words = nw;
+        return *this;
+    }
+    constexpr uint65536_t operator>>(int n) const { uint65536_t res = *this; res >>= n; return res; }
+    constexpr uint65536_t& operator>>=(int n) {
+        if (n <= 0) return *this;
+        if (n >= 65536) { words.fill(0); return *this; }
+        int word_shift = n / 64;
+        int bit_shift = n % 64;
+        std::array<uint64_t, 1024> nw{{0}};
+        for (int i = 0; i < 1024; ++i) {
+            int ni = i - word_shift;
+            if (ni < 0) continue;
+            uint64_t part = words[i];
+            nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
+            if (ni - 1 >= 0 && bit_shift != 0) nw[ni - 1] |= part << (64 - bit_shift);
+        }
+        words = nw;
+        return *this;
+    }
+    constexpr uint65536_t operator|(const uint65536_t& rhs) const {
+        uint65536_t r;
+        for (size_t i = 0; i < 1024; ++i) r.words[i] = words[i] | rhs.words[i];
+        return r;
+    }
+    constexpr uint65536_t& operator|=(const uint65536_t& rhs) {
+        for (size_t i = 0; i < 1024; ++i) words[i] |= rhs.words[i];
+        return *this;
     }
 
 #if defined(__SIZEOF_INT128__)
