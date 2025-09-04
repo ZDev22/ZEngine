@@ -10,8 +10,10 @@ public:
     RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
-    void renderSprites(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+    void renderSprites(VkCommandBuffer commandBuffer);
     void updateSprites();
+
+    Pipeline& getPipeline() { return pipeline; }
     
 private:
     void createPipeline();
@@ -23,7 +25,7 @@ private:
     AppWindow& window;
     Renderer& renderer;
     Push& push;
-    std::unique_ptr<Pipeline> pipeline;
+    Pipeline pipeline;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;

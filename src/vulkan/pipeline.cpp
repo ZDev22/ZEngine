@@ -250,15 +250,17 @@ void Pipeline::loadSprites() {
     });
 
     //loadFlappyBird();
-    //loadSlimeAttack();
-    loadTerminalCalculator();
+    loadSlimeAttack();
+    //loadTerminalCalculator();
 
     for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
 }
 
 void Pipeline::loadTextures() {
+    while (texturePaths.size() < MAX_TEXTURES - fonts.size()) { texturePaths.push_back("e.jpg"); }
+
     spriteTextures.clear();
-    spriteTextures.reserve(texturePaths.size());
+    spriteTextures.reserve(MAX_TEXTURES);
 
     for (const auto& path : texturePaths) {
         spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this));

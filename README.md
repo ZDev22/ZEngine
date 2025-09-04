@@ -1,4 +1,4 @@
-# A sprite-based C++ Vulkan engine that supports WINDOWS and LINUX || still in development!
+# A C++ Vulkan engine supporting **windows** and **linux**
 
 ## How to use:
 
@@ -26,13 +26,11 @@ sudo apt install gdb
 - You may make other files and folders in your game folder, because you are ready to create!
 
 ## Third party dependencies:
-```bash
-[GLM](https://github.com/icaven/glm)
-[GLFW](https://www.glfw.org/download)
-[VULKAN](https://vulkan.lunarg.com/sdk/home)
-[MINIAUDIO](https://miniaud.io/)
-[STB-LIBRARIES](https://github.com/nothings/stb)
-```
+[GLM (Math)](https://github.com/icaven/glm)  
+[GLFW (Window)](https://www.glfw.org/download)  
+[VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)  
+[MINIAUDIO (Audio)](https://miniaud.io/)  
+[STB-LIBRARIES (Image loader, font text rasterizer)](https://github.com/nothings/stb)  
  ## Build commands:
 
 ### Windows:

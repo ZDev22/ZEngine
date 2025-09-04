@@ -6,8 +6,8 @@
 #include "../deps/ZDev/audio.hpp"
 
 //#include "../games/flappyBird/flappyBird.hpp"
-//#include "../games/slimeAttack/slimeAttack.hpp"
-#include "../games/terminalCalculator/terminalCalculator.hpp"
+#include "../games/slimeAttack/slimeAttack.hpp"
+//#include "../games/terminalCalculator/terminalCalculator.hpp"
 
 std::chrono::high_resolution_clock::time_point appcpslastTime;
 std::chrono::high_resolution_clock::time_point appcpscurrentTime;
@@ -19,18 +19,20 @@ int appfps = 0;
 
 bool shouldClose = false;
 
-App::App() : pipeline(device, renderer, "texture") {
-    pipeline.loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline.getDescriptorSetLayout());
+App::App() {
+    pipeline = std::make_unique<Pipeline>(device, renderer, "texture");
+    pipeline->loadSprites();
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline->getDescriptorSetLayout());
+    pipeline.reset();
 }
 
 void App::run() {
 
     AudioPlayer audio;
 
-    //FlappyBird flappyBird{keyboard, audio, pipeline, push};
-    //SlimeAttack slimeAttack{keyboard, audio, pipeline, push};
-    TerminalCalculator terminalCalculator{};
+    //FlappyBird flappyBird{keyboard, audio, renderSystem->getPipeline(), push};
+    SlimeAttack slimeAttack{keyboard, audio, renderSystem->getPipeline(), push};
+    //TerminalCalculator terminalCalculator{};
 
     std::thread update(&App::render, this);
     update.detach();
@@ -53,8 +55,8 @@ void App::run() {
         glfwPollEvents();
 
         //flappyBird.tick();
-        //slimeAttack.tick();
-        terminalCalculator.tick();
+        slimeAttack.tick();
+        //terminalCalculator.tick();
 
         renderSystem->updateSprites();
         shouldClose = window.shouldClose();
@@ -69,7 +71,7 @@ void App::render() {
     while (!shouldClose) {
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
-            renderSystem->renderSprites(commandBuffer, pipeline.getPipelineLayout());
+            renderSystem->renderSprites(commandBuffer);
             vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
             appfps++;
