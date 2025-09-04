@@ -18,12 +18,8 @@ void SlimeAttack::tick() {
     slimeAttackEnemies.simulateEnemies();
 
     if (slimeAttackIsDead) {
-        slimeAttackSpeed.y += .00015f * deltaTime;
-        sprites[0].position += slimeAttackSpeed;
-
         slimeAttackTimer += deltaTime;
-
-        if (slimeAttackTimer >= 1.5f) {
+        if (slimeAttackTimer >= 1.f) {
             slimeAttackIsDead = false;
             slimeAttackTimer = 0.f;
             slimeAttackSpeed = glm::vec2(0.f);
@@ -39,26 +35,28 @@ void SlimeAttack::tick() {
         else if (slimeAttackEnemies.isTouchingEnemies()) {
             slimeAttackIsDead = true;
             slimeAttackSpeed = glm::vec2(0.f, .5f);
+            sprites[0].position = glm::vec2(1.5f);
+            slimeAttackSpeed = glm::vec2(0.f);
         }
 
         if(slimeAttackTouchingGround) {
             if (keyboard.keyPressed(GLFW_KEY_W)) {
-                slimeAttackSpeed.y = -.00002f;
+                slimeAttackSpeed.y = -4.f;
                 slimeAttackTouchingGround = false; 
             }
         }
     
         if (keyboard.keyHit(GLFW_KEY_Q)) { slimeAttackEnemies.spawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME, pipeline); }
-        if(keyboard.keyPressed(GLFW_KEY_A)) { slimeAttackSpeed.x -= 5.f * deltaTime; }
-        if(keyboard.keyPressed(GLFW_KEY_D)) { slimeAttackSpeed.x += 5.f * deltaTime; }
-    
-        slimeAttackSpeed.x *= .1f;
-        slimeAttackSpeed.y += .0001f * deltaTime;
-        sprites[0].position += slimeAttackSpeed;
+        if(keyboard.keyPressed(GLFW_KEY_A)) { slimeAttackSpeed.x = -1.f; }
+        else if(keyboard.keyPressed(GLFW_KEY_D)) { slimeAttackSpeed.x = 1.f; }
+        else { slimeAttackSpeed.x = 0.f; }
+
+        slimeAttackSpeed.y += 15.f * deltaTime;
+        sprites[0].position += slimeAttackSpeed * glm::vec2(deltaTime);
     
         if (checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) {
             slimeAttackTouchingGround = true;
-            sprites[0].position.y -= slimeAttackSpeed.y;
+            sprites[0].position.y -= slimeAttackSpeed.y * deltaTime;
             slimeAttackSpeed.y = 0;
         }
         else { slimeAttackTouchingGround = false; }
