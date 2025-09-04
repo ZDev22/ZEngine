@@ -19,19 +19,17 @@ int appfps = 0;
 
 bool shouldClose = false;
 
-App::App() {
-    pipeline = std::make_unique<Pipeline>(device, renderer, "texture");
-    pipeline->loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline->getDescriptorSetLayout());
-    pipeline.reset();
+App::App() : pipeline(device, renderer, "texture") {
+    pipeline.loadSprites();
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline.getDescriptorSetLayout());
 }
 
 void App::run() {
 
     AudioPlayer audio;
 
-    //FlappyBird flappyBird{keyboard, audio, renderSystem->getPipeline(), push};
-    SlimeAttack slimeAttack{keyboard, audio, renderSystem->getPipeline(), push};
+    //FlappyBird flappyBird{keyboard, audio, pipeline, push};
+    SlimeAttack slimeAttack{keyboard, audio, pipeline, push};
     //TerminalCalculator terminalCalculator{};
 
     std::thread update(&App::render, this);
