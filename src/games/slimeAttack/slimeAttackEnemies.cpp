@@ -45,7 +45,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type, Pipeline& pipeline) {
         slime.health = 2;
         slime.coinDrop = 1;
         slime.defence = 0;
-        slime.cooldown = 0.f;
+        slime.cooldown = 1.f;
         slime.speed = glm::vec2(0.f);
         slime.skip = false;
 
@@ -60,7 +60,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type, Pipeline& pipeline) {
         bat.health = 3;
         bat.coinDrop = 4;
         bat.defence = 0;
-        bat.cooldown = 0.f;
+        bat.cooldown = 1.f;
         slime.speed = glm::vec2(0.f);
         bat.skip = false;
 
@@ -75,7 +75,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type, Pipeline& pipeline) {
         ogre.health = 6;
         ogre.coinDrop = 8;
         ogre.defence = 1;
-        ogre.cooldown = 0.f;
+        ogre.cooldown = 1.f;
         slime.speed = glm::vec2(0.f);
         ogre.skip = false;
 
@@ -87,19 +87,24 @@ void SlimeAttackEnemies::spawnEnemy(const int type, Pipeline& pipeline) {
 void SlimeAttackEnemies::simulateEnemies() {
     for (size_t i = 0; i < sprites.size(); i++) {
         if (!enemies[i].skip) {
-            enemies[i].cooldown += 1.f * deltaTime;
+            enemies[i].cooldown += deltaTime;
 
             switch(sprites[i].textureIndex) {
 
             case SLIMEATTACK_ENEMY_TYPE_SLIME:
                 if (enemies[i].cooldown > 2.5f) {
-                    enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .2f : -.2f, -1.2f);
+                    enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .2f : -.2f, -10.f);
                     enemies[i].cooldown = 0.f;
                 }
-                enemies[i].speed.y += 1.5f * deltaTime;
+                enemies[i].speed.y += 1.6f * deltaTime;
                 sprites[i].position += enemies[i].speed * glm::vec2(deltaTime);
 
-                if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { enemies[i].speed = glm::vec2(0.f); }
+                if (enemies[i].speed.y <= -1.5f) { enemies[i].speed.y = -1.5f; }
+
+                if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { 
+                    sprites[i].position -= enemies[i].speed * glm::vec2(deltaTime);
+                    enemies[i].speed = glm::vec2(0.f); 
+                }
                 break;
             case SLIMEATTACK_ENEMY_TYPE_BAT:
                 break;
