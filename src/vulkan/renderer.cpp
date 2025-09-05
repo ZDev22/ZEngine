@@ -1,9 +1,6 @@
 #include "renderer.hpp"
 #include "pipeline.hpp"
 
-#include <array>
-#include <vulkan/vulkan.h>
-
 Renderer::Renderer(AppWindow& window, Device& device) : window{ window }, device{ device } {
     recreateSwapChain();
     createCommandBuffers();
@@ -72,11 +69,11 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = swapChain->getSwapChainExtent();
 
-    std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = VkClearColorValue{ .float32 = {0.1f, 0.1f, 0.1f, 1.f} };
-    clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0 };
-    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    renderPassInfo.pClearValues = clearValues.data();
+    VkClearValue clearValues[2] = {};
+    clearValues[0].color = VkClearColorValue{ .float32 = {.1f, .1f, .1f, 1.f} };
+    clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0.f };
+    renderPassInfo.clearValueCount = 2;
+    renderPassInfo.pClearValues = clearValues;
 
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 

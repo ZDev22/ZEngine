@@ -17,7 +17,6 @@ void AppWindow::initWindow() {
 }
 
 void AppWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) { if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) { throw("failed to create window surface!"); }}
-
 void AppWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto vulkanWindow = reinterpret_cast<AppWindow*>(glfwGetWindowUserPointer(window));
     vulkanWindow->framebufferResized = true;

@@ -21,7 +21,7 @@ bool shouldClose = false;
 
 App::App() : pipeline(device, renderer, "texture") {
     pipeline.loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline.getDescriptorSetLayout());
+    renderSystem = std::make_unique<RenderSystem>(device, window, push, pipeline.getDescriptorSetLayout());
 }
 
 void App::run() {
@@ -32,8 +32,8 @@ void App::run() {
     SlimeAttack slimeAttack{keyboard, audio, pipeline, push};
     //TerminalCalculator terminalCalculator{};
 
-    std::thread update(&App::render, this);
-    update.detach();
+    std::thread render(&App::render, this);
+    render.detach();
 
     appcpslastTime = std::chrono::high_resolution_clock::now();
     while (!shouldClose) {

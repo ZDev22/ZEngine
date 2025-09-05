@@ -4,8 +4,6 @@
 
 #include <memory>
 
-#include <vulkan/vulkan.h>
-
 #define MAX_FRAMES_IN_FLIGHT 2
 
 class SwapChain {

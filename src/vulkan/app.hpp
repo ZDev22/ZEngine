@@ -17,7 +17,7 @@ private:
     Push push{};
     Device device{window};
     Renderer renderer{window, device};
-    Keyboard keyboard{window};
+    Keyboard keyboard{window.getWindow()};
     Pipeline pipeline;
     std::unique_ptr<RenderSystem> renderSystem;
 };

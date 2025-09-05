@@ -43,7 +43,7 @@ private:
     VkDescriptorPool descriptorPool;
 
     std::vector<std::string> texturePaths;
-    std::vector<std::string> fonts = { "Bullpen3D.ttf" };
+    std::vector<std::string> fonts;
     std::shared_ptr<Model> squareModel;
     std::vector<stbtt_bakedchar> fontCharData;
 };

@@ -7,7 +7,6 @@
 
 class Device;
 class Pipeline;
-
 class Texture {
 public:
     Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);

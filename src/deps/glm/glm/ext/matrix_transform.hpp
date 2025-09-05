@@ -46,10 +46,6 @@ namespace glm
 	/// @tparam T A floating-point scalar type
 	/// @tparam Q A value from qualifier enum
 	///
-	/// @code
-	/// #include <glm/glm.hpp>
-	/// #include <glm/gtc/matrix_transform.hpp>
-	/// ...
 	/// glm::mat4 m = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f));
 	/// // m[0][0] == 1.0f, m[0][1] == 0.0f, m[0][2] == 0.0f, m[0][3] == 0.0f
 	/// // m[1][0] == 0.0f, m[1][1] == 1.0f, m[1][2] == 0.0f, m[1][3] == 0.0f

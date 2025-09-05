@@ -7,6 +7,8 @@
 
 #include "slimeAttackEnemies.hpp"
 
+#include <glm/glm.hpp>
+
 class AudioPlayer;
 class SlimeAttack {
 public:
@@ -16,8 +18,7 @@ public:
 private:
     SlimeAttackEnemies slimeAttackEnemies{*this};
     Keyboard& keyboard;
+    AudioPlayer& audio;
     Pipeline& pipeline;
     Push& push;
-
-    AudioPlayer& audio;
 };

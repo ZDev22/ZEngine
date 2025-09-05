@@ -2,8 +2,6 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-#include <glm/glm.hpp>
-
 FlappyBird::FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), push(push) {}
 
 float flappyBirdSpeedY = 0.f;

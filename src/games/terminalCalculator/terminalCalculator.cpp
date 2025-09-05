@@ -64,7 +64,7 @@ void TerminalCalculator::terminalCalculatorRun() {
             std::cout << std::endl << "Operation: ";
             std::cin >> operationStr;
 
-            if (operationStr == "factorial") { answer = bigInts::toString8192(factorial8192(std::stoi(num1))); }
+            if (operationStr == "factorial") { answer = toString8192(factorial8192(std::stoi(num1))); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(std::sqrt(std::stof(num1))); }
             else if (operationStr == "lerp") {
                 std::cout << "\nsmoothStep\nsmootherStep\nlerp\neaseInSine\neaseOutSine\neaseInOutSine\neaseInExpo\neaseOutExpo\neaseInOutExpo\neaseInCirc\neaseOutCirc\neaseInOutCirc\neaseOutBounce\n\nChoose one: ";
@@ -104,7 +104,7 @@ void TerminalCalculator::terminalCalculatorRun() {
             else if (operationStr == "+128") { 
                 std::cout << "Num2: ";
                 std::cin >> num2;
-                answer = bigInts::toString128(bigInts::uint128_t(std::stoi(num1)) + bigInts::uint128_t(std::stoi(num2)));
+                answer = toString128(uint128_t(std::stoi(num1)) + uint128_t(std::stoi(num2)));
             }
             std::cout << "Answer: " << answer << std::endl;
             break;

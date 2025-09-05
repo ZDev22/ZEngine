@@ -2,8 +2,6 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-#include <glm/glm.hpp>
-
 SlimeAttack::SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), push(push) {}
 
 glm::vec2 slimeAttackSpeed = glm::vec2(0.f);
@@ -14,8 +12,8 @@ float slimeAttackAttackTimer = 0.f;
 
 void SlimeAttack::tick() {
 
-    //slimeAttackEnemies.spawnNewWave(pipeline);
-    slimeAttackEnemies.simulateEnemies();
+    slimeAttackEnemies.spawnNewWave(pipeline);
+    slimeAttackEnemies.simulateEnemies(pipeline);
 
     if (slimeAttackIsDead) {
         slimeAttackTimer += deltaTime;

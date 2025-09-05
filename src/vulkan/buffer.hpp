@@ -2,8 +2,6 @@
 
 #include "device.hpp"
 
-#include <vulkan/vulkan.h>
-
 class Buffer {
 public:
     Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);

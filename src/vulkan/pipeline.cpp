@@ -5,7 +5,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <array>
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
 Pipeline::~Pipeline() {
@@ -114,12 +113,12 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     imageBinding.descriptorCount = MAX_TEXTURES;
     imageBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = { bufferBinding, imageBinding };
+    VkDescriptorSetLayoutBinding bindings[2] = { bufferBinding, imageBinding };
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-    layoutInfo.pBindings = bindings.data();
+    layoutInfo.bindingCount = 2;
+    layoutInfo.pBindings = bindings;
 
     if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw("failed to create descriptor set layout!"); }
 
@@ -136,7 +135,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
 
     if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 
-    std::array<VkDescriptorPoolSize, 2> poolSizes{};
+    VkDescriptorPoolSize poolSizes[2] = {};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     poolSizes[0].descriptorCount = 1;
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -144,8 +143,8 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    poolInfo.pPoolSizes = poolSizes.data();
+    poolInfo.poolSizeCount = 2;
+    poolInfo.pPoolSizes = poolSizes;
     poolInfo.maxSets = 1;
 
     if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
@@ -269,6 +268,7 @@ void Pipeline::loadTextures() {
 
 void Pipeline::loadFlappyBird() {
     texturePaths = { "flappyBird.png", "pipe.png" };
+    fonts = { "Bullpen3D.ttf" };
     loadTextures();
 
     createSprite(squareModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
@@ -282,6 +282,7 @@ void Pipeline::loadFlappyBird() {
 
 void Pipeline::loadSlimeAttack() {
     texturePaths = { "flappyBird.png", "pipe.png" };
+    fonts = {};
     loadTextures();
     
     createSprite(squareModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
@@ -290,6 +291,7 @@ void Pipeline::loadSlimeAttack() {
 
 void Pipeline::loadTerminalCalculator() {
     texturePaths = { "terminalCalculator.png" };
+    fonts = {};
     loadTextures();
     
     createSprite(squareModel, 0, glm::vec2(0.f), glm::vec2(2.f, 1.f), 0.f, glm::vec4(1.f));

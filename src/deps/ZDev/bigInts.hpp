@@ -3,9 +3,6 @@
 #include <string>
 #include <ostream>
 #include <cstdio>
-#include <array>
-
-namespace bigInts {
 
 constexpr int bit_width64(uint64_t x) {
     if (x == 0) return 0;
@@ -14,9 +11,9 @@ constexpr int bit_width64(uint64_t x) {
 
 constexpr uint64_t mul_hi(uint64_t a, uint64_t b) {
 #if defined(__GNUC__) && defined(__x86_64__)
-        return static_cast<uint64_t>((static_cast<__uint128_t>(a) * b) >> 64);
+    return static_cast<uint64_t>((static_cast<__uint128_t>(a) * b) >> 64);
 #else
-        return (((((a & 0xFFFFFFFFu) * (b & 0xFFFFFFFFu)) >> 32) + (((a >> 32) * (b & 0xFFFFFFFFu)) & 0xFFFFFFFFu) + (((a & 0xFFFFFFFFu) * (b >> 32)) & 0xFFFFFFFFu)) >> 32) + (((a >> 32) * (b & 0xFFFFFFFFu)) >> 32) + (((a & 0xFFFFFFFFu) * (b >> 32)) >> 32) + ((a >> 32) * (b >> 32));
+    return (((((a & 0xFFFFFFFFu) * (b & 0xFFFFFFFFu)) >> 32) + (((a >> 32) * (b & 0xFFFFFFFFu)) & 0xFFFFFFFFu) + (((a & 0xFFFFFFFFu) * (b >> 32)) & 0xFFFFFFFFu)) >> 32) + (((a >> 32) * (b & 0xFFFFFFFFu)) >> 32) + (((a & 0xFFFFFFFFu) * (b >> 32)) >> 32) + ((a >> 32) * (b >> 32));
 #endif
 }
 
@@ -175,7 +172,7 @@ inline std::string toString128(const uint128_t& v) {
 }
 
 struct uint256_t {
-    std::array<uint64_t, 4> words{{0,0,0,0}};
+    uint64_t words[4] = {0,0,0,0};
 
     constexpr uint256_t() = default;
     constexpr explicit uint256_t(uint64_t v) : words{{v,0,0,0}} {}
@@ -302,7 +299,7 @@ struct uint256_t {
         if (n >= 256) { words = {0,0,0,0}; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t,4> nw{{0,0,0,0}};
+        uint64_t nw[4] = {0,0,0,0};
         for (int i = 3; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 3) continue;
@@ -320,7 +317,7 @@ struct uint256_t {
         if (n >= 256) { words = {0,0,0,0}; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t,4> nw{{0,0,0,0}};
+        uint64_t nw = {0,0,0,0};
         for (int i = 0; i < 4; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -397,7 +394,7 @@ inline std::string toString256(const uint256_t& v) {
 }
 
 struct uint512_t {
-    std::array<uint64_t, 8> words{{0,0,0,0,0,0,0,0}};
+    uint64_t words[8] = {0,0,0,0,0,0,0,0};
 
     constexpr uint512_t() = default;
     constexpr explicit uint512_t(uint64_t v) : words{{v,0,0,0,0,0,0,0}} {}
@@ -527,7 +524,7 @@ struct uint512_t {
         if (n >= 512) { words = {0,0,0,0,0,0,0,0}; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t,8> nw{{0,0,0,0,0,0,0,0}};
+        uint64_t nw[8] = {0,0,0,0,0,0,0,0};
         for (int i = 7; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 7) continue;
@@ -545,7 +542,7 @@ struct uint512_t {
         if (n >= 512) { words = {0,0,0,0,0,0,0,0}; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t,8> nw{{0,0,0,0,0,0,0,0}};
+        uint64_t nw[8] = {0,0,0,0,0,0,0,0};
         for (int i = 0; i < 8; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -621,7 +618,7 @@ inline std::string toString512(const uint512_t& v) {
 }
 
 struct uint1024_t {
-    std::array<uint64_t, 16> words{{0}};
+    uint64_t words[16] = {0};
 
     constexpr uint1024_t() = default;
     constexpr explicit uint1024_t(uint64_t v) : words{{v}} {}
@@ -752,7 +749,7 @@ struct uint1024_t {
         if (n >= 1024) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 16> nw{{0}};
+        uint64_t nw[16] = {0};
         for (int i = 15; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 15) continue;
@@ -770,7 +767,7 @@ struct uint1024_t {
         if (n >= 1024) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 16> nw{{0}};
+        uint64_t nw[16] = {0};
         for (int i = 0; i < 16; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -854,7 +851,7 @@ inline std::string toString1024(const uint1024_t& v) {
 }
 
 struct uint2048_t {
-    std::array<uint64_t, 32> words{{0}};
+    uint64_t words[32] = {0};
 
     constexpr uint2048_t() = default;
     constexpr explicit uint2048_t(uint64_t v) : words{{v}} {}
@@ -986,7 +983,7 @@ struct uint2048_t {
         if (n >= 2048) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 32> nw{{0}};
+        uint64_t nw[32] = {0};
         for (int i = 31; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 31) continue;
@@ -1004,7 +1001,7 @@ struct uint2048_t {
         if (n >= 2048) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 32> nw{{0}};
+        uint64_t nw[32] = {0};
         for (int i = 0; i < 32; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -1094,7 +1091,7 @@ inline std::string toString2048(const uint2048_t& v) {
 }
 
 struct uint4096_t {
-    std::array<uint64_t, 64> words{{0}};
+    uint64_t words[64] = {0};
 
     constexpr uint4096_t() = default;
     constexpr explicit uint4096_t(uint64_t v) : words{{v}} {}
@@ -1222,7 +1219,7 @@ struct uint4096_t {
         if (n >= 4096) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 64> nw{{0}};
+        uint64_t nw[64] = {0};
         for (int i = 63; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 63) continue;
@@ -1240,7 +1237,7 @@ struct uint4096_t {
         if (n >= 4096) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 64> nw{{0}};
+        uint64_t nw[64] = {0};
         for (int i = 0; i < 64; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -1330,7 +1327,7 @@ inline std::string toString4096(const uint4096_t& v) {
 }
 
 struct uint8192_t {
-    std::array<uint64_t, 128> words{{0}};
+    uint64_t words[128] = {0};
 
     constexpr uint8192_t() = default;
     constexpr explicit uint8192_t(uint64_t v) : words{{v}} {}
@@ -1458,7 +1455,7 @@ struct uint8192_t {
         if (n >= 8192) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 128> nw{{0}};
+        uint64_t nw[64] = {0};
         for (int i = 127; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 127) continue;
@@ -1476,7 +1473,7 @@ struct uint8192_t {
         if (n >= 8192) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 128> nw{{0}};
+        uint64_t nw[64] = {0};
         for (int i = 0; i < 128; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -1566,7 +1563,7 @@ inline std::string toString8192(const uint8192_t& v) {
 }
 
 struct uint16384_t {
-    std::array<uint64_t, 256> words{{0}};
+    uint64_t words[256] = {0};
 
     constexpr uint16384_t() = default;
     constexpr explicit uint16384_t(uint64_t v) : words{{v}} {}
@@ -1672,7 +1669,7 @@ struct uint16384_t {
         if (n >= 16384) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 256> nw{{0}};
+        uint64_t nw[256] = {0};
         for (int i = 255; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 255) continue;
@@ -1689,7 +1686,7 @@ struct uint16384_t {
         if (n >= 16384) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 256> nw{{0}};
+        uint64_t nw[256] = {0};
         for (int i = 0; i < 256; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -1780,7 +1777,7 @@ inline std::string toString16384(const uint16384_t& v) {
 }
 
 struct uint32768_t {
-    std::array<uint64_t, 512> words{{0}};
+    uint64_t words[512] = {0};
 
     constexpr uint32768_t() = default;
     constexpr explicit uint32768_t(uint64_t v) : words{{v}} {}
@@ -1886,7 +1883,7 @@ struct uint32768_t {
         if (n >= 32768) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 512> nw{{0}};
+        uint64_t nw[512] = {0};
         for (int i = 511; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 511) continue;
@@ -1903,7 +1900,7 @@ struct uint32768_t {
         if (n >= 32768) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 512> nw{{0}};
+        uint64_t nw[512] = {0};
         for (int i = 0; i < 512; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -1994,7 +1991,7 @@ inline std::string toString32768(const uint32768_t& v) {
 }
 
 struct uint65536_t {
-    std::array<uint64_t, 1024> words{{0}};
+    uint64_t words[1024] = {0};
 
     constexpr uint65536_t() = default;
     constexpr explicit uint65536_t(uint64_t v) : words{{v}} {}
@@ -2102,7 +2099,7 @@ struct uint65536_t {
         if (n >= 65536) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 1024> nw{{0}};
+        uint64_t nw[1024] = {0};
         for (int i = 1023; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 1023) continue;
@@ -2119,7 +2116,7 @@ struct uint65536_t {
         if (n >= 65536) { words.fill(0); return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        std::array<uint64_t, 1024> nw{{0}};
+        uint64_t nw[1024] = {0};
         for (int i = 0; i < 1024; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
@@ -2207,5 +2204,4 @@ inline std::string toString65536(const uint65536_t& v) {
     }
     return out.empty() ? "0" : out;
 #endif
-}
 }

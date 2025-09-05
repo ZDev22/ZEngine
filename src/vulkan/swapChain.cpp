@@ -1,7 +1,5 @@
 #include "swapChain.hpp"
 
-#include <array>
-
 SwapChain::SwapChain(Device& deviceRef, VkExtent2D extent) : device{ deviceRef }, windowExtent{ extent } { init(); }
 SwapChain::SwapChain(Device& deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous) : device{ deviceRef }, windowExtent{ extent }, oldSwapChain{ previous } { init(); oldSwapChain = nullptr; }
 SwapChain::~SwapChain() {
@@ -80,7 +78,7 @@ VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, uint32_
 }
 
 void SwapChain::createSwapChain() {
-    SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
+    Device::SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
     VkSurfaceFormatKHR surfaceFormat; {
         surfaceFormat = swapChainSupport.formats[0];
@@ -123,7 +121,7 @@ void SwapChain::createSwapChain() {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
+    Device::QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
 
     if (indices.graphicsFamily != indices.presentFamily) {
@@ -216,11 +214,11 @@ void SwapChain::createRenderPass() {
     dependency.srcAccessMask = 0;
     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
-    std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+    VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-    renderPassInfo.pAttachments = attachments.data();
+    renderPassInfo.attachmentCount = 2;
+    renderPassInfo.pAttachments = attachments;
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
     renderPassInfo.dependencyCount = 1;
@@ -232,14 +230,14 @@ void SwapChain::createRenderPass() {
 void SwapChain::createFramebuffers() {
     swapChainFramebuffers.resize(imageCount());
     for (int i = 0; i < imageCount(); i++) {
-        std::array<VkImageView, 2> attachments = { swapChainImageViews[i], depthImageViews[i] };
+        VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
 
         VkExtent2D swapChainExtent = getSwapChainExtent();
         VkFramebufferCreateInfo framebufferInfo = {};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        framebufferInfo.pAttachments = attachments.data();
+        framebufferInfo.attachmentCount = 2;
+        framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;
         framebufferInfo.height = swapChainExtent.height;
         framebufferInfo.layers = 1;

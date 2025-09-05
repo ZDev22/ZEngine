@@ -6,10 +6,7 @@
 
 #include "device.hpp"
 
-#include <vulkan/vulkan.h>
-
 #include <iostream>
-#include <string>
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,void* pUserData) {
     std::cerr << "[Validation Layer] " << pCallbackData->pMessage << std::endl;

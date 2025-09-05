@@ -13,8 +13,7 @@ public:
     void tick();
 private:
     Keyboard& keyboard;
+    AudioPlayer& audio;
     Pipeline& pipeline;
     Push& push;
-
-    AudioPlayer& audio;
 };

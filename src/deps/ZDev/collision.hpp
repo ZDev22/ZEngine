@@ -3,8 +3,6 @@
 #include "../../vulkan/sprite.hpp"
 #include "math.hpp"
 
-#include <glm/glm.hpp>
-
 // Collision for square objects like textures
 inline bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
     dataA.setRotationMatrix();

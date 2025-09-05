@@ -6,7 +6,6 @@ layout(location = 1) in vec2 inTexCoord;
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) flat out uint fragTextureIndex;
-layout(location = 3) flat out uint fragTextureArraySize;
 
 struct SpriteData {
     vec2 position;
