@@ -7,7 +7,7 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Push& push, VkDescriptorSetLayout descriptorSetLayout);
+    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
     void renderSprites(VkCommandBuffer commandBuffer);

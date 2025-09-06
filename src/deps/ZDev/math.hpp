@@ -84,25 +84,30 @@ inline unsigned long long xorshift32() {
     return state;
 }
 
-inline unsigned char randomChar(const char min, const char max) { return min + (xorshift32() % (max - min + 1)); }
+inline unsigned char randomChar(const unsigned char min, unsigned const char max) { return min + (xorshift32() % (max - min + 1)); }
 inline short randomShort(const short min, const short max) { return min + (xorshift32() % (max - min + 1)); }
 inline int randomInt(const int min, const int max) { return min + (xorshift32() % (max - min + 1)); }
-inline long long randomLong(const long long min, const int max) { return min + (xorshift32() % (max - min + 1)); }
+inline long long randomLong(const long long min, const long long max) { return min + (xorshift32() % (max - min + 1)); }
+inline unsigned short randomUnsignedShort(const unsigned short min, const unsigned short max) { return min + (xorshift32() % (max - min + 1)); }
+inline unsigned int randomUnsignedInt(const unsigned int min, const unsigned int max) { return min + (xorshift32() % (max - min + 1)); }
+inline unsigned long long randomUnsignedLong(const unsigned long long min, const unsigned long long max) { return min + (xorshift32() % (max - min + 1)); }
 inline float randomFloat(const float min, const float max) { return min + (max - min) * (xorshift32() / 4294967295.0f); }
-inline unsigned char randomUnsignedChar(const unsigned char min, const unsigned char max) { return min + (xorshift32() % (max - min + 1)); }
-inline short randomUnsignedShort(const unsigned short min, const unsigned short max) { return min + (xorshift32() % (max - min + 1)); }
-inline int randomUnsignedInt(const unsigned int min, const unsigned int max) { return min + (xorshift32() % (max - min + 1)); }
-inline long long randomUnsignedLong(const unsigned long long min, const unsigned int max) { return min + (xorshift32() % (max - min + 1)); }
-inline float randomUnsignedFloat(const unsigned float min, const unsigned float max) { return min + (max - min) * (xorshift32() / 4294967295.0f); }
 inline bool randomBool() { return (xorshift32() & 1) == 0; }
 
 // Weight table
 class WeightTable {
 public:
+    struct WeightTableValues {
+        unsigned int weight;
+        int value;
+        unsigned int ID;
+        unsigned long long offset;
+    };
+
     WeightTable() {}
 
     void addItem(unsigned int weight, int value) {
-        WeigthTableValues weightValues;
+        WeightTableValues weightValues;
         weightValues.weight = weight;
         weightValues.value = value;
         weightValues.ID = weights.size();
@@ -110,7 +115,7 @@ public:
         weights.push_back(weightValues);
     }
 
-    void removeItem(unsigned int ID) { weights.erase(ID); }
+    void removeItem(unsigned int ID) { weights.erase(weights.begin() + ID); }
 
     int getRandomValue() {
         unsigned long long offset = 0;
@@ -119,21 +124,18 @@ public:
             offset += weights[i].weight;
         }
 
-        unsigned long long number = randomUnsignedLong(0, 18446744073709551615);
-        for (size_t i = 0; i < weights.size(); i++) { if (weights[i].offset >= number) { return weights[i].value; }}
+        unsigned long long number = randomUnsignedLong(0ULL, 18446744073709551615ULL);
+        for (size_t i = 0; i < weights.size(); i++) {
+            if (weights[i].offset >= number) { return weights[i].value; }
+        }
+        return -1; // handle edge case
     }
 
     std::vector<WeightTableValues> getTable() { return weights; }
 
 private:
-    struct WeightTableValues {
-        unsigned int weight;
-        int value;
-        unsigned int ID;
-        unsigned long long offset;
-    };
-    std::vector<WeightTableValues> weights = {};
-};
+    std::vector<WeightTableValues> weights;
+};    
 
 // Averages
 inline short averageChar(const std::vector<unsigned char>& chars) {

@@ -15,8 +15,9 @@ public:
     SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push);
 
     void tick();
+    void knockback(float origin);
 private:
-    SlimeAttackEnemies slimeAttackEnemies{*this};
+    SlimeAttackEnemies slimeAttackEnemies;
     Keyboard& keyboard;
     AudioPlayer& audio;
     Pipeline& pipeline;

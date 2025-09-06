@@ -71,7 +71,7 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
 
     VkClearValue clearValues[2] = {};
     clearValues[0].color = VkClearColorValue{ .float32 = {.1f, .1f, .1f, 1.f} };
-    clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0.f };
+    clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0 };
     renderPassInfo.clearValueCount = 2;
     renderPassInfo.pClearValues = clearValues;
 

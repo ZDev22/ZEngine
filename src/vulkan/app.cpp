@@ -21,7 +21,7 @@ bool shouldClose = false;
 
 App::App() : pipeline(device, renderer, "texture") {
     pipeline.loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, push, pipeline.getDescriptorSetLayout());
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline.getDescriptorSetLayout());
 }
 
 void App::run() {

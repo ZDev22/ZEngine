@@ -1,6 +1,6 @@
 #include "renderSystem.hpp"
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Push& push, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), device(device), window(window), push(push), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), push(push), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
     initializeSpriteData();
     createTextureArrayDescriptorSet();

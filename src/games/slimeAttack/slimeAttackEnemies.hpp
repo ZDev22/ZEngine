@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <glm/glm.hpp>
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
 #define SLIMEATTACK_ENEMY_TYPE_SLIME 4
@@ -20,6 +21,7 @@ public:
     bool isTouchingEnemies();
     void damageEnemies();
 private:
+    SlimeAttack& slimeAttack;
     Pipeline& pipeline;
 
     struct Enemy { 

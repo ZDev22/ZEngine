@@ -40,7 +40,7 @@ public:
     bool keyHit(int key) { return updateKeyState(key) == KEY_HIT; }
     bool keyReleased(int key) { return updateKeyState(key) == KEY_RELEASED; }
     bool keysPressed(const int* keys, size_t numKeys) { for (size_t k = 0; k < numKeys; k++) { if (!(glfwGetKey(window, keys[k]) == GLFW_PRESS)) { return false; }} return true; }
-    bool anyKeyPressed() { for (int i = 0; i < 122; ++i) { if (updateKeyState(glfwKeys[i]) == KEY_HIT;) { return true; } } return false; }
+    bool anyKeyPressed() { for (int i = 0; i < 122; ++i) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) { return true; } } return false; }
     bool anyKeyHit() { for (int i = 0; i < 122; ++i) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { return true; } } return false; }
 
     void simulateKey(int key, int newKeyState) {

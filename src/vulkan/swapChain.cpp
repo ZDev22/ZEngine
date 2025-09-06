@@ -229,20 +229,22 @@ void SwapChain::createRenderPass() {
 
 void SwapChain::createFramebuffers() {
     swapChainFramebuffers.resize(imageCount());
-    for (int i = 0; i < imageCount(); i++) {
-        VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
 
-        VkExtent2D swapChainExtent = getSwapChainExtent();
-        VkFramebufferCreateInfo framebufferInfo = {};
+    for (size_t i = 0; i < imageCount(); i++) {
+        VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
+
+        VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = 2;
+        framebufferInfo.attachmentCount = 2;  // fixed size
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;
         framebufferInfo.height = swapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) { throw("failed to create framebuffer!"); }
+        if (vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create framebuffer!");
+        }
     }
 }
 
