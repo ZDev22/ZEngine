@@ -9,6 +9,7 @@ SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Pipeline& pipel
         enemy.skip = true;
         enemies.push_back(enemy);
     }
+    spawnNewWave();
 }
 
 void SlimeAttackEnemies::spawnNewWave() {
@@ -56,6 +57,7 @@ void SlimeAttackEnemies::spawnNewWave() {
         spawnEnemy(SLIMEATTACK_ENEMY_TYPE_BOSS);
         break;
     }
+    wave++;
 }
 
 void SlimeAttackEnemies::spawnEnemy(const int type) {
@@ -125,11 +127,11 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 void SlimeAttackEnemies::simulateEnemies() {
     for (size_t i = 0; i < sprites.size(); i++) {
         if (!enemies[i].skip) {
-            enemies[i].cooldown += deltaTime;
 
             switch(sprites[i].textureIndex) {
 
             case SLIMEATTACK_ENEMY_TYPE_SLIME:
+                enemies[i].cooldown += deltaTime;
                 if (enemies[i].cooldown > 2.5f) {
                     enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .2f : -.2f, -10.f);
                     enemies[i].cooldown = 0.f;
@@ -137,14 +139,14 @@ void SlimeAttackEnemies::simulateEnemies() {
                 enemies[i].speed.y += 1.6f * deltaTime;
                 sprites[i].position += enemies[i].speed * glm::vec2(deltaTime);
 
-                if (enemies[i].speed.y <= -1.5f) { enemies[i].speed.y = -1.5f; }
-
                 if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { 
                     sprites[i].position -= enemies[i].speed * glm::vec2(deltaTime);
                     enemies[i].speed = glm::vec2(0.f); 
                 }
                 break;
+
             case SLIMEATTACK_ENEMY_TYPE_BAT:
+                enemies[i].cooldown += deltaTime;
                 if (enemies[i].cooldown > 2.f) {
                     enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .5f : -.5f, 1.5f);
                     enemies[i].speed.y -=  1.f * deltaTime;
@@ -152,13 +154,18 @@ void SlimeAttackEnemies::simulateEnemies() {
                     if (absoluteFloat(sprites[i].position.x) >= .9f) { enemies[i].speed.x = 0.f; }
                 }
                 break;
+
             case SLIMEATTACK_ENEMY_TYPE_OGRE:
+                enemies[i].cooldown += deltaTime;
                 if (enemies[i].cooldown > 2.5f) { if (absoluteFloat(sprites[0].position.x - sprites[i].position.x) <= .2f) { slimeAttack.knockback(sprites[i].position.x); }}
                 enemies[i].speed.x += (sprites[0].position.x >= sprites[i].position.x ? -.1f : .1f) * deltaTime;
                 break;
+
             case SLIMEATTACK_ENEMY_TYPE_BOSS:
                 break;
             }
+
+            if (enemies[i].speed.y <= -1.5f) { enemies[i].speed.y = -1.5f; }
         }
     }
 }
@@ -181,6 +188,7 @@ void SlimeAttackEnemies::damageEnemies() {
                 sprites[i].textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
                 spriteCPU[i].visible = false;
                 aliveEnemies--;
+                if (aliveEnemies == 0) { spawnNewWave(); }
             }
         }
     }

@@ -14,7 +14,6 @@ float slimeAttackHitTimer = 0.f;
 
 void SlimeAttack::tick() {
 
-    slimeAttackEnemies.spawnNewWave();
     slimeAttackEnemies.simulateEnemies();
 
     if (slimeAttackIsDead) {
