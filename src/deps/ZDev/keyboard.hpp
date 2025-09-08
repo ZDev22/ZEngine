@@ -9,52 +9,62 @@
 #define GLFW_INCLUDE_VULKAN
 #include "../glfw/glfw3.h"
 
-#include <unordered_map>
 #include <cstring>
 
 class Keyboard {
 public:
-    explicit Keyboard(GLFWwindow* window) : window{window} {
-        std::memset(keys, 0, 244);
-        for (int i = 0; i < 122; ++i) { keyIndexMap[glfwKeys[i]] = i; }
+    explicit Keyboard(GLFWwindow* window) : window{window} { std::memset(keys, 0, 244); }
+
+    unsigned char getKeyIndex(int key) const {
+        for (int i = 0; i < 122; ++i) { if (glfwKeys[i] == key) return i; }
+        return 0;
     }
 
     unsigned char updateKeyState(int key) {
-        auto keyState = keyIndexMap.find(key);
-
-        if (keys[keyState->second + 122] == 0) {
+        int index = getKeyIndex(key);
+        if (keys[index + 122] == 0) {
             if (glfwGetKey(window, key) == GLFW_PRESS) {
-                if (keys[keyState->second] == KEY_IDLE) { keys[keyState->second] = KEY_HIT; }
-                else { keys[keyState->second] = KEY_PRESSED; }
-            }
+                if (keys[index] == KEY_IDLE) { keys[index] = KEY_HIT; } 
+                else { keys[index] = KEY_PRESSED; }
+            } 
             else {
-                if (keys[keyState->second] >= KEY_HIT) { keys[keyState->second] = KEY_RELEASED; }
-                else { keys[keyState->second] = KEY_IDLE; }
+                if (keys[index] >= KEY_HIT) { keys[index] = KEY_RELEASED; } 
+                else { keys[index] = KEY_IDLE; }
             }
-            keys[keyState->second + 122] = 1;
+            keys[index + 122] = 1;
         }
-        return keys[keyState->second];
+        return keys[index];
     }
 
     bool keyPressed(int key) { return glfwGetKey(window, key) == GLFW_PRESS; }
     bool keyHit(int key) { return updateKeyState(key) == KEY_HIT; }
     bool keyReleased(int key) { return updateKeyState(key) == KEY_RELEASED; }
-    bool keysPressed(const int* keys, size_t numKeys) { for (size_t k = 0; k < numKeys; k++) { if (!(glfwGetKey(window, keys[k]) == GLFW_PRESS)) { return false; }} return true; }
-    bool anyKeyPressed() { for (int i = 0; i < 122; ++i) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) { return true; } } return false; }
-    bool anyKeyHit() { for (int i = 0; i < 122; ++i) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { return true; } } return false; }
-
-    void simulateKey(int key, int newKeyState) {
-        auto keyState = keyIndexMap.find(key);
-        keys[keyState->second] = newKeyState;
-        keys[keyState->second + 122] = 0;
+    bool keysPressed(const int* keysArr, size_t numKeys) {
+        for (size_t k = 0; k < numKeys; k++) { if (!(glfwGetKey(window, keysArr[k]) == GLFW_PRESS)) { return false; }}
+        return true;
+    }
+    bool anyKeyPressed() {
+        for (int i = 0; i < 122; ++i) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { return true; }}
+        return false;
+    }
+    bool anyKeyHit() {
+        for (int i = 0; i < 122; ++i) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) { return true; }}
+        return false;
     }
 
-    void resetKeys() { std::memset(keys + 122, 0, (122)); }
+    void simulateKey(int key, int newKeyState) {
+        int index = getKeyIndex(key);
+        if (index != -1) {
+            keys[index] = newKeyState;
+            keys[index + 122] = 0;
+        }
+    }
+
+    void resetKeys() { std::memset(keys + 122, 0, 122); }
 
 private:
     GLFWwindow* window;
 
-    std::unordered_map<int, int> keyIndexMap;
     unsigned char keys[244];
     int glfwKeys[122] = {
         /*common   */ GLFW_KEY_A, GLFW_KEY_S, GLFW_KEY_W, GLFW_KEY_D, GLFW_KEY_SPACE, GLFW_KEY_E, GLFW_KEY_Q, GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C, GLFW_KEY_T, GLFW_KEY_F, GLFW_KEY_G, GLFW_KEY_H, GLFW_KEY_I, GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_RIGHT, GLFW_KEY_LEFT, GLFW_KEY_DOWN, GLFW_KEY_UP, GLFW_KEY_V, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9, GLFW_KEY_0,

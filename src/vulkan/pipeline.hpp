@@ -44,6 +44,5 @@ private:
 
     std::vector<std::string> texturePaths;
     std::vector<std::string> fonts;
-    std::shared_ptr<Model> squareModel;
     std::vector<stbtt_bakedchar> fontCharData;
 };

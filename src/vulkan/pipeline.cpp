@@ -191,8 +191,8 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
 
 void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color) {
     if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
-    Sprite sprite;
-    SpriteData spriteData;
+    Sprite::Sprite sprite;
+    Sprite::SpriteData spriteData;
 
     sprite.model = model;
     if (textureIndex < 0 || textureIndex >= MAX_TEXTURES) { throw("Out of bounds texture!"); }
@@ -241,18 +241,20 @@ void Pipeline::loadSprites() {
     sprites.clear();
     spriteCPU.clear();
 
-    squareModel = makeModel({
+    sprite::setBaseSpriteModel(makeModel({
         {-.5f, -.5f}, // Bottom-Left
         { .5f, -.5f}, // Bottom-Right
         {-.5f,  .5f}, // Top-Right
         { .5f,  .5f}  // Top-Left
-    });
+    });)
 
     //loadFlappyBird();
     loadSlimeAttack();
     //loadTerminalCalculator();
 
     for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
+
+    sprite::clearQueue();
 }
 
 void Pipeline::loadTextures() {

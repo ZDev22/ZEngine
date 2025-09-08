@@ -26,11 +26,11 @@ sudo apt install gdb
 - You may make other files and folders in your game folder, because you are ready to create!
 
 ## Third party dependencies:
-[GLM (Math)](https://github.com/icaven/glm)  
-[GLFW (Window)](https://www.glfw.org/download)  
+[GLM (Math) {Modified}](https://github.com/icaven/glm)  
+[GLFW (Window) {Modified}](https://www.glfw.org/download)  
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)  
-[MINIAUDIO (Audio)](https://miniaud.io/)  
-[STB-LIBRARIES (Image loader, font text rasterizer)](https://github.com/nothings/stb)  
+[MINIAUDIO (Audio) {Modified}](https://miniaud.io/)  
+[STB-LIBRARIES (Image loader, font text rasterizer) {Modified}](https://github.com/nothings/stb)  
 ## Build commands:
 ### Windows:
 ```bash

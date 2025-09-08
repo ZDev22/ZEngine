@@ -2,30 +2,29 @@
 
 #include <string>
 #include <ostream>
-#include <cstdio>
-#include <cstring> // For memcmp and memcpy
-#include <algorithm> // For std::equal and std::fill
+#include <cstring>
+#include <algorithm>
 
-constexpr int bit_width64(uint64_t x) {
+constexpr int bit_width64(unsigned long long x) {
     if (x == 0) return 0;
     return 64 - __builtin_clzll(x);
 }
 
-constexpr uint64_t mul_hi(uint64_t a, uint64_t b) {
+constexpr unsigned long long mul_hi(unsigned long long a, unsigned long long b) {
 #if defined(__GNUC__) && defined(__x86_64__)
-    return static_cast<uint64_t>((static_cast<__uint128_t>(a) * b) >> 64);
+    return static_cast<unsigned long long>((static_cast<__uint128_t>(a) * b) >> 64);
 #else
     return (((((a & 0xFFFFFFFFu) * (b & 0xFFFFFFFFu)) >> 32) + (((a >> 32) * (b & 0xFFFFFFFFu)) & 0xFFFFFFFFu) + (((a & 0xFFFFFFFFu) * (b >> 32)) & 0xFFFFFFFFu)) >> 32) + (((a >> 32) * (b & 0xFFFFFFFFu)) >> 32) + (((a & 0xFFFFFFFFu) * (b >> 32)) >> 32) + ((a >> 32) * (b >> 32));
 #endif
 }
 
 struct uint128_t {
-    uint64_t low = 0;
-    uint64_t high = 0;
+    unsigned long long low = 0;
+    unsigned long long high = 0;
 
     constexpr uint128_t() = default;
-    constexpr explicit uint128_t(uint64_t v) : low(v), high(0) {}
-    constexpr uint128_t(uint64_t lo, uint64_t hi) : low(lo), high(hi) {}
+    constexpr explicit uint128_t(unsigned long long v) : low(v), high(0) {}
+    constexpr uint128_t(unsigned long long lo, unsigned long long hi) : low(lo), high(hi) {}
 
     constexpr uint128_t operator+(const uint128_t& rhs) const { return uint128_t(low + rhs.low, high + rhs.high + ((low + rhs.low < low) ? 1 : 0)); }
     constexpr uint128_t& operator+=(const uint128_t& rhs) { *this = *this + rhs; return *this; }
@@ -119,8 +118,8 @@ struct uint128_t {
         int i = 39;
 
         uint128_t temp = v;
-        const uint64_t BASE = 10000000000000000000ULL;
-        uint64_t parts[3];
+        const unsigned long long BASE = 10000000000000000000ULL;
+        unsigned long long parts[3];
 
         parts[0] = temp.low % BASE;
         temp /= uint128_t(BASE);
@@ -130,7 +129,7 @@ struct uint128_t {
 
         bool started = false;
         for (int j = 2; j >= 0; --j) {
-            uint64_t p = parts[j];
+            unsigned long long p = parts[j];
 
             if (!started) { if (p == 0){ continue; } started = true; }
 
@@ -160,7 +159,7 @@ inline std::string toString128(const uint128_t& v) {
     uint128_t temp = v;
     std::string s;
     while (temp > uint128_t(0)) {
-        uint64_t rem = static_cast<uint64_t>((temp % uint128_t(10)).low);
+        unsigned long long rem = static_cast<unsigned long long>((temp % uint128_t(10)).low);
         s.push_back('0' + static_cast<unsigned>(rem));
         temp /= uint128_t(10);
     }
@@ -174,11 +173,11 @@ inline std::string toString128(const uint128_t& v) {
 }
 
 struct uint256_t {
-    uint64_t words[4] = {0,0,0,0};
+    unsigned long long words[4] = {0,0,0,0};
 
     constexpr uint256_t() = default;
-    constexpr explicit uint256_t(uint64_t v) : words{v,0,0,0} {}
-    constexpr uint256_t(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) : words{w0, w1, w2, w3} {}
+    constexpr explicit uint256_t(unsigned long long v) : words{v,0,0,0} {}
+    constexpr uint256_t(unsigned long long w0, unsigned long long w1, unsigned long long w2, unsigned long long w3) : words{w0, w1, w2, w3} {}
 
     constexpr bool is_zero() const { return words[0]==0 && words[1]==0 && words[2]==0 && words[3]==0; }
     constexpr int bit_width() const {
@@ -191,13 +190,13 @@ struct uint256_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 4; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -210,7 +209,7 @@ struct uint256_t {
         uint256_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 4; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -219,28 +218,28 @@ struct uint256_t {
 
     constexpr uint256_t& operator-=(const uint256_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint256_t operator*(const uint256_t& rhs) const {
-        uint64_t res_words[4] = {0,0,0,0};
+        unsigned long long res_words[4] = {0,0,0,0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[8] = {0,0,0,0,0,0,0,0};
         for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 4; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[8] = {0,0,0,0,0,0,0,0};
         for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 4; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -256,7 +255,7 @@ struct uint256_t {
         if (bw == 0) return uint256_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -276,7 +275,7 @@ struct uint256_t {
         if (bw == 0) return uint256_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -306,11 +305,11 @@ struct uint256_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[4] = {0,0,0,0};
+        unsigned long long nw[4] = {0,0,0,0};
         for (int i = 3; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 3) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 3 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -327,11 +326,11 @@ struct uint256_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[4] = {0};
+        unsigned long long nw[4] = {0};
         for (int i = 0; i < 4; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -346,15 +345,15 @@ struct uint256_t {
     constexpr uint256_t& operator|=(const uint256_t& rhs) { words[0] |= rhs.words[0]; words[1] |= rhs.words[1]; words[2] |= rhs.words[2]; words[3] |= rhs.words[3]; return *this; }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 3; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -404,11 +403,11 @@ inline std::string toString256(const uint256_t& v) {
 }
 
 struct uint512_t {
-    uint64_t words[8] = {0,0,0,0,0,0,0,0};
+    unsigned long long words[8] = {0,0,0,0,0,0,0,0};
 
     constexpr uint512_t() = default;
-    constexpr explicit uint512_t(uint64_t v) : words{v,0,0,0,0,0,0,0} {}
-    constexpr uint512_t(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3, uint64_t w4, uint64_t w5, uint64_t w6, uint64_t w7) : words{w0,w1,w2,w3,w4,w5,w6,w7} {}
+    constexpr explicit uint512_t(unsigned long long v) : words{v,0,0,0,0,0,0,0} {}
+    constexpr uint512_t(unsigned long long w0, unsigned long long w1, unsigned long long w2, unsigned long long w3, unsigned long long w4, unsigned long long w5, unsigned long long w6, unsigned long long w7) : words{w0,w1,w2,w3,w4,w5,w6,w7} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 8; ++i) if (words[i] != 0) return false;
@@ -424,13 +423,13 @@ struct uint512_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 8; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -443,7 +442,7 @@ struct uint512_t {
         uint512_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 8; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -452,28 +451,28 @@ struct uint512_t {
 
     constexpr uint512_t& operator-=(const uint512_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint512_t operator*(const uint512_t& rhs) const {
-        uint64_t res_words[8] = {0,0,0,0,0,0,0,0};
+        unsigned long long res_words[8] = {0,0,0,0,0,0,0,0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[16] = {0};
         for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 8; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[16] = {0};
         for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 8; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -489,7 +488,7 @@ struct uint512_t {
         if (bw == 0) return uint512_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -509,7 +508,7 @@ struct uint512_t {
         if (bw == 0) return uint512_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -539,11 +538,11 @@ struct uint512_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[8] = {0,0,0,0,0,0,0,0};
+        unsigned long long nw[8] = {0,0,0,0,0,0,0,0};
         for (int i = 7; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 7) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 7 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -560,11 +559,11 @@ struct uint512_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[8] = {0,0,0,0,0,0,0,0};
+        unsigned long long nw[8] = {0,0,0,0,0,0,0,0};
         for (int i = 0; i < 8; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -584,15 +583,15 @@ struct uint512_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 7; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -636,10 +635,10 @@ inline std::string toString512(const uint512_t& v) {
 }
 
 struct uint1024_t {
-    uint64_t words[16] = {0};
+    unsigned long long words[16] = {0};
 
     constexpr uint1024_t() = default;
-    constexpr explicit uint1024_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint1024_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 16; ++i) if (words[i] != 0) return false;
@@ -655,13 +654,13 @@ struct uint1024_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 16; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -674,7 +673,7 @@ struct uint1024_t {
         uint1024_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 16; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -683,28 +682,28 @@ struct uint1024_t {
 
     constexpr uint1024_t& operator-=(const uint1024_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint1024_t operator*(const uint1024_t& rhs) const {
-        uint64_t res_words[16] = {0};
+        unsigned long long res_words[16] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[32] = {0};
         for (int i = 0; i < 16; ++i) for (int j = 0; j < 16; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 16; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[32] = {0};
         for (int i = 0; i < 16; ++i) for (int j = 0; j < 16; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 16; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -722,7 +721,7 @@ struct uint1024_t {
         if (bw == 0) return uint1024_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -742,7 +741,7 @@ struct uint1024_t {
         if (bw == 0) return uint1024_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -772,11 +771,11 @@ struct uint1024_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[16] = {0};
+        unsigned long long nw[16] = {0};
         for (int i = 15; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 15) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 15 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -793,11 +792,11 @@ struct uint1024_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[16] = {0};
+        unsigned long long nw[16] = {0};
         for (int i = 0; i < 16; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -817,15 +816,15 @@ struct uint1024_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 15; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -877,10 +876,10 @@ inline std::string toString1024(const uint1024_t& v) {
 }
 
 struct uint2048_t {
-    uint64_t words[32] = {0};
+    unsigned long long words[32] = {0};
 
     constexpr uint2048_t() = default;
-    constexpr explicit uint2048_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint2048_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 32; ++i) if (words[i] != 0) return false;
@@ -896,13 +895,13 @@ struct uint2048_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 32; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -915,7 +914,7 @@ struct uint2048_t {
         uint2048_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 32; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -924,28 +923,28 @@ struct uint2048_t {
 
     constexpr uint2048_t& operator-=(const uint2048_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint2048_t operator*(const uint2048_t& rhs) const {
-        uint64_t res_words[32] = {0};
+        unsigned long long res_words[32] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[64] = {0};
         for (int i = 0; i < 32; ++i) for (int j = 0; j < 32; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 32; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[64] = {0};
         for (int i = 0; i < 32; ++i) for (int j = 0; j < 32; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 32; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -963,7 +962,7 @@ struct uint2048_t {
         if (bw == 0) return uint2048_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -983,7 +982,7 @@ struct uint2048_t {
         if (bw == 0) return uint2048_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -1013,11 +1012,11 @@ struct uint2048_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[32] = {0};
+        unsigned long long nw[32] = {0};
         for (int i = 31; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 31) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 31 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -1034,11 +1033,11 @@ struct uint2048_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[32] = {0};
+        unsigned long long nw[32] = {0};
         for (int i = 0; i < 32; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -1058,15 +1057,15 @@ struct uint2048_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 31; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -1134,10 +1133,10 @@ inline std::string toString2048(const uint2048_t& v) {
 }
 
 struct uint4096_t {
-    uint64_t words[64] = {0};
+    unsigned long long words[64] = {0};
 
     constexpr uint4096_t() = default;
-    constexpr explicit uint4096_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint4096_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 64; ++i) if (words[i] != 0) return false;
@@ -1153,13 +1152,13 @@ struct uint4096_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 64; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -1172,7 +1171,7 @@ struct uint4096_t {
         uint4096_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 64; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -1181,28 +1180,28 @@ struct uint4096_t {
 
     constexpr uint4096_t& operator-=(const uint4096_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint4096_t operator*(const uint4096_t& rhs) const {
-        uint64_t res_words[64] = {0};
+        unsigned long long res_words[64] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[128] = {0};
         for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 64; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[128] = {0};
         for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 64; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -1220,7 +1219,7 @@ struct uint4096_t {
         if (bw == 0) return uint4096_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -1240,7 +1239,7 @@ struct uint4096_t {
         if (bw == 0) return uint4096_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -1270,11 +1269,11 @@ struct uint4096_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[64] = {0};
+        unsigned long long nw[64] = {0};
         for (int i = 63; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 63) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 63 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -1291,11 +1290,11 @@ struct uint4096_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[64] = {0};
+        unsigned long long nw[64] = {0};
         for (int i = 0; i < 64; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -1315,15 +1314,15 @@ struct uint4096_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 63; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -1423,10 +1422,10 @@ inline std::string toString4096(const uint4096_t& v) {
 }
 
 struct uint8192_t {
-    uint64_t words[128] = {0};
+    unsigned long long words[128] = {0};
 
     constexpr uint8192_t() = default;
-    constexpr explicit uint8192_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint8192_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 128; ++i) if (words[i] != 0) return false;
@@ -1442,13 +1441,13 @@ struct uint8192_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 128; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -1461,7 +1460,7 @@ struct uint8192_t {
         uint8192_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 128; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -1470,28 +1469,28 @@ struct uint8192_t {
 
     constexpr uint8192_t& operator-=(const uint8192_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint8192_t operator*(const uint8192_t& rhs) const {
-        uint64_t res_words[128] = {0};
+        unsigned long long res_words[128] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[256] = {0};
         for (int i = 0; i < 128; ++i) for (int j = 0; j < 128; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 128; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[256] = {0};
         for (int i = 0; i < 128; ++i) for (int j = 0; j < 128; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 128; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -1509,7 +1508,7 @@ struct uint8192_t {
         if (bw == 0) return uint8192_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -1529,7 +1528,7 @@ struct uint8192_t {
         if (bw == 0) return uint8192_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -1559,11 +1558,11 @@ struct uint8192_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[128] = {0};
+        unsigned long long nw[128] = {0};
         for (int i = 127; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 127) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 127 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -1580,11 +1579,11 @@ struct uint8192_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[128] = {0};
+        unsigned long long nw[128] = {0};
         for (int i = 0; i < 128; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -1604,15 +1603,15 @@ struct uint8192_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 127; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -1776,10 +1775,10 @@ inline std::string toString8192(const uint8192_t& v) {
 }
 
 struct uint16384_t {
-    uint64_t words[256] = {0};
+    unsigned long long words[256] = {0};
 
     constexpr uint16384_t() = default;
-    constexpr explicit uint16384_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint16384_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 256; ++i) if (words[i] != 0) return false;
@@ -1795,13 +1794,13 @@ struct uint16384_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 256; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -1814,7 +1813,7 @@ struct uint16384_t {
         uint16384_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 256; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -1823,28 +1822,28 @@ struct uint16384_t {
 
     constexpr uint16384_t& operator-=(const uint16384_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint16384_t operator*(const uint16384_t& rhs) const {
-        uint64_t res_words[256] = {0};
+        unsigned long long res_words[256] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[512] = {0};
         for (int i = 0; i < 256; ++i) for (int j = 0; j < 256; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 256; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[512] = {0};
         for (int i = 0; i < 256; ++i) for (int j = 0; j < 256; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 256; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -1862,7 +1861,7 @@ struct uint16384_t {
         if (bw == 0) return uint16384_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -1882,7 +1881,7 @@ struct uint16384_t {
         if (bw == 0) return uint16384_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -1912,11 +1911,11 @@ struct uint16384_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[256] = {0};
+        unsigned long long nw[256] = {0};
         for (int i = 255; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 255) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 255 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -1933,11 +1932,11 @@ struct uint16384_t {
         }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[256] = {0};
+        unsigned long long nw[256] = {0};
         for (int i = 0; i < 256; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -1957,15 +1956,15 @@ struct uint16384_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 255; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -2257,10 +2256,10 @@ inline std::string toString16384(const uint16384_t& v) {
 }
 
 struct uint32768_t {
-    uint64_t words[512] = {0};
+    unsigned long long words[512] = {0};
 
     constexpr uint32768_t() = default;
-    constexpr explicit uint32768_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint32768_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 512; ++i) if (words[i] != 0) return false;
@@ -2276,13 +2275,13 @@ struct uint32768_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 512; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -2295,7 +2294,7 @@ struct uint32768_t {
         uint32768_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 512; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -2304,28 +2303,28 @@ struct uint32768_t {
 
     constexpr uint32768_t& operator-=(const uint32768_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint32768_t operator*(const uint32768_t& rhs) const {
-        uint64_t res_words[512] = {0};
+        unsigned long long res_words[512] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[1024] = {0};
         for (int i = 0; i < 512; ++i) for (int j = 0; j < 512; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 512; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[1024] = {0};
         for (int i = 0; i < 512; ++i) for (int j = 0; j < 512; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 512; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -2343,7 +2342,7 @@ struct uint32768_t {
         if (bw == 0) return uint32768_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -2363,7 +2362,7 @@ struct uint32768_t {
         if (bw == 0) return uint32768_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -2391,11 +2390,11 @@ struct uint32768_t {
         if (n >= 32768) { for (size_t i=0; i<512; ++i) words[i]=0; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[512] = {0};
+        unsigned long long nw[512] = {0};
         for (int i = 511; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 511) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 511 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -2409,11 +2408,11 @@ struct uint32768_t {
         if (n >= 32768) { for (size_t i=0; i<512; ++i) words[i]=0; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[512] = {0};
+        unsigned long long nw[512] = {0};
         for (int i = 0; i < 512; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -2433,15 +2432,15 @@ struct uint32768_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 511; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -2459,7 +2458,7 @@ struct uint32768_t {
         std::string out;
         bool leading = true;
         for (int i = 511; i >= 0; --i) {
-            uint64_t val = static_cast<unsigned long long>(v.words[i]);
+            unsigned long long val = static_cast<unsigned long long>(v.words[i]);
             char buf[17];
             if (leading) {
                 if (val == 0) continue;
@@ -2495,7 +2494,7 @@ inline std::string toString32768(const uint32768_t& v) {
     out.reserve(512 * 16 + 1);
     bool leading = true;
     for (int i = 511; i >= 0; --i) {
-        uint64_t val = v.words[i];
+        unsigned long long val = v.words[i];
         if (leading) {
             if (val == 0) continue;
             char buf[17];
@@ -2513,10 +2512,10 @@ inline std::string toString32768(const uint32768_t& v) {
 }
 
 struct uint65536_t {
-    uint64_t words[1024] = {0};
+    unsigned long long words[1024] = {0};
 
     constexpr uint65536_t() = default;
-    constexpr explicit uint65536_t(uint64_t v) : words{{v}} {}
+    constexpr explicit uint65536_t(unsigned long long v) : words{{v}} {}
 
     constexpr bool is_zero() const {
         for (size_t i = 0; i < 1024; ++i) if (words[i] != 0) return false;
@@ -2532,13 +2531,13 @@ struct uint65536_t {
         unsigned __int128 carry = 0;
         for (size_t i = 0; i < 1024; ++i) {
 #if defined(__GNUC__) && defined(__x86_64__)
-            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<uint64_t>(carry);
-            res.words[i] = static_cast<uint64_t>(sum);
+            __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + static_cast<unsigned long long>(carry);
+            res.words[i] = static_cast<unsigned long long>(sum);
             carry = static_cast<unsigned __int128>(sum >> 64);
 #else
-            uint64_t tmp = words[i] + rhs.words[i];
-            uint64_t c = (tmp < words[i]) ? 1 : 0;
-            uint64_t tmp2 = tmp + static_cast<uint64_t>(carry);
+            unsigned long long tmp = words[i] + rhs.words[i];
+            unsigned long long c = (tmp < words[i]) ? 1 : 0;
+            unsigned long long tmp2 = tmp + static_cast<unsigned long long>(carry);
             res.words[i] = tmp2;
             carry = c + (tmp2 < tmp ? 1 : 0);
 #endif
@@ -2551,7 +2550,7 @@ struct uint65536_t {
         uint65536_t res;
         unsigned __int128 borrow = 0;
         for (size_t i = 0; i < 1024; ++i) {
-            uint64_t tmp = words[i] - rhs.words[i] - static_cast<uint64_t>(borrow);
+            unsigned long long tmp = words[i] - rhs.words[i] - static_cast<unsigned long long>(borrow);
             borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
@@ -2560,28 +2559,28 @@ struct uint65536_t {
 
     constexpr uint65536_t& operator-=(const uint65536_t& rhs) { *this = *this - rhs; return *this; }
     constexpr uint65536_t operator*(const uint65536_t& rhs) const {
-        uint64_t res_words[1024] = {0};
+        unsigned long long res_words[1024] = {0};
 #if defined(__SIZEOF_INT128__)
         __uint128_t tmp[2048] = {0};
         for (int i = 0; i < 1024; ++i) for (int j = 0; j < 1024; ++j) tmp[i+j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
         unsigned __int128 carry = 0;
         for (int i = 0; i < 1024; ++i) {
             tmp[i] += carry;
-            res_words[i] = static_cast<uint64_t>(tmp[i]);
+            res_words[i] = static_cast<unsigned long long>(tmp[i]);
             carry = static_cast<unsigned __int128>(tmp[i] >> 64);
         }
 #else
         unsigned __int128 acc[2048] = {0};
         for (int i = 0; i < 1024; ++i) for (int j = 0; j < 1024; ++j) {
-            uint64_t lo = words[i] * rhs.words[j];
-            uint64_t hi = mul_hi(words[i], rhs.words[j]);
+            unsigned long long lo = words[i] * rhs.words[j];
+            unsigned long long hi = mul_hi(words[i], rhs.words[j]);
             acc[i+j] += lo;
             acc[i+j+1] += hi;
         }
         unsigned __int128 carry = 0;
         for (int i = 0; i < 1024; ++i) {
             acc[i] += carry;
-            res_words[i] = static_cast<uint64_t>(acc[i]);
+            res_words[i] = static_cast<unsigned long long>(acc[i]);
             carry = acc[i] >> 64;
         }
 #endif
@@ -2599,7 +2598,7 @@ struct uint65536_t {
         if (bw == 0) return uint65536_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
@@ -2619,7 +2618,7 @@ struct uint65536_t {
         if (bw == 0) return uint65536_t(0);
         for (int i = bw - 1; i >= 0; --i) {
             remainder <<= 1;
-            uint64_t bit = (words[i / 64] >> (i % 64)) & 1;
+            unsigned long long bit = (words[i / 64] >> (i % 64)) & 1;
             remainder.words[0] |= bit;
             if (remainder >= rhs) {
                 remainder -= rhs;
@@ -2647,11 +2646,11 @@ struct uint65536_t {
         if (n >= 65536) { for (size_t i=0; i<1024; ++i) words[i]=0; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[1024] = {0};
+        unsigned long long nw[1024] = {0};
         for (int i = 1023; i >= 0; --i) {
             int ni = i + word_shift;
             if (ni > 1023) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
             if (ni + 1 <= 1023 && bit_shift != 0) nw[ni+1] |= part >> (64 - bit_shift);
         }
@@ -2665,11 +2664,11 @@ struct uint65536_t {
         if (n >= 65536) { for (size_t i=0; i<1024; ++i) words[i]=0; return *this; }
         int word_shift = n / 64;
         int bit_shift = n % 64;
-        uint64_t nw[1024] = {0};
+        unsigned long long nw[1024] = {0};
         for (int i = 0; i < 1024; ++i) {
             int ni = i - word_shift;
             if (ni < 0) continue;
-            uint64_t part = words[i];
+            unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
             if (ni - 1 >= 0 && bit_shift != 0) nw[ni-1] |= part << (64 - bit_shift);
         }
@@ -2689,15 +2688,15 @@ struct uint65536_t {
     }
 
 #if defined(__SIZEOF_INT128__)
-    uint64_t div_mod_uint64(uint64_t m) {
+    unsigned long long div_mod_uint64(unsigned long long m) {
         if (m == 0) return 0;
         __uint128_t rem = 0;
         for (int i = 1023; i >= 0; --i) {
             __uint128_t cur = (rem << 64) | words[i];
-            words[i] = static_cast<uint64_t>(cur / m);
+            words[i] = static_cast<unsigned long long>(cur / m);
             rem = cur % m;
         }
-        return static_cast<uint64_t>(rem);
+        return static_cast<unsigned long long>(rem);
     }
 #endif
 
@@ -2715,7 +2714,7 @@ struct uint65536_t {
         std::string out;
         bool leading = true;
         for (int i = 1023; i >= 0; --i) {
-            uint64_t val = static_cast<unsigned long long>(v.words[i]);
+            unsigned long long val = static_cast<unsigned long long>(v.words[i]);
             char buf[17];
             if (leading) {
                 if (val == 0) continue;
@@ -2751,7 +2750,7 @@ inline std::string toString65536(const uint65536_t& v) {
     out.reserve(1024 * 16 + 1);
     bool leading = true;
     for (int i = 1023; i >= 0; --i) {
-        uint64_t val = v.words[i];
+        unsigned long long val = v.words[i];
         if (leading) {
             if (val == 0) continue;
             char buf[17];

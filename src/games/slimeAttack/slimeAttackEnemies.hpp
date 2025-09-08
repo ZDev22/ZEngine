@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <../../deps/ZDev/vector.hpp>
 #include <glm/glm.hpp>
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
@@ -31,7 +31,7 @@ private:
         glm::vec2 speed;
         bool skip;
     };
-    std::vector<Enemy> enemies = {};
+    vector<Enemy> enemies = {};
 
     int wave = 1;
     int aliveEnemies = 0;

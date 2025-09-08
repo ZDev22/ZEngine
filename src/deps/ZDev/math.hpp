@@ -5,12 +5,11 @@
 #define GOLDENRATIO 1.6180339887
 #define SQRT2 1.4142135624
 #define SQRT3 1.7320508076
+#define SQRT5 2.2360679775
 #define LN2 .6931471806
 #define LN10 2.3025850929
 #define APERY 1.2020569032
-#define FEIGENBAUM1 4.6692016091
-#define FEIGENBAUM2 2.5029078750
-#define SQRT5 2.2360679775
+#define FEIGENBAUM 4.6692016091
 #define PHI 1.6180339887
 #define EULERMASCHERONI .5772156649
 #define CATALAN .9159655941
@@ -20,15 +19,14 @@
 #define BERNOUILLI .0787456776
 
 #include <cmath>
-#include <vector>
 #include <cstring>
-#include <cstdint>
 
-#include "../../deps/ZDev/bigInts.hpp"
+#include "vector.hpp"
+#include "bigInts.hpp"
 
 #include <glm/glm.hpp>
 
-// Global functions
+// Global
 inline constexpr float clamp(float value, float minValue, float maxValue) {
     if (value < minValue) { return minValue; }
     if (value > maxValue) { return maxValue; }
@@ -75,7 +73,7 @@ inline constexpr float easeOutBounce(const float t) {
 }
 
 // Random
-static unsigned long long state = 381195919421132;
+static unsigned long long state = 381195919421132ULL;
 
 inline unsigned long long xorshift32() {
     state ^= state << 13;
@@ -84,15 +82,15 @@ inline unsigned long long xorshift32() {
     return state;
 }
 
-inline unsigned char randomChar(const unsigned char min, unsigned const char max) { return min + (xorshift32() % (max - min + 1)); }
-inline short randomShort(const short min, const short max) { return min + (xorshift32() % (max - min + 1)); }
-inline int randomInt(const int min, const int max) { return min + (xorshift32() % (max - min + 1)); }
-inline long long randomLong(const long long min, const long long max) { return min + (xorshift32() % (max - min + 1)); }
-inline unsigned short randomUnsignedShort(const unsigned short min, const unsigned short max) { return min + (xorshift32() % (max - min + 1)); }
-inline unsigned int randomUnsignedInt(const unsigned int min, const unsigned int max) { return min + (xorshift32() % (max - min + 1)); }
-inline unsigned long long randomUnsignedLong(const unsigned long long min, const unsigned long long max) { return min + (xorshift32() % (max - min + 1)); }
-inline float randomFloat(const float min, const float max) { return min + (max - min) * (xorshift32() / 4294967295.0f); }
-inline bool randomBool() { return (xorshift32() & 1) == 0; }
+inline unsigned char randomChar(const unsigned char min, unsigned const char max) { return static_cast<unsigned char>(min + (xorshift32() % (max - min + 1))); }
+inline short randomShort(const short min, const short max) { return static_cast<short>(min + (xorshift32() % (max - min + 1))); }
+inline int randomInt(const int min, const int max) { return static_cast<int>(min + (xorshift32() % (max - min + 1))); }
+inline long long randomLong(const long long min, const long long max) { return static_cast<long long>(min + (xorshift32() % (max - min + 1))); }
+inline unsigned short randomUnsignedShort(const unsigned short min, const unsigned short max) { return static_cast<unsigned short>(min + (xorshift32() % (max - min + 1))); }
+inline unsigned int randomUnsignedInt(const unsigned int min, const unsigned int max) { return static_cast<unsigned int>(min + (xorshift32() % (max - min + 1))); }
+inline unsigned long long randomUnsignedLong(const unsigned long long min, const unsigned long long max) { return static_cast<unsigned long long>(min + (xorshift32() % (max - min + 1))); }
+inline float randomFloat(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
+inline bool randomBool() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table
 class WeightTable {
@@ -110,68 +108,72 @@ public:
         WeightTableValues weightValues;
         weightValues.weight = weight;
         weightValues.value = value;
-        weightValues.ID = weights.size();
+        weightValues.ID = static_cast<unsigned int>(weights.size());
         weightValues.offset = 0;
         weights.push_back(weightValues);
     }
 
-    void removeItem(unsigned int ID) { weights.erase(weights.begin() + ID); }
+    void removeItem(unsigned int ID) { weights.erase(ID); }
 
-    int getRandomValue() {
-        unsigned long long offset = 0;
+    unsigned int getRandomValue() {
+        unsigned long long offset = 0ULL;
         for (size_t i = 0; i < weights.size(); i++) {
             weights[i].offset = offset;
             offset += weights[i].weight;
         }
 
         unsigned long long number = randomUnsignedLong(0ULL, 18446744073709551615ULL);
-        for (size_t i = 0; i < weights.size(); i++) {
-            if (weights[i].offset >= number) { return weights[i].value; }
-        }
-        return -1; // handle edge case
+        for (size_t i = 0; i < weights.size(); i++) { if (number >= weights[i].offset && number < weights[i].offset + weights[i].weight) { return weights[i].value; }}
+        return -1;
     }
 
-    std::vector<WeightTableValues> getTable() { return weights; }
+    vector<WeightTableValues> getTable() const { return weights; }
 
 private:
-    std::vector<WeightTableValues> weights;
+    vector<WeightTableValues> weights;
 };    
 
 // Averages
-inline short averageChar(const std::vector<unsigned char>& chars) {
-    short average = 0;
-    for (const short a : chars) { average += a; }
-    return average / chars.size();
+inline short averageChar(const vector<unsigned char>& chars) {
+    if (chars.size() == 0) return 0;
+    int sum = 0;
+    for (size_t i = 0; i < chars.size(); ++i) sum += chars[i];
+    return static_cast<short>(sum / static_cast<int>(chars.size()));
 }
 
-inline short averageShort(const std::vector<short>& shorts) {
-    int average = 0;
-    for (const short a : shorts) { average += a; }
-    return average / shorts.size();
+inline short averageShort(const vector<short>& shorts) {
+    if (shorts.size() == 0) return 0;
+    int sum = 0;
+    for (size_t i = 0; i < shorts.size(); ++i) sum += shorts[i];
+    return static_cast<short>(sum / static_cast<int>(shorts.size()));
 }
 
-inline int averageInt(const std::vector<int>& ints) {
-    long long average = 0;
-    for (const int a : ints) { average += a; }
-    return average / ints.size();
+inline int averageInt(const vector<int>& ints) {
+    if (ints.size() == 0) return 0;
+    long long sum = 0;
+    for (size_t i = 0; i < ints.size(); ++i) sum += ints[i];
+    return static_cast<int>(sum / static_cast<long long>(ints.size()));
 }
 
-inline long long averageLong(const std::vector<long long>& longs) {
-    long long average = 0;
-    for (const long long a : longs) { average += a; }
-    return average / longs.size();
+inline long long averageLong(const vector<long long>& longs) {
+    if (longs.size() == 0) return 0;
+    long long sum = 0;
+    for (size_t i = 0; i < longs.size(); ++i) sum += longs[i];
+    return sum / static_cast<long long>(longs.size());
 }
 
-inline float averageFloat(const std::vector<float>& floats) {
-    float average = 0;
-    for (const float a : floats) { average += a; }
-    return average / floats.size();
+inline float averageFloat(const vector<float>& floats) {
+    if (floats.size() == 0) return 0.0f;
+    float sum = 0.0f;
+    for (size_t i = 0; i < floats.size(); ++i) sum += floats[i];
+    return sum / static_cast<float>(floats.size());
 }
 
-inline bool averageBool(const std::vector<bool>& bools) {
+inline bool averageBool(const vector<bool>& bools) {
+    if (bools.size() == 0) return randomBool();
     int averageTrue = 0, averageFalse = 0;
-    for (bool a : bools) {
-        if (a) { averageTrue++; }
+    for (size_t i = 0; i < bools.size(); ++i) {
+        if (bools[i]) { averageTrue++; }
         else { averageFalse++; }
     }
     if (averageTrue > averageFalse) { return true; }
@@ -179,78 +181,102 @@ inline bool averageBool(const std::vector<bool>& bools) {
     return randomBool();
 }
 
-inline short averageMinMaxChar(const std::vector<unsigned char>& chars) {
+inline short averageMinMaxChar(const vector<unsigned char>& chars) {
+    if (chars.size() == 0) return 0;
     unsigned char minVal = chars[0], maxVal = chars[0];
-    short sum = 0;
+    int sum = 0;
 
-    for (const short a : chars) {
+    for (size_t i = 0; i < chars.size(); ++i) {
+        unsigned char a = chars[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const short a : chars) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / chars.size();
+    for (size_t i = 0; i < chars.size(); ++i) {
+        unsigned char a = chars[i];
+        if (a != minVal && a != maxVal) sum += a;
+    }
+    return static_cast<short>(sum / static_cast<int>(chars.size()));
 }
 
-inline short averageMinMaxShort(const std::vector<short>& shorts) {
+inline short averageMinMaxShort(const vector<short>& shorts) {
+    if (shorts.size() == 0) return 0;
     short minVal = shorts[0], maxVal = shorts[0];
     int sum = 0;
 
-    for (const short a : shorts) {
+    for (size_t i = 0; i < shorts.size(); ++i) {
+        short a = shorts[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const short a : shorts) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / shorts.size();
+    for (size_t i = 0; i < shorts.size(); ++i) {
+        short a = shorts[i];
+        if (a != minVal && a != maxVal) sum += a;
+    }
+    return static_cast<short>(sum / static_cast<int>(shorts.size()));
 }
 
-inline int averageMinMaxInt(const std::vector<int>& ints) {
+inline int averageMinMaxInt(const vector<int>& ints) {
+    if (ints.size() == 0) return 0;
     int minVal = ints[0], maxVal = ints[0];
     long long sum = 0;
 
-    for (const int a : ints) {
+    for (size_t i = 0; i < ints.size(); ++i) {
+        int a = ints[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const int a : ints) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / ints.size();
+    for (size_t i = 0; i < ints.size(); ++i) {
+        int a = ints[i];
+        if (a != minVal && a != maxVal) sum += a;
+    }
+    return static_cast<int>(sum / static_cast<long long>(ints.size()));
 }
 
-inline long long averageMinMaxLong(const std::vector<long long>& longs) {
+inline long long averageMinMaxLong(const vector<long long>& longs) {
+    if (longs.size() == 0) return 0;
     long long minVal = longs[0], maxVal = longs[0], sum = 0;
 
-    for (const long long a : longs) {
+    for (size_t i = 0; i < longs.size(); ++i) {
+        long long a = longs[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const long long a : longs) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / longs.size();
+    for (size_t i = 0; i < longs.size(); ++i) {
+        long long a = longs[i];
+        if (a != minVal && a != maxVal) sum += a;
+    }
+    return sum / static_cast<long long>(longs.size());
 }
 
-inline float averageMinMaxFloat(const std::vector<float>& floats) {
-    float minVal = floats[0], maxVal = floats[0], sum = 0;
+inline float averageMinMaxFloat(const vector<float>& floats) {
+    if (floats.size() == 0) return 0.0f;
+    float minVal = floats[0], maxVal = floats[0], sum = 0.0f;
 
-    for (const float a : floats) {
+    for (size_t i = 0; i < floats.size(); ++i) {
+        float a = floats[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (const float a : floats) { if (a != minVal && a != maxVal) { sum += a; } }
-    return sum / floats.size();
+    for (size_t i = 0; i < floats.size(); ++i) {
+        float a = floats[i];
+        if (a != minVal && a != maxVal) sum += a;
+    }
+    return sum / static_cast<float>(floats.size());
 }
 
 // Values
-inline void setValuesInRangeChar(std::vector<unsigned char>& vec, const unsigned char value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-inline void setValuesInRangeShort(std::vector<short>& vec, const short value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-inline void setValuesInRangeInt(std::vector<int>& vec, const int value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-inline void setValuesInRangeLong(std::vector<long long>& vec, const long long value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-inline void setValuesInRangeFloat(std::vector<float>& vec, const float value, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, value); }
-inline void setZeroChar(std::vector<unsigned char>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count); }
-inline void setZeroShort(std::vector<short>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 2); }
-inline void setZeroInt(std::vector<int>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 4); }
-inline void setZeroLong(std::vector<long long>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 8); }
-inline void setZeroFloat(std::vector<float>& vec, size_t startIndex, size_t count) { memset(vec.data() + startIndex, 0, count * 4); }
-
-inline void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, true); }
-inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { std::fill(vec.begin() + minIndex, vec.begin() + maxIndex, false); }
+inline void setValuesInRangeChar(vector<unsigned char>& vec, const unsigned char value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+inline void setValuesInRangeShort(vector<short>& vec, const short value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+inline void setValuesInRangeInt(vector<int>& vec, const int value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+inline void setValuesInRangeLong(vector<long long>& vec, const long long value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+inline void setValuesInRangeFloat(vector<float>& vec, const float value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+inline void setZeroChar(std::vector<unsigned char>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(unsigned char)); }
+inline void setZeroShort(std::vector<short>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(short)); }
+inline void setZeroInt(std::vector<int>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(int)); }
+inline void setZeroLong(std::vector<long long>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(long long)); }
+inline void setZeroFloat(std::vector<float>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(float)); }
+inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
+inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
 // Cmath debloated functions
 inline constexpr short absoluteShort(const short i) { return (i < 0) ? -i : i; }
@@ -259,14 +285,14 @@ inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
 
 // Factorials
-inline constexpr uint64_t factorial64(int n) {
-    uint64_t result = uint64_t(1);
-    int i = 2;
+inline constexpr unsigned long long  factorial64(int n) {
+    unsigned long long result = 1;
+    unsigned long long i = 2;
     for (; i + 3 <= n; i += 4) {
-        result *= uint64_t(i) * uint64_t(i + 1);
-        result *= uint64_t(i + 2) * uint64_t(i + 3);
+        result *= i * i + 1;
+        result *= i + 2 * i + 3;
     }
-    for (; i <= n; ++i) { result *= uint64_t(i); }
+    for (; i <= n; ++i) { result *= i; }
     return result;
 }
 inline constexpr uint128_t factorial128(int n) {
@@ -371,9 +397,10 @@ inline constexpr uint65536_t factorial65536(int n) {
 }
 
 // Points
-inline constexpr float slopeOf(glm::vec2& point1, glm::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
-inline glm::vec2 averagePoint(std::vector<glm::vec2> points) {
-    glm::vec2 averagePoint = glm::vec2(0.f);
-    for (int i = 0; i < points.size(); i++) { averagePoint += points[i]; }
-    return averagePoint / glm::vec2(points.size());
+inline constexpr float slopeOf(const glm::vec2& point1, const glm::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
+inline glm::vec2 averagePoint(const vector<glm::vec2>& points) {
+    glm::vec2 avg = glm::vec2(0.f);
+    if (points.size() == 0) return avg;
+    for (size_t i = 0; i < points.size(); ++i) { avg += points[i]; }
+    return avg / static_cast<float>(points.size());
 }

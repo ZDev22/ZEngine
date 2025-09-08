@@ -1,48 +1,76 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
-inline int vectorContainsString(const std::string& target, const std::vector<std::string>& list) {
-    for (int i = 0; i < list.size(); i++) { if (list[i] == target) { return i; }}
-    return 0;
+inline size_t stringLength(const char* str) {
+    size_t len = 0;
+    while (str[len] != '\0') len++;
+    return len;
 }
 
-inline bool stringContainsItem(const std::string& str, const std::string& item) {
-    for (size_t i = 0; i < str.size() - item.size(); i++) {
-        bool found = true;
-        for (size_t j = 0; j < item.size(); j++) { if (str[i + j] != item[j]) { found = false; break; }}
-        if (found) { return true; }
+inline int strCompare(const char* a, const char* b) {
+    while (*a && (*a == *b)) {
+        a++;
+        b++;
     }
-    return false;
+    return *(unsigned char*)a - *(unsigned char*)b;
 }
 
-inline bool stringStartsWithItem(const std::string& str, const std::string& item) {
-    bool found = true;
-    for (size_t i = 0; i < item.size(); i++) { if (str[0] != item[0]) { found = false; break; }}
-    return found;
-}
-
-inline bool stringEndsWithItem(const std::string& str, const std::string& item) {
-    int start = str.size() - item.size();
-    if (start < 0) { return 0; }
-
-    bool found = true;
-    for (size_t i = start; i < item.size(); i++) { if (str[0] != item[0]) { found = false; break; }}
-    return found;
-}
-
-inline int itemIndexInString(const std::string& str, const std::string& item) {
-    bool found = false;
-    int index = 0, collision = 0;
-
-    for (size_t i = 0; i < str.size(); i++) {
-        if (str[i] == item[collision]) {
-            if (collision == 0) { index = i; }
-            collision++;
-            if (collision == item.size()) { break; }
+inline const char* stringContainsItem(const char* str, const char* sub) {
+    if (!*sub) return str;
+    for (; *str; str++) {
+        const char* s = str;
+        const char* p = sub;
+        while (*s && *p && *s == *p) {
+            s++;
+            p++;
         }
-        else { collision = 0; }
+        if (!*p) return str;
     }
-    return index;
+    return nullptr;
+}
+
+inline int vectorContainsString(const char* target, const char** list, int listSize) {
+    for (int i = 0; i < listSize; i++) {
+        if (strCompare(list[i], target) == 0) { return i; }
+    }
+    return -1;
+}
+
+inline bool stringStartsWithItem(const char* str, const char* item) {
+    size_t i = 0;
+    while (item[i] != '\0') {
+        if (str[i] != item[i]) return false;
+        i++;
+    }
+    return true;
+}
+
+inline bool stringEndsWithItem(const char* str, const char* item) {
+    size_t strLen = stringLength(str);
+    size_t itemLen = stringLength(item);
+    if (itemLen > strLen) return false;
+
+    size_t start = strLen - itemLen;
+    for (size_t i = 0; i < itemLen; i++) {
+        if (str[start + i] != item[i]) return false;
+    }
+    return true;
+}
+
+inline int itemIndexInString(const char* str, const char* item) {
+    size_t strLen = stringLength(str);
+    size_t itemLen = stringLength(item);
+
+    if (itemLen == 0 || itemLen > strLen) return -1;
+
+    for (size_t i = 0; i <= strLen - itemLen; i++) {
+        bool match = true;
+        for (size_t j = 0; j < itemLen; j++) {
+            if (str[i + j] != item[j]) {
+                match = false;
+                break;
+            }
+        }
+        if (match) return (int)i;
+    }
+    return -1;
 }

@@ -1567,62 +1567,26 @@ MA_API void ma_pcm_f32_to_s24(void* pOut, const void* pIn, ma_uint64 count, ma_d
 MA_API void ma_pcm_f32_to_s32(void* pOut, const void* pIn, ma_uint64 count, ma_dither_mode ditherMode);
 MA_API void ma_pcm_convert(void* pOut, ma_format formatOut, const void* pIn, ma_format formatIn, ma_uint64 sampleCount, ma_dither_mode ditherMode);
 MA_API void ma_convert_pcm_frames_format(void* pOut, ma_format formatOut, const void* pIn, ma_format formatIn, ma_uint64 frameCount, ma_uint32 channels, ma_dither_mode ditherMode);
-
-
 MA_API void ma_deinterleave_pcm_frames(ma_format format, ma_uint32 channels, ma_uint64 frameCount, const void* pInterleavedPCMFrames, void** ppDeinterleavedPCMFrames);
-
-
 MA_API void ma_interleave_pcm_frames(ma_format format, ma_uint32 channels, ma_uint64 frameCount, const void** ppDeinterleavedPCMFrames, void* pInterleavedPCMFrames);
-
-
 #define MA_CHANNEL_INDEX_NULL   255
-
-
 MA_API ma_channel ma_channel_map_get_channel(const ma_channel* pChannelMap, ma_uint32 channelCount, ma_uint32 channelIndex);
-
-
 MA_API void ma_channel_map_init_blank(ma_channel* pChannelMap, ma_uint32 channels);
-
-
 MA_API void ma_channel_map_init_standard(ma_standard_channel_map standardChannelMap, ma_channel* pChannelMap, size_t channelMapCap, ma_uint32 channels);
-
-
 MA_API void ma_channel_map_copy(ma_channel* pOut, const ma_channel* pIn, ma_uint32 channels);
-
-
 MA_API void ma_channel_map_copy_or_default(ma_channel* pOut, size_t channelMapCapOut, const ma_channel* pIn, ma_uint32 channels);
-
 MA_API ma_bool32 ma_channel_map_is_valid(const ma_channel* pChannelMap, ma_uint32 channels);
-
-
 MA_API ma_bool32 ma_channel_map_is_equal(const ma_channel* pChannelMapA, const ma_channel* pChannelMapB, ma_uint32 channels);
-
-
 MA_API ma_bool32 ma_channel_map_is_blank(const ma_channel* pChannelMap, ma_uint32 channels);
-
-
 MA_API ma_bool32 ma_channel_map_contains_channel_position(ma_uint32 channels, const ma_channel* pChannelMap, ma_channel channelPosition);
-
-
 MA_API ma_bool32 ma_channel_map_find_channel_position(ma_uint32 channels, const ma_channel* pChannelMap, ma_channel channelPosition, ma_uint32* pChannelIndex);
-
-
 MA_API size_t ma_channel_map_to_string(const ma_channel* pChannelMap, ma_uint32 channels, char* pBufferOut, size_t bufferCap);
-
-
 MA_API const char* ma_channel_position_to_string(ma_channel channel);
-
-
-
 MA_API ma_uint64 ma_convert_frames(void* pOut, ma_uint64 frameCountOut, ma_format formatOut, ma_uint32 channelsOut, ma_uint32 sampleRateOut, const void* pIn, ma_uint64 frameCountIn, ma_format formatIn, ma_uint32 channelsIn, ma_uint32 sampleRateIn);
 MA_API ma_uint64 ma_convert_frames_ex(void* pOut, ma_uint64 frameCountOut, const void* pIn, ma_uint64 frameCountIn, const ma_data_converter_config* pConfig);
-
 typedef void ma_data_source;
-
 #define MA_DATA_SOURCE_SELF_MANAGED_RANGE_AND_LOOP_POINT    0x00000001
-
-typedef struct
-{
+typedef struct {
     ma_result (* onRead)(ma_data_source* pDataSource, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);
     ma_result (* onSeek)(ma_data_source* pDataSource, ma_uint64 frameIndex);
     ma_result (* onGetDataFormat)(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
@@ -1634,14 +1598,12 @@ typedef struct
 
 typedef ma_data_source* (* ma_data_source_get_next_proc)(ma_data_source* pDataSource);
 
-typedef struct
-{
+typedef struct {
     const ma_data_source_vtable* vtable;
 } ma_data_source_config;
 
 MA_API ma_data_source_config ma_data_source_config_init(void);
-typedef struct
-{
+typedef struct {
     const ma_data_source_vtable* vtable;
     ma_uint64 rangeBegInFrames;
     ma_uint64 rangeEndInFrames;             
@@ -1677,8 +1639,7 @@ MA_API ma_result ma_data_source_set_next(ma_data_source* pDataSource, ma_data_so
 MA_API ma_data_source* ma_data_source_get_next(const ma_data_source* pDataSource);
 MA_API ma_result ma_data_source_set_next_callback(ma_data_source* pDataSource, ma_data_source_get_next_proc onGetNext);
 MA_API ma_data_source_get_next_proc ma_data_source_get_next_callback(const ma_data_source* pDataSource);
-typedef struct
-{
+typedef struct {
     ma_data_source_base ds;
     ma_format format;
     ma_uint32 channels;
@@ -1699,8 +1660,7 @@ MA_API ma_bool32 ma_audio_buffer_ref_at_end(const ma_audio_buffer_ref* pAudioBuf
 MA_API ma_result ma_audio_buffer_ref_get_cursor_in_pcm_frames(const ma_audio_buffer_ref* pAudioBufferRef, ma_uint64* pCursor);
 MA_API ma_result ma_audio_buffer_ref_get_length_in_pcm_frames(const ma_audio_buffer_ref* pAudioBufferRef, ma_uint64* pLength);
 MA_API ma_result ma_audio_buffer_ref_get_available_frames(const ma_audio_buffer_ref* pAudioBufferRef, ma_uint64* pAvailableFrames);
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -1711,8 +1671,7 @@ typedef struct
 
 MA_API ma_audio_buffer_config ma_audio_buffer_config_init(ma_format format, ma_uint32 channels, ma_uint64 sizeInFrames, const void* pData, const ma_allocation_callbacks* pAllocationCallbacks);
 
-typedef struct
-{
+typedef struct {
     ma_audio_buffer_ref ref;
     ma_allocation_callbacks allocationCallbacks;
     ma_bool32 ownsData;             
@@ -1734,15 +1693,13 @@ MA_API ma_result ma_audio_buffer_get_length_in_pcm_frames(const ma_audio_buffer*
 MA_API ma_result ma_audio_buffer_get_available_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pAvailableFrames);
 
 typedef struct ma_paged_audio_buffer_page ma_paged_audio_buffer_page;
-struct ma_paged_audio_buffer_page
-{
+struct ma_paged_audio_buffer_page {
     MA_ATOMIC(MA_SIZEOF_PTR, ma_paged_audio_buffer_page*) pNext;
     ma_uint64 sizeInFrames;
     ma_uint8 pAudioData[1];
 };
 
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_paged_audio_buffer_page head;                                
@@ -1758,14 +1715,12 @@ MA_API ma_result ma_paged_audio_buffer_data_allocate_page(ma_paged_audio_buffer_
 MA_API ma_result ma_paged_audio_buffer_data_free_page(ma_paged_audio_buffer_data* pData, ma_paged_audio_buffer_page* pPage, const ma_allocation_callbacks* pAllocationCallbacks);
 MA_API ma_result ma_paged_audio_buffer_data_append_page(ma_paged_audio_buffer_data* pData, ma_paged_audio_buffer_page* pPage);
 MA_API ma_result ma_paged_audio_buffer_data_allocate_and_append_page(ma_paged_audio_buffer_data* pData, ma_uint32 pageSizeInFrames, const void* pInitialData, const ma_allocation_callbacks* pAllocationCallbacks);
-typedef struct
-{
+typedef struct {
     ma_paged_audio_buffer_data* pData;  
 } ma_paged_audio_buffer_config;
 
 MA_API ma_paged_audio_buffer_config ma_paged_audio_buffer_config_init(ma_paged_audio_buffer_data* pData);
-typedef struct
-{
+typedef struct {
     ma_data_source_base ds;
     ma_paged_audio_buffer_data* pData;              
     ma_paged_audio_buffer_page* pCurrent;
@@ -1780,8 +1735,7 @@ MA_API ma_result ma_paged_audio_buffer_seek_to_pcm_frame(ma_paged_audio_buffer* 
 MA_API ma_result ma_paged_audio_buffer_get_cursor_in_pcm_frames(ma_paged_audio_buffer* pPagedAudioBuffer, ma_uint64* pCursor);
 MA_API ma_result ma_paged_audio_buffer_get_length_in_pcm_frames(ma_paged_audio_buffer* pPagedAudioBuffer, ma_uint64* pLength);
 
-typedef struct
-{
+typedef struct {
     void* pBuffer;
     ma_uint32 subbufferSizeInBytes;
     ma_uint32 subbufferCount;
@@ -1810,8 +1764,7 @@ MA_API size_t ma_rb_get_subbuffer_size(ma_rb* pRB);
 MA_API size_t ma_rb_get_subbuffer_stride(ma_rb* pRB);
 MA_API size_t ma_rb_get_subbuffer_offset(ma_rb* pRB, size_t subbufferIndex);
 MA_API void* ma_rb_get_subbuffer_ptr(ma_rb* pRB, size_t subbufferIndex, void* pBuffer);
-typedef struct
-{
+typedef struct {
     ma_data_source_base ds;
     ma_rb rb;
     ma_format format;
@@ -1841,79 +1794,35 @@ MA_API ma_uint32 ma_pcm_rb_get_channels(const ma_pcm_rb* pRB);
 MA_API ma_uint32 ma_pcm_rb_get_sample_rate(const ma_pcm_rb* pRB);
 MA_API void ma_pcm_rb_set_sample_rate(ma_pcm_rb* pRB, ma_uint32 sampleRate);
 
-typedef struct
-{
+typedef struct {
     ma_pcm_rb rb;
 } ma_duplex_rb;
 
 MA_API ma_result ma_duplex_rb_init(ma_format captureFormat, ma_uint32 captureChannels, ma_uint32 sampleRate, ma_uint32 captureInternalSampleRate, ma_uint32 captureInternalPeriodSizeInFrames, const ma_allocation_callbacks* pAllocationCallbacks, ma_duplex_rb* pRB);
 MA_API ma_result ma_duplex_rb_uninit(ma_duplex_rb* pRB);
-
-
 MA_API const char* ma_result_description(ma_result result);
-
-
 MA_API void* ma_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void* ma_calloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void* ma_realloc(void* p, size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void ma_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void* ma_aligned_malloc(size_t sz, size_t alignment, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void ma_aligned_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API const char* ma_get_format_name(ma_format format);
-
-
 MA_API void ma_blend_f32(float* pOut, float* pInA, float* pInB, float factor, ma_uint32 channels);
-
-
 MA_API ma_uint32 ma_get_bytes_per_sample(ma_format format);
 static MA_INLINE ma_uint32 ma_get_bytes_per_frame(ma_format format, ma_uint32 channels) { return ma_get_bytes_per_sample(format) * channels; }
-
-
 MA_API const char* ma_log_level_to_string(ma_uint32 logLevel);
-
-
 MA_API ma_result ma_spinlock_lock(volatile ma_spinlock* pSpinlock);
-
-
 MA_API ma_result ma_spinlock_lock_noyield(volatile ma_spinlock* pSpinlock);
-
-
 MA_API ma_result ma_spinlock_unlock(volatile ma_spinlock* pSpinlock);
 #ifndef MA_NO_THREADING
-
-
 MA_API ma_result ma_mutex_init(ma_mutex* pMutex);
-
-
 MA_API void ma_mutex_uninit(ma_mutex* pMutex);
-
-
 MA_API void ma_mutex_lock(ma_mutex* pMutex);
-
-
 MA_API void ma_mutex_unlock(ma_mutex* pMutex);
-
 MA_API ma_result ma_event_init(ma_event* pEvent);
-
-
 MA_API void ma_event_uninit(ma_event* pEvent);
-
-
 MA_API ma_result ma_event_wait(ma_event* pEvent);
-
-
 MA_API ma_result ma_event_signal(ma_event* pEvent);
 MA_API ma_result ma_semaphore_init(int initialValue, ma_semaphore* pSemaphore);
 MA_API void ma_semaphore_uninit(ma_semaphore* pSemaphore);
@@ -1921,8 +1830,7 @@ MA_API ma_result ma_semaphore_wait(ma_semaphore* pSemaphore);
 MA_API ma_result ma_semaphore_release(ma_semaphore* pSemaphore);
 #endif  
 
-typedef struct
-{
+typedef struct {
 #ifndef MA_NO_THREADING
     ma_event e;
 #endif
@@ -1936,16 +1844,13 @@ MA_API ma_result ma_fence_release(ma_fence* pFence);
 MA_API ma_result ma_fence_wait(ma_fence* pFence);       
 
 typedef void ma_async_notification;
-
-typedef struct
-{
+typedef struct {
     void (* onSignal)(ma_async_notification* pNotification);
 } ma_async_notification_callbacks;
 
 MA_API ma_result ma_async_notification_signal(ma_async_notification* pNotification);
 
-typedef struct
-{
+typedef struct {
     ma_async_notification_callbacks cb;
     ma_bool32 signalled;
 } ma_async_notification_poll;
@@ -1953,8 +1858,7 @@ typedef struct
 MA_API ma_result ma_async_notification_poll_init(ma_async_notification_poll* pNotificationPoll);
 MA_API ma_bool32 ma_async_notification_poll_is_signalled(const ma_async_notification_poll* pNotificationPoll);
 
-typedef struct
-{
+typedef struct {
     ma_async_notification_callbacks cb;
 #ifndef MA_NO_THREADING
     ma_event e;
@@ -1965,22 +1869,16 @@ MA_API ma_result ma_async_notification_event_init(ma_async_notification_event* p
 MA_API ma_result ma_async_notification_event_uninit(ma_async_notification_event* pNotificationEvent);
 MA_API ma_result ma_async_notification_event_wait(ma_async_notification_event* pNotificationEvent);
 MA_API ma_result ma_async_notification_event_signal(ma_async_notification_event* pNotificationEvent);
-
-
-
-typedef struct
-{
+typedef struct {
     ma_uint32 capacity;    
 } ma_slot_allocator_config;
 
 MA_API ma_slot_allocator_config ma_slot_allocator_config_init(ma_uint32 capacity);
-typedef struct
-{
+typedef struct {
     MA_ATOMIC(4, ma_uint32) bitfield;   
 } ma_slot_allocator_group;
 
-typedef struct
-{
+typedef struct {
     ma_slot_allocator_group* pGroups;   
     ma_uint32* pSlots;                  
     ma_uint32 count;                    
@@ -1998,14 +1896,8 @@ MA_API void ma_slot_allocator_uninit(ma_slot_allocator* pAllocator, const ma_all
 MA_API ma_result ma_slot_allocator_alloc(ma_slot_allocator* pAllocator, ma_uint64* pSlot);
 MA_API ma_result ma_slot_allocator_free(ma_slot_allocator* pAllocator, ma_uint64 slot);
 typedef struct ma_job ma_job;
-
-
 typedef ma_result (* ma_job_proc)(ma_job* pJob);
-
-
-typedef enum
-{
-    
+typedef enum {
     MA_JOB_TYPE_QUIT = 0,
     MA_JOB_TYPE_CUSTOM,
 
@@ -2027,12 +1919,9 @@ typedef enum
     MA_JOB_TYPE_COUNT
 } ma_job_type;
 
-struct ma_job
-{
-    union
-    {
-        struct
-        {
+struct ma_job {
+    union {
+        struct {
             ma_uint16 code;         
             ma_uint16 slot;         
             ma_uint32 refcount;
@@ -2042,21 +1931,17 @@ struct ma_job
     MA_ATOMIC(8, ma_uint64) next; 
     ma_uint32 order;    
 
-    union
-    {
+    union {
         
-        struct
-        {
+        struct {
             ma_job_proc proc;
             ma_uintptr data0;
             ma_uintptr data1;
         } custom;
 
         
-        union
-        {
-            struct
-            {
+        union {
+            struct {
                  void* pResourceManager;
                  void* pDataBufferNode;
                 char* pFilePath;
@@ -2067,15 +1952,13 @@ struct ma_job
                 ma_fence* pInitFence;                           
                 ma_fence* pDoneFence;                           
             } loadDataBufferNode;
-            struct
-            {
+            struct {
                  void* pResourceManager;
                  void* pDataBufferNode;
                 ma_async_notification* pDoneNotification;
                 ma_fence* pDoneFence;
             } freeDataBufferNode;
-            struct
-            {
+            struct {
                  void* pResourceManager;
                  void* pDataBufferNode;
                  void* pDecoder;
@@ -2083,8 +1966,7 @@ struct ma_job
                 ma_fence* pDoneFence;                           
             } pageDataBufferNode;
 
-            struct
-            {
+            struct {
                  void* pDataBuffer;
                 ma_async_notification* pInitNotification;       
                 ma_async_notification* pDoneNotification;       
@@ -2096,15 +1978,13 @@ struct ma_job
                 ma_uint64 loopPointEndInPCMFrames;
                 ma_uint32 isLooping;
             } loadDataBuffer;
-            struct
-            {
+            struct {
                  void* pDataBuffer;
                 ma_async_notification* pDoneNotification;
                 ma_fence* pDoneFence;
             } freeDataBuffer;
 
-            struct
-            {
+            struct {
                  void* pDataStream;
                 char* pFilePath;                            
                 wchar_t* pFilePathW;                        
@@ -2112,31 +1992,25 @@ struct ma_job
                 ma_async_notification* pInitNotification;   
                 ma_fence* pInitFence;
             } loadDataStream;
-            struct
-            {
+            struct {
                  void* pDataStream;
                 ma_async_notification* pDoneNotification;
                 ma_fence* pDoneFence;
             } freeDataStream;
-            struct
-            {
+            struct {
                  void* pDataStream;
                 ma_uint32 pageIndex;                    
             } pageDataStream;
-            struct
-            {
+            struct {
                  void* pDataStream;
                 ma_uint64 frameIndex;
             } seekDataStream;
         } resourceManager;
 
         
-        union
-        {
-            union
-            {
-                struct
-                {
+        union {
+            union {
+                struct {
                      void* pDevice;
                      ma_uint32 deviceType;
                 } reroute;
@@ -2148,20 +2022,17 @@ struct ma_job
 MA_API ma_job ma_job_init(ma_uint16 code);
 MA_API ma_result ma_job_process(ma_job* pJob);
 
-typedef enum
-{
+typedef enum {
     MA_JOB_QUEUE_FLAG_NON_BLOCKING = 0x00000001
 } ma_job_queue_flags;
 
-typedef struct
-{
+typedef struct {
     ma_uint32 flags;
     ma_uint32 capacity; 
 } ma_job_queue_config;
 
 MA_API ma_job_queue_config ma_job_queue_config_init(ma_uint32 flags, ma_uint32 capacity);
-typedef struct
-{
+typedef struct {
     ma_uint32 flags;                
     ma_uint32 capacity;             
     MA_ATOMIC(8, ma_uint64) head;   
@@ -2174,8 +2045,6 @@ typedef struct
 #ifndef MA_USE_EXPERIMENTAL_LOCK_FREE_JOB_QUEUE
     ma_spinlock lock;
 #endif
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_job_queue;
@@ -2286,8 +2155,7 @@ MA_API ma_result ma_job_queue_next(ma_job_queue* pQueue, ma_job* pJob);
     #define MA_HAS_NULL
 #endif
 
-typedef enum
-{
+typedef enum {
     ma_device_state_uninitialized = 0,
     ma_device_state_stopped       = 1,  
     ma_device_state_started       = 2,  
@@ -2298,8 +2166,7 @@ typedef enum
 MA_ATOMIC_SAFE_TYPE_DECL(i32, 4, device_state)
 #ifdef MA_SUPPORT_WASAPI
 
-typedef struct
-{
+typedef struct {
     void* lpVtbl;
     ma_uint32 counter;
     ma_device* pDevice;
@@ -2307,8 +2174,7 @@ typedef struct
 #endif
 
 
-typedef enum
-{
+typedef enum {
     ma_backend_wasapi,
     ma_backend_dsound,
     ma_backend_winmm,
@@ -2328,8 +2194,7 @@ typedef enum
 
 #define MA_BACKEND_COUNT (ma_backend_null+1)
 
-typedef struct
-{
+typedef struct {
     ma_bool32 noThread; 
     ma_uint32 jobQueueCapacity;
     ma_uint32 jobQueueFlags;
@@ -2337,8 +2202,7 @@ typedef struct
 
 MA_API ma_device_job_thread_config ma_device_job_thread_config_init(void);
 
-typedef struct
-{
+typedef struct {
     ma_thread thread;
     ma_job_queue jobQueue;
     ma_bool32 _hasThread;
@@ -2349,8 +2213,7 @@ MA_API void ma_device_job_thread_uninit(ma_device_job_thread* pJobThread, const 
 MA_API ma_result ma_device_job_thread_post(ma_device_job_thread* pJobThread, const ma_job* pJob);
 MA_API ma_result ma_device_job_thread_next(ma_device_job_thread* pJobThread, ma_job* pJob);
 
-typedef enum
-{
+typedef enum {
     ma_device_notification_type_started,
     ma_device_notification_type_stopped,
     ma_device_notification_type_rerouted,
@@ -2359,55 +2222,42 @@ typedef enum
     ma_device_notification_type_unlocked
 } ma_device_notification_type;
 
-typedef struct
-{
+typedef struct {
     ma_device* pDevice;
     ma_device_notification_type type;
     union
     {
-        struct
-        {
+        struct {
             int _unused;
         } started;
-        struct
-        {
+        struct {
             int _unused;
         } stopped;
-        struct
-        {
+        struct {
             int _unused;
         } rerouted;
-        struct
-        {
+        struct {
             int _unused;
         } interruption;
     } data;
 } ma_device_notification;
-
-
 typedef void (* ma_device_notification_proc)(const ma_device_notification* pNotification);
-
 typedef void (* ma_device_data_proc)(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
-
 typedef void (* ma_stop_proc)(ma_device* pDevice);  
-
-typedef enum
-{
+typedef enum {
     ma_device_type_playback = 1,
     ma_device_type_capture  = 2,
     ma_device_type_duplex   = ma_device_type_playback | ma_device_type_capture, 
     ma_device_type_loopback = 4
 } ma_device_type;
 
-typedef enum
-{
+typedef enum {
     ma_share_mode_shared = 0,
     ma_share_mode_exclusive
 } ma_share_mode;
 
 
-typedef enum
-{
+typedef enum {
     ma_ios_session_category_default = 0,        
     ma_ios_session_category_none,               
     ma_ios_session_category_ambient,            
@@ -2419,8 +2269,7 @@ typedef enum
 } ma_ios_session_category;
 
 
-typedef enum
-{
+typedef enum {
     ma_ios_session_category_option_mix_with_others                            = 0x01,   
     ma_ios_session_category_option_duck_others                                = 0x02,   
     ma_ios_session_category_option_allow_bluetooth                            = 0x04,   
@@ -2431,8 +2280,7 @@ typedef enum
 } ma_ios_session_category_option;
 
 
-typedef enum
-{
+typedef enum {
     ma_opensl_stream_type_default = 0,              
     ma_opensl_stream_type_voice,                    
     ma_opensl_stream_type_system,                   
@@ -2443,8 +2291,7 @@ typedef enum
 } ma_opensl_stream_type;
 
 
-typedef enum
-{
+typedef enum {
     ma_opensl_recording_preset_default = 0,         
     ma_opensl_recording_preset_generic,             
     ma_opensl_recording_preset_camcorder,           
@@ -2454,16 +2301,14 @@ typedef enum
 } ma_opensl_recording_preset;
 
 
-typedef enum
-{
+typedef enum {
     ma_wasapi_usage_default = 0,
     ma_wasapi_usage_games,
     ma_wasapi_usage_pro_audio,
 } ma_wasapi_usage;
 
 
-typedef enum
-{
+typedef enum {
     ma_aaudio_usage_default = 0,                    
     ma_aaudio_usage_media,                          
     ma_aaudio_usage_voice_communication,            
@@ -2484,8 +2329,7 @@ typedef enum
 } ma_aaudio_usage;
 
 
-typedef enum
-{
+typedef enum {
     ma_aaudio_content_type_default = 0,             
     ma_aaudio_content_type_speech,                  
     ma_aaudio_content_type_music,                   
@@ -2494,8 +2338,7 @@ typedef enum
 } ma_aaudio_content_type;
 
 
-typedef enum
-{
+typedef enum {
     ma_aaudio_input_preset_default = 0,             
     ma_aaudio_input_preset_generic,                 
     ma_aaudio_input_preset_camcorder,               
@@ -2505,22 +2348,19 @@ typedef enum
     ma_aaudio_input_preset_voice_performance        
 } ma_aaudio_input_preset;
 
-typedef enum
-{
+typedef enum {
     ma_aaudio_allow_capture_default = 0,            
     ma_aaudio_allow_capture_by_all,                 
     ma_aaudio_allow_capture_by_system,              
     ma_aaudio_allow_capture_by_none                 
 } ma_aaudio_allowed_capture_policy;
 
-typedef union
-{
+typedef union {
     ma_int64 counter;
     double counterD;
 } ma_timer;
 
-typedef union
-{
+typedef union {
     ma_wchar_win32 wasapi[64];      
     ma_uint8 dsound[16];            
      ma_uint32 winmm;   
@@ -2554,9 +2394,7 @@ typedef struct ma_backend_callbacks ma_backend_callbacks;
 #define MA_MAX_DEVICE_NAME_LENGTH   255
 #endif
 
-typedef struct
-{
-    
+typedef struct {
     ma_device_id id;
     char name[MA_MAX_DEVICE_NAME_LENGTH + 1];   
     ma_bool32 isDefault;
@@ -2571,8 +2409,7 @@ typedef struct
     } nativeDataFormats[ 64];  
 } ma_device_info;
 
-struct ma_device_config
-{
+struct ma_device_config {
     ma_device_type deviceType;
     ma_uint32 sampleRate;
     ma_uint32 periodSizeInFrames;
@@ -2588,8 +2425,7 @@ struct ma_device_config
     ma_stop_proc stopCallback;
     void* pUserData;
     ma_resampler_config resampling;
-    struct
-    {
+    struct {
         const ma_device_id* pDeviceID;
         ma_format format;
         ma_uint32 channels;
@@ -2598,8 +2434,7 @@ struct ma_device_config
         ma_bool32 calculateLFEFromSpatialChannels;  
         ma_share_mode shareMode;
     } playback;
-    struct
-    {
+    struct {
         const ma_device_id* pDeviceID;
         ma_format format;
         ma_uint32 channels;
@@ -2609,8 +2444,7 @@ struct ma_device_config
         ma_share_mode shareMode;
     } capture;
 
-    struct
-    {
+    struct {
         ma_wasapi_usage usage;              
         ma_bool8 noAutoConvertSRC;          
         ma_bool8 noDefaultQualitySRC;       
@@ -2619,31 +2453,26 @@ struct ma_device_config
         ma_uint32 loopbackProcessID;        
         ma_bool8 loopbackProcessExclude;    
     } wasapi;
-    struct
-    {
+    struct {
         ma_bool32 noMMap;           
         ma_bool32 noAutoFormat;     
         ma_bool32 noAutoChannels;   
         ma_bool32 noAutoResample;   
     } alsa;
-    struct
-    {
+    struct {
         const char* pStreamNamePlayback;
         const char* pStreamNameCapture;
         int channelMap;
     } pulse;
-    struct
-    {
+    struct {
         ma_bool32 allowNominalSampleRateChange; 
     } coreaudio;
-    struct
-    {
+    struct {
         ma_opensl_stream_type streamType;
         ma_opensl_recording_preset recordingPreset;
         ma_bool32 enableCompatibilityWorkarounds;
     } opensl;
-    struct
-    {
+    struct {
         ma_aaudio_usage usage;
         ma_aaudio_content_type contentType;
         ma_aaudio_input_preset inputPreset;
@@ -2656,8 +2485,7 @@ struct ma_device_config
 
 typedef ma_bool32 (* ma_enum_devices_callback_proc)(ma_context* pContext, ma_device_type deviceType, const ma_device_info* pInfo, void* pUserData);
 
-typedef struct
-{
+typedef struct {
     const ma_device_id* pDeviceID;
     ma_share_mode shareMode;
     ma_format format;
@@ -2670,8 +2498,7 @@ typedef struct
 } ma_device_descriptor;
 
 
-struct ma_backend_callbacks
-{
+struct ma_backend_callbacks {
     ma_result (* onContextInit)(ma_context* pContext, const ma_context_config* pConfig, ma_backend_callbacks* pCallbacks);
     ma_result (* onContextUninit)(ma_context* pContext);
     ma_result (* onContextEnumerateDevices)(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData);
@@ -2687,70 +2514,57 @@ struct ma_backend_callbacks
     ma_result (* onDeviceGetInfo)(ma_device* pDevice, ma_device_type type, ma_device_info* pDeviceInfo);
 };
 
-struct ma_context_config
-{
+struct ma_context_config {
     ma_log* pLog;
     ma_thread_priority threadPriority;
     size_t threadStackSize;
     void* pUserData;
     ma_allocation_callbacks allocationCallbacks;
-    struct
-    {
+    struct {
         ma_handle hWnd; 
     } dsound;
-    struct
-    {
+    struct {
         ma_bool32 useVerboseDeviceEnumeration;
     } alsa;
-    struct
-    {
+    struct {
         const char* pApplicationName;
         const char* pServerName;
         ma_bool32 tryAutoSpawn; 
     } pulse;
-    struct
-    {
+    struct {
         ma_ios_session_category sessionCategory;
         ma_uint32 sessionCategoryOptions;
         ma_bool32 noAudioSessionActivate;   
         ma_bool32 noAudioSessionDeactivate; 
     } coreaudio;
-    struct
-    {
+    struct {
         const char* pClientName;
         ma_bool32 tryStartServer;
     } jack;
     ma_backend_callbacks custom;
 };
 
-
-typedef struct
-{
+typedef struct {
     int code;
     ma_event* pEvent;   
-    union
-    {
-        struct
-        {
+    union {
+        struct {
             int _unused;
         } quit;
-        struct
-        {
+        struct {
             ma_device_type deviceType;
             void* pAudioClient;
             void** ppAudioClientService;
             ma_result* pResult; 
         } createAudioClient;
-        struct
-        {
+        struct {
             ma_device* pDevice;
             ma_device_type deviceType;
         } releaseAudioClient;
     } data;
 } ma_context_command__wasapi;
 
-struct ma_context
-{
+struct ma_context {
     ma_backend_callbacks callbacks;
     ma_backend backend;                 
     ma_log* pLog;
@@ -2766,11 +2580,9 @@ struct ma_context
     ma_uint32 captureDeviceInfoCount;
     ma_device_info* pDeviceInfos;       
 
-    union
-    {
+    union {
 #ifdef MA_SUPPORT_WASAPI
-        struct
-        {
+        struct {
             ma_thread commandThread;
             ma_mutex commandLock;
             ma_semaphore commandSem;
@@ -2785,8 +2597,7 @@ struct ma_context
         } wasapi;
 #endif
 #ifdef MA_SUPPORT_DSOUND
-        struct
-        {
+        struct {
             ma_handle hWnd; 
             ma_handle hDSoundDLL;
             ma_proc DirectSoundCreate;
@@ -2796,8 +2607,7 @@ struct ma_context
         } dsound;
 #endif
 #ifdef MA_SUPPORT_WINMM
-        struct
-        {
+        struct {
             ma_handle hWinMM;
             ma_proc waveOutGetNumDevs;
             ma_proc waveOutGetDevCapsA;
@@ -2819,8 +2629,7 @@ struct ma_context
         } winmm;
 #endif
 #ifdef MA_SUPPORT_ALSA
-        struct
-        {
+        struct {
             ma_handle asoundSO;
             ma_proc snd_pcm_open;
             ma_proc snd_pcm_close;
@@ -2888,14 +2697,12 @@ struct ma_context
             ma_proc snd_pcm_poll_descriptors_count;
             ma_proc snd_pcm_poll_descriptors_revents;
             ma_proc snd_config_update_free_global;
-
             ma_mutex internalDeviceEnumLock;
             ma_bool32 useVerboseDeviceEnumeration;
         } alsa;
 #endif
 #ifdef MA_SUPPORT_PULSEAUDIO
-        struct
-        {
+        struct {
             ma_handle pulseSO;
             ma_proc pa_mainloop_new;
             ma_proc pa_mainloop_free;
@@ -2958,16 +2765,14 @@ struct ma_context
             ma_proc pa_stream_drop;
             ma_proc pa_stream_writable_size;
             ma_proc pa_stream_readable_size;
-
-             ma_ptr pMainLoop;
-             ma_ptr pPulseContext;
+            ma_ptr pMainLoop;
+            ma_ptr pPulseContext;
             char* pApplicationName; 
             char* pServerName;      
         } pulse;
 #endif
 #ifdef MA_SUPPORT_JACK
-        struct
-        {
+        struct {
             ma_handle jackSO;
             ma_proc jack_client_open;
             ma_proc jack_client_close;
@@ -2985,25 +2790,21 @@ struct ma_context
             ma_proc jack_port_name;
             ma_proc jack_port_get_buffer;
             ma_proc jack_free;
-
             char* pClientName;
             ma_bool32 tryStartServer;
         } jack;
 #endif
 #ifdef MA_SUPPORT_COREAUDIO
-        struct
-        {
+        struct {
             ma_handle hCoreFoundation;
             ma_proc CFStringGetCString;
             ma_proc CFRelease;
-
             ma_handle hCoreAudio;
             ma_proc AudioObjectGetPropertyData;
             ma_proc AudioObjectGetPropertyDataSize;
             ma_proc AudioObjectSetPropertyData;
             ma_proc AudioObjectAddPropertyListener;
             ma_proc AudioObjectRemovePropertyListener;
-
             ma_handle hAudioUnit;  
             ma_proc AudioComponentFindNext;
             ma_proc AudioComponentInstanceDispose;
@@ -3016,14 +2817,12 @@ struct ma_context
             ma_proc AudioUnitSetProperty;
             ma_proc AudioUnitInitialize;
             ma_proc AudioUnitRender;
-
-             ma_ptr component;
+            ma_ptr component;
             ma_bool32 noAudioSessionDeactivate; 
         } coreaudio;
 #endif
 #ifdef MA_SUPPORT_SNDIO
-        struct
-        {
+        struct {
             ma_handle sndioSO;
             ma_proc sio_open;
             ma_proc sio_close;
@@ -3045,21 +2844,18 @@ struct ma_context
         } sndio;
 #endif
 #ifdef MA_SUPPORT_AUDIO4
-        struct
-        {
+        struct {
             int _unused;
         } audio4;
 #endif
 #ifdef MA_SUPPORT_OSS
-        struct
-        {
+        struct {
             int versionMajor;
             int versionMinor;
         } oss;
 #endif
 #ifdef MA_SUPPORT_AAUDIO
-        struct
-        {
+        struct {
             ma_handle hAAudio; 
             ma_proc AAudio_createStreamBuilder;
             ma_proc AAudioStreamBuilder_delete;
@@ -3094,8 +2890,7 @@ struct ma_context
         } aaudio;
 #endif
 #ifdef MA_SUPPORT_OPENSL
-        struct
-        {
+        struct {
             ma_handle libOpenSLES;
             ma_handle SL_IID_ENGINE;
             ma_handle SL_IID_AUDIOIODEVICECAPABILITIES;
@@ -3108,25 +2903,21 @@ struct ma_context
         } opensl;
 #endif
 #ifdef MA_SUPPORT_WEBAUDIO
-        struct
-        {
+        struct {
             int _unused;
         } webaudio;
 #endif
 #ifdef MA_SUPPORT_NULL
-        struct
-        {
+        struct {
             int _unused;
         } null_backend;
 #endif
     };
 
-    union
-    {
+    union {
 #if defined(MA_WIN32)
-        struct
-        {
-             ma_handle hOle32DLL;
+        struct {
+            ma_handle hOle32DLL;
             ma_proc CoInitialize;
             ma_proc CoInitializeEx;
             ma_proc CoUninitialize;
@@ -3134,22 +2925,18 @@ struct ma_context
             ma_proc CoTaskMemFree;
             ma_proc PropVariantClear;
             ma_proc StringFromGUID2;
-
-             ma_handle hUser32DLL;
+            ma_handle hUser32DLL;
             ma_proc GetForegroundWindow;
             ma_proc GetDesktopWindow;
-
-             ma_handle hAdvapi32DLL;
+            ma_handle hAdvapi32DLL;
             ma_proc RegOpenKeyExA;
             ma_proc RegCloseKey;
             ma_proc RegQueryValueExA;
-
-             long CoInitializeResult;
+            long CoInitializeResult;
         } win32;
 #endif
 #ifdef MA_POSIX
-        struct
-        {
+        struct {
             int _unused;
         } posix;
 #endif
@@ -3157,8 +2944,7 @@ struct ma_context
     };
 };
 
-struct ma_device
-{
+struct ma_device {
     ma_context* pContext;
     ma_device_type type;
     ma_uint32 sampleRate;
@@ -3180,18 +2966,15 @@ struct ma_device
     ma_bool8 noFixedSizedCallback;
     ma_atomic_float masterVolumeFactor;         
     ma_duplex_rb duplexRB;                      
-    struct
-    {
+    struct {
         ma_resample_algorithm algorithm;
         ma_resampling_backend_vtable* pBackendVTable;
         void* pBackendUserData;
-        struct
-        {
+        struct {
             ma_uint32 lpfOrder;
         } linear;
     } resampling;
-    struct
-    {
+    struct {
         ma_device_id* pID;                  
         ma_device_id id;                    
         char name[MA_MAX_DEVICE_NAME_LENGTH + 1];                     
@@ -3216,8 +2999,7 @@ struct ma_device
         ma_uint64 inputCacheConsumed;
         ma_uint64 inputCacheRemaining;
     } playback;
-    struct
-    {
+    struct {
         ma_device_id* pID;                  
         ma_device_id id;                    
         char name[MA_MAX_DEVICE_NAME_LENGTH + 1];                     
@@ -3239,19 +3021,17 @@ struct ma_device
         ma_uint32 intermediaryBufferLen;    
     } capture;
 
-    union
-    {
+    union {
 #ifdef MA_SUPPORT_WASAPI
-        struct
-        {
-             ma_ptr pAudioClientPlayback;
-             ma_ptr pAudioClientCapture;
-             ma_ptr pRenderClient;
-             ma_ptr pCaptureClient;
-             ma_ptr pDeviceEnumerator;      
+        struct {
+            ma_ptr pAudioClientPlayback;
+            ma_ptr pAudioClientCapture;
+            ma_ptr pRenderClient;
+            ma_ptr pCaptureClient;
+            ma_ptr pDeviceEnumerator;      
             ma_IMMNotificationClient notificationClient;
-             ma_handle hEventPlayback;                    
-             ma_handle hEventCapture;                     
+            ma_handle hEventPlayback;                    
+            ma_handle hEventCapture;                     
             ma_uint32 actualBufferSizeInFramesPlayback;             
             ma_uint32 actualBufferSizeInFramesCapture;
             ma_uint32 originalPeriodSizeInFrames;
@@ -3283,8 +3063,7 @@ struct ma_device
         } wasapi;
 #endif
 #ifdef MA_SUPPORT_DSOUND
-        struct
-        {
+        struct {
              ma_ptr pPlayback;
              ma_ptr pPlaybackPrimaryBuffer;
              ma_ptr pPlaybackBuffer;
@@ -3293,31 +3072,29 @@ struct ma_device
         } dsound;
 #endif
 #ifdef MA_SUPPORT_WINMM
-        struct
-        {
-             ma_handle hDevicePlayback;
-             ma_handle hDeviceCapture;
-             ma_handle hEventPlayback;
-             ma_handle hEventCapture;
+        struct {
+            ma_handle hDevicePlayback;
+            ma_handle hDeviceCapture;
+            ma_handle hEventPlayback;
+            ma_handle hEventCapture;
             ma_uint32 fragmentSizeInFrames;
             ma_uint32 iNextHeaderPlayback;             
             ma_uint32 iNextHeaderCapture;              
             ma_uint32 headerFramesConsumedPlayback;    
             ma_uint32 headerFramesConsumedCapture;     
-             ma_uint8* pWAVEHDRPlayback;   
-             ma_uint8* pWAVEHDRCapture;    
+            ma_uint8* pWAVEHDRPlayback;   
+            ma_uint8* pWAVEHDRCapture;    
             ma_uint8* pIntermediaryBufferPlayback;
             ma_uint8* pIntermediaryBufferCapture;
             ma_uint8* _pHeapData;                      
         } winmm;
 #endif
 #ifdef MA_SUPPORT_ALSA
-        struct
-        {
-             ma_ptr pPCMPlayback;
-             ma_ptr pPCMCapture;
-             void* pPollDescriptorsPlayback;
-             void* pPollDescriptorsCapture;
+        struct {
+            ma_ptr pPCMPlayback;
+            ma_ptr pPCMCapture;
+            void* pPollDescriptorsPlayback;
+            void* pPollDescriptorsCapture;
             int pollDescriptorCountPlayback;
             int pollDescriptorCountCapture;
             int wakeupfdPlayback;   
@@ -3327,8 +3104,7 @@ struct ma_device
         } alsa;
 #endif
 #ifdef MA_SUPPORT_PULSEAUDIO
-        struct
-        {
+        struct {
              ma_ptr pMainLoop;
              ma_ptr pPulseContext;
              ma_ptr pStreamPlayback;
@@ -3336,8 +3112,7 @@ struct ma_device
         } pulse;
 #endif
 #ifdef MA_SUPPORT_JACK
-        struct
-        {
+        struct {
              ma_ptr pClient;
              ma_ptr* ppPortsPlayback;
              ma_ptr* ppPortsCapture;
@@ -3346,13 +3121,12 @@ struct ma_device
         } jack;
 #endif
 #ifdef MA_SUPPORT_COREAUDIO
-        struct
-        {
+        struct {
             ma_uint32 deviceObjectIDPlayback;
             ma_uint32 deviceObjectIDCapture;
-             ma_ptr audioUnitPlayback;
-             ma_ptr audioUnitCapture;
-             ma_ptr pAudioBufferList;   
+            ma_ptr audioUnitPlayback;
+            ma_ptr audioUnitCapture;
+            ma_ptr pAudioBufferList;   
             ma_uint32 audioBufferCapInFrames;               
             ma_event stopEvent;
             ma_uint32 originalPeriodSizeInFrames;
@@ -3367,8 +3141,7 @@ struct ma_device
         } coreaudio;
 #endif
 #ifdef MA_SUPPORT_SNDIO
-        struct
-        {
+        struct {
             ma_ptr handlePlayback;
             ma_ptr handleCapture;
             ma_bool32 isStartedPlayback;
@@ -3376,22 +3149,19 @@ struct ma_device
         } sndio;
 #endif
 #ifdef MA_SUPPORT_AUDIO4
-        struct
-        {
+        struct {
             int fdPlayback;
             int fdCapture;
         } audio4;
 #endif
 #ifdef MA_SUPPORT_OSS
-        struct
-        {
+        struct {
             int fdPlayback;
             int fdCapture;
         } oss;
 #endif
 #ifdef MA_SUPPORT_AAUDIO
-        struct
-        {
+        struct {
              ma_ptr pStreamPlayback;
              ma_ptr pStreamCapture;
             ma_mutex rerouteLock;
@@ -3403,16 +3173,15 @@ struct ma_device
         } aaudio;
 #endif
 #ifdef MA_SUPPORT_OPENSL
-        struct
-        {
-             ma_ptr pOutputMixObj;
-             ma_ptr pOutputMix;
-             ma_ptr pAudioPlayerObj;
-             ma_ptr pAudioPlayer;
-             ma_ptr pAudioRecorderObj;
-             ma_ptr pAudioRecorder;
-             ma_ptr pBufferQueuePlayback;
-             ma_ptr pBufferQueueCapture;
+        struct {
+            ma_ptr pOutputMixObj;
+            ma_ptr pOutputMix;
+            ma_ptr pAudioPlayerObj;
+            ma_ptr pAudioPlayer;
+            ma_ptr pAudioRecorderObj;
+            ma_ptr pAudioRecorder;
+            ma_ptr pBufferQueuePlayback;
+            ma_ptr pBufferQueueCapture;
             ma_bool32 isDrainingCapture;
             ma_bool32 isDrainingPlayback;
             ma_uint32 currentBufferIndexPlayback;
@@ -3422,11 +3191,9 @@ struct ma_device
         } opensl;
 #endif
 #ifdef MA_SUPPORT_WEBAUDIO
-        struct
-        {
-            
-             int audioContext;
-             int audioWorklet;
+        struct {
+            int audioContext;
+            int audioWorklet;
             float* pIntermediaryBuffer;
             void* pStackBuffer;
             ma_result initResult;   
@@ -3434,8 +3201,7 @@ struct ma_device
         } webaudio;
 #endif
 #ifdef MA_SUPPORT_NULL
-        struct
-        {
+        struct {
             ma_thread deviceThread;
             ma_event operationEvent;
             ma_event operationCompletionEvent;
@@ -3458,148 +3224,76 @@ struct ma_device
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
     #pragma GCC diagnostic pop  
 #endif
-
-
 MA_API ma_context_config ma_context_config_init(void);
-
-
 MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendCount, const ma_context_config* pConfig, ma_context* pContext);
-
-
 MA_API ma_result ma_context_uninit(ma_context* pContext);
-
-
 MA_API size_t ma_context_sizeof(void);
-
-
 MA_API ma_log* ma_context_get_log(ma_context* pContext);
-
-
 MA_API ma_result ma_context_enumerate_devices(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData);
-
-
 MA_API ma_result ma_context_get_devices(ma_context* pContext, ma_device_info** ppPlaybackDeviceInfos, ma_uint32* pPlaybackDeviceCount, ma_device_info** ppCaptureDeviceInfos, ma_uint32* pCaptureDeviceCount);
-
-
 MA_API ma_result ma_context_get_device_info(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_device_info* pDeviceInfo);
-
-
 MA_API ma_bool32 ma_context_is_loopback_supported(ma_context* pContext);
-
 MA_API ma_device_config ma_device_config_init(ma_device_type deviceType);
-
 MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pConfig, ma_device* pDevice);
-
-
 MA_API ma_result ma_device_init_ex(const ma_backend backends[], ma_uint32 backendCount, const ma_context_config* pContextConfig, const ma_device_config* pConfig, ma_device* pDevice);
-
-
 MA_API void ma_device_uninit(ma_device* pDevice);
-
 MA_API ma_context* ma_device_get_context(ma_device* pDevice);
-
-
 MA_API ma_log* ma_device_get_log(ma_device* pDevice);
-
 MA_API ma_result ma_device_get_info(ma_device* pDevice, ma_device_type type, ma_device_info* pDeviceInfo);
-
 MA_API ma_result ma_device_get_name(ma_device* pDevice, ma_device_type type, char* pName, size_t nameCap, size_t* pLengthNotIncludingNullTerminator);
-
 MA_API ma_result ma_device_start(ma_device* pDevice);
-
-
 MA_API ma_result ma_device_stop(ma_device* pDevice);
-
-
 MA_API ma_bool32 ma_device_is_started(const ma_device* pDevice);
-
 MA_API ma_device_state ma_device_get_state(const ma_device* pDevice);
-
 MA_API ma_result ma_device_post_init(ma_device* pDevice, ma_device_type deviceType, const ma_device_descriptor* pPlaybackDescriptor, const ma_device_descriptor* pCaptureDescriptor);
-
 MA_API ma_result ma_device_set_master_volume(ma_device* pDevice, float volume);
-
-
 MA_API ma_result ma_device_get_master_volume(ma_device* pDevice, float* pVolume);
-
-
 MA_API ma_result ma_device_set_master_volume_db(ma_device* pDevice, float gainDB);
-
-
 MA_API ma_result ma_device_get_master_volume_db(ma_device* pDevice, float* pGainDB);
-
 MA_API ma_result ma_device_handle_backend_data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
-
 MA_API ma_uint32 ma_calculate_buffer_size_in_frames_from_descriptor(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile);
-
 MA_API const char* ma_get_backend_name(ma_backend backend);
-
-
 MA_API ma_result ma_get_backend_from_name(const char* pBackendName, ma_backend* pBackend);
-
-
 MA_API ma_bool32 ma_is_backend_enabled(ma_backend backend);
-
-
 MA_API ma_result ma_get_enabled_backends(ma_backend* pBackends, size_t backendCap, size_t* pBackendCount);
-
-
 MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend);
-
-#endif  
-
-
-
+#endif
 MA_API ma_uint32 ma_calculate_buffer_size_in_milliseconds_from_frames(ma_uint32 bufferSizeInFrames, ma_uint32 sampleRate);
-
-
 MA_API ma_uint32 ma_calculate_buffer_size_in_frames_from_milliseconds(ma_uint32 bufferSizeInMilliseconds, ma_uint32 sampleRate);
-
-
 MA_API void ma_copy_pcm_frames(void* dst, const void* src, ma_uint64 frameCount, ma_format format, ma_uint32 channels);
-
-
 MA_API void ma_silence_pcm_frames(void* p, ma_uint64 frameCount, ma_format format, ma_uint32 channels);
-
 MA_API void* ma_offset_pcm_frames_ptr(void* p, ma_uint64 offsetInFrames, ma_format format, ma_uint32 channels);
 MA_API const void* ma_offset_pcm_frames_const_ptr(const void* p, ma_uint64 offsetInFrames, ma_format format, ma_uint32 channels);
 static MA_INLINE float* ma_offset_pcm_frames_ptr_f32(float* p, ma_uint64 offsetInFrames, ma_uint32 channels) { return (float*)ma_offset_pcm_frames_ptr((void*)p, offsetInFrames, ma_format_f32, channels); }
 static MA_INLINE const float* ma_offset_pcm_frames_const_ptr_f32(const float* p, ma_uint64 offsetInFrames, ma_uint32 channels) { return (const float*)ma_offset_pcm_frames_const_ptr((const void*)p, offsetInFrames, ma_format_f32, channels); }
-
 MA_API void ma_clip_samples_u8(ma_uint8* pDst, const ma_int16* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_s16(ma_int16* pDst, const ma_int32* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_s24(ma_uint8* pDst, const ma_int64* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_s32(ma_int32* pDst, const ma_int64* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_f32(float* pDst, const float* pSrc, ma_uint64 count);
 MA_API void ma_clip_pcm_frames(void* pDst, const void* pSrc, ma_uint64 frameCount, ma_format format, ma_uint32 channels);
-
-
 MA_API void ma_copy_and_apply_volume_factor_u8(ma_uint8* pSamplesOut, const ma_uint8* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_s16(ma_int16* pSamplesOut, const ma_int16* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_s24(void* pSamplesOut, const void* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_s32(ma_int32* pSamplesOut, const ma_int32* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_f32(float* pSamplesOut, const float* pSamplesIn, ma_uint64 sampleCount, float factor);
-
 MA_API void ma_apply_volume_factor_u8(ma_uint8* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_s16(ma_int16* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_s24(void* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_s32(ma_int32* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_f32(float* pSamples, ma_uint64 sampleCount, float factor);
-
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_u8(ma_uint8* pFramesOut, const ma_uint8* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s16(ma_int16* pFramesOut, const ma_int16* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s24(void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s32(ma_int32* pFramesOut, const ma_int32* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_f32(float* pFramesOut, const float* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames(void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor);
-
 MA_API void ma_apply_volume_factor_pcm_frames_u8(ma_uint8* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_s16(ma_int16* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_s24(void* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_s32(ma_int32* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_f32(float* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames(void* pFrames, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor);
-
 MA_API void ma_copy_and_apply_volume_factor_per_channel_f32(float* pFramesOut, const float* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float* pChannelGains);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_u8(ma_uint8* pDst, const ma_int16* pSrc, ma_uint64 count, float volume);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_s16(ma_int16* pDst, const ma_int32* pSrc, ma_uint64 count, float volume);
@@ -3607,14 +3301,9 @@ MA_API void ma_copy_and_apply_volume_and_clip_samples_s24(ma_uint8* pDst, const 
 MA_API void ma_copy_and_apply_volume_and_clip_samples_s32(ma_int32* pDst, const ma_int64* pSrc, ma_uint64 count, float volume);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_f32(float* pDst, const float* pSrc, ma_uint64 count, float volume);
 MA_API void ma_copy_and_apply_volume_and_clip_pcm_frames(void* pDst, const void* pSrc, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float volume);
-
 MA_API float ma_volume_linear_to_db(float factor);
-
-
 MA_API float ma_volume_db_to_linear(float gain);
-
 MA_API ma_result ma_mix_pcm_frames_f32(float* pDst, const float* pSrc, ma_uint64 frameCount, ma_uint32 channels, float volume);
-
 typedef void      ma_vfs;
 typedef ma_handle ma_vfs_file;
 
@@ -3756,36 +3445,19 @@ struct ma_decoder
 
 MA_API ma_decoder_config ma_decoder_config_init(ma_format outputFormat, ma_uint32 outputChannels, ma_uint32 outputSampleRate);
 MA_API ma_decoder_config ma_decoder_config_init_default(void);
-
 MA_API ma_result ma_decoder_init(ma_decoder_read_proc onRead, ma_decoder_seek_proc onSeek, void* pUserData, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_memory(const void* pData, size_t dataSize, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_vfs(ma_vfs* pVFS, const char* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_vfs_w(ma_vfs* pVFS, const wchar_t* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_file(const char* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_file_w(const wchar_t* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
-
-
 MA_API ma_result ma_decoder_uninit(ma_decoder* pDecoder);
-
-
 MA_API ma_result ma_decoder_read_pcm_frames(ma_decoder* pDecoder, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);
-
-
 MA_API ma_result ma_decoder_seek_to_pcm_frame(ma_decoder* pDecoder, ma_uint64 frameIndex);
-
-
 MA_API ma_result ma_decoder_get_data_format(ma_decoder* pDecoder, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
-
-
 MA_API ma_result ma_decoder_get_cursor_in_pcm_frames(ma_decoder* pDecoder, ma_uint64* pCursor);
-
-
 MA_API ma_result ma_decoder_get_length_in_pcm_frames(ma_decoder* pDecoder, ma_uint64* pLength);
-
-
 MA_API ma_result ma_decoder_get_available_frames(ma_decoder* pDecoder, ma_uint64* pAvailableFrames);
-
-
 MA_API ma_result ma_decode_from_vfs(ma_vfs* pVFS, const char* pFilePath, ma_decoder_config* pConfig, ma_uint64* pFrameCountOut, void** ppPCMFramesOut);
 MA_API ma_result ma_decode_file(const char* pFilePath, ma_decoder_config* pConfig, ma_uint64* pFrameCountOut, void** ppPCMFramesOut);
 MA_API ma_result ma_decode_memory(const void* pData, size_t dataSize, ma_decoder_config* pConfig, ma_uint64* pFrameCountOut, void** ppPCMFramesOut);
@@ -4189,8 +3861,6 @@ struct ma_resource_manager
 MA_API ma_result ma_resource_manager_init(const ma_resource_manager_config* pConfig, ma_resource_manager* pResourceManager);
 MA_API void ma_resource_manager_uninit(ma_resource_manager* pResourceManager);
 MA_API ma_log* ma_resource_manager_get_log(ma_resource_manager* pResourceManager);
-
-
 MA_API ma_result ma_resource_manager_register_file(ma_resource_manager* pResourceManager, const char* pFilePath, ma_uint32 flags);
 MA_API ma_result ma_resource_manager_register_file_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath, ma_uint32 flags);
 MA_API ma_result ma_resource_manager_register_decoded_data(ma_resource_manager* pResourceManager, const char* pName, const void* pData, ma_uint64 frameCount, ma_format format, ma_uint32 channels, ma_uint32 sampleRate);  
@@ -4201,8 +3871,6 @@ MA_API ma_result ma_resource_manager_unregister_file(ma_resource_manager* pResou
 MA_API ma_result ma_resource_manager_unregister_file_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath);
 MA_API ma_result ma_resource_manager_unregister_data(ma_resource_manager* pResourceManager, const char* pName);
 MA_API ma_result ma_resource_manager_unregister_data_w(ma_resource_manager* pResourceManager, const wchar_t* pName);
-
-
 MA_API ma_result ma_resource_manager_data_buffer_init_ex(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_buffer* pDataBuffer);
 MA_API ma_result ma_resource_manager_data_buffer_init(ma_resource_manager* pResourceManager, const char* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_buffer* pDataBuffer);
 MA_API ma_result ma_resource_manager_data_buffer_init_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_buffer* pDataBuffer);
@@ -4217,8 +3885,6 @@ MA_API ma_result ma_resource_manager_data_buffer_result(const ma_resource_manage
 MA_API ma_result ma_resource_manager_data_buffer_set_looping(ma_resource_manager_data_buffer* pDataBuffer, ma_bool32 isLooping);
 MA_API ma_bool32 ma_resource_manager_data_buffer_is_looping(const ma_resource_manager_data_buffer* pDataBuffer);
 MA_API ma_result ma_resource_manager_data_buffer_get_available_frames(ma_resource_manager_data_buffer* pDataBuffer, ma_uint64* pAvailableFrames);
-
-
 MA_API ma_result ma_resource_manager_data_stream_init_ex(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_stream* pDataStream);
 MA_API ma_result ma_resource_manager_data_stream_init(ma_resource_manager* pResourceManager, const char* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_stream* pDataStream);
 MA_API ma_result ma_resource_manager_data_stream_init_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_stream* pDataStream);
@@ -4232,8 +3898,6 @@ MA_API ma_result ma_resource_manager_data_stream_result(const ma_resource_manage
 MA_API ma_result ma_resource_manager_data_stream_set_looping(ma_resource_manager_data_stream* pDataStream, ma_bool32 isLooping);
 MA_API ma_bool32 ma_resource_manager_data_stream_is_looping(const ma_resource_manager_data_stream* pDataStream);
 MA_API ma_result ma_resource_manager_data_stream_get_available_frames(ma_resource_manager_data_stream* pDataStream, ma_uint64* pAvailableFrames);
-
-
 MA_API ma_result ma_resource_manager_data_source_init_ex(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_source* pDataSource);
 MA_API ma_result ma_resource_manager_data_source_init(ma_resource_manager* pResourceManager, const char* pName, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_source* pDataSource);
 MA_API ma_result ma_resource_manager_data_source_init_w(ma_resource_manager* pResourceManager, const wchar_t* pName, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_source* pDataSource);
@@ -4248,8 +3912,6 @@ MA_API ma_result ma_resource_manager_data_source_result(const ma_resource_manage
 MA_API ma_result ma_resource_manager_data_source_set_looping(ma_resource_manager_data_source* pDataSource, ma_bool32 isLooping);
 MA_API ma_bool32 ma_resource_manager_data_source_is_looping(const ma_resource_manager_data_source* pDataSource);
 MA_API ma_result ma_resource_manager_data_source_get_available_frames(ma_resource_manager_data_source* pDataSource, ma_uint64* pAvailableFrames);
-
-
 MA_API ma_result ma_resource_manager_post_job(ma_resource_manager* pResourceManager, const ma_job* pJob);
 MA_API ma_result ma_resource_manager_post_job_quit(ma_resource_manager* pResourceManager);  
 MA_API ma_result ma_resource_manager_next_job(ma_resource_manager* pResourceManager, ma_job* pJob);
@@ -4887,8 +4549,7 @@ MA_API void ma_engine_listener_set_enabled(ma_engine* pEngine, ma_uint32 listene
 MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint32 listenerIndex);
 
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result ma_engine_play_sound_ex(ma_engine* pEngine, const char* pFilePath, ma_node* pNode, ma_uint32 nodeInputBusIndex);
-MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath, ma_sound_group* pGroup);   
+MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath);
 #endif
 
 #ifndef MA_NO_RESOURCE_MANAGER
@@ -4970,7 +4631,6 @@ MA_API ma_result ma_sound_get_length_in_pcm_frames(ma_sound* pSound, ma_uint64* 
 MA_API ma_result ma_sound_get_cursor_in_seconds(ma_sound* pSound, float* pCursor);
 MA_API ma_result ma_sound_get_length_in_seconds(ma_sound* pSound, float* pLength);
 MA_API ma_result ma_sound_set_end_callback(ma_sound* pSound, ma_sound_end_proc callback, void* pUserData);
-
 MA_API ma_result ma_sound_group_init(ma_engine* pEngine, ma_uint32 flags, ma_sound_group* pParentGroup, ma_sound_group* pGroup);
 MA_API ma_result ma_sound_group_init_ex(ma_engine* pEngine, const ma_sound_group_config* pConfig, ma_sound_group* pGroup);
 MA_API void ma_sound_group_uninit(ma_sound_group* pGroup);
@@ -41243,27 +40903,12 @@ MA_API ma_vec3f ma_vec3f_neg(ma_vec3f a)
     );
 }
 
-MA_API float ma_vec3f_dot(ma_vec3f a, ma_vec3f b)
-{
-    return a.x*b.x + a.y*b.y + a.z*b.z;
-}
+MA_API float ma_vec3f_dot(ma_vec3f a, ma_vec3f b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
+MA_API float ma_vec3f_len2(ma_vec3f v) { return ma_vec3f_dot(v, v); }
+MA_API float ma_vec3f_len(ma_vec3f v) { return (float)ma_sqrtd(ma_vec3f_len2(v)); }
+MA_API float ma_vec3f_dist(ma_vec3f a, ma_vec3f b) { return ma_vec3f_len(ma_vec3f_sub(a, b)); }
 
-MA_API float ma_vec3f_len2(ma_vec3f v)
-{
-    return ma_vec3f_dot(v, v);
-}
-
-MA_API float ma_vec3f_len(ma_vec3f v)
-{
-    return (float)ma_sqrtd(ma_vec3f_len2(v));
-}
-MA_API float ma_vec3f_dist(ma_vec3f a, ma_vec3f b)
-{
-    return ma_vec3f_len(ma_vec3f_sub(a, b));
-}
-
-MA_API ma_vec3f ma_vec3f_normalize(ma_vec3f v)
-{
+MA_API ma_vec3f ma_vec3f_normalize(ma_vec3f v) {
     float invLen;
     float len2 = ma_vec3f_len2(v);
     if (len2 == 0) {
@@ -41278,37 +40923,27 @@ MA_API ma_vec3f ma_vec3f_normalize(ma_vec3f v)
     return v;
 }
 
-MA_API ma_vec3f ma_vec3f_cross(ma_vec3f a, ma_vec3f b)
-{
+MA_API ma_vec3f ma_vec3f_cross(ma_vec3f a, ma_vec3f b) {
     return ma_vec3f_init_3f(
         a.y*b.z - a.z*b.y,
         a.z*b.x - a.x*b.z,
         a.x*b.y - a.y*b.x
     );
 }
-MA_API void ma_atomic_vec3f_init(ma_atomic_vec3f* v, ma_vec3f value)
-{
+MA_API void ma_atomic_vec3f_init(ma_atomic_vec3f* v, ma_vec3f value) {
     v->v = value;
     v->lock = 0;    
 }
 
-MA_API void ma_atomic_vec3f_set(ma_atomic_vec3f* v, ma_vec3f value)
-{
-    ma_spinlock_lock(&v->lock);
-    {
-        v->v = value;
-    }
+MA_API void ma_atomic_vec3f_set(ma_atomic_vec3f* v, ma_vec3f value) {
+    ma_spinlock_lock(&v->lock); { v->v = value; }
     ma_spinlock_unlock(&v->lock);
 }
 
-MA_API ma_vec3f ma_atomic_vec3f_get(ma_atomic_vec3f* v)
-{
+MA_API ma_vec3f ma_atomic_vec3f_get(ma_atomic_vec3f* v) {
     ma_vec3f r;
 
-    ma_spinlock_lock(&v->lock);
-    {
-        r = v->v;
-    }
+    ma_spinlock_lock(&v->lock); { r = v->v; }
     ma_spinlock_unlock(&v->lock);
 
     return r;
@@ -43407,64 +43042,40 @@ static ma_result ma_resampling_backend_init__linear(void* pUserData, const ma_re
     return MA_SUCCESS;
 }
 
-static void ma_resampling_backend_uninit__linear(void* pUserData, ma_resampling_backend* pBackend, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+static void ma_resampling_backend_uninit__linear(void* pUserData, ma_resampling_backend* pBackend, const ma_allocation_callbacks* pAllocationCallbacks) {
     (void)pUserData;
-
     ma_linear_resampler_uninit((ma_linear_resampler*)pBackend, pAllocationCallbacks);
 }
-
-static ma_result ma_resampling_backend_process__linear(void* pUserData, ma_resampling_backend* pBackend, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut)
-{
+static ma_result ma_resampling_backend_process__linear(void* pUserData, ma_resampling_backend* pBackend, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut) {
     (void)pUserData;
-
     return ma_linear_resampler_process_pcm_frames((ma_linear_resampler*)pBackend, pFramesIn, pFrameCountIn, pFramesOut, pFrameCountOut);
 }
-
-static ma_result ma_resampling_backend_set_rate__linear(void* pUserData, ma_resampling_backend* pBackend, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut)
-{
+static ma_result ma_resampling_backend_set_rate__linear(void* pUserData, ma_resampling_backend* pBackend, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut) {
     (void)pUserData;
-
     return ma_linear_resampler_set_rate((ma_linear_resampler*)pBackend, sampleRateIn, sampleRateOut);
 }
-
-static ma_uint64 ma_resampling_backend_get_input_latency__linear(void* pUserData, const ma_resampling_backend* pBackend)
-{
+static ma_uint64 ma_resampling_backend_get_input_latency__linear(void* pUserData, const ma_resampling_backend* pBackend) {
     (void)pUserData;
-
     return ma_linear_resampler_get_input_latency((const ma_linear_resampler*)pBackend);
 }
-
-static ma_uint64 ma_resampling_backend_get_output_latency__linear(void* pUserData, const ma_resampling_backend* pBackend)
-{
+static ma_uint64 ma_resampling_backend_get_output_latency__linear(void* pUserData, const ma_resampling_backend* pBackend) {
     (void)pUserData;
-
     return ma_linear_resampler_get_output_latency((const ma_linear_resampler*)pBackend);
 }
-
-static ma_result ma_resampling_backend_get_required_input_frame_count__linear(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount)
-{
+static ma_result ma_resampling_backend_get_required_input_frame_count__linear(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount) {
     (void)pUserData;
-
     return ma_linear_resampler_get_required_input_frame_count((const ma_linear_resampler*)pBackend, outputFrameCount, pInputFrameCount);
 }
-
-static ma_result ma_resampling_backend_get_expected_output_frame_count__linear(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount)
-{
+static ma_result ma_resampling_backend_get_expected_output_frame_count__linear(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount) {
     (void)pUserData;
-
     return ma_linear_resampler_get_expected_output_frame_count((const ma_linear_resampler*)pBackend, inputFrameCount, pOutputFrameCount);
 }
-
-static ma_result ma_resampling_backend_reset__linear(void* pUserData, ma_resampling_backend* pBackend)
-{
+static ma_result ma_resampling_backend_reset__linear(void* pUserData, ma_resampling_backend* pBackend) {
     (void)pUserData;
-
     return ma_linear_resampler_reset((ma_linear_resampler*)pBackend);
 }
 
-static ma_resampling_backend_vtable g_ma_linear_resampler_vtable =
-{
+static ma_resampling_backend_vtable g_ma_linear_resampler_vtable = {
     ma_resampling_backend_get_heap_size__linear,
     ma_resampling_backend_init__linear,
     ma_resampling_backend_uninit__linear,
@@ -43528,47 +43139,22 @@ MA_API ma_result ma_resampler_get_heap_size(const ma_resampler_config* pConfig, 
     ma_result result;
     ma_resampling_backend_vtable* pVTable;
     void* pVTableUserData;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pHeapSizeInBytes == NULL) { return MA_INVALID_ARGS; }
     *pHeapSizeInBytes = 0;
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
     result = ma_resampler_get_vtable(pConfig, NULL, &pVTable, &pVTableUserData);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    if (pVTable == NULL || pVTable->onGetHeapSize == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
+    if (pVTable == NULL || pVTable->onGetHeapSize == NULL) { return MA_NOT_IMPLEMENTED; }
     result = pVTable->onGetHeapSize(pVTableUserData, pConfig, pHeapSizeInBytes);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    return MA_SUCCESS;
+    if (result == MA_SUCCESS) { return MA_SUCCESS; }
+    return result;
 }
 
-MA_API ma_result ma_resampler_init_preallocated(const ma_resampler_config* pConfig, void* pHeap, ma_resampler* pResampler)
-{
+MA_API ma_result ma_resampler_init_preallocated(const ma_resampler_config* pConfig, void* pHeap, ma_resampler* pResampler) {
     ma_result result;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pResampler == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pResampler);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
 
     pResampler->_pHeap        = pHeap;
     pResampler->format        = pConfig->format;
@@ -43577,20 +43163,11 @@ MA_API ma_result ma_resampler_init_preallocated(const ma_resampler_config* pConf
     pResampler->sampleRateOut = pConfig->sampleRateOut;
 
     result = ma_resampler_get_vtable(pConfig, pResampler, &pResampler->pBackendVTable, &pResampler->pBackendUserData);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onInit == NULL) {
-        return MA_NOT_IMPLEMENTED;  
-    }
-
+    if (result != MA_SUCCESS) { return result; }
+    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onInit == NULL) { return MA_NOT_IMPLEMENTED; }
     result = pResampler->pBackendVTable->onInit(pResampler->pBackendUserData, pConfig, pHeap, &pResampler->pBackend);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    return MA_SUCCESS;
+    if (result == MA_SUCCESS) { return MA_SUCCESS; }
+    return result;
 }
 
 MA_API ma_result ma_resampler_init(const ma_resampler_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_resampler* pResampler)
@@ -65500,18 +65077,9 @@ MA_API ma_result ma_engine_init(const ma_engine_config* pConfig, ma_engine* pEng
     ma_spatializer_listener_config listenerConfig;
     ma_uint32 iListener;
 
-    if (pEngine == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pEngine);
-
     
-    if (pConfig != NULL) {
-        engineConfig = *pConfig;
-    } else {
-        engineConfig = ma_engine_config_init();
-    }
+    engineConfig = ma_engine_config_init();
 
     pEngine->monoExpansionMode = engineConfig.monoExpansionMode;
     pEngine->defaultVolumeSmoothTimeInPCMFrames = engineConfig.defaultVolumeSmoothTimeInPCMFrames;
@@ -66167,67 +65735,38 @@ MA_API void ma_engine_listener_set_enabled(ma_engine* pEngine, ma_uint32 listene
     ma_spatializer_listener_set_enabled(&pEngine->listeners[listenerIndex], isEnabled);
 }
 
-MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint32 listenerIndex)
-{
-    if (pEngine == NULL || listenerIndex >= pEngine->listenerCount) {
-        return MA_FALSE;
-    }
-
+MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint32 listenerIndex) {
+    if (pEngine == NULL || listenerIndex >= pEngine->listenerCount) { return MA_FALSE; }
     return ma_spatializer_listener_is_enabled(&pEngine->listeners[listenerIndex]);
 }
+
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result ma_engine_play_sound_ex(ma_engine* pEngine, const char* pFilePath, ma_node* pNode, ma_uint32 nodeInputBusIndex)
-{
+MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath) {
     ma_result result = MA_SUCCESS;
     ma_sound_inlined* pSound = NULL;
     ma_sound_inlined* pNextSound = NULL;
-
-    if (pEngine == NULL || pFilePath == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pNode == NULL) {
-        pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
-        nodeInputBusIndex = 0;
-    }
-
-    
-    ma_spinlock_lock(&pEngine->inlinedSoundLock);
-    {
-        ma_uint32 soundFlags = 0;
+    ma_node* pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
+    ma_spinlock_lock(&pEngine->inlinedSoundLock); {
+    ma_uint32 soundFlags = 0;
 
         for (pNextSound = pEngine->pInlinedSoundHead; pNextSound != NULL; pNextSound = pNextSound->pNext) {
             if (ma_sound_at_end(&pNextSound->sound)) {
-                
                 pSound = pNextSound;
                 ma_atomic_fetch_sub_32(&pEngine->inlinedSoundCount, 1);
                 break;
             }
         }
 
-        if (pSound != NULL) {
-            
-            if (pEngine->pInlinedSoundHead == pSound) {
-                pEngine->pInlinedSoundHead =  pSound->pNext;
-            }
-
-            if (pSound->pPrev != NULL) {
-                pSound->pPrev->pNext = pSound->pNext;
-            }
-            if (pSound->pNext != NULL) {
-                pSound->pNext->pPrev = pSound->pPrev;
-            }
-
-            
-            ma_sound_uninit(&pNextSound->sound);
-        } else {
-            
+        if (pSound == NULL) { 
             pSound = (ma_sound_inlined*)ma_malloc(sizeof(*pSound), &pEngine->allocationCallbacks);
+            result = MA_OUT_OF_MEMORY;
         }
+        else {
+            if (pEngine->pInlinedSoundHead == pSound) { pEngine->pInlinedSoundHead =  pSound->pNext; }
+            if (pSound->pPrev != NULL) { pSound->pPrev->pNext = pSound->pNext; }
+            if (pSound->pNext != NULL) { pSound->pNext->pPrev = pSound->pPrev; }
+            ma_sound_uninit(&pNextSound->sound);
 
-        if (pSound != NULL) {   
-            
             soundFlags |= MA_SOUND_FLAG_ASYNC;                 
             soundFlags |= MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT; 
             soundFlags |= MA_SOUND_FLAG_NO_PITCH;              
@@ -66235,49 +65774,32 @@ MA_API ma_result ma_engine_play_sound_ex(ma_engine* pEngine, const char* pFilePa
 
             result = ma_sound_init_from_file(pEngine, pFilePath, soundFlags, NULL, NULL, &pSound->sound);
             if (result == MA_SUCCESS) {
-                
-                result = ma_node_attach_output_bus(pSound, 0, pNode, nodeInputBusIndex);
+                result = ma_node_attach_output_bus(pSound, 0, pNode, 0);
                 if (result == MA_SUCCESS) {
                     
                     pSound->pNext = pEngine->pInlinedSoundHead;
                     pSound->pPrev = NULL;
 
                     pEngine->pInlinedSoundHead = pSound;    
-                    if (pSound->pNext != NULL) {
-                        pSound->pNext->pPrev = pSound;
-                    }
-                } else {
-                    ma_free(pSound, &pEngine->allocationCallbacks);
+                    if (pSound->pNext != NULL) { pSound->pNext->pPrev = pSound; }
                 }
-            } else {
-                ma_free(pSound, &pEngine->allocationCallbacks);
-            }
-        } else {
-            result = MA_OUT_OF_MEMORY;
+                else { ma_free(pSound, &pEngine->allocationCallbacks); }
+            } 
+            else { ma_free(pSound, &pEngine->allocationCallbacks); }
         }
     }
     ma_spinlock_unlock(&pEngine->inlinedSoundLock);
 
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    
+    if (result != MA_SUCCESS) { return result; }
     result = ma_sound_start(&pSound->sound);
     if (result != MA_SUCCESS) {
-        
         ma_atomic_exchange_32(&pSound->sound.atEnd, MA_TRUE);
         return result;
     }
-
     ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
     return result;
 }
 
-MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath, ma_sound_group* pGroup)
-{
-    return ma_engine_play_sound_ex(pEngine, pFilePath, pGroup, 0);
-}
 #endif
 static ma_result ma_sound_preinit(ma_engine* pEngine, ma_sound* pSound)
 {
@@ -82984,71 +82506,45 @@ static ma_int16* ma_dr_mp3__full_read_and_close_s16(ma_dr_mp3* pMP3, ma_dr_mp3_c
     }
     return pFrames;
 }
-MA_API float* ma_dr_mp3_open_and_read_pcm_frames_f32(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API float* ma_dr_mp3_open_and_read_pcm_frames_f32(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_dr_mp3 mp3;
-    if (!ma_dr_mp3_init(&mp3, onRead, onSeek, pUserData, pAllocationCallbacks)) {
-        return NULL;
-    }
-    return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount);
+    if (ma_dr_mp3_init(&mp3, onRead, onSeek, pUserData, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount); }
+    return NULL;
 }
-MA_API ma_int16* ma_dr_mp3_open_and_read_pcm_frames_s16(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API ma_int16* ma_dr_mp3_open_and_read_pcm_frames_s16(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_dr_mp3 mp3;
-    if (!ma_dr_mp3_init(&mp3, onRead, onSeek, pUserData, pAllocationCallbacks)) {
-        return NULL;
-    }
-    return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount);
+    if (ma_dr_mp3_init(&mp3, onRead, onSeek, pUserData, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount); }
+    return NULL;
 }
-MA_API float* ma_dr_mp3_open_memory_and_read_pcm_frames_f32(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API float* ma_dr_mp3_open_memory_and_read_pcm_frames_f32(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_dr_mp3 mp3;
-    if (!ma_dr_mp3_init_memory(&mp3, pData, dataSize, pAllocationCallbacks)) {
-        return NULL;
-    }
-    return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount);
+    if (ma_dr_mp3_init_memory(&mp3, pData, dataSize, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount); }
+    return NULL;
 }
-MA_API ma_int16* ma_dr_mp3_open_memory_and_read_pcm_frames_s16(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API ma_int16* ma_dr_mp3_open_memory_and_read_pcm_frames_s16(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_dr_mp3 mp3;
-    if (!ma_dr_mp3_init_memory(&mp3, pData, dataSize, pAllocationCallbacks)) {
-        return NULL;
-    }
-    return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount);
+    if (ma_dr_mp3_init_memory(&mp3, pData, dataSize, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount); }
+    return NULL;
 }
 #ifndef MA_DR_MP3_NO_STDIO
-MA_API float* ma_dr_mp3_open_file_and_read_pcm_frames_f32(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API float* ma_dr_mp3_open_file_and_read_pcm_frames_f32(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_dr_mp3 mp3;
-    if (!ma_dr_mp3_init_file(&mp3, filePath, pAllocationCallbacks)) {
-        return NULL;
-    }
-    return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount);
+    if (ma_dr_mp3_init_file(&mp3, filePath, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount); }
+    return NULL;
 }
-MA_API ma_int16* ma_dr_mp3_open_file_and_read_pcm_frames_s16(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API ma_int16* ma_dr_mp3_open_file_and_read_pcm_frames_s16(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_dr_mp3 mp3;
-    if (!ma_dr_mp3_init_file(&mp3, filePath, pAllocationCallbacks)) {
-        return NULL;
-    }
-    return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount);
+    if (ma_dr_mp3_init_file(&mp3, filePath, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount); }
+    return NULL;
 }
 #endif
-MA_API void* ma_dr_mp3_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (pAllocationCallbacks != NULL) {
-        return ma_dr_mp3__malloc_from_callbacks(sz, pAllocationCallbacks);
-    } else {
-        return ma_dr_mp3__malloc_default(sz, NULL);
-    }
+MA_API void* ma_dr_mp3_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks) {
+    if (pAllocationCallbacks != NULL) { return ma_dr_mp3__malloc_from_callbacks(sz, pAllocationCallbacks); } 
+    else { return ma_dr_mp3__malloc_default(sz, NULL); }
 }
-MA_API void ma_dr_mp3_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (pAllocationCallbacks != NULL) {
-        ma_dr_mp3__free_from_callbacks(p, pAllocationCallbacks);
-    } else {
-        ma_dr_mp3__free_default(p, NULL);
-    }
+MA_API void ma_dr_mp3_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks) {
+    if (pAllocationCallbacks != NULL) { ma_dr_mp3__free_from_callbacks(p, pAllocationCallbacks); } 
+    else { ma_dr_mp3__free_default(p, NULL); }
 }
 #endif
 #endif

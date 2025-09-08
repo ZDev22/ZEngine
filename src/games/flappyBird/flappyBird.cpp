@@ -20,12 +20,12 @@ void FlappyBird::tick() {
                 sprites[0].rotation = 60.f;
                 sprites[0].textureIndex = 0;
 
-                audio.play("chirp.mp3");
+                audio.play("assets/sounds/chirp.mp3");
             }
 
             if (sprites[0].position.y > 1.f || sprites[0].position.y < -1.f) {
                 flappyBirdDead = true;
-                audio.play("hit.mp3");
+                audio.play("assets/sounds/hit.mp3");
             }
         }
         else if (sprites[0].position.y > 2.5f) {
@@ -54,7 +54,7 @@ void FlappyBird::tick() {
                 sprites[0].rotation = 60.f;
                 sprites[0].textureIndex = 1;
 
-                audio.play("hit.mp3");
+                audio.play("assets/sounds/hit.mp3");
             }
         }
 
