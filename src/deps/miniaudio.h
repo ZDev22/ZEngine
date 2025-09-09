@@ -1812,8 +1812,6 @@ MA_API void ma_blend_f32(float* pOut, float* pInA, float* pInB, float factor, ma
 MA_API ma_uint32 ma_get_bytes_per_sample(ma_format format);
 static MA_INLINE ma_uint32 ma_get_bytes_per_frame(ma_format format, ma_uint32 channels) { return ma_get_bytes_per_sample(format) * channels; }
 MA_API const char* ma_log_level_to_string(ma_uint32 logLevel);
-MA_API ma_result ma_spinlock_lock(volatile ma_spinlock* pSpinlock);
-MA_API ma_result ma_spinlock_lock_noyield(volatile ma_spinlock* pSpinlock);
 MA_API ma_result ma_spinlock_unlock(volatile ma_spinlock* pSpinlock);
 #ifndef MA_NO_THREADING
 MA_API ma_result ma_mutex_init(ma_mutex* pMutex);
@@ -3288,11 +3286,6 @@ MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s24(void* pFramesOut, con
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s32(ma_int32* pFramesOut, const ma_int32* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_f32(float* pFramesOut, const float* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames(void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor);
-MA_API void ma_apply_volume_factor_pcm_frames_u8(ma_uint8* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
-MA_API void ma_apply_volume_factor_pcm_frames_s16(ma_int16* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
-MA_API void ma_apply_volume_factor_pcm_frames_s24(void* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
-MA_API void ma_apply_volume_factor_pcm_frames_s32(ma_int32* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
-MA_API void ma_apply_volume_factor_pcm_frames_f32(float* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames(void* pFrames, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_per_channel_f32(float* pFramesOut, const float* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float* pChannelGains);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_u8(ma_uint8* pDst, const ma_int16* pSrc, ma_uint64 count, float volume);
@@ -4150,8 +4143,6 @@ typedef struct
 } ma_biquad_node;
 
 MA_API ma_result ma_biquad_node_init(ma_node_graph* pNodeGraph, const ma_biquad_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_biquad_node* pNode);
-MA_API ma_result ma_biquad_node_reinit(const ma_biquad_config* pConfig, ma_biquad_node* pNode);
-MA_API void ma_biquad_node_uninit(ma_biquad_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks);
 
 typedef struct
 {
@@ -4159,7 +4150,6 @@ typedef struct
     ma_lpf_config lpf;
 } ma_lpf_node_config;
 
-MA_API ma_lpf_node_config ma_lpf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order);
 typedef struct
 {
     ma_node_base baseNode;
@@ -4283,15 +4273,6 @@ typedef struct
     ma_node_base baseNode;
     ma_delay delay;
 } ma_delay_node;
-
-MA_API ma_result ma_delay_node_init(ma_node_graph* pNodeGraph, const ma_delay_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_delay_node* pDelayNode);
-MA_API void ma_delay_node_uninit(ma_delay_node* pDelayNode, const ma_allocation_callbacks* pAllocationCallbacks);
-MA_API void ma_delay_node_set_wet(ma_delay_node* pDelayNode, float value);
-MA_API float ma_delay_node_get_wet(const ma_delay_node* pDelayNode);
-MA_API void ma_delay_node_set_dry(ma_delay_node* pDelayNode, float value);
-MA_API float ma_delay_node_get_dry(const ma_delay_node* pDelayNode);
-MA_API void ma_delay_node_set_decay(ma_delay_node* pDelayNode, float value);
-MA_API float ma_delay_node_get_decay(const ma_delay_node* pDelayNode);
 #endif  
 
 
@@ -4411,9 +4392,8 @@ typedef struct
     ma_fence* pDoneFence;                       
     ma_bool32 isLooping;                        
 } ma_sound_config;
-
-MA_API ma_sound_config ma_sound_config_init(void);                  
-MA_API ma_sound_config ma_sound_config_init_2(ma_engine* pEngine);  
+              
+MA_API ma_sound_config ma_sound_config_init(ma_engine* pEngine);  
 
 struct ma_sound
 {
@@ -4633,59 +4613,6 @@ MA_API ma_result ma_sound_get_length_in_seconds(ma_sound* pSound, float* pLength
 MA_API ma_result ma_sound_set_end_callback(ma_sound* pSound, ma_sound_end_proc callback, void* pUserData);
 MA_API ma_result ma_sound_group_init(ma_engine* pEngine, ma_uint32 flags, ma_sound_group* pParentGroup, ma_sound_group* pGroup);
 MA_API ma_result ma_sound_group_init_ex(ma_engine* pEngine, const ma_sound_group_config* pConfig, ma_sound_group* pGroup);
-MA_API void ma_sound_group_uninit(ma_sound_group* pGroup);
-MA_API ma_engine* ma_sound_group_get_engine(const ma_sound_group* pGroup);
-MA_API ma_result ma_sound_group_start(ma_sound_group* pGroup);
-MA_API ma_result ma_sound_group_stop(ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_volume(ma_sound_group* pGroup, float volume);
-MA_API float ma_sound_group_get_volume(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pan(ma_sound_group* pGroup, float pan);
-MA_API float ma_sound_group_get_pan(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pan_mode(ma_sound_group* pGroup, ma_pan_mode panMode);
-MA_API ma_pan_mode ma_sound_group_get_pan_mode(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pitch(ma_sound_group* pGroup, float pitch);
-MA_API float ma_sound_group_get_pitch(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_spatialization_enabled(ma_sound_group* pGroup, ma_bool32 enabled);
-MA_API ma_bool32 ma_sound_group_is_spatialization_enabled(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pinned_listener_index(ma_sound_group* pGroup, ma_uint32 listenerIndex);
-MA_API ma_uint32 ma_sound_group_get_pinned_listener_index(const ma_sound_group* pGroup);
-MA_API ma_uint32 ma_sound_group_get_listener_index(const ma_sound_group* pGroup);
-MA_API ma_vec3f ma_sound_group_get_direction_to_listener(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_position(ma_sound_group* pGroup, float x, float y, float z);
-MA_API ma_vec3f ma_sound_group_get_position(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_direction(ma_sound_group* pGroup, float x, float y, float z);
-MA_API ma_vec3f ma_sound_group_get_direction(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_velocity(ma_sound_group* pGroup, float x, float y, float z);
-MA_API ma_vec3f ma_sound_group_get_velocity(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_attenuation_model(ma_sound_group* pGroup, ma_attenuation_model attenuationModel);
-MA_API ma_attenuation_model ma_sound_group_get_attenuation_model(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_positioning(ma_sound_group* pGroup, ma_positioning positioning);
-MA_API ma_positioning ma_sound_group_get_positioning(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_rolloff(ma_sound_group* pGroup, float rolloff);
-MA_API float ma_sound_group_get_rolloff(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_min_gain(ma_sound_group* pGroup, float minGain);
-MA_API float ma_sound_group_get_min_gain(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_max_gain(ma_sound_group* pGroup, float maxGain);
-MA_API float ma_sound_group_get_max_gain(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_min_distance(ma_sound_group* pGroup, float minDistance);
-MA_API float ma_sound_group_get_min_distance(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_max_distance(ma_sound_group* pGroup, float maxDistance);
-MA_API float ma_sound_group_get_max_distance(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_cone(ma_sound_group* pGroup, float innerAngleInRadians, float outerAngleInRadians, float outerGain);
-MA_API void ma_sound_group_get_cone(const ma_sound_group* pGroup, float* pInnerAngleInRadians, float* pOuterAngleInRadians, float* pOuterGain);
-MA_API void ma_sound_group_set_doppler_factor(ma_sound_group* pGroup, float dopplerFactor);
-MA_API float ma_sound_group_get_doppler_factor(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_directional_attenuation_factor(ma_sound_group* pGroup, float directionalAttenuationFactor);
-MA_API float ma_sound_group_get_directional_attenuation_factor(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_fade_in_pcm_frames(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames);
-MA_API void ma_sound_group_set_fade_in_milliseconds(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds);
-MA_API float ma_sound_group_get_current_fade_volume(ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_start_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames);
-MA_API void ma_sound_group_set_start_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds);
-MA_API void ma_sound_group_set_stop_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames);
-MA_API void ma_sound_group_set_stop_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds);
-MA_API ma_bool32 ma_sound_group_is_playing(const ma_sound_group* pGroup);
-MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGroup);
 #endif  
 
 
@@ -6490,8 +6417,7 @@ static MA_INLINE unsigned int ma_count_set_bits(unsigned int x)
     return count;
 }
 
-static void* ma__malloc_default(size_t sz, void* pUserData)
-{
+static void* ma__malloc_default(size_t sz, void* pUserData) {
     (void)pUserData;
     return MA_MALLOC(sz);
 }
@@ -9130,7 +9056,7 @@ static ma_result ma_result_from_GetLastError(DWORD error)
 }
 #endif  
 
-static MA_INLINE ma_result ma_spinlock_lock_ex(volatile ma_spinlock* pSpinlock, ma_bool32 yield)
+static MA_INLINE ma_result ma_spinlock_lock(volatile ma_spinlock* pSpinlock, ma_bool32 yield)
 {
     if (pSpinlock == NULL) {
         return MA_INVALID_ARGS;
@@ -9149,16 +9075,6 @@ static MA_INLINE ma_result ma_spinlock_lock_ex(volatile ma_spinlock* pSpinlock, 
     }
 
     return MA_SUCCESS;
-}
-
-MA_API ma_result ma_spinlock_lock(volatile ma_spinlock* pSpinlock)
-{
-    return ma_spinlock_lock_ex(pSpinlock, MA_TRUE);
-}
-
-MA_API ma_result ma_spinlock_lock_noyield(volatile ma_spinlock* pSpinlock)
-{
-    return ma_spinlock_lock_ex(pSpinlock, MA_FALSE);
 }
 
 MA_API ma_result ma_spinlock_unlock(volatile ma_spinlock* pSpinlock)
@@ -10727,7 +10643,7 @@ MA_API ma_result ma_job_queue_post(ma_job_queue* pQueue, const ma_job* pJob)
     pQueue->pJobs[ma_job_extract_slot(slot)].next             = MA_JOB_ID_NONE;          
 
     #ifndef MA_USE_EXPERIMENTAL_LOCK_FREE_JOB_QUEUE
-    ma_spinlock_lock(&pQueue->lock);
+    ma_spinlock_lock(&pQueue->lock, MA_TRUE);
     #endif
     {
         
@@ -10790,7 +10706,7 @@ MA_API ma_result ma_job_queue_next(ma_job_queue* pQueue, ma_job* pJob)
     }
 
     #ifndef MA_USE_EXPERIMENTAL_LOCK_FREE_JOB_QUEUE
-    ma_spinlock_lock(&pQueue->lock);
+    ma_spinlock_lock(&pQueue->lock, MA_TRUE);
     #endif
     {
         
@@ -16464,17 +16380,11 @@ struct ma_IDirectSound
 {
     ma_IDirectSoundVtbl* lpVtbl;
 };
-static MA_INLINE HRESULT ma_IDirectSound_QueryInterface(ma_IDirectSound* pThis, const IID* const riid, void** ppObject) { return pThis->lpVtbl->QueryInterface(pThis, riid, ppObject); }
-static MA_INLINE ULONG   ma_IDirectSound_AddRef(ma_IDirectSound* pThis)                                                 { return pThis->lpVtbl->AddRef(pThis); }
 static MA_INLINE ULONG   ma_IDirectSound_Release(ma_IDirectSound* pThis)                                                { return pThis->lpVtbl->Release(pThis); }
 static MA_INLINE HRESULT ma_IDirectSound_CreateSoundBuffer(ma_IDirectSound* pThis, const MA_DSBUFFERDESC* pDSBufferDesc, ma_IDirectSoundBuffer** ppDSBuffer, void* pUnkOuter) { return pThis->lpVtbl->CreateSoundBuffer(pThis, pDSBufferDesc, ppDSBuffer, pUnkOuter); }
 static MA_INLINE HRESULT ma_IDirectSound_GetCaps(ma_IDirectSound* pThis, MA_DSCAPS* pDSCaps)                            { return pThis->lpVtbl->GetCaps(pThis, pDSCaps); }
-static MA_INLINE HRESULT ma_IDirectSound_DuplicateSoundBuffer(ma_IDirectSound* pThis, ma_IDirectSoundBuffer* pDSBufferOriginal, ma_IDirectSoundBuffer** ppDSBufferDuplicate) { return pThis->lpVtbl->DuplicateSoundBuffer(pThis, pDSBufferOriginal, ppDSBufferDuplicate); }
 static MA_INLINE HRESULT ma_IDirectSound_SetCooperativeLevel(ma_IDirectSound* pThis, HWND hwnd, DWORD dwLevel)          { return pThis->lpVtbl->SetCooperativeLevel(pThis, hwnd, dwLevel); }
-static MA_INLINE HRESULT ma_IDirectSound_Compact(ma_IDirectSound* pThis)                                                { return pThis->lpVtbl->Compact(pThis); }
 static MA_INLINE HRESULT ma_IDirectSound_GetSpeakerConfig(ma_IDirectSound* pThis, DWORD* pSpeakerConfig)                { return pThis->lpVtbl->GetSpeakerConfig(pThis, pSpeakerConfig); }
-static MA_INLINE HRESULT ma_IDirectSound_SetSpeakerConfig(ma_IDirectSound* pThis, DWORD dwSpeakerConfig)                { return pThis->lpVtbl->SetSpeakerConfig(pThis, dwSpeakerConfig); }
-static MA_INLINE HRESULT ma_IDirectSound_Initialize(ma_IDirectSound* pThis, const GUID* pGuidDevice)                    { return pThis->lpVtbl->Initialize(pThis, pGuidDevice); }
 
 typedef struct
 {
@@ -16507,27 +16417,16 @@ struct ma_IDirectSoundBuffer
 {
     ma_IDirectSoundBufferVtbl* lpVtbl;
 };
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_QueryInterface(ma_IDirectSoundBuffer* pThis, const IID* const riid, void** ppObject) { return pThis->lpVtbl->QueryInterface(pThis, riid, ppObject); }
-static MA_INLINE ULONG   ma_IDirectSoundBuffer_AddRef(ma_IDirectSoundBuffer* pThis)                                                 { return pThis->lpVtbl->AddRef(pThis); }
 static MA_INLINE ULONG   ma_IDirectSoundBuffer_Release(ma_IDirectSoundBuffer* pThis)                                                { return pThis->lpVtbl->Release(pThis); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetCaps(ma_IDirectSoundBuffer* pThis, MA_DSBCAPS* pDSBufferCaps)                     { return pThis->lpVtbl->GetCaps(pThis, pDSBufferCaps); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetCurrentPosition(ma_IDirectSoundBuffer* pThis, DWORD* pCurrentPlayCursor, DWORD* pCurrentWriteCursor) { return pThis->lpVtbl->GetCurrentPosition(pThis, pCurrentPlayCursor, pCurrentWriteCursor); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetFormat(ma_IDirectSoundBuffer* pThis, MA_WAVEFORMATEX* pFormat, DWORD dwSizeAllocated, DWORD* pSizeWritten) { return pThis->lpVtbl->GetFormat(pThis, pFormat, dwSizeAllocated, pSizeWritten); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetVolume(ma_IDirectSoundBuffer* pThis, LONG* pVolume)                               { return pThis->lpVtbl->GetVolume(pThis, pVolume); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetPan(ma_IDirectSoundBuffer* pThis, LONG* pPan)                                     { return pThis->lpVtbl->GetPan(pThis, pPan); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetFrequency(ma_IDirectSoundBuffer* pThis, DWORD* pFrequency)                        { return pThis->lpVtbl->GetFrequency(pThis, pFrequency); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_GetStatus(ma_IDirectSoundBuffer* pThis, DWORD* pStatus)                              { return pThis->lpVtbl->GetStatus(pThis, pStatus); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_Initialize(ma_IDirectSoundBuffer* pThis, ma_IDirectSound* pDirectSound, const MA_DSBUFFERDESC* pDSBufferDesc) { return pThis->lpVtbl->Initialize(pThis, pDirectSound, pDSBufferDesc); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_Lock(ma_IDirectSoundBuffer* pThis, DWORD dwOffset, DWORD dwBytes, void** ppAudioPtr1, DWORD* pAudioBytes1, void** ppAudioPtr2, DWORD* pAudioBytes2, DWORD dwFlags) { return pThis->lpVtbl->Lock(pThis, dwOffset, dwBytes, ppAudioPtr1, pAudioBytes1, ppAudioPtr2, pAudioBytes2, dwFlags); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_Play(ma_IDirectSoundBuffer* pThis, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags) { return pThis->lpVtbl->Play(pThis, dwReserved1, dwPriority, dwFlags); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_SetCurrentPosition(ma_IDirectSoundBuffer* pThis, DWORD dwNewPosition)                { return pThis->lpVtbl->SetCurrentPosition(pThis, dwNewPosition); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_SetFormat(ma_IDirectSoundBuffer* pThis, const MA_WAVEFORMATEX* pFormat)              { return pThis->lpVtbl->SetFormat(pThis, pFormat); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_SetVolume(ma_IDirectSoundBuffer* pThis, LONG volume)                                 { return pThis->lpVtbl->SetVolume(pThis, volume); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_SetPan(ma_IDirectSoundBuffer* pThis, LONG pan)                                       { return pThis->lpVtbl->SetPan(pThis, pan); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_SetFrequency(ma_IDirectSoundBuffer* pThis, DWORD dwFrequency)                        { return pThis->lpVtbl->SetFrequency(pThis, dwFrequency); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_Stop(ma_IDirectSoundBuffer* pThis)                                                   { return pThis->lpVtbl->Stop(pThis); }
 static MA_INLINE HRESULT ma_IDirectSoundBuffer_Unlock(ma_IDirectSoundBuffer* pThis, void* pAudioPtr1, DWORD dwAudioBytes1, void* pAudioPtr2, DWORD dwAudioBytes2) { return pThis->lpVtbl->Unlock(pThis, pAudioPtr1, dwAudioBytes1, pAudioPtr2, dwAudioBytes2); }
-static MA_INLINE HRESULT ma_IDirectSoundBuffer_Restore(ma_IDirectSoundBuffer* pThis)                                                { return pThis->lpVtbl->Restore(pThis); }
 
 typedef struct
 {
@@ -16545,12 +16444,9 @@ struct ma_IDirectSoundCapture
 {
     ma_IDirectSoundCaptureVtbl* lpVtbl;
 };
-static MA_INLINE HRESULT ma_IDirectSoundCapture_QueryInterface     (ma_IDirectSoundCapture* pThis, const IID* const riid, void** ppObject) { return pThis->lpVtbl->QueryInterface(pThis, riid, ppObject); }
-static MA_INLINE ULONG   ma_IDirectSoundCapture_AddRef             (ma_IDirectSoundCapture* pThis)                                    { return pThis->lpVtbl->AddRef(pThis); }
 static MA_INLINE ULONG   ma_IDirectSoundCapture_Release            (ma_IDirectSoundCapture* pThis)                                    { return pThis->lpVtbl->Release(pThis); }
 static MA_INLINE HRESULT ma_IDirectSoundCapture_CreateCaptureBuffer(ma_IDirectSoundCapture* pThis, const MA_DSCBUFFERDESC* pDSCBufferDesc, ma_IDirectSoundCaptureBuffer** ppDSCBuffer, void* pUnkOuter) { return pThis->lpVtbl->CreateCaptureBuffer(pThis, pDSCBufferDesc, ppDSCBuffer, pUnkOuter); }
 static MA_INLINE HRESULT ma_IDirectSoundCapture_GetCaps            (ma_IDirectSoundCapture* pThis, MA_DSCCAPS* pDSCCaps)              { return pThis->lpVtbl->GetCaps(pThis, pDSCCaps); }
-static MA_INLINE HRESULT ma_IDirectSoundCapture_Initialize         (ma_IDirectSoundCapture* pThis, const GUID* pGuidDevice)           { return pThis->lpVtbl->Initialize(pThis, pGuidDevice); }
 
 typedef struct
 {
@@ -16574,14 +16470,9 @@ struct ma_IDirectSoundCaptureBuffer
 {
     ma_IDirectSoundCaptureBufferVtbl* lpVtbl;
 };
-static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_QueryInterface(ma_IDirectSoundCaptureBuffer* pThis, const IID* const riid, void** ppObject) { return pThis->lpVtbl->QueryInterface(pThis, riid, ppObject); }
-static MA_INLINE ULONG   ma_IDirectSoundCaptureBuffer_AddRef(ma_IDirectSoundCaptureBuffer* pThis)                                                 { return pThis->lpVtbl->AddRef(pThis); }
 static MA_INLINE ULONG   ma_IDirectSoundCaptureBuffer_Release(ma_IDirectSoundCaptureBuffer* pThis)                                                { return pThis->lpVtbl->Release(pThis); }
-static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_GetCaps(ma_IDirectSoundCaptureBuffer* pThis, MA_DSCBCAPS* pDSCBCaps)                        { return pThis->lpVtbl->GetCaps(pThis, pDSCBCaps); }
 static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_GetCurrentPosition(ma_IDirectSoundCaptureBuffer* pThis, DWORD* pCapturePosition, DWORD* pReadPosition) { return pThis->lpVtbl->GetCurrentPosition(pThis, pCapturePosition, pReadPosition); }
 static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_GetFormat(ma_IDirectSoundCaptureBuffer* pThis, MA_WAVEFORMATEX* pFormat, DWORD dwSizeAllocated, DWORD* pSizeWritten) { return pThis->lpVtbl->GetFormat(pThis, pFormat, dwSizeAllocated, pSizeWritten); }
-static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_GetStatus(ma_IDirectSoundCaptureBuffer* pThis, DWORD* pStatus)                              { return pThis->lpVtbl->GetStatus(pThis, pStatus); }
-static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_Initialize(ma_IDirectSoundCaptureBuffer* pThis, ma_IDirectSoundCapture* pDirectSoundCapture, const MA_DSCBUFFERDESC* pDSCBufferDesc) { return pThis->lpVtbl->Initialize(pThis, pDirectSoundCapture, pDSCBufferDesc); }
 static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_Lock(ma_IDirectSoundCaptureBuffer* pThis, DWORD dwOffset, DWORD dwBytes, void** ppAudioPtr1, DWORD* pAudioBytes1, void** ppAudioPtr2, DWORD* pAudioBytes2, DWORD dwFlags) { return pThis->lpVtbl->Lock(pThis, dwOffset, dwBytes, ppAudioPtr1, pAudioBytes1, ppAudioPtr2, pAudioBytes2, dwFlags); }
 static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_Start(ma_IDirectSoundCaptureBuffer* pThis, DWORD dwFlags)                                   { return pThis->lpVtbl->Start(pThis, dwFlags); }
 static MA_INLINE HRESULT ma_IDirectSoundCaptureBuffer_Stop(ma_IDirectSoundCaptureBuffer* pThis)                                                   { return pThis->lpVtbl->Stop(pThis); }
@@ -16601,86 +16492,57 @@ struct ma_IDirectSoundNotify
 {
     ma_IDirectSoundNotifyVtbl* lpVtbl;
 };
-static MA_INLINE HRESULT ma_IDirectSoundNotify_QueryInterface(ma_IDirectSoundNotify* pThis, const IID* const riid, void** ppObject) { return pThis->lpVtbl->QueryInterface(pThis, riid, ppObject); }
-static MA_INLINE ULONG   ma_IDirectSoundNotify_AddRef(ma_IDirectSoundNotify* pThis)                                                 { return pThis->lpVtbl->AddRef(pThis); }
-static MA_INLINE ULONG   ma_IDirectSoundNotify_Release(ma_IDirectSoundNotify* pThis)                                                { return pThis->lpVtbl->Release(pThis); }
-static MA_INLINE HRESULT ma_IDirectSoundNotify_SetNotificationPositions(ma_IDirectSoundNotify* pThis, DWORD dwPositionNotifies, const MA_DSBPOSITIONNOTIFY* pPositionNotifies) { return pThis->lpVtbl->SetNotificationPositions(pThis, dwPositionNotifies, pPositionNotifies); }
 typedef BOOL    (CALLBACK * ma_DSEnumCallbackAProc)             (GUID* pDeviceGUID, const char* pDeviceDescription, const char* pModule, void* pContext);
 typedef HRESULT (WINAPI   * ma_DirectSoundCreateProc)           (const GUID* pcGuidDevice, ma_IDirectSound** ppDS8, ma_IUnknown* pUnkOuter);
 typedef HRESULT (WINAPI   * ma_DirectSoundEnumerateAProc)       (ma_DSEnumCallbackAProc pDSEnumCallback, void* pContext);
 typedef HRESULT (WINAPI   * ma_DirectSoundCaptureCreateProc)    (const GUID* pcGuidDevice, ma_IDirectSoundCapture** ppDSC8, ma_IUnknown* pUnkOuter);
 typedef HRESULT (WINAPI   * ma_DirectSoundCaptureEnumerateAProc)(ma_DSEnumCallbackAProc pDSEnumCallback, void* pContext);
 
-static ma_uint32 ma_get_best_sample_rate_within_range(ma_uint32 sampleRateMin, ma_uint32 sampleRateMax)
-{
-    
-    if (sampleRateMin < (ma_uint32)ma_standard_sample_rate_min) {
-        sampleRateMin = (ma_uint32)ma_standard_sample_rate_min;
-    }
-    if (sampleRateMax > (ma_uint32)ma_standard_sample_rate_max) {
-        sampleRateMax = (ma_uint32)ma_standard_sample_rate_max;
-    }
-    if (sampleRateMin > sampleRateMax) {
-        sampleRateMin = sampleRateMax;
-    }
-
-    if (sampleRateMin == sampleRateMax) {
-        return sampleRateMax;
-    } else {
+static ma_uint32 ma_get_best_sample_rate_within_range(ma_uint32 sampleRateMin, ma_uint32 sampleRateMax) {
+    if (sampleRateMin < (ma_uint32)ma_standard_sample_rate_min) { sampleRateMin = (ma_uint32)ma_standard_sample_rate_min; }
+    if (sampleRateMax > (ma_uint32)ma_standard_sample_rate_max) { sampleRateMax = (ma_uint32)ma_standard_sample_rate_max; }
+    if (sampleRateMin > sampleRateMax) { sampleRateMin = sampleRateMax; }
+    if (sampleRateMin == sampleRateMax) { return sampleRateMax; } 
+    else {
         size_t iStandardRate;
         for (iStandardRate = 0; iStandardRate < ma_countof(g_maStandardSampleRatePriorities); ++iStandardRate) {
             ma_uint32 standardRate = g_maStandardSampleRatePriorities[iStandardRate];
-            if (standardRate >= sampleRateMin && standardRate <= sampleRateMax) {
-                return standardRate;
-            }
+            if (standardRate >= sampleRateMin && standardRate <= sampleRateMax) { return standardRate; }
         }
     }
-
-    
     MA_ASSERT(MA_FALSE);
     return 0;
 }
 
 
-static void ma_get_channels_from_speaker_config__dsound(DWORD speakerConfig, WORD* pChannelsOut, DWORD* pChannelMapOut)
-{
+static void ma_get_channels_from_speaker_config__dsound(DWORD speakerConfig, WORD* pChannelsOut, DWORD* pChannelMapOut) {
     WORD  channels;
     DWORD channelMap;
 
     channels = 0;
-    if (pChannelsOut != NULL) {
-        channels = *pChannelsOut;
-    }
+    if (pChannelsOut != NULL) { channels = *pChannelsOut; }
 
     channelMap = 0;
-    if (pChannelMapOut != NULL) {
-        channelMap = *pChannelMapOut;
-    }
+    if (pChannelMapOut != NULL) { channelMap = *pChannelMapOut;  }
 
     
     switch ((BYTE)(speakerConfig)) {
-        case 1 :                          channels = 2; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT; break;
-        case 2 :                               channels = 1; channelMap = SPEAKER_FRONT_CENTER; break;
-        case 3 :                               channels = 4; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT; break;
-        case 4 :                             channels = 2; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT; break;
-        case 5 :                           channels = 4; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_BACK_CENTER; break;
-        case 6  : channels = 6; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT; break;
-        case 7  : channels = 8; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_FRONT_LEFT_OF_CENTER | SPEAKER_FRONT_RIGHT_OF_CENTER; break;
-        case 8 :                   channels = 8; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_SIDE_LEFT | SPEAKER_SIDE_RIGHT; break;
-        case 9 :                   channels = 6; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_SIDE_LEFT | SPEAKER_SIDE_RIGHT; break;
+        case 1: channels = 2; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT; break;
+        case 2: channels = 1; channelMap = SPEAKER_FRONT_CENTER; break;
+        case 3: channels = 4; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT; break;
+        case 4: channels = 2; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT; break;
+        case 5: channels = 4; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_BACK_CENTER; break;
+        case 6: channels = 6; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT; break;
+        case 7: channels = 8; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_FRONT_LEFT_OF_CENTER | SPEAKER_FRONT_RIGHT_OF_CENTER; break;
+        case 8: channels = 8; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_SIDE_LEFT | SPEAKER_SIDE_RIGHT; break;
+        case 9: channels = 6; channelMap = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_SIDE_LEFT | SPEAKER_SIDE_RIGHT; break;
         default: break;
     }
 
-    if (pChannelsOut != NULL) {
-        *pChannelsOut = channels;
-    }
-
-    if (pChannelMapOut != NULL) {
-        *pChannelMapOut = channelMap;
-    }
+    if (pChannelsOut != NULL) { *pChannelsOut = channels; }
+    if (pChannelMapOut != NULL) { *pChannelMapOut = channelMap; }
 }
-static ma_result ma_context_create_IDirectSound__dsound(ma_context* pContext, ma_share_mode shareMode, const ma_device_id* pDeviceID, ma_IDirectSound** ppDirectSound)
-{
+static ma_result ma_context_create_IDirectSound__dsound(ma_context* pContext, ma_share_mode shareMode, const ma_device_id* pDeviceID, ma_IDirectSound** ppDirectSound) {
     ma_IDirectSound* pDirectSound;
     HWND hWnd;
     HRESULT hr;
@@ -16700,9 +16562,7 @@ static ma_result ma_context_create_IDirectSound__dsound(ma_context* pContext, ma
     hWnd = (HWND)pContext->dsound.hWnd;
     if (hWnd == 0) {
         hWnd = ((MA_PFN_GetForegroundWindow)pContext->win32.GetForegroundWindow)();
-        if (hWnd == 0) {
-            hWnd = ((MA_PFN_GetDesktopWindow)pContext->win32.GetDesktopWindow)();
-        }
+        if (hWnd == 0) { hWnd = ((MA_PFN_GetDesktopWindow)pContext->win32.GetDesktopWindow)(); }
     }
 
     hr = ma_IDirectSound_SetCooperativeLevel(pDirectSound, hWnd, (shareMode == ma_share_mode_exclusive) ? MA_DSSCL_EXCLUSIVE : MA_DSSCL_PRIORITY);
@@ -16715,8 +16575,7 @@ static ma_result ma_context_create_IDirectSound__dsound(ma_context* pContext, ma
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_create_IDirectSoundCapture__dsound(ma_context* pContext, ma_share_mode shareMode, const ma_device_id* pDeviceID, ma_IDirectSoundCapture** ppDirectSoundCapture)
-{
+static ma_result ma_context_create_IDirectSoundCapture__dsound(ma_context* pContext, ma_share_mode shareMode, const ma_device_id* pDeviceID, ma_IDirectSoundCapture** ppDirectSoundCapture) {
     ma_IDirectSoundCapture* pDirectSoundCapture;
     HRESULT hr;
 
@@ -16724,9 +16583,7 @@ static ma_result ma_context_create_IDirectSoundCapture__dsound(ma_context* pCont
     MA_ASSERT(ppDirectSoundCapture != NULL);
 
     
-    if (shareMode == ma_share_mode_exclusive) {
-        return MA_SHARE_MODE_NOT_SUPPORTED;
-    }
+    if (shareMode == ma_share_mode_exclusive) { return MA_SHARE_MODE_NOT_SUPPORTED; }
 
     *ppDirectSoundCapture = NULL;
     pDirectSoundCapture = NULL;
@@ -16741,8 +16598,7 @@ static ma_result ma_context_create_IDirectSoundCapture__dsound(ma_context* pCont
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_get_format_info_for_IDirectSoundCapture__dsound(ma_context* pContext, ma_IDirectSoundCapture* pDirectSoundCapture, WORD* pChannels, WORD* pBitsPerSample, DWORD* pSampleRate)
-{
+static ma_result ma_context_get_format_info_for_IDirectSoundCapture__dsound(ma_context* pContext, ma_IDirectSoundCapture* pDirectSoundCapture, WORD* pChannels, WORD* pBitsPerSample, DWORD* pSampleRate) {
     HRESULT hr;
     MA_DSCCAPS caps;
     WORD bitsPerSample;
@@ -16751,15 +16607,9 @@ static ma_result ma_context_get_format_info_for_IDirectSoundCapture__dsound(ma_c
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pDirectSoundCapture != NULL);
 
-    if (pChannels) {
-        *pChannels = 0;
-    }
-    if (pBitsPerSample) {
-        *pBitsPerSample = 0;
-    }
-    if (pSampleRate) {
-        *pSampleRate = 0;
-    }
+    if (pChannels) { *pChannels = 0; }
+    if (pBitsPerSample) { *pBitsPerSample = 0; }
+    if (pSampleRate) { *pSampleRate = 0; }
 
     MA_ZERO_OBJECT(&caps);
     caps.dwSize = sizeof(caps);
@@ -16769,81 +16619,49 @@ static ma_result ma_context_get_format_info_for_IDirectSoundCapture__dsound(ma_c
         return ma_result_from_HRESULT(hr);
     }
 
-    if (pChannels) {
-        *pChannels = (WORD)caps.dwChannels;
-    }
+    if (pChannels) { *pChannels = (WORD)caps.dwChannels; }
 
-    
     bitsPerSample = 16;
     sampleRate = 48000;
 
     if (caps.dwChannels == 1) {
-        if ((caps.dwFormats & WAVE_FORMAT_48M16) != 0) {
-            sampleRate = 48000;
-        } else if ((caps.dwFormats & WAVE_FORMAT_44M16) != 0) {
-            sampleRate = 44100;
-        } else if ((caps.dwFormats & WAVE_FORMAT_2M16) != 0) {
-            sampleRate = 22050;
-        } else if ((caps.dwFormats & WAVE_FORMAT_1M16) != 0) {
-            sampleRate = 11025;
-        } else if ((caps.dwFormats & WAVE_FORMAT_96M16) != 0) {
-            sampleRate = 96000;
-        } else {
+        if ((caps.dwFormats & WAVE_FORMAT_48M16) != 0) { sampleRate = 48000; }
+        else if ((caps.dwFormats & WAVE_FORMAT_44M16) != 0) { sampleRate = 44100; }
+        else if ((caps.dwFormats & WAVE_FORMAT_2M16) != 0) { sampleRate = 22050; }
+        else if ((caps.dwFormats & WAVE_FORMAT_1M16) != 0) { sampleRate = 11025; }
+        else if ((caps.dwFormats & WAVE_FORMAT_96M16) != 0) { sampleRate = 96000; }
+        else {
             bitsPerSample = 8;
-            if ((caps.dwFormats & WAVE_FORMAT_48M08) != 0) {
-                sampleRate = 48000;
-            } else if ((caps.dwFormats & WAVE_FORMAT_44M08) != 0) {
-                sampleRate = 44100;
-            } else if ((caps.dwFormats & WAVE_FORMAT_2M08) != 0) {
-                sampleRate = 22050;
-            } else if ((caps.dwFormats & WAVE_FORMAT_1M08) != 0) {
-                sampleRate = 11025;
-            } else if ((caps.dwFormats & WAVE_FORMAT_96M08) != 0) {
-                sampleRate = 96000;
-            } else {
-                bitsPerSample = 16;  
-            }
+            if ((caps.dwFormats & WAVE_FORMAT_48M08) != 0) { sampleRate = 48000; }
+            else if ((caps.dwFormats & WAVE_FORMAT_44M08) != 0) { sampleRate = 44100; }
+            else if ((caps.dwFormats & WAVE_FORMAT_2M08) != 0) { sampleRate = 22050; }
+            else if ((caps.dwFormats & WAVE_FORMAT_1M08) != 0) { sampleRate = 11025; }
+            else if ((caps.dwFormats & WAVE_FORMAT_96M08) != 0) { sampleRate = 96000; }
+            else { bitsPerSample = 16; }
         }
-    } else if (caps.dwChannels == 2) {
-        if ((caps.dwFormats & WAVE_FORMAT_48S16) != 0) {
-            sampleRate = 48000;
-        } else if ((caps.dwFormats & WAVE_FORMAT_44S16) != 0) {
-            sampleRate = 44100;
-        } else if ((caps.dwFormats & WAVE_FORMAT_2S16) != 0) {
-            sampleRate = 22050;
-        } else if ((caps.dwFormats & WAVE_FORMAT_1S16) != 0) {
-            sampleRate = 11025;
-        } else if ((caps.dwFormats & WAVE_FORMAT_96S16) != 0) {
-            sampleRate = 96000;
-        } else {
+    } 
+    else if (caps.dwChannels == 2) {
+        if ((caps.dwFormats & WAVE_FORMAT_48S16) != 0) { sampleRate = 48000; }
+        else if ((caps.dwFormats & WAVE_FORMAT_44S16) != 0) { sampleRate = 44100; }
+        else if ((caps.dwFormats & WAVE_FORMAT_2S16) != 0) { sampleRate = 22050; }
+        else if ((caps.dwFormats & WAVE_FORMAT_1S16) != 0) { sampleRate = 11025; }
+        else if ((caps.dwFormats & WAVE_FORMAT_96S16) != 0) { sampleRate = 96000; }
+        else {
             bitsPerSample = 8;
-            if ((caps.dwFormats & WAVE_FORMAT_48S08) != 0) {
-                sampleRate = 48000;
-            } else if ((caps.dwFormats & WAVE_FORMAT_44S08) != 0) {
-                sampleRate = 44100;
-            } else if ((caps.dwFormats & WAVE_FORMAT_2S08) != 0) {
-                sampleRate = 22050;
-            } else if ((caps.dwFormats & WAVE_FORMAT_1S08) != 0) {
-                sampleRate = 11025;
-            } else if ((caps.dwFormats & WAVE_FORMAT_96S08) != 0) {
-                sampleRate = 96000;
-            } else {
-                bitsPerSample = 16;  
-            }
+            if ((caps.dwFormats & WAVE_FORMAT_48S08) != 0) { sampleRate = 48000; }
+            else if ((caps.dwFormats & WAVE_FORMAT_44S08) != 0) { sampleRate = 44100; }
+            else if ((caps.dwFormats & WAVE_FORMAT_2S08) != 0) { sampleRate = 22050; }
+            else if ((caps.dwFormats & WAVE_FORMAT_1S08) != 0) { sampleRate = 11025; }
+            else if ((caps.dwFormats & WAVE_FORMAT_96S08) != 0) { sampleRate = 96000; }
+            else { bitsPerSample = 16; }
         }
     }
 
-    if (pBitsPerSample) {
-        *pBitsPerSample = bitsPerSample;
-    }
-    if (pSampleRate) {
-        *pSampleRate = sampleRate;
-    }
-
+    if (pBitsPerSample) { *pBitsPerSample = bitsPerSample; }
+    if (pSampleRate) { *pSampleRate = sampleRate; }
     return MA_SUCCESS;
 }
-typedef struct
-{
+typedef struct {
     ma_context* pContext;
     ma_device_type deviceType;
     ma_enum_devices_callback_proc callback;
@@ -16851,8 +16669,7 @@ typedef struct
     ma_bool32 terminated;
 } ma_context_enumerate_devices_callback_data__dsound;
 
-static BOOL CALLBACK ma_context_enumerate_devices_callback__dsound(GUID* lpGuid, const char* lpcstrDescription, const char* lpcstrModule, void* lpContext)
-{
+static BOOL CALLBACK ma_context_enumerate_devices_callback__dsound(GUID* lpGuid, const char* lpcstrDescription, const char* lpcstrModule, void* lpContext) {
     ma_context_enumerate_devices_callback_data__dsound* pData = (ma_context_enumerate_devices_callback_data__dsound*)lpContext;
     ma_device_info deviceInfo;
 
@@ -16861,27 +16678,22 @@ static BOOL CALLBACK ma_context_enumerate_devices_callback__dsound(GUID* lpGuid,
     MA_ZERO_OBJECT(&deviceInfo);
 
     
-    if (lpGuid != NULL) {
-        MA_COPY_MEMORY(deviceInfo.id.dsound, lpGuid, 16);
-    } else {
+    if (lpGuid == NULL) {
         MA_ZERO_MEMORY(deviceInfo.id.dsound, 16);
         deviceInfo.isDefault = MA_TRUE;
-    }
+    } 
+    else { MA_COPY_MEMORY(deviceInfo.id.dsound, lpGuid, 16); }
 
     
     ma_strncpy_s(deviceInfo.name, sizeof(deviceInfo.name), lpcstrDescription, (size_t)-1);
     
     MA_ASSERT(pData != NULL);
     pData->terminated = (pData->callback(pData->pContext, pData->deviceType, &deviceInfo, pData->pUserData) == MA_FALSE);
-    if (pData->terminated) {
-        return FALSE;   
-    } else {
-        return TRUE;    
-    }
+    if (pData->terminated) { return FALSE; }
+    else { return TRUE; }
 }
 
-static ma_result ma_context_enumerate_devices__dsound(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData)
-{
+static ma_result ma_context_enumerate_devices__dsound(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData) {
     ma_context_enumerate_devices_callback_data__dsound data;
 
     MA_ASSERT(pContext != NULL);
@@ -16892,13 +16704,6 @@ static ma_result ma_context_enumerate_devices__dsound(ma_context* pContext, ma_e
     data.pUserData = pUserData;
     data.terminated = MA_FALSE;
 
-    
-    if (!data.terminated) {
-        data.deviceType = ma_device_type_playback;
-        ((ma_DirectSoundEnumerateAProc)pContext->dsound.DirectSoundEnumerateA)(ma_context_enumerate_devices_callback__dsound, &data);
-    }
-
-    
     if (!data.terminated) {
         data.deviceType = ma_device_type_capture;
         ((ma_DirectSoundCaptureEnumerateAProc)pContext->dsound.DirectSoundCaptureEnumerateA)(ma_context_enumerate_devices_callback__dsound, &data);
@@ -16906,15 +16711,13 @@ static ma_result ma_context_enumerate_devices__dsound(ma_context* pContext, ma_e
 
     return MA_SUCCESS;
 }
-typedef struct
-{
+typedef struct {
     const ma_device_id* pDeviceID;
     ma_device_info* pDeviceInfo;
     ma_bool32 found;
 } ma_context_get_device_info_callback_data__dsound;
 
-static BOOL CALLBACK ma_context_get_device_info_callback__dsound(GUID* lpGuid, const char* lpcstrDescription, const char* lpcstrModule, void* lpContext)
-{
+static BOOL CALLBACK ma_context_get_device_info_callback__dsound(GUID* lpGuid, const char* lpcstrDescription, const char* lpcstrModule, void* lpContext) {
     ma_context_get_device_info_callback_data__dsound* pData = (ma_context_get_device_info_callback_data__dsound*)lpContext;
     MA_ASSERT(pData != NULL);
 
@@ -16924,7 +16727,8 @@ static BOOL CALLBACK ma_context_get_device_info_callback__dsound(GUID* lpGuid, c
         pData->pDeviceInfo->isDefault = MA_TRUE;
         pData->found = MA_TRUE;
         return FALSE;   
-    } else {
+    } 
+    else {
         
         if (lpGuid != NULL && pData->pDeviceID != NULL) {
             if (memcmp(pData->pDeviceID->dsound, lpGuid, sizeof(pData->pDeviceID->dsound)) == 0) {
@@ -16939,43 +16743,24 @@ static BOOL CALLBACK ma_context_get_device_info_callback__dsound(GUID* lpGuid, c
     return TRUE;
 }
 
-static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_device_info* pDeviceInfo)
-{
+static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_device_info* pDeviceInfo) {
     ma_result result;
     HRESULT hr;
 
     if (pDeviceID != NULL) {
         ma_context_get_device_info_callback_data__dsound data;
-
-        
         MA_COPY_MEMORY(pDeviceInfo->id.dsound, pDeviceID->dsound, 16);
-
-        
         data.pDeviceID = pDeviceID;
         data.pDeviceInfo = pDeviceInfo;
         data.found = MA_FALSE;
-        if (deviceType == ma_device_type_playback) {
-            ((ma_DirectSoundEnumerateAProc)pContext->dsound.DirectSoundEnumerateA)(ma_context_get_device_info_callback__dsound, &data);
-        } else {
-            ((ma_DirectSoundCaptureEnumerateAProc)pContext->dsound.DirectSoundCaptureEnumerateA)(ma_context_get_device_info_callback__dsound, &data);
-        }
-
-        if (!data.found) {
-            return MA_NO_DEVICE;
-        }
-    } else {
-        
-
-        
+        if (deviceType == ma_device_type_playback) { ((ma_DirectSoundEnumerateAProc)pContext->dsound.DirectSoundEnumerateA)(ma_context_get_device_info_callback__dsound, &data); }
+        else { ((ma_DirectSoundCaptureEnumerateAProc)pContext->dsound.DirectSoundCaptureEnumerateA)(ma_context_get_device_info_callback__dsound, &data); }
+        if (!data.found) { return MA_NO_DEVICE; }
+    } 
+    else {
         MA_ZERO_MEMORY(pDeviceInfo->id.dsound, 16);
-
-        
-        if (deviceType == ma_device_type_playback) {
-            ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), MA_DEFAULT_PLAYBACK_DEVICE_NAME, (size_t)-1);
-        } else {
-            ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), MA_DEFAULT_CAPTURE_DEVICE_NAME, (size_t)-1);
-        }
-
+        if (deviceType == ma_device_type_playback) { ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), MA_DEFAULT_PLAYBACK_DEVICE_NAME, (size_t)-1); }
+        else { ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), MA_DEFAULT_CAPTURE_DEVICE_NAME, (size_t)-1); }
         pDeviceInfo->isDefault = MA_TRUE;
     }
 
@@ -16987,10 +16772,7 @@ static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_dev
         WORD channels;
 
         result = ma_context_create_IDirectSound__dsound(pContext, ma_share_mode_shared, pDeviceID, &pDirectSound);
-        if (result != MA_SUCCESS) {
-            return result;
-        }
-
+        if (result != MA_SUCCESS) { return result; }
         MA_ZERO_OBJECT(&caps);
         caps.dwSize = sizeof(caps);
         hr = ma_IDirectSound_GetCaps(pDirectSound, &caps);
@@ -17000,21 +16782,12 @@ static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_dev
         }
         
         if ((caps.dwFlags & MA_DSCAPS_PRIMARYSTEREO) != 0) {
-            
             DWORD speakerConfig;
-
             channels = 2;
-
-            
             hr = ma_IDirectSound_GetSpeakerConfig(pDirectSound, &speakerConfig);
-            if (SUCCEEDED(hr)) {
-                ma_get_channels_from_speaker_config__dsound(speakerConfig, &channels, NULL);
-            }
-        } else {
-            
-            channels = 1;
-        }
-        
+            if (SUCCEEDED(hr)) { ma_get_channels_from_speaker_config__dsound(speakerConfig, &channels, NULL); }
+        } 
+        else { channels = 1; }
         if ((caps.dwFlags & MA_DSCAPS_CONTINUOUSRATE) != 0) {
             
             size_t iStandardSampleRate;
@@ -17028,7 +16801,8 @@ static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_dev
                     pDeviceInfo->nativeDataFormatCount += 1;
                 }
             }
-        } else {
+        }
+        else {
             
             pDeviceInfo->nativeDataFormats[pDeviceInfo->nativeDataFormatCount].format     = ma_format_unknown;
             pDeviceInfo->nativeDataFormats[pDeviceInfo->nativeDataFormatCount].channels   = channels;
@@ -17038,7 +16812,8 @@ static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_dev
         }
 
         ma_IDirectSound_Release(pDirectSound);
-    } else {
+    }
+    else {
         
         ma_IDirectSoundCapture* pDirectSoundCapture;
         WORD channels;
@@ -17046,97 +16821,50 @@ static ma_result ma_context_get_device_info__dsound(ma_context* pContext, ma_dev
         DWORD sampleRate;
 
         result = ma_context_create_IDirectSoundCapture__dsound(pContext, ma_share_mode_shared, pDeviceID, &pDirectSoundCapture);
-        if (result != MA_SUCCESS) {
-            return result;
-        }
-
+        if (result != MA_SUCCESS) { return result; }
         result = ma_context_get_format_info_for_IDirectSoundCapture__dsound(pContext, pDirectSoundCapture, &channels, &bitsPerSample, &sampleRate);
         if (result != MA_SUCCESS) {
             ma_IDirectSoundCapture_Release(pDirectSoundCapture);
             return result;
         }
-
         ma_IDirectSoundCapture_Release(pDirectSoundCapture);
 
         
-        if (bitsPerSample == 8) {
-            pDeviceInfo->nativeDataFormats[0].format = ma_format_u8;
-        } else if (bitsPerSample == 16) {
-            pDeviceInfo->nativeDataFormats[0].format = ma_format_s16;
-        } else if (bitsPerSample == 24) {
-            pDeviceInfo->nativeDataFormats[0].format = ma_format_s24;
-        } else if (bitsPerSample == 32) {
-            pDeviceInfo->nativeDataFormats[0].format = ma_format_s32;
-        } else {
-            return MA_FORMAT_NOT_SUPPORTED;
-        }
-
+        if (bitsPerSample == 8) { pDeviceInfo->nativeDataFormats[0].format = ma_format_u8; }
+        else if (bitsPerSample == 16) { pDeviceInfo->nativeDataFormats[0].format = ma_format_s16; }
+        else if (bitsPerSample == 24) { pDeviceInfo->nativeDataFormats[0].format = ma_format_s24; }
+        else if (bitsPerSample == 32) { pDeviceInfo->nativeDataFormats[0].format = ma_format_s32; }
+        else { return MA_FORMAT_NOT_SUPPORTED; }
         pDeviceInfo->nativeDataFormats[0].channels   = channels;
         pDeviceInfo->nativeDataFormats[0].sampleRate = sampleRate;
         pDeviceInfo->nativeDataFormats[0].flags      = 0;
         pDeviceInfo->nativeDataFormatCount = 1;
     }
-
     return MA_SUCCESS;
 }
-static ma_result ma_device_uninit__dsound(ma_device* pDevice)
-{
+static ma_result ma_device_uninit__dsound(ma_device* pDevice) {
     MA_ASSERT(pDevice != NULL);
-
-    if (pDevice->dsound.pCaptureBuffer != NULL) {
-        ma_IDirectSoundCaptureBuffer_Release((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer);
-    }
-    if (pDevice->dsound.pCapture != NULL) {
-        ma_IDirectSoundCapture_Release((ma_IDirectSoundCapture*)pDevice->dsound.pCapture);
-    }
-
-    if (pDevice->dsound.pPlaybackBuffer != NULL) {
-        ma_IDirectSoundBuffer_Release((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer);
-    }
-    if (pDevice->dsound.pPlaybackPrimaryBuffer != NULL) {
-        ma_IDirectSoundBuffer_Release((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackPrimaryBuffer);
-    }
-    if (pDevice->dsound.pPlayback != NULL) {
-        ma_IDirectSound_Release((ma_IDirectSound*)pDevice->dsound.pPlayback);
-    }
-
+    if (pDevice->dsound.pCaptureBuffer != NULL) { ma_IDirectSoundCaptureBuffer_Release((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer); }
+    if (pDevice->dsound.pCapture != NULL) { ma_IDirectSoundCapture_Release((ma_IDirectSoundCapture*)pDevice->dsound.pCapture); }
+    if (pDevice->dsound.pPlaybackBuffer != NULL) { ma_IDirectSoundBuffer_Release((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer); }
+    if (pDevice->dsound.pPlaybackPrimaryBuffer != NULL) { ma_IDirectSoundBuffer_Release((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackPrimaryBuffer); }
+    if (pDevice->dsound.pPlayback != NULL) { ma_IDirectSound_Release((ma_IDirectSound*)pDevice->dsound.pPlayback); }
     return MA_SUCCESS;
 }
 
-static ma_result ma_config_to_WAVEFORMATEXTENSIBLE(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, const ma_channel* pChannelMap, MA_WAVEFORMATEXTENSIBLE* pWF)
-{
+static ma_result ma_config_to_WAVEFORMATEXTENSIBLE(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, const ma_channel* pChannelMap, MA_WAVEFORMATEXTENSIBLE* pWF) {
     GUID subformat;
+    if (format == ma_format_unknown) { format = MA_DEFAULT_FORMAT; }
+    if (channels == 0) { channels = MA_DEFAULT_CHANNELS; }
+    if (sampleRate == 0) { sampleRate = MA_DEFAULT_SAMPLE_RATE; }
 
-    if (format == ma_format_unknown) {
-        format = MA_DEFAULT_FORMAT;
-    }
-
-    if (channels == 0) {
-        channels = MA_DEFAULT_CHANNELS;
-    }
-
-    if (sampleRate == 0) {
-        sampleRate = MA_DEFAULT_SAMPLE_RATE;
-    }
-
-    switch (format)
-    {
-        case ma_format_u8:
-        case ma_format_s16:
-        case ma_format_s24:
-        
-        case ma_format_s32:
-        {
-            subformat = MA_GUID_KSDATAFORMAT_SUBTYPE_PCM;
-        } break;
-
-        case ma_format_f32:
-        {
-            subformat = MA_GUID_KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-        } break;
-
-        default:
-        return MA_FORMAT_NOT_SUPPORTED;
+    switch (format) {
+        case ma_format_u8: break;
+        case ma_format_s16: break;
+        case ma_format_s24: break;
+        case ma_format_s32: { subformat = MA_GUID_KSDATAFORMAT_SUBTYPE_PCM; } break;
+        case ma_format_f32: { subformat = MA_GUID_KSDATAFORMAT_SUBTYPE_IEEE_FLOAT; } break;
+        default: return MA_FORMAT_NOT_SUPPORTED;
     }
 
     MA_ZERO_OBJECT(pWF);
@@ -17154,34 +16882,22 @@ static ma_result ma_config_to_WAVEFORMATEXTENSIBLE(ma_format format, ma_uint32 c
     return MA_SUCCESS;
 }
 
-static ma_uint32 ma_calculate_period_size_in_frames_from_descriptor__dsound(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile)
-{
-    
+static ma_uint32 ma_calculate_period_size_in_frames_from_descriptor__dsound(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile) {
     ma_uint32 minPeriodSizeInFrames = ma_calculate_buffer_size_in_frames_from_milliseconds(30, nativeSampleRate);
     ma_uint32 periodSizeInFrames;
-
     periodSizeInFrames = ma_calculate_buffer_size_in_frames_from_descriptor(pDescriptor, nativeSampleRate, performanceProfile);
-    if (periodSizeInFrames < minPeriodSizeInFrames) {
-        periodSizeInFrames = minPeriodSizeInFrames;
-    }
+    if (periodSizeInFrames < minPeriodSizeInFrames) { periodSizeInFrames = minPeriodSizeInFrames; }
 
     return periodSizeInFrames;
 }
 
-static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_config* pConfig, ma_device_descriptor* pDescriptorPlayback, ma_device_descriptor* pDescriptorCapture)
-{
+static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_config* pConfig, ma_device_descriptor* pDescriptorPlayback, ma_device_descriptor* pDescriptorCapture) {
     ma_result result;
     HRESULT hr;
-
     MA_ASSERT(pDevice != NULL);
-
     MA_ZERO_OBJECT(&pDevice->dsound);
 
-    if (pConfig->deviceType == ma_device_type_loopback) {
-        return MA_DEVICE_TYPE_NOT_SUPPORTED;
-    }
-
-    
+    if (pConfig->deviceType == ma_device_type_loopback) { return MA_DEVICE_TYPE_NOT_SUPPORTED; }
     if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
         MA_WAVEFORMATEXTENSIBLE wf;
         MA_DSCBUFFERDESC descDS;
@@ -17191,16 +16907,12 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
         MA_WAVEFORMATEXTENSIBLE* pActualFormat;
 
         result = ma_config_to_WAVEFORMATEXTENSIBLE(pDescriptorCapture->format, pDescriptorCapture->channels, pDescriptorCapture->sampleRate, pDescriptorCapture->channelMap, &wf);
-        if (result != MA_SUCCESS) {
-            return result;
-        }
-
+        if (result != MA_SUCCESS) { return result; }
         result = ma_context_create_IDirectSoundCapture__dsound(pDevice->pContext, pDescriptorCapture->shareMode, pDescriptorCapture->pDeviceID, (ma_IDirectSoundCapture**)&pDevice->dsound.pCapture);
         if (result != MA_SUCCESS) {
             ma_device_uninit__dsound(pDevice);
             return result;
         }
-
         result = ma_context_get_format_info_for_IDirectSoundCapture__dsound(pDevice->pContext, (ma_IDirectSoundCapture*)pDevice->dsound.pCapture, &wf.nChannels, &wf.wBitsPerSample, &wf.nSamplesPerSec);
         if (result != MA_SUCCESS) {
             ma_device_uninit__dsound(pDevice);
@@ -17211,11 +16923,8 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
         wf.nAvgBytesPerSec             = wf.nBlockAlign * wf.nSamplesPerSec;
         wf.Samples.wValidBitsPerSample = wf.wBitsPerSample;
         wf.SubFormat                   = MA_GUID_KSDATAFORMAT_SUBTYPE_PCM;
-
-        
         periodSizeInFrames = ma_calculate_period_size_in_frames_from_descriptor__dsound(pDescriptorCapture, wf.nSamplesPerSec, pConfig->performanceProfile);
         periodCount = (pDescriptorCapture->periodCount > 0) ? pDescriptorCapture->periodCount : MA_DEFAULT_PERIODS;
-
         MA_ZERO_OBJECT(&descDS);
         descDS.dwSize        = sizeof(descDS);
         descDS.dwFlags       = 0;
@@ -17227,8 +16936,6 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] IDirectSoundCapture_CreateCaptureBuffer() failed for capture device.");
             return ma_result_from_HRESULT(hr);
         }
-
-        
         pActualFormat = (MA_WAVEFORMATEXTENSIBLE*)rawdata;
         hr = ma_IDirectSoundCaptureBuffer_GetFormat((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, (MA_WAVEFORMATEX*)pActualFormat, sizeof(rawdata), NULL);
         if (FAILED(hr)) {
@@ -17236,24 +16943,16 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to retrieve the actual format of the capture device's buffer.");
             return ma_result_from_HRESULT(hr);
         }
-
-        
         pDescriptorCapture->format     = ma_format_from_WAVEFORMATEX((MA_WAVEFORMATEX*)pActualFormat);
         pDescriptorCapture->channels   = pActualFormat->nChannels;
         pDescriptorCapture->sampleRate = pActualFormat->nSamplesPerSec;
-
-        
-        if (pActualFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
-            ma_channel_mask_to_channel_map__win32(pActualFormat->dwChannelMask, pDescriptorCapture->channels, pDescriptorCapture->channelMap);
-        } else {
-            ma_channel_mask_to_channel_map__win32(wf.dwChannelMask, pDescriptorCapture->channels, pDescriptorCapture->channelMap);
-        }
+        if (pActualFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE) { ma_channel_mask_to_channel_map__win32(pActualFormat->dwChannelMask, pDescriptorCapture->channels, pDescriptorCapture->channelMap); }
+        else { ma_channel_mask_to_channel_map__win32(wf.dwChannelMask, pDescriptorCapture->channels, pDescriptorCapture->channelMap); }
 
         
         if (periodSizeInFrames != (descDS.dwBufferBytes / ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels) / periodCount)) {
             descDS.dwBufferBytes = periodSizeInFrames * ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels) * periodCount;
             ma_IDirectSoundCaptureBuffer_Release((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer);
-
             hr = ma_IDirectSoundCapture_CreateCaptureBuffer((ma_IDirectSoundCapture*)pDevice->dsound.pCapture, &descDS, (ma_IDirectSoundCaptureBuffer**)&pDevice->dsound.pCaptureBuffer, NULL);
             if (FAILED(hr)) {
                 ma_device_uninit__dsound(pDevice);
@@ -17261,8 +16960,6 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
                 return ma_result_from_HRESULT(hr);
             }
         }
-
-        
         pDescriptorCapture->periodSizeInFrames = periodSizeInFrames;
         pDescriptorCapture->periodCount        = periodCount;
     }
@@ -17280,16 +16977,12 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
         DWORD nativeChannelMask = 0;
 
         result = ma_config_to_WAVEFORMATEXTENSIBLE(pDescriptorPlayback->format, pDescriptorPlayback->channels, pDescriptorPlayback->sampleRate, pDescriptorPlayback->channelMap, &wf);
-        if (result != MA_SUCCESS) {
-            return result;
-        }
-
+        if (result != MA_SUCCESS) { return result; }
         result = ma_context_create_IDirectSound__dsound(pDevice->pContext, pDescriptorPlayback->shareMode, pDescriptorPlayback->pDeviceID, (ma_IDirectSound**)&pDevice->dsound.pPlayback);
         if (result != MA_SUCCESS) {
             ma_device_uninit__dsound(pDevice);
             return result;
         }
-
         MA_ZERO_OBJECT(&descDSPrimary);
         descDSPrimary.dwSize  = sizeof(MA_DSBUFFERDESC);
         descDSPrimary.dwFlags = MA_DSBCAPS_PRIMARYBUFFER | MA_DSBCAPS_CTRLVOLUME;
@@ -17299,7 +16992,6 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] IDirectSound_CreateSoundBuffer() failed for playback device's primary buffer.");
             return ma_result_from_HRESULT(hr);
         }
-        
         MA_ZERO_OBJECT(&caps);
         caps.dwSize = sizeof(caps);
         hr = ma_IDirectSound_GetCaps((ma_IDirectSound*)pDevice->dsound.pPlayback, &caps);
@@ -17311,41 +17003,27 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
 
         if ((caps.dwFlags & MA_DSCAPS_PRIMARYSTEREO) != 0) {
             DWORD speakerConfig;
-
-            
             nativeChannelCount = 2;
-
-            
-            if (SUCCEEDED(ma_IDirectSound_GetSpeakerConfig((ma_IDirectSound*)pDevice->dsound.pPlayback, &speakerConfig))) {
-                ma_get_channels_from_speaker_config__dsound(speakerConfig, &nativeChannelCount, &nativeChannelMask);
-            }
-        } else {
-            
+            if (SUCCEEDED(ma_IDirectSound_GetSpeakerConfig((ma_IDirectSound*)pDevice->dsound.pPlayback, &speakerConfig))) { ma_get_channels_from_speaker_config__dsound(speakerConfig, &nativeChannelCount, &nativeChannelMask); }
+        }
+        else {
             nativeChannelCount = 1;
             nativeChannelMask  = 0x00000001;
         }
-
         if (pDescriptorPlayback->channels == 0) {
             wf.nChannels = nativeChannelCount;
             wf.dwChannelMask    = nativeChannelMask;
         }
-
         if (pDescriptorPlayback->sampleRate == 0) {
             
-            if ((caps.dwFlags & MA_DSCAPS_CONTINUOUSRATE) != 0) {
-                wf.nSamplesPerSec = ma_get_best_sample_rate_within_range(caps.dwMinSecondarySampleRate, caps.dwMaxSecondarySampleRate);
-            } else {
-                wf.nSamplesPerSec = caps.dwMaxSecondarySampleRate;
-            }
+            if ((caps.dwFlags & MA_DSCAPS_CONTINUOUSRATE) != 0) { wf.nSamplesPerSec = ma_get_best_sample_rate_within_range(caps.dwMinSecondarySampleRate, caps.dwMaxSecondarySampleRate); }
+            else { wf.nSamplesPerSec = caps.dwMaxSecondarySampleRate; }
         }
 
         wf.nBlockAlign     = (WORD)(wf.nChannels * wf.wBitsPerSample / 8);
         wf.nAvgBytesPerSec = wf.nBlockAlign * wf.nSamplesPerSec;
-
-        
         hr = ma_IDirectSoundBuffer_SetFormat((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackPrimaryBuffer, (MA_WAVEFORMATEX*)&wf);
         if (FAILED(hr)) {
-            
             wf.cbSize          = 18;    
             wf.wFormatTag      = WAVE_FORMAT_PCM;
             wf.wBitsPerSample  = 16;
@@ -17361,8 +17039,6 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
                 return ma_result_from_HRESULT(hr);
             }
         }
-
-        
         pActualFormat = (MA_WAVEFORMATEXTENSIBLE*)rawdata;
         hr = ma_IDirectSoundBuffer_GetFormat((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackPrimaryBuffer, (MA_WAVEFORMATEX*)pActualFormat, sizeof(rawdata), NULL);
         if (FAILED(hr)) {
@@ -17370,24 +17046,13 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to retrieve the actual format of the playback device's primary buffer.");
             return ma_result_from_HRESULT(hr);
         }
-
-        
         pDescriptorPlayback->format     = ma_format_from_WAVEFORMATEX((MA_WAVEFORMATEX*)pActualFormat);
         pDescriptorPlayback->channels   = pActualFormat->nChannels;
         pDescriptorPlayback->sampleRate = pActualFormat->nSamplesPerSec;
-
-        
-        if (pActualFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
-            ma_channel_mask_to_channel_map__win32(pActualFormat->dwChannelMask, pDescriptorPlayback->channels, pDescriptorPlayback->channelMap);
-        } else {
-            ma_channel_mask_to_channel_map__win32(wf.dwChannelMask, pDescriptorPlayback->channels, pDescriptorPlayback->channelMap);
-        }
-
-        
+        if (pActualFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE) { ma_channel_mask_to_channel_map__win32(pActualFormat->dwChannelMask, pDescriptorPlayback->channels, pDescriptorPlayback->channelMap); }
+        else { ma_channel_mask_to_channel_map__win32(wf.dwChannelMask, pDescriptorPlayback->channels, pDescriptorPlayback->channelMap); }
         periodSizeInFrames = ma_calculate_period_size_in_frames_from_descriptor__dsound(pDescriptorPlayback, pDescriptorPlayback->sampleRate, pConfig->performanceProfile);
         periodCount = (pDescriptorPlayback->periodCount > 0) ? pDescriptorPlayback->periodCount : MA_DEFAULT_PERIODS;
-
-        
         MA_ZERO_OBJECT(&descDS);
         descDS.dwSize = sizeof(descDS);
         descDS.dwFlags = MA_DSBCAPS_CTRLPOSITIONNOTIFY | MA_DSBCAPS_GLOBALFOCUS | MA_DSBCAPS_GETCURRENTPOSITION2;
@@ -17399,16 +17064,13 @@ static ma_result ma_device_init__dsound(ma_device* pDevice, const ma_device_conf
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] IDirectSound_CreateSoundBuffer() failed for playback device's secondary buffer.");
             return ma_result_from_HRESULT(hr);
         }
-
-        
         pDescriptorPlayback->periodSizeInFrames = periodSizeInFrames;
         pDescriptorPlayback->periodCount        = periodCount;
     }
 
     return MA_SUCCESS;
 }
-static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
-{
+static ma_result ma_device_data_loop__dsound(ma_device* pDevice) {
     ma_result result = MA_SUCCESS;
     ma_uint32 bpfDeviceCapture  = ma_get_bytes_per_frame(pDevice->capture.internalFormat, pDevice->capture.internalChannels);
     ma_uint32 bpfDevicePlayback = ma_get_bytes_per_frame(pDevice->playback.internalFormat, pDevice->playback.internalChannels);
@@ -17431,10 +17093,7 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
     ma_uint32 framesWrittenToPlaybackDevice = 0;   
     ma_uint32 waitTimeInMilliseconds = 1;
     DWORD playbackBufferStatus = 0;
-
     MA_ASSERT(pDevice != NULL);
-
-    
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         hr = ma_IDirectSoundCaptureBuffer_Start((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, MA_DSCBSTART_LOOPING);
         if (FAILED(hr)) {
@@ -17442,38 +17101,28 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
             return ma_result_from_HRESULT(hr);
         }
     }
-
     while (ma_device_get_state(pDevice) == ma_device_state_started) {
-        switch (pDevice->type)
-        {
-            case ma_device_type_duplex:
-            {
+        switch (pDevice->type) {
+            case ma_device_type_duplex: {
                 DWORD physicalCaptureCursorInBytes;
                 DWORD physicalReadCursorInBytes;
                 hr = ma_IDirectSoundCaptureBuffer_GetCurrentPosition((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, &physicalCaptureCursorInBytes, &physicalReadCursorInBytes);
-                if (FAILED(hr)) {
-                    return ma_result_from_HRESULT(hr);
-                }
-
-                
+                if (FAILED(hr)) { return ma_result_from_HRESULT(hr); }
                 if (physicalReadCursorInBytes == prevReadCursorInBytesCapture) {
                     ma_sleep(waitTimeInMilliseconds);
                     continue; 
                 }
-
-                
                 if (prevReadCursorInBytesCapture < physicalReadCursorInBytes) {
-                    
                     lockOffsetInBytesCapture = prevReadCursorInBytesCapture;
                     lockSizeInBytesCapture   = (physicalReadCursorInBytes - prevReadCursorInBytesCapture);
-                } else {
+                }
+                else {
                     
                     if (prevReadCursorInBytesCapture < pDevice->capture.internalPeriodSizeInFrames*pDevice->capture.internalPeriods*bpfDeviceCapture) {
-                        
                         lockOffsetInBytesCapture = prevReadCursorInBytesCapture;
                         lockSizeInBytesCapture   = (pDevice->capture.internalPeriodSizeInFrames*pDevice->capture.internalPeriods*bpfDeviceCapture) - prevReadCursorInBytesCapture;
-                    } else {
-                        
+                    }
+                    else {
                         lockOffsetInBytesCapture = 0;
                         lockSizeInBytesCapture   = physicalReadCursorInBytes;
                     }
@@ -17483,15 +17132,12 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                     ma_sleep(waitTimeInMilliseconds);
                     continue; 
                 }
-
                 hr = ma_IDirectSoundCaptureBuffer_Lock((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, lockOffsetInBytesCapture, lockSizeInBytesCapture, &pMappedDeviceBufferCapture, &mappedSizeInBytesCapture, NULL, NULL, 0);
                 if (FAILED(hr)) {
                     ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to map buffer from capture device in preparation for writing to the device.");
                     return ma_result_from_HRESULT(hr);
                 }
-                
                 mappedDeviceFramesProcessedCapture = 0;
-
                 for (;;) {  
                     ma_uint8  inputFramesInClientFormat[MA_DATA_CONVERTER_STACK_BUFFER_SIZE];
                     ma_uint32 inputFramesInClientFormatCap = sizeof(inputFramesInClientFormat) / ma_get_bytes_per_frame(pDevice->capture.format, pDevice->capture.channels);
@@ -17504,50 +17150,32 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                     void* pRunningMappedDeviceBufferCapture = ma_offset_ptr(pMappedDeviceBufferCapture, mappedDeviceFramesProcessedCapture * bpfDeviceCapture);
 
                     result = ma_data_converter_process_pcm_frames(&pDevice->capture.converter, pRunningMappedDeviceBufferCapture, &deviceCapturedFramesToProcess, inputFramesInClientFormat, &clientCapturedFramesToProcess);
-                    if (result != MA_SUCCESS) {
-                        break;
-                    }
-
+                    if (result != MA_SUCCESS) { break; }
                     outputFramesInClientFormatCount     = (ma_uint32)clientCapturedFramesToProcess;
                     mappedDeviceFramesProcessedCapture += (ma_uint32)deviceCapturedFramesToProcess;
-
                     ma_device__handle_data_callback(pDevice, outputFramesInClientFormat, inputFramesInClientFormat, (ma_uint32)clientCapturedFramesToProcess);
-
-                    
                     for (;;) {
                         ma_uint32 framesWrittenThisIteration;
                         DWORD physicalPlayCursorInBytes;
                         DWORD physicalWriteCursorInBytes;
                         DWORD availableBytesPlayback;
                         DWORD silentPaddingInBytes = 0; 
-
-                        
-                        if (FAILED(ma_IDirectSoundBuffer_GetCurrentPosition((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, &physicalPlayCursorInBytes, &physicalWriteCursorInBytes))) {
-                            break;
-                        }
-
-                        if (physicalPlayCursorInBytes < prevPlayCursorInBytesPlayback) {
-                            physicalPlayCursorLoopFlagPlayback = !physicalPlayCursorLoopFlagPlayback;
-                        }
+                        if (FAILED(ma_IDirectSoundBuffer_GetCurrentPosition((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, &physicalPlayCursorInBytes, &physicalWriteCursorInBytes))) { break; }
+                        if (physicalPlayCursorInBytes < prevPlayCursorInBytesPlayback) { physicalPlayCursorLoopFlagPlayback = !physicalPlayCursorLoopFlagPlayback; }
                         prevPlayCursorInBytesPlayback  = physicalPlayCursorInBytes;
-
-                        
                         if (physicalPlayCursorLoopFlagPlayback == virtualWriteCursorLoopFlagPlayback) {
-                            
                             if (physicalPlayCursorInBytes <= virtualWriteCursorInBytesPlayback) {
                                 availableBytesPlayback  = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - virtualWriteCursorInBytesPlayback;
                                 availableBytesPlayback += physicalPlayCursorInBytes;    
-                            } else {
-                                
+                            }
+                            else {
                                 ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[DirectSound] (Duplex/Playback): Play cursor has moved in front of the write cursor (same loop iteration). physicalPlayCursorInBytes=%ld, virtualWriteCursorInBytes=%ld.\n", physicalPlayCursorInBytes, virtualWriteCursorInBytesPlayback);
                                 availableBytesPlayback = 0;
                             }
-                        } else {
-                            
-                            if (physicalPlayCursorInBytes >= virtualWriteCursorInBytesPlayback) {
-                                availableBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback;
-                            } else {
-                                
+                        }
+                        else {
+                            if (physicalPlayCursorInBytes >= virtualWriteCursorInBytesPlayback) { availableBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback; }
+                            else {
                                 ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[DirectSound] (Duplex/Playback): Write cursor has moved behind the play cursor (different loop iterations). physicalPlayCursorInBytes=%ld, virtualWriteCursorInBytes=%ld.\n", physicalPlayCursorInBytes, virtualWriteCursorInBytesPlayback);
                                 availableBytesPlayback = 0;
                             }
@@ -17555,7 +17183,6 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
 
                         
                         if (availableBytesPlayback == 0) {
-                            
                             if (!isPlaybackDeviceStarted) {
                                 hr = ma_IDirectSoundBuffer_Play((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, 0, 0, MA_DSBPLAY_LOOPING);
                                 if (FAILED(hr)) {
@@ -17564,37 +17191,27 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                                     return ma_result_from_HRESULT(hr);
                                 }
                                 isPlaybackDeviceStarted = MA_TRUE;
-                            } else {
+                            }
+                            else {
                                 ma_sleep(waitTimeInMilliseconds);
                                 continue;
                             }
                         }
                         
                         lockOffsetInBytesPlayback = virtualWriteCursorInBytesPlayback;
-                        if (physicalPlayCursorLoopFlagPlayback == virtualWriteCursorLoopFlagPlayback) {
-                            
-                            lockSizeInBytesPlayback = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - virtualWriteCursorInBytesPlayback;
-                        } else {
-                            
-                            lockSizeInBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback;
-                        }
-
+                        if (physicalPlayCursorLoopFlagPlayback == virtualWriteCursorLoopFlagPlayback) { lockSizeInBytesPlayback = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - virtualWriteCursorInBytesPlayback; }
+                        else { lockSizeInBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback; }
                         hr = ma_IDirectSoundBuffer_Lock((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, lockOffsetInBytesPlayback, lockSizeInBytesPlayback, &pMappedDeviceBufferPlayback, &mappedSizeInBytesPlayback, NULL, NULL, 0);
                         if (FAILED(hr)) {
                             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to map buffer from playback device in preparation for writing to the device.");
                             result = ma_result_from_HRESULT(hr);
                             break;
                         }
-
-                        
                         if (isPlaybackDeviceStarted) {
                             DWORD bytesQueuedForPlayback = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - availableBytesPlayback;
                             if (bytesQueuedForPlayback < (pDevice->playback.internalPeriodSizeInFrames*bpfDevicePlayback)) {
                                 silentPaddingInBytes   = (pDevice->playback.internalPeriodSizeInFrames*2*bpfDevicePlayback) - bytesQueuedForPlayback;
-                                if (silentPaddingInBytes > lockSizeInBytesPlayback) {
-                                    silentPaddingInBytes = lockSizeInBytesPlayback;
-                                }
-
+                                if (silentPaddingInBytes > lockSizeInBytesPlayback) { silentPaddingInBytes = lockSizeInBytesPlayback; }
                                 ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[DirectSound] (Duplex/Playback) Playback buffer starved. availableBytesPlayback=%ld, silentPaddingInBytes=%ld\n", availableBytesPlayback, silentPaddingInBytes);
                             }
                         }
@@ -17603,17 +17220,14 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                         if (silentPaddingInBytes > 0) {
                             MA_ZERO_MEMORY(pMappedDeviceBufferPlayback, silentPaddingInBytes);
                             framesWrittenThisIteration = silentPaddingInBytes/bpfDevicePlayback;
-                        } else {
+                        }
+                        else {
                             ma_uint64 convertedFrameCountIn  = (outputFramesInClientFormatCount - outputFramesInClientFormatConsumed);
                             ma_uint64 convertedFrameCountOut = mappedSizeInBytesPlayback/bpfDevicePlayback;
                             void* pConvertedFramesIn  = ma_offset_ptr(outputFramesInClientFormat, outputFramesInClientFormatConsumed * bpfDevicePlayback);
                             void* pConvertedFramesOut = pMappedDeviceBufferPlayback;
-
                             result = ma_data_converter_process_pcm_frames(&pDevice->playback.converter, pConvertedFramesIn, &convertedFrameCountIn, pConvertedFramesOut, &convertedFrameCountOut);
-                            if (result != MA_SUCCESS) {
-                                break;
-                            }
-
+                            if (result != MA_SUCCESS) { break; }
                             outputFramesInClientFormatConsumed += (ma_uint32)convertedFrameCountOut;
                             framesWrittenThisIteration          = (ma_uint32)convertedFrameCountOut;
                         }
@@ -17623,14 +17237,11 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                             result = ma_result_from_HRESULT(hr);
                             break;
                         }
-
                         virtualWriteCursorInBytesPlayback += framesWrittenThisIteration*bpfDevicePlayback;
                         if ((virtualWriteCursorInBytesPlayback/bpfDevicePlayback) == pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods) {
                             virtualWriteCursorInBytesPlayback  = 0;
                             virtualWriteCursorLoopFlagPlayback = !virtualWriteCursorLoopFlagPlayback;
                         }
-
-                        
                         framesWrittenToPlaybackDevice += framesWrittenThisIteration;
                         if (!isPlaybackDeviceStarted && framesWrittenToPlaybackDevice >= (pDevice->playback.internalPeriodSizeInFrames*2)) {
                             hr = ma_IDirectSoundBuffer_Play((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, 0, 0, MA_DSBPLAY_LOOPING);
@@ -17641,15 +17252,9 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                             }
                             isPlaybackDeviceStarted = MA_TRUE;
                         }
-
-                        if (framesWrittenThisIteration < mappedSizeInBytesPlayback/bpfDevicePlayback) {
-                            break;  
-                        }
+                        if (framesWrittenThisIteration < mappedSizeInBytesPlayback/bpfDevicePlayback) { break; }
                     }
-
-                    if (clientCapturedFramesToProcess == 0) {
-                        break;  
-                    }
+                    if (clientCapturedFramesToProcess == 0) { break; }
                 }
                 
                 hr = ma_IDirectSoundCaptureBuffer_Unlock((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, pMappedDeviceBufferCapture, mappedSizeInBytesCapture, NULL, 0);
@@ -17659,34 +17264,25 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                 }
                 prevReadCursorInBytesCapture = (lockOffsetInBytesCapture + mappedSizeInBytesCapture);
             } break;
-            case ma_device_type_capture:
-            {
+            case ma_device_type_capture: {
                 DWORD physicalCaptureCursorInBytes;
                 DWORD physicalReadCursorInBytes;
                 hr = ma_IDirectSoundCaptureBuffer_GetCurrentPosition((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, &physicalCaptureCursorInBytes, &physicalReadCursorInBytes);
-                if (FAILED(hr)) {
-                    return MA_ERROR;
-                }
-
-                
+                if (FAILED(hr)) { return MA_ERROR; }
                 if (prevReadCursorInBytesCapture == physicalReadCursorInBytes) {
                     ma_sleep(waitTimeInMilliseconds);
                     continue;
                 }
-
-                
                 if (prevReadCursorInBytesCapture < physicalReadCursorInBytes) {
-                    
                     lockOffsetInBytesCapture = prevReadCursorInBytesCapture;
                     lockSizeInBytesCapture   = (physicalReadCursorInBytes - prevReadCursorInBytesCapture);
-                } else {
-                    
+                }
+                else {
                     if (prevReadCursorInBytesCapture < pDevice->capture.internalPeriodSizeInFrames*pDevice->capture.internalPeriods*bpfDeviceCapture) {
-                        
                         lockOffsetInBytesCapture = prevReadCursorInBytesCapture;
                         lockSizeInBytesCapture   = (pDevice->capture.internalPeriodSizeInFrames*pDevice->capture.internalPeriods*bpfDeviceCapture) - prevReadCursorInBytesCapture;
-                    } else {
-                        
+                    }
+                    else {
                         lockOffsetInBytesCapture = 0;
                         lockSizeInBytesCapture   = physicalReadCursorInBytes;
                     }
@@ -17696,40 +17292,27 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                     ma_sleep(waitTimeInMilliseconds);
                     continue; 
                 }
-
                 hr = ma_IDirectSoundCaptureBuffer_Lock((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, lockOffsetInBytesCapture, lockSizeInBytesCapture, &pMappedDeviceBufferCapture, &mappedSizeInBytesCapture, NULL, NULL, 0);
                 if (FAILED(hr)) {
                     ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to map buffer from capture device in preparation for writing to the device.");
                     result = ma_result_from_HRESULT(hr);
                 }
-
-                if (lockSizeInBytesCapture != mappedSizeInBytesCapture) {
-                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[DirectSound] (Capture) lockSizeInBytesCapture=%ld != mappedSizeInBytesCapture=%ld\n", lockSizeInBytesCapture, mappedSizeInBytesCapture);
-                }
-
+                if (lockSizeInBytesCapture != mappedSizeInBytesCapture) { ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[DirectSound] (Capture) lockSizeInBytesCapture=%ld != mappedSizeInBytesCapture=%ld\n", lockSizeInBytesCapture, mappedSizeInBytesCapture); }
                 ma_device__send_frames_to_client(pDevice, mappedSizeInBytesCapture/bpfDeviceCapture, pMappedDeviceBufferCapture);
-
                 hr = ma_IDirectSoundCaptureBuffer_Unlock((ma_IDirectSoundCaptureBuffer*)pDevice->dsound.pCaptureBuffer, pMappedDeviceBufferCapture, mappedSizeInBytesCapture, NULL, 0);
                 if (FAILED(hr)) {
                     ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to unlock internal buffer from capture device after reading from the device.");
                     return ma_result_from_HRESULT(hr);
                 }
                 prevReadCursorInBytesCapture = lockOffsetInBytesCapture + mappedSizeInBytesCapture;
-
-                if (prevReadCursorInBytesCapture == (pDevice->capture.internalPeriodSizeInFrames*pDevice->capture.internalPeriods*bpfDeviceCapture)) {
-                    prevReadCursorInBytesCapture = 0;
-                }
+                if (prevReadCursorInBytesCapture == (pDevice->capture.internalPeriodSizeInFrames*pDevice->capture.internalPeriods*bpfDeviceCapture)) { prevReadCursorInBytesCapture = 0; }
             } break;
-            case ma_device_type_playback:
-            {
+            case ma_device_type_playback: {
                 DWORD availableBytesPlayback;
                 DWORD physicalPlayCursorInBytes;
                 DWORD physicalWriteCursorInBytes;
                 hr = ma_IDirectSoundBuffer_GetCurrentPosition((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, &physicalPlayCursorInBytes, &physicalWriteCursorInBytes);
-                if (FAILED(hr)) {
-                    break;
-                }
-
+                if (FAILED(hr)) { break; }
                 hr = ma_IDirectSoundBuffer_GetStatus((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, &playbackBufferStatus);
                 if (SUCCEEDED(hr) && (playbackBufferStatus & MA_DSBSTATUS_PLAYING) == 0 && isPlaybackDeviceStarted) {
                     ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[DirectSound] Attempting to resume audio due to state: %d.", (int)playbackBufferStatus);
@@ -17738,42 +17321,31 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                         ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] IDirectSoundBuffer_Play() failed after attempting to resume from state %d.", (int)playbackBufferStatus);
                         return ma_result_from_HRESULT(hr);
                     }
-
                     isPlaybackDeviceStarted = MA_TRUE;
                     ma_sleep(waitTimeInMilliseconds);
                     continue;
                 }
-
-                if (physicalPlayCursorInBytes < prevPlayCursorInBytesPlayback) {
-                    physicalPlayCursorLoopFlagPlayback = !physicalPlayCursorLoopFlagPlayback;
-                }
+                if (physicalPlayCursorInBytes < prevPlayCursorInBytesPlayback) { physicalPlayCursorLoopFlagPlayback = !physicalPlayCursorLoopFlagPlayback; }
                 prevPlayCursorInBytesPlayback  = physicalPlayCursorInBytes;
-
-                
                 if (physicalPlayCursorLoopFlagPlayback == virtualWriteCursorLoopFlagPlayback) {
                     
                     if (physicalPlayCursorInBytes <= virtualWriteCursorInBytesPlayback) {
                         availableBytesPlayback  = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - virtualWriteCursorInBytesPlayback;
                         availableBytesPlayback += physicalPlayCursorInBytes;    
-                    } else {
-                        
+                    }
+                    else {
                         ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[DirectSound] (Playback): Play cursor has moved in front of the write cursor (same loop iterations). physicalPlayCursorInBytes=%ld, virtualWriteCursorInBytes=%ld.\n", physicalPlayCursorInBytes, virtualWriteCursorInBytesPlayback);
                         availableBytesPlayback = 0;
                     }
-                } else {
-                    
-                    if (physicalPlayCursorInBytes >= virtualWriteCursorInBytesPlayback) {
-                        availableBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback;
-                    } else {
-                        
+                }
+                else {
+                    if (physicalPlayCursorInBytes >= virtualWriteCursorInBytesPlayback) { availableBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback; }
+                    else {
                         ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[DirectSound] (Playback): Write cursor has moved behind the play cursor (different loop iterations). physicalPlayCursorInBytes=%ld, virtualWriteCursorInBytes=%ld.\n", physicalPlayCursorInBytes, virtualWriteCursorInBytesPlayback);
                         availableBytesPlayback = 0;
                     }
                 }
-
-                
                 if (availableBytesPlayback < pDevice->playback.internalPeriodSizeInFrames) {
-                    
                     if (availableBytesPlayback == 0 && !isPlaybackDeviceStarted) {
                         hr = ma_IDirectSoundBuffer_Play((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, 0, 0, MA_DSBPLAY_LOOPING);
                         if (FAILED(hr)) {
@@ -17781,46 +17353,30 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
                             return ma_result_from_HRESULT(hr);
                         }
                         isPlaybackDeviceStarted = MA_TRUE;
-                    } else {
-                        ma_sleep(waitTimeInMilliseconds);
-                        continue;
                     }
+                    else { ma_sleep(waitTimeInMilliseconds); continue; }
                 }
-
-                
                 lockOffsetInBytesPlayback = virtualWriteCursorInBytesPlayback;
-                if (physicalPlayCursorLoopFlagPlayback == virtualWriteCursorLoopFlagPlayback) {
-                    
-                    lockSizeInBytesPlayback = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - virtualWriteCursorInBytesPlayback;
-                } else {
-                    
-                    lockSizeInBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback;
-                }
-
+                if (physicalPlayCursorLoopFlagPlayback == virtualWriteCursorLoopFlagPlayback) { lockSizeInBytesPlayback = (pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) - virtualWriteCursorInBytesPlayback; }
+                else { lockSizeInBytesPlayback = physicalPlayCursorInBytes - virtualWriteCursorInBytesPlayback; }
                 hr = ma_IDirectSoundBuffer_Lock((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, lockOffsetInBytesPlayback, lockSizeInBytesPlayback, &pMappedDeviceBufferPlayback, &mappedSizeInBytesPlayback, NULL, NULL, 0);
                 if (FAILED(hr)) {
                     ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to map buffer from playback device in preparation for writing to the device.");
                     result = ma_result_from_HRESULT(hr);
                     break;
                 }
-
-                
                 ma_device__read_frames_from_client(pDevice, (mappedSizeInBytesPlayback/bpfDevicePlayback), pMappedDeviceBufferPlayback);
-
                 hr = ma_IDirectSoundBuffer_Unlock((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, pMappedDeviceBufferPlayback, mappedSizeInBytesPlayback, NULL, 0);
                 if (FAILED(hr)) {
                     ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[DirectSound] Failed to unlock internal buffer from playback device after writing to the device.");
                     result = ma_result_from_HRESULT(hr);
                     break;
                 }
-
                 virtualWriteCursorInBytesPlayback += mappedSizeInBytesPlayback;
                 if (virtualWriteCursorInBytesPlayback == pDevice->playback.internalPeriodSizeInFrames*pDevice->playback.internalPeriods*bpfDevicePlayback) {
                     virtualWriteCursorInBytesPlayback  = 0;
                     virtualWriteCursorLoopFlagPlayback = !virtualWriteCursorLoopFlagPlayback;
                 }
-
-                
                 framesWrittenToPlaybackDevice += mappedSizeInBytesPlayback/bpfDevicePlayback;
                 if (!isPlaybackDeviceStarted && framesWrittenToPlaybackDevice >= pDevice->playback.internalPeriodSizeInFrames) {
                     hr = ma_IDirectSoundBuffer_Play((ma_IDirectSoundBuffer*)pDevice->dsound.pPlaybackBuffer, 0, 0, MA_DSBPLAY_LOOPING);
@@ -17833,10 +17389,7 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
             } break;
             default: return MA_INVALID_ARGS;   
         }
-
-        if (result != MA_SUCCESS) {
-            return result;
-        }
+        if (result != MA_SUCCESS) { return result; }
     }
 
     
@@ -17902,42 +17455,32 @@ static ma_result ma_device_data_loop__dsound(ma_device* pDevice)
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_uninit__dsound(ma_context* pContext)
-{
+static ma_result ma_context_uninit__dsound(ma_context* pContext) {
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pContext->backend == ma_backend_dsound);
-
     ma_dlclose(ma_context_get_log(pContext), pContext->dsound.hDSoundDLL);
-
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_init__dsound(ma_context* pContext, const ma_context_config* pConfig, ma_backend_callbacks* pCallbacks)
-{
+static ma_result ma_context_init__dsound(ma_context* pContext, const ma_context_config* pConfig, ma_backend_callbacks* pCallbacks) {
     MA_ASSERT(pContext != NULL);
 
     (void)pConfig;
 
     pContext->dsound.hDSoundDLL = ma_dlopen(ma_context_get_log(pContext), "dsound.dll");
-    if (pContext->dsound.hDSoundDLL == NULL) {
-        return MA_API_NOT_FOUND;
-    }
+    if (pContext->dsound.hDSoundDLL == NULL) { return MA_API_NOT_FOUND; }
 
     pContext->dsound.DirectSoundCreate            = ma_dlsym(ma_context_get_log(pContext), pContext->dsound.hDSoundDLL, "DirectSoundCreate");
     pContext->dsound.DirectSoundEnumerateA        = ma_dlsym(ma_context_get_log(pContext), pContext->dsound.hDSoundDLL, "DirectSoundEnumerateA");
     pContext->dsound.DirectSoundCaptureCreate     = ma_dlsym(ma_context_get_log(pContext), pContext->dsound.hDSoundDLL, "DirectSoundCaptureCreate");
     pContext->dsound.DirectSoundCaptureEnumerateA = ma_dlsym(ma_context_get_log(pContext), pContext->dsound.hDSoundDLL, "DirectSoundCaptureEnumerateA");
-
-    
     if (pContext->dsound.DirectSoundCreate            == NULL ||
         pContext->dsound.DirectSoundEnumerateA        == NULL ||
         pContext->dsound.DirectSoundCaptureCreate     == NULL ||
         pContext->dsound.DirectSoundCaptureEnumerateA == NULL) {
         return MA_API_NOT_FOUND;
     }
-
     pContext->dsound.hWnd = pConfig->dsound.hWnd;
-
     pCallbacks->onContextInit             = ma_context_init__dsound;
     pCallbacks->onContextUninit           = ma_context_uninit__dsound;
     pCallbacks->onContextEnumerateDevices = ma_context_enumerate_devices__dsound;
@@ -17955,8 +17498,6 @@ static ma_result ma_context_init__dsound(ma_context* pContext, const ma_context_
 #endif
 
 #ifdef MA_HAS_WINMM
-
-
 #define MA_MMSYSERR_NOERROR     0
 #define MA_MMSYSERR_ERROR       1
 #define MA_MMSYSERR_BADDEVICEID 2
@@ -18113,159 +17654,95 @@ typedef struct
     GUID NameGuid;
 } MA_WAVECAPSA;
 
-static ma_result ma_get_best_info_from_formats_flags__winmm(DWORD dwFormats, WORD channels, WORD* pBitsPerSample, DWORD* pSampleRate)
-{
+static ma_result ma_get_best_info_from_formats_flags__winmm(DWORD dwFormats, WORD channels, WORD* pBitsPerSample, DWORD* pSampleRate) {
     WORD bitsPerSample = 0;
     DWORD sampleRate = 0;
-
-    if (pBitsPerSample) {
-        *pBitsPerSample = 0;
-    }
-    if (pSampleRate) {
-        *pSampleRate = 0;
-    }
+    if (pBitsPerSample) { *pBitsPerSample = 0; }
+    if (pSampleRate) { *pSampleRate = 0; }
 
     if (channels == 1) {
         bitsPerSample = 16;
-        if ((dwFormats & WAVE_FORMAT_48M16) != 0) {
-            sampleRate = 48000;
-        } else if ((dwFormats & WAVE_FORMAT_44M16) != 0) {
-            sampleRate = 44100;
-        } else if ((dwFormats & WAVE_FORMAT_2M16) != 0) {
-            sampleRate = 22050;
-        } else if ((dwFormats & WAVE_FORMAT_1M16) != 0) {
-            sampleRate = 11025;
-        } else if ((dwFormats & WAVE_FORMAT_96M16) != 0) {
-            sampleRate = 96000;
-        } else {
+        if ((dwFormats & WAVE_FORMAT_48M16) != 0) { sampleRate = 48000; }
+        else if ((dwFormats & WAVE_FORMAT_44M16) != 0) { sampleRate = 44100; }
+        else if ((dwFormats & WAVE_FORMAT_2M16) != 0) { sampleRate = 22050; }
+        else if ((dwFormats & WAVE_FORMAT_1M16) != 0) { sampleRate = 11025; }
+        else if ((dwFormats & WAVE_FORMAT_96M16) != 0) { sampleRate = 96000; }
+        else {
             bitsPerSample = 8;
-            if ((dwFormats & WAVE_FORMAT_48M08) != 0) {
-                sampleRate = 48000;
-            } else if ((dwFormats & WAVE_FORMAT_44M08) != 0) {
-                sampleRate = 44100;
-            } else if ((dwFormats & WAVE_FORMAT_2M08) != 0) {
-                sampleRate = 22050;
-            } else if ((dwFormats & WAVE_FORMAT_1M08) != 0) {
-                sampleRate = 11025;
-            } else if ((dwFormats & WAVE_FORMAT_96M08) != 0) {
-                sampleRate = 96000;
-            } else {
-                return MA_FORMAT_NOT_SUPPORTED;
-            }
+            if ((dwFormats & WAVE_FORMAT_48M08) != 0) { sampleRate = 48000; }
+            else if ((dwFormats & WAVE_FORMAT_44M08) != 0) { sampleRate = 44100; }
+            else if ((dwFormats & WAVE_FORMAT_2M08) != 0) { sampleRate = 22050; }
+            else if ((dwFormats & WAVE_FORMAT_1M08) != 0) { sampleRate = 11025; }
+            else if ((dwFormats & WAVE_FORMAT_96M08) != 0) { sampleRate = 96000; }
+            else { return MA_FORMAT_NOT_SUPPORTED; }
         }
     } else {
         bitsPerSample = 16;
-        if ((dwFormats & WAVE_FORMAT_48S16) != 0) {
-            sampleRate = 48000;
-        } else if ((dwFormats & WAVE_FORMAT_44S16) != 0) {
-            sampleRate = 44100;
-        } else if ((dwFormats & WAVE_FORMAT_2S16) != 0) {
-            sampleRate = 22050;
-        } else if ((dwFormats & WAVE_FORMAT_1S16) != 0) {
-            sampleRate = 11025;
-        } else if ((dwFormats & WAVE_FORMAT_96S16) != 0) {
-            sampleRate = 96000;
-        } else {
+        if ((dwFormats & WAVE_FORMAT_48S16) != 0) { sampleRate = 48000; }
+        else if ((dwFormats & WAVE_FORMAT_44S16) != 0) { sampleRate = 44100; }
+        else if ((dwFormats & WAVE_FORMAT_2S16) != 0) { sampleRate = 22050; }
+        else if ((dwFormats & WAVE_FORMAT_1S16) != 0) { sampleRate = 11025; }
+        else if ((dwFormats & WAVE_FORMAT_96S16) != 0) { sampleRate = 96000; }
+        else {
             bitsPerSample = 8;
-            if ((dwFormats & WAVE_FORMAT_48S08) != 0) {
-                sampleRate = 48000;
-            } else if ((dwFormats & WAVE_FORMAT_44S08) != 0) {
-                sampleRate = 44100;
-            } else if ((dwFormats & WAVE_FORMAT_2S08) != 0) {
-                sampleRate = 22050;
-            } else if ((dwFormats & WAVE_FORMAT_1S08) != 0) {
-                sampleRate = 11025;
-            } else if ((dwFormats & WAVE_FORMAT_96S08) != 0) {
-                sampleRate = 96000;
-            } else {
-                return MA_FORMAT_NOT_SUPPORTED;
-            }
+            if ((dwFormats & WAVE_FORMAT_48S08) != 0) { sampleRate = 48000; }
+            else if ((dwFormats & WAVE_FORMAT_44S08) != 0) { sampleRate = 44100; }
+            else if ((dwFormats & WAVE_FORMAT_2S08) != 0) { sampleRate = 22050; }
+            else if ((dwFormats & WAVE_FORMAT_1S08) != 0) { sampleRate = 11025; }
+            else if ((dwFormats & WAVE_FORMAT_96S08) != 0) { sampleRate = 96000; }
+            else { return MA_FORMAT_NOT_SUPPORTED; }
         }
     }
-
-    if (pBitsPerSample) {
-        *pBitsPerSample = bitsPerSample;
-    }
-    if (pSampleRate) {
-        *pSampleRate = sampleRate;
-    }
-
+    if (pBitsPerSample) { *pBitsPerSample = bitsPerSample; }
+    if (pSampleRate) { *pSampleRate = sampleRate; }
     return MA_SUCCESS;
 }
 
-static ma_result ma_formats_flags_to_WAVEFORMATEX__winmm(DWORD dwFormats, WORD channels, MA_WAVEFORMATEX* pWF)
-{
+static ma_result ma_formats_flags_to_WAVEFORMATEX__winmm(DWORD dwFormats, WORD channels, MA_WAVEFORMATEX* pWF) {
     ma_result result;
-
     MA_ASSERT(pWF != NULL);
-
     MA_ZERO_OBJECT(pWF);
     pWF->cbSize     = sizeof(*pWF);
     pWF->wFormatTag = WAVE_FORMAT_PCM;
     pWF->nChannels  = (WORD)channels;
-    if (pWF->nChannels > 2) {
-        pWF->nChannels = 2;
-    }
-
+    if (pWF->nChannels > 2) { pWF->nChannels = 2; }
     result = ma_get_best_info_from_formats_flags__winmm(dwFormats, channels, &pWF->wBitsPerSample, &pWF->nSamplesPerSec);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
     pWF->nBlockAlign     = (WORD)(pWF->nChannels * pWF->wBitsPerSample / 8);
     pWF->nAvgBytesPerSec = pWF->nBlockAlign * pWF->nSamplesPerSec;
-
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, MA_WAVECAPSA* pCaps, ma_device_info* pDeviceInfo)
-{
+static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, MA_WAVECAPSA* pCaps, ma_device_info* pDeviceInfo) {
     WORD bitsPerSample;
     DWORD sampleRate;
     ma_result result;
-
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pCaps != NULL);
     MA_ASSERT(pDeviceInfo != NULL);
-
-    
-
-    
     ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), pCaps->szPname, (size_t)-1);
-
-    
     if (!ma_is_guid_null(&pCaps->NameGuid)) {
         WCHAR guidStrW[256];
         if (((MA_PFN_StringFromGUID2)pContext->win32.StringFromGUID2)(&pCaps->NameGuid, guidStrW, ma_countof(guidStrW)) > 0) {
             char guidStr[256];
             char keyStr[1024];
             HKEY hKey;
-
             WideCharToMultiByte(CP_UTF8, 0, guidStrW, -1, guidStr, sizeof(guidStr), 0, FALSE);
-
             ma_strcpy_s(keyStr, sizeof(keyStr), "SYSTEM\\CurrentControlSet\\Control\\MediaCategories\\");
             ma_strcat_s(keyStr, sizeof(keyStr), guidStr);
-
             if (((MA_PFN_RegOpenKeyExA)pContext->win32.RegOpenKeyExA)(HKEY_LOCAL_MACHINE, keyStr, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
                 BYTE nameFromReg[512];
                 DWORD nameFromRegSize = sizeof(nameFromReg);
                 LONG resultWin32 = ((MA_PFN_RegQueryValueExA)pContext->win32.RegQueryValueExA)(hKey, "Name", 0, NULL, (BYTE*)nameFromReg, (DWORD*)&nameFromRegSize);
-                ((MA_PFN_RegCloseKey)pContext->win32.RegCloseKey)(hKey);
-
+                ((MA_PFN_RegCloseKey)pContext->win32.RegCloseKey)(hKey);]
                 if (resultWin32 == ERROR_SUCCESS) {
-                    
                     char name[1024];
                     if (ma_strcpy_s(name, sizeof(name), pDeviceInfo->name) == 0) {
                         char* nameBeg = ma_find_last_character(name, '(');
                         if (nameBeg != NULL) {
                             size_t leadingLen = (nameBeg - name);
                             ma_strncpy_s(nameBeg + 1, sizeof(name) - leadingLen, (const char*)nameFromReg, (size_t)-1);
-
-                            
-                            if (leadingLen + nameFromRegSize < sizeof(name)-1) {
-                                ma_strcat_s(name, sizeof(name), ")");
-                            }
-
+                            if (leadingLen + nameFromRegSize < sizeof(name)-1) { ma_strcat_s(name, sizeof(name), ")"); }
                             ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), name, (size_t)-1);
                         }
                     }
@@ -18274,37 +17751,24 @@ static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, 
         }
     }
     result = ma_get_best_info_from_formats_flags__winmm(pCaps->dwFormats, pCaps->wChannels, &bitsPerSample, &sampleRate);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    if (bitsPerSample == 8) {
-        pDeviceInfo->nativeDataFormats[0].format = ma_format_u8;
-    } else if (bitsPerSample == 16) {
-        pDeviceInfo->nativeDataFormats[0].format = ma_format_s16;
-    } else if (bitsPerSample == 24) {
-        pDeviceInfo->nativeDataFormats[0].format = ma_format_s24;
-    } else if (bitsPerSample == 32) {
-        pDeviceInfo->nativeDataFormats[0].format = ma_format_s32;
-    } else {
-        return MA_FORMAT_NOT_SUPPORTED;
-    }
+    if (result != MA_SUCCESS) { return result; }
+    if (bitsPerSample == 8) { pDeviceInfo->nativeDataFormats[0].format = ma_format_u8; }
+    else if (bitsPerSample == 16) { pDeviceInfo->nativeDataFormats[0].format = ma_format_s16; }
+    else if (bitsPerSample == 24) { pDeviceInfo->nativeDataFormats[0].format = ma_format_s24; }
+    else if (bitsPerSample == 32) { pDeviceInfo->nativeDataFormats[0].format = ma_format_s32; }
+    else { return MA_FORMAT_NOT_SUPPORTED; }
     pDeviceInfo->nativeDataFormats[0].channels   = pCaps->wChannels;
     pDeviceInfo->nativeDataFormats[0].sampleRate = sampleRate;
     pDeviceInfo->nativeDataFormats[0].flags      = 0;
     pDeviceInfo->nativeDataFormatCount = 1;
-
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_get_device_info_from_WAVEOUTCAPS2(ma_context* pContext, MA_WAVEOUTCAPS2A* pCaps, ma_device_info* pDeviceInfo)
-{
+static ma_result ma_context_get_device_info_from_WAVEOUTCAPS2(ma_context* pContext, MA_WAVEOUTCAPS2A* pCaps, ma_device_info* pDeviceInfo) {
     MA_WAVECAPSA caps;
-
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pCaps != NULL);
     MA_ASSERT(pDeviceInfo != NULL);
-
     MA_COPY_MEMORY(caps.szPname, pCaps->szPname, sizeof(caps.szPname));
     caps.dwFormats = pCaps->dwFormats;
     caps.wChannels = pCaps->wChannels;
@@ -18312,218 +17776,139 @@ static ma_result ma_context_get_device_info_from_WAVEOUTCAPS2(ma_context* pConte
     return ma_context_get_device_info_from_WAVECAPS(pContext, &caps, pDeviceInfo);
 }
 
-static ma_result ma_context_get_device_info_from_WAVEINCAPS2(ma_context* pContext, MA_WAVEINCAPS2A* pCaps, ma_device_info* pDeviceInfo)
-{
+static ma_result ma_context_get_device_info_from_WAVEINCAPS2(ma_context* pContext, MA_WAVEINCAPS2A* pCaps, ma_device_info* pDeviceInfo) {
     MA_WAVECAPSA caps;
-
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pCaps != NULL);
     MA_ASSERT(pDeviceInfo != NULL);
-
     MA_COPY_MEMORY(caps.szPname, pCaps->szPname, sizeof(caps.szPname));
     caps.dwFormats = pCaps->dwFormats;
     caps.wChannels = pCaps->wChannels;
     caps.NameGuid  = pCaps->NameGuid;
     return ma_context_get_device_info_from_WAVECAPS(pContext, &caps, pDeviceInfo);
 }
-static ma_result ma_context_enumerate_devices__winmm(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData)
-{
+static ma_result ma_context_enumerate_devices__winmm(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData) {
     UINT playbackDeviceCount;
     UINT captureDeviceCount;
     UINT iPlaybackDevice;
     UINT iCaptureDevice;
-
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(callback != NULL);
-
-    
     playbackDeviceCount = ((MA_PFN_waveOutGetNumDevs)pContext->winmm.waveOutGetNumDevs)();
     for (iPlaybackDevice = 0; iPlaybackDevice < playbackDeviceCount; ++iPlaybackDevice) {
         MA_MMRESULT result;
         MA_WAVEOUTCAPS2A caps;
-
         MA_ZERO_OBJECT(&caps);
-
         result = ((MA_PFN_waveOutGetDevCapsA)pContext->winmm.waveOutGetDevCapsA)(iPlaybackDevice, (MA_WAVEOUTCAPSA*)&caps, sizeof(caps));
         if (result == MA_MMSYSERR_NOERROR) {
             ma_device_info deviceInfo;
-
             MA_ZERO_OBJECT(&deviceInfo);
             deviceInfo.id.winmm = iPlaybackDevice;
-
-            
-            if (iPlaybackDevice == 0) {
-                deviceInfo.isDefault = MA_TRUE;
-            }
-
+            if (iPlaybackDevice == 0) { deviceInfo.isDefault = MA_TRUE; }
             if (ma_context_get_device_info_from_WAVEOUTCAPS2(pContext, &caps, &deviceInfo) == MA_SUCCESS) {
                 ma_bool32 cbResult = callback(pContext, ma_device_type_playback, &deviceInfo, pUserData);
-                if (cbResult == MA_FALSE) {
-                    return MA_SUCCESS; 
-                }
+                if (cbResult == MA_FALSE) { return MA_SUCCESS;  }
             }
         }
     }
-
-    
     captureDeviceCount = ((MA_PFN_waveInGetNumDevs)pContext->winmm.waveInGetNumDevs)();
     for (iCaptureDevice = 0; iCaptureDevice < captureDeviceCount; ++iCaptureDevice) {
         MA_MMRESULT result;
         MA_WAVEINCAPS2A caps;
-
         MA_ZERO_OBJECT(&caps);
-
         result = ((MA_PFN_waveInGetDevCapsA)pContext->winmm.waveInGetDevCapsA)(iCaptureDevice, (MA_WAVEINCAPSA*)&caps, sizeof(caps));
         if (result == MA_MMSYSERR_NOERROR) {
             ma_device_info deviceInfo;
-
             MA_ZERO_OBJECT(&deviceInfo);
             deviceInfo.id.winmm = iCaptureDevice;
-
-            
-            if (iCaptureDevice == 0) {
-                deviceInfo.isDefault = MA_TRUE;
-            }
-
+            if (iCaptureDevice == 0) { deviceInfo.isDefault = MA_TRUE; }
             if (ma_context_get_device_info_from_WAVEINCAPS2(pContext, &caps, &deviceInfo) == MA_SUCCESS) {
                 ma_bool32 cbResult = callback(pContext, ma_device_type_capture, &deviceInfo, pUserData);
-                if (cbResult == MA_FALSE) {
-                    return MA_SUCCESS; 
-                }
+                if (cbResult == MA_FALSE) { return MA_SUCCESS; }
             }
         }
     }
-
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_get_device_info__winmm(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_device_info* pDeviceInfo)
-{
+static ma_result ma_context_get_device_info__winmm(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_device_info* pDeviceInfo) {
     UINT winMMDeviceID;
-
     MA_ASSERT(pContext != NULL);
-
     winMMDeviceID = 0;
-    if (pDeviceID != NULL) {
-        winMMDeviceID = (UINT)pDeviceID->winmm;
-    }
-
+    if (pDeviceID != NULL) { winMMDeviceID = (UINT)pDeviceID->winmm; }
     pDeviceInfo->id.winmm = winMMDeviceID;
-
-    
-    if (winMMDeviceID == 0) {
-        pDeviceInfo->isDefault = MA_TRUE;
-    }
-
+    if (winMMDeviceID == 0) { pDeviceInfo->isDefault = MA_TRUE; }
     if (deviceType == ma_device_type_playback) {
         MA_MMRESULT result;
         MA_WAVEOUTCAPS2A caps;
-
         MA_ZERO_OBJECT(&caps);
-
         result = ((MA_PFN_waveOutGetDevCapsA)pContext->winmm.waveOutGetDevCapsA)(winMMDeviceID, (MA_WAVEOUTCAPSA*)&caps, sizeof(caps));
-        if (result == MA_MMSYSERR_NOERROR) {
-            return ma_context_get_device_info_from_WAVEOUTCAPS2(pContext, &caps, pDeviceInfo);
-        }
-    } else {
+        if (result == MA_MMSYSERR_NOERROR) { return ma_context_get_device_info_from_WAVEOUTCAPS2(pContext, &caps, pDeviceInfo); }
+    }
+    else {
         MA_MMRESULT result;
         MA_WAVEINCAPS2A caps;
-
         MA_ZERO_OBJECT(&caps);
-
         result = ((MA_PFN_waveInGetDevCapsA)pContext->winmm.waveInGetDevCapsA)(winMMDeviceID, (MA_WAVEINCAPSA*)&caps, sizeof(caps));
-        if (result == MA_MMSYSERR_NOERROR) {
-            return ma_context_get_device_info_from_WAVEINCAPS2(pContext, &caps, pDeviceInfo);
-        }
+        if (result == MA_MMSYSERR_NOERROR) { return ma_context_get_device_info_from_WAVEINCAPS2(pContext, &caps, pDeviceInfo); }
     }
 
     return MA_NO_DEVICE;
 }
-static ma_result ma_device_uninit__winmm(ma_device* pDevice)
-{
+static ma_result ma_device_uninit__winmm(ma_device* pDevice) {
     MA_ASSERT(pDevice != NULL);
-
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         ((MA_PFN_waveInClose)pDevice->pContext->winmm.waveInClose)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture);
         CloseHandle((HANDLE)pDevice->winmm.hEventCapture);
     }
-
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
         ((MA_PFN_waveOutReset)pDevice->pContext->winmm.waveOutReset)((MA_HWAVEOUT)pDevice->winmm.hDevicePlayback);
         ((MA_PFN_waveOutClose)pDevice->pContext->winmm.waveOutClose)((MA_HWAVEOUT)pDevice->winmm.hDevicePlayback);
         CloseHandle((HANDLE)pDevice->winmm.hEventPlayback);
     }
-
     ma_free(pDevice->winmm._pHeapData, &pDevice->pContext->allocationCallbacks);
-
     MA_ZERO_OBJECT(&pDevice->winmm);   
-
     return MA_SUCCESS;
 }
 
-static ma_uint32 ma_calculate_period_size_in_frames_from_descriptor__winmm(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile)
-{
-    
+static ma_uint32 ma_calculate_period_size_in_frames_from_descriptor__winmm(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile) {
     ma_uint32 minPeriodSizeInFrames = ma_calculate_buffer_size_in_frames_from_milliseconds(40, nativeSampleRate);
     ma_uint32 periodSizeInFrames;
 
     periodSizeInFrames = ma_calculate_buffer_size_in_frames_from_descriptor(pDescriptor, nativeSampleRate, performanceProfile);
-    if (periodSizeInFrames < minPeriodSizeInFrames) {
-        periodSizeInFrames = minPeriodSizeInFrames;
-    }
-
+    if (periodSizeInFrames < minPeriodSizeInFrames) { periodSizeInFrames = minPeriodSizeInFrames; }
     return periodSizeInFrames;
 }
 
-static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_config* pConfig, ma_device_descriptor* pDescriptorPlayback, ma_device_descriptor* pDescriptorCapture)
-{
+static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_config* pConfig, ma_device_descriptor* pDescriptorPlayback, ma_device_descriptor* pDescriptorCapture) {
     const char* errorMsg = "";
     ma_result errorCode = MA_ERROR;
     ma_result result = MA_SUCCESS;
     ma_uint32 heapSize;
     UINT winMMDeviceIDPlayback = 0;
     UINT winMMDeviceIDCapture  = 0;
-
     MA_ASSERT(pDevice != NULL);
-
     MA_ZERO_OBJECT(&pDevice->winmm);
-
-    if (pConfig->deviceType == ma_device_type_loopback) {
-        return MA_DEVICE_TYPE_NOT_SUPPORTED;
-    }
-
-    
+    if (pConfig->deviceType == ma_device_type_loopback) { return MA_DEVICE_TYPE_NOT_SUPPORTED; }
     if (((pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) && pDescriptorPlayback->shareMode == ma_share_mode_exclusive) ||
         ((pConfig->deviceType == ma_device_type_capture  || pConfig->deviceType == ma_device_type_duplex) && pDescriptorCapture->shareMode  == ma_share_mode_exclusive)) {
         return MA_SHARE_MODE_NOT_SUPPORTED;
     }
-
-    if (pDescriptorPlayback->pDeviceID != NULL) {
-        winMMDeviceIDPlayback = (UINT)pDescriptorPlayback->pDeviceID->winmm;
-    }
-    if (pDescriptorCapture->pDeviceID != NULL) {
-        winMMDeviceIDCapture = (UINT)pDescriptorCapture->pDeviceID->winmm;
-    }
-
-    
+    if (pDescriptorPlayback->pDeviceID != NULL) { winMMDeviceIDPlayback = (UINT)pDescriptorPlayback->pDeviceID->winmm; }
+    if (pDescriptorCapture->pDeviceID != NULL) { winMMDeviceIDCapture = (UINT)pDescriptorCapture->pDeviceID->winmm; }
     if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
         MA_WAVEINCAPSA caps;
         MA_WAVEFORMATEX wf;
         MA_MMRESULT resultMM;
-
-        
         pDevice->winmm.hEventCapture = (ma_handle)CreateEventA(NULL, TRUE, TRUE, NULL);
         if (pDevice->winmm.hEventCapture == NULL) {
             errorMsg = "[WinMM] Failed to create event for fragment enqueuing for the capture device.", errorCode = ma_result_from_GetLastError(GetLastError());
             goto on_error;
         }
-
-        
         if (((MA_PFN_waveInGetDevCapsA)pDevice->pContext->winmm.waveInGetDevCapsA)(winMMDeviceIDCapture, &caps, sizeof(caps)) != MA_MMSYSERR_NOERROR) {
             errorMsg = "[WinMM] Failed to retrieve internal device caps.", errorCode = MA_FORMAT_NOT_SUPPORTED;
             goto on_error;
         }
-
         result = ma_formats_flags_to_WAVEFORMATEX__winmm(caps.dwFormats, caps.wChannels, &wf);
         if (result != MA_SUCCESS) {
             errorMsg = "[WinMM] Could not find appropriate format for internal device.", errorCode = result;
@@ -18535,7 +17920,6 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
             errorMsg = "[WinMM] Failed to open capture device.", errorCode = MA_FAILED_TO_OPEN_BACKEND_DEVICE;
             goto on_error;
         }
-
         pDescriptorCapture->format             = ma_format_from_WAVEFORMATEX(&wf);
         pDescriptorCapture->channels           = wf.nChannels;
         pDescriptorCapture->sampleRate         = wf.nSamplesPerSec;
@@ -18543,37 +17927,29 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
         pDescriptorCapture->periodCount        = pDescriptorCapture->periodCount;
         pDescriptorCapture->periodSizeInFrames = ma_calculate_period_size_in_frames_from_descriptor__winmm(pDescriptorCapture, pDescriptorCapture->sampleRate, pConfig->performanceProfile);
     }
-
     if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) {
         MA_WAVEOUTCAPSA caps;
         MA_WAVEFORMATEX wf;
         MA_MMRESULT resultMM;
-
-        
         pDevice->winmm.hEventPlayback = (ma_handle)CreateEventA(NULL, TRUE, TRUE, NULL);
         if (pDevice->winmm.hEventPlayback == NULL) {
             errorMsg = "[WinMM] Failed to create event for fragment enqueuing for the playback device.", errorCode = ma_result_from_GetLastError(GetLastError());
             goto on_error;
         }
-
-        
         if (((MA_PFN_waveOutGetDevCapsA)pDevice->pContext->winmm.waveOutGetDevCapsA)(winMMDeviceIDPlayback, &caps, sizeof(caps)) != MA_MMSYSERR_NOERROR) {
             errorMsg = "[WinMM] Failed to retrieve internal device caps.", errorCode = MA_FORMAT_NOT_SUPPORTED;
             goto on_error;
         }
-
         result = ma_formats_flags_to_WAVEFORMATEX__winmm(caps.dwFormats, caps.wChannels, &wf);
         if (result != MA_SUCCESS) {
             errorMsg = "[WinMM] Could not find appropriate format for internal device.", errorCode = result;
             goto on_error;
         }
-
         resultMM = ((MA_PFN_waveOutOpen)pDevice->pContext->winmm.waveOutOpen)((MA_HWAVEOUT*)&pDevice->winmm.hDevicePlayback, winMMDeviceIDPlayback, &wf, (DWORD_PTR)pDevice->winmm.hEventPlayback, (DWORD_PTR)pDevice, MA_CALLBACK_EVENT | MA_WAVE_ALLOWSYNC);
         if (resultMM != MA_MMSYSERR_NOERROR) {
             errorMsg = "[WinMM] Failed to open playback device.", errorCode = MA_FAILED_TO_OPEN_BACKEND_DEVICE;
             goto on_error;
         }
-
         pDescriptorPlayback->format             = ma_format_from_WAVEFORMATEX(&wf);
         pDescriptorPlayback->channels           = wf.nChannels;
         pDescriptorPlayback->sampleRate         = wf.nSamplesPerSec;
@@ -18581,46 +17957,33 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
         pDescriptorPlayback->periodCount        = pDescriptorPlayback->periodCount;
         pDescriptorPlayback->periodSizeInFrames = ma_calculate_period_size_in_frames_from_descriptor__winmm(pDescriptorPlayback, pDescriptorPlayback->sampleRate, pConfig->performanceProfile);
     }
-
-    
     heapSize = 0;
-    if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
-        heapSize += sizeof(MA_WAVEHDR)*pDescriptorCapture->periodCount + (pDescriptorCapture->periodSizeInFrames * pDescriptorCapture->periodCount * ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels));
-    }
-    if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) {
-        heapSize += sizeof(MA_WAVEHDR)*pDescriptorPlayback->periodCount + (pDescriptorPlayback->periodSizeInFrames * pDescriptorPlayback->periodCount * ma_get_bytes_per_frame(pDescriptorPlayback->format, pDescriptorPlayback->channels));
-    }
-
+    if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) { heapSize += sizeof(MA_WAVEHDR)*pDescriptorCapture->periodCount + (pDescriptorCapture->periodSizeInFrames * pDescriptorCapture->periodCount * ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels)); }
+    if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) { heapSize += sizeof(MA_WAVEHDR)*pDescriptorPlayback->periodCount + (pDescriptorPlayback->periodSizeInFrames * pDescriptorPlayback->periodCount * ma_get_bytes_per_frame(pDescriptorPlayback->format, pDescriptorPlayback->channels)); }
     pDevice->winmm._pHeapData = (ma_uint8*)ma_calloc(heapSize, &pDevice->pContext->allocationCallbacks);
     if (pDevice->winmm._pHeapData == NULL) {
         errorMsg = "[WinMM] Failed to allocate memory for the intermediary buffer.", errorCode = MA_OUT_OF_MEMORY;
         goto on_error;
     }
-
     MA_ZERO_MEMORY(pDevice->winmm._pHeapData, heapSize);
-
     if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
         ma_uint32 iPeriod;
 
         if (pConfig->deviceType == ma_device_type_capture) {
             pDevice->winmm.pWAVEHDRCapture            = pDevice->winmm._pHeapData;
             pDevice->winmm.pIntermediaryBufferCapture = pDevice->winmm._pHeapData + (sizeof(MA_WAVEHDR)*(pDescriptorCapture->periodCount));
-        } else {
+        }
+        else {
             pDevice->winmm.pWAVEHDRCapture            = pDevice->winmm._pHeapData;
             pDevice->winmm.pIntermediaryBufferCapture = pDevice->winmm._pHeapData + (sizeof(MA_WAVEHDR)*(pDescriptorCapture->periodCount + pDescriptorPlayback->periodCount));
         }
-
-        
         for (iPeriod = 0; iPeriod < pDescriptorCapture->periodCount; ++iPeriod) {
             ma_uint32 periodSizeInBytes = ma_get_period_size_in_bytes(pDescriptorCapture->periodSizeInFrames, pDescriptorCapture->format, pDescriptorCapture->channels);
-
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod].lpData         = (char*)(pDevice->winmm.pIntermediaryBufferCapture + (periodSizeInBytes*iPeriod));
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod].dwBufferLength = periodSizeInBytes;
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod].dwFlags        = 0L;
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod].dwLoops        = 0L;
             ((MA_PFN_waveInPrepareHeader)pDevice->pContext->winmm.waveInPrepareHeader)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod], sizeof(MA_WAVEHDR));
-
-            
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod].dwUser = 0;
         }
     }
@@ -18631,7 +17994,8 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
         if (pConfig->deviceType == ma_device_type_playback) {
             pDevice->winmm.pWAVEHDRPlayback            = pDevice->winmm._pHeapData;
             pDevice->winmm.pIntermediaryBufferPlayback = pDevice->winmm._pHeapData + (sizeof(MA_WAVEHDR)*pDescriptorPlayback->periodCount);
-        } else {
+        }
+        else {
             pDevice->winmm.pWAVEHDRPlayback            = pDevice->winmm._pHeapData + (sizeof(MA_WAVEHDR)*(pDescriptorCapture->periodCount));
             pDevice->winmm.pIntermediaryBufferPlayback = pDevice->winmm._pHeapData + (sizeof(MA_WAVEHDR)*(pDescriptorCapture->periodCount + pDescriptorPlayback->periodCount)) + (pDescriptorCapture->periodSizeInFrames*pDescriptorCapture->periodCount*ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels));
         }
@@ -18639,14 +18003,11 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
         
         for (iPeriod = 0; iPeriod < pDescriptorPlayback->periodCount; ++iPeriod) {
             ma_uint32 periodSizeInBytes = ma_get_period_size_in_bytes(pDescriptorPlayback->periodSizeInFrames, pDescriptorPlayback->format, pDescriptorPlayback->channels);
-
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod].lpData         = (char*)(pDevice->winmm.pIntermediaryBufferPlayback + (periodSizeInBytes*iPeriod));
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod].dwBufferLength = periodSizeInBytes;
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod].dwFlags        = 0L;
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod].dwLoops        = 0L;
             ((MA_PFN_waveOutPrepareHeader)pDevice->pContext->winmm.waveOutPrepareHeader)((MA_HWAVEOUT)pDevice->winmm.hDevicePlayback, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod], sizeof(MA_WAVEHDR));
-
-            
             ((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod].dwUser = 0;
         }
     }
@@ -18657,90 +18018,55 @@ on_error:
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         if (pDevice->winmm.pWAVEHDRCapture != NULL) {
             ma_uint32 iPeriod;
-            for (iPeriod = 0; iPeriod < pDescriptorCapture->periodCount; ++iPeriod) {
-                ((MA_PFN_waveInUnprepareHeader)pDevice->pContext->winmm.waveInUnprepareHeader)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod], sizeof(MA_WAVEHDR));
-            }
+            for (iPeriod = 0; iPeriod < pDescriptorCapture->periodCount; ++iPeriod) { ((MA_PFN_waveInUnprepareHeader)pDevice->pContext->winmm.waveInUnprepareHeader)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod], sizeof(MA_WAVEHDR)); }
         }
-
         ((MA_PFN_waveInClose)pDevice->pContext->winmm.waveInClose)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture);
     }
 
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
         if (pDevice->winmm.pWAVEHDRCapture != NULL) {
             ma_uint32 iPeriod;
-            for (iPeriod = 0; iPeriod < pDescriptorPlayback->periodCount; ++iPeriod) {
-                ((MA_PFN_waveOutUnprepareHeader)pDevice->pContext->winmm.waveOutUnprepareHeader)((MA_HWAVEOUT)pDevice->winmm.hDevicePlayback, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod], sizeof(MA_WAVEHDR));
-            }
+            for (iPeriod = 0; iPeriod < pDescriptorPlayback->periodCount; ++iPeriod) { ((MA_PFN_waveOutUnprepareHeader)pDevice->pContext->winmm.waveOutUnprepareHeader)((MA_HWAVEOUT)pDevice->winmm.hDevicePlayback, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback)[iPeriod], sizeof(MA_WAVEHDR)); }
         }
-
         ((MA_PFN_waveOutClose)pDevice->pContext->winmm.waveOutClose)((MA_HWAVEOUT)pDevice->winmm.hDevicePlayback);
     }
-
     ma_free(pDevice->winmm._pHeapData, &pDevice->pContext->allocationCallbacks);
-
-    if (errorMsg != NULL && errorMsg[0] != '\0') {
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "%s", errorMsg);
-    }
-
+    if (errorMsg != NULL && errorMsg[0] != '\0') { ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "%s", errorMsg); }
     return errorCode;
 }
 
-static ma_result ma_device_start__winmm(ma_device* pDevice)
-{
+static ma_result ma_device_start__winmm(ma_device* pDevice) {
     MA_ASSERT(pDevice != NULL);
-
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         MA_MMRESULT resultMM;
         MA_WAVEHDR* pWAVEHDR;
         ma_uint32 iPeriod;
-
         pWAVEHDR = (MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture;
-
-        
         ResetEvent((HANDLE)pDevice->winmm.hEventCapture);
-
-        
         for (iPeriod = 0; iPeriod < pDevice->capture.internalPeriods; ++iPeriod) {
             resultMM = ((MA_PFN_waveInAddBuffer)pDevice->pContext->winmm.waveInAddBuffer)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture, &((MA_WAVEHDR*)pDevice->winmm.pWAVEHDRCapture)[iPeriod], sizeof(MA_WAVEHDR));
             if (resultMM != MA_MMSYSERR_NOERROR) {
                 ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WinMM] Failed to attach input buffers to capture device in preparation for capture.");
                 return ma_result_from_MMRESULT(resultMM);
             }
-
-            
             pWAVEHDR[iPeriod].dwUser = 1;   
         }
-
-        
         resultMM = ((MA_PFN_waveInStart)pDevice->pContext->winmm.waveInStart)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture);
         if (resultMM != MA_MMSYSERR_NOERROR) {
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WinMM] Failed to start backend device.");
             return ma_result_from_MMRESULT(resultMM);
         }
     }
-
-    if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
-        
-    }
-
     return MA_SUCCESS;
 }
 
-static ma_result ma_device_stop__winmm(ma_device* pDevice)
-{
+static ma_result ma_device_stop__winmm(ma_device* pDevice) {
     MA_MMRESULT resultMM;
-
     MA_ASSERT(pDevice != NULL);
-
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
-        if (pDevice->winmm.hDeviceCapture == NULL) {
-            return MA_INVALID_ARGS;
-        }
-
+        if (pDevice->winmm.hDeviceCapture == NULL) { return MA_INVALID_ARGS; }
         resultMM = ((MA_PFN_waveInReset)pDevice->pContext->winmm.waveInReset)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture);
-        if (resultMM != MA_MMSYSERR_NOERROR) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[WinMM] WARNING: Failed to reset capture device.");
-        }
+        if (resultMM != MA_MMSYSERR_NOERROR) { ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[WinMM] WARNING: Failed to reset capture device."); }
     }
 
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
@@ -25786,7 +25112,7 @@ static ma_result ma_context__init_device_tracking__coreaudio(ma_context* pContex
 {
     MA_ASSERT(pContext != NULL);
 
-    ma_spinlock_lock(&g_DeviceTrackingInitLock_CoreAudio);
+    ma_spinlock_lock(&g_DeviceTrackingInitLock_CoreAudio, MA_TRUE);
     {
         
         if (g_DeviceTrackingInitCounter_CoreAudio == 0) {
@@ -25814,7 +25140,7 @@ static ma_result ma_context__uninit_device_tracking__coreaudio(ma_context* pCont
 {
     MA_ASSERT(pContext != NULL);
 
-    ma_spinlock_lock(&g_DeviceTrackingInitLock_CoreAudio);
+    ma_spinlock_lock(&g_DeviceTrackingInitLock_CoreAudio, MA_TRUE);
     {
         if (g_DeviceTrackingInitCounter_CoreAudio > 0)
             g_DeviceTrackingInitCounter_CoreAudio -= 1;
@@ -31266,7 +30592,7 @@ static ma_result ma_context_uninit__opensl(ma_context* pContext)
     (void)pContext;
 
     
-    ma_spinlock_lock(&g_maOpenSLSpinlock);
+    ma_spinlock_lock(&g_maOpenSLSpinlock, MA_TRUE);
     {
         MA_ASSERT(g_maOpenSLInitCounter > 0);   
 
@@ -31406,7 +30732,7 @@ static ma_result ma_context_init__opensl(ma_context* pContext, const ma_context_
     pContext->opensl.slCreateEngine                   = (ma_proc)slCreateEngine;
 #endif
     
-    ma_spinlock_lock(&g_maOpenSLSpinlock);
+    ma_spinlock_lock(&g_maOpenSLSpinlock, MA_TRUE);
     {
         result = ma_context_init_engine_nolock__opensl(pContext);
     }
@@ -34506,31 +33832,6 @@ MA_API void ma_copy_and_apply_volume_factor_pcm_frames(void* pFramesOut, const v
     case ma_format_f32: ma_copy_and_apply_volume_factor_pcm_frames_f32(   (float*)pFramesOut,    (const float*)pFramesIn, frameCount, channels, factor); return;
     default: return;    
     }
-}
-
-MA_API void ma_apply_volume_factor_pcm_frames_u8(ma_uint8* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor)
-{
-    ma_copy_and_apply_volume_factor_pcm_frames_u8(pFrames, pFrames, frameCount, channels, factor);
-}
-
-MA_API void ma_apply_volume_factor_pcm_frames_s16(ma_int16* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor)
-{
-    ma_copy_and_apply_volume_factor_pcm_frames_s16(pFrames, pFrames, frameCount, channels, factor);
-}
-
-MA_API void ma_apply_volume_factor_pcm_frames_s24(void* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor)
-{
-    ma_copy_and_apply_volume_factor_pcm_frames_s24(pFrames, pFrames, frameCount, channels, factor);
-}
-
-MA_API void ma_apply_volume_factor_pcm_frames_s32(ma_int32* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor)
-{
-    ma_copy_and_apply_volume_factor_pcm_frames_s32(pFrames, pFrames, frameCount, channels, factor);
-}
-
-MA_API void ma_apply_volume_factor_pcm_frames_f32(float* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor)
-{
-    ma_copy_and_apply_volume_factor_pcm_frames_f32(pFrames, pFrames, frameCount, channels, factor);
 }
 
 MA_API void ma_apply_volume_factor_pcm_frames(void* pFramesOut, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor)
@@ -40936,14 +40237,14 @@ MA_API void ma_atomic_vec3f_init(ma_atomic_vec3f* v, ma_vec3f value) {
 }
 
 MA_API void ma_atomic_vec3f_set(ma_atomic_vec3f* v, ma_vec3f value) {
-    ma_spinlock_lock(&v->lock); { v->v = value; }
+    ma_spinlock_lock(&v->lock, MA_TRUE); { v->v = value; }
     ma_spinlock_unlock(&v->lock);
 }
 
 MA_API ma_vec3f ma_atomic_vec3f_get(ma_atomic_vec3f* v) {
     ma_vec3f r;
 
-    ma_spinlock_lock(&v->lock); { r = v->v; }
+    ma_spinlock_lock(&v->lock, MA_TRUE); { r = v->v; }
     ma_spinlock_unlock(&v->lock);
 
     return r;
@@ -46047,32 +45348,22 @@ MA_API void ma_channel_map_init_blank(ma_channel* pChannelMap, ma_uint32 channel
 
     MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channels);
 }
-static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    if (channelCount == 0 || channelIndex >= channelCount) {
-        return MA_CHANNEL_NONE;
-    }
+static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    if (channelCount == 0 || channelIndex >= channelCount) { return MA_CHANNEL_NONE; }
 
     
-    switch (channelCount)
-    {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 1: { return MA_CHANNEL_MONO; } break;
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3: 
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46080,8 +45371,7 @@ static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 chann
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
             #ifndef MA_USE_QUAD_MICROSOFT_CHANNEL_MAP
                 
@@ -46099,8 +45389,7 @@ static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 chann
             }
         } break;
 
-        case 5: 
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46110,8 +45399,7 @@ static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 chann
             }
         } break;
 
-        case 6:
-        {
+        case 6: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46122,8 +45410,7 @@ static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 chann
             }
         } break;
 
-        case 7: 
-        {
+        case 7: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46136,8 +45423,7 @@ static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 chann
         } break;
 
         case 8:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46151,37 +45437,23 @@ static ma_channel ma_channel_map_init_standard_channel_microsoft(ma_uint32 chann
         } break;
     }
 
-    if (channelCount > 8) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8));
-        }
-    }
-
-    
+    if (channelCount > 8 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8)); }
     return MA_CHANNEL_NONE;
 }
 
-static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    switch (channelCount)
-    {
+static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
+        case 1: { return MA_CHANNEL_MONO; } break;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3:
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46189,8 +45461,7 @@ static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCou
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46199,8 +45470,7 @@ static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCou
             }
         } break;
 
-        case 5:
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46210,8 +45480,7 @@ static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCou
             }
         } break;
 
-        case 6:
-        {
+        case 6: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46222,8 +45491,7 @@ static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCou
             }
         } break;
 
-        case 7:
-        {
+        case 7: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46236,8 +45504,7 @@ static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCou
         } break;
 
         case 8:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46251,37 +45518,23 @@ static ma_channel ma_channel_map_init_standard_channel_alsa(ma_uint32 channelCou
         } break;
     }
 
-    if (channelCount > 8) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8));
-        }
-    }
-
-    
+    if (channelCount > 8 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8)); }
     return MA_CHANNEL_NONE;
 }
 
-static ma_channel ma_channel_map_init_standard_channel_rfc3551(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    switch (channelCount)
-    {
+static ma_channel ma_channel_map_init_standard_channel_rfc3551(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
+        case 1: { return MA_CHANNEL_MONO; } break;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3:
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46289,8 +45542,7 @@ static ma_channel ma_channel_map_init_standard_channel_rfc3551(ma_uint32 channel
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 2: return MA_CHANNEL_FRONT_CENTER;
@@ -46299,8 +45551,7 @@ static ma_channel ma_channel_map_init_standard_channel_rfc3551(ma_uint32 channel
             }
         } break;
 
-        case 5:
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46311,8 +45562,7 @@ static ma_channel ma_channel_map_init_standard_channel_rfc3551(ma_uint32 channel
         } break;
 
         case 6:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_SIDE_LEFT;
@@ -46324,37 +45574,23 @@ static ma_channel ma_channel_map_init_standard_channel_rfc3551(ma_uint32 channel
         } break;
     }
 
-    if (channelCount > 6) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 6));
-        }
-    }
-
-    
+    if (channelCount > 6 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 6)); }
     return MA_CHANNEL_NONE;
 }
 
-static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    switch (channelCount)
-    {
+static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
+        case 1: { return MA_CHANNEL_MONO; } break;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3:
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46362,8 +45598,7 @@ static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCou
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46372,8 +45607,7 @@ static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCou
             }
         } break;
 
-        case 5:
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46383,8 +45617,7 @@ static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCou
             }
         } break;
 
-        case 6:
-        {
+        case 6: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46395,8 +45628,7 @@ static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCou
             }
         } break;
 
-        case 7:
-        {
+        case 7: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46409,8 +45641,7 @@ static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCou
         } break;
 
         case 8:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46424,37 +45655,23 @@ static ma_channel ma_channel_map_init_standard_channel_flac(ma_uint32 channelCou
         } break;
     }
 
-    if (channelCount > 8) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8));
-        }
-    }
-
-    
+    if (channelCount > 8 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8)); }
     return MA_CHANNEL_NONE;
 }
 
-static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    switch (channelCount)
-    {
+static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
+        case 1: { return MA_CHANNEL_MONO; } break;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3:
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46462,8 +45679,7 @@ static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelC
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46472,8 +45688,7 @@ static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelC
             }
         } break;
 
-        case 5:
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46483,8 +45698,7 @@ static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelC
             }
         } break;
 
-        case 6:
-        {
+        case 6: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46495,8 +45709,7 @@ static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelC
             }
         } break;
 
-        case 7:
-        {
+        case 7: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46509,8 +45722,7 @@ static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelC
         } break;
 
         case 8:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46524,37 +45736,23 @@ static ma_channel ma_channel_map_init_standard_channel_vorbis(ma_uint32 channelC
         } break;
     }
 
-    if (channelCount > 8) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8));
-        }
-    }
-
-    
+    if (channelCount > 8 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8)); }
     return MA_CHANNEL_NONE;
 }
 
-static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    switch (channelCount)
-    {
+static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
+        case 1: { return MA_CHANNEL_MONO; } break;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3:
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46562,8 +45760,7 @@ static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelC
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46572,8 +45769,7 @@ static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelC
             }
         } break;
 
-        case 5:
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46583,8 +45779,7 @@ static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelC
             }
         } break;
 
-        case 6:
-        {
+        case 6: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46595,8 +45790,7 @@ static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelC
             }
         } break;
 
-        case 7:
-        {
+        case 7: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46609,8 +45803,7 @@ static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelC
         } break;
 
         case 8:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_CENTER;
@@ -46624,37 +45817,23 @@ static ma_channel ma_channel_map_init_standard_channel_sound4(ma_uint32 channelC
         } break;
     }
 
-    if (channelCount > 8) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8));
-        }
-    }
-
-    
+    if (channelCount > 8 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 8)); }
     return MA_CHANNEL_NONE;
 }
 
-static ma_channel ma_channel_map_init_standard_channel_sndio(ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    switch (channelCount)
-    {
+static ma_channel ma_channel_map_init_standard_channel_sndio(ma_uint32 channelCount, ma_uint32 channelIndex) {
+    switch (channelCount) {
         case 0: return MA_CHANNEL_NONE;
+        case 1: { return MA_CHANNEL_MONO; } break;
 
-        case 1:
-        {
-            return MA_CHANNEL_MONO;
-        } break;
-
-        case 2:
-        {
+        case 2: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
             }
         } break;
 
-        case 3: 
-        {
+        case 3: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46662,8 +45841,7 @@ static ma_channel ma_channel_map_init_standard_channel_sndio(ma_uint32 channelCo
             }
         } break;
 
-        case 4:
-        {
+        case 4: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46672,8 +45850,7 @@ static ma_channel ma_channel_map_init_standard_channel_sndio(ma_uint32 channelCo
             }
         } break;
 
-        case 5: 
-        {
+        case 5: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46684,8 +45861,7 @@ static ma_channel ma_channel_map_init_standard_channel_sndio(ma_uint32 channelCo
         } break;
 
         case 6:
-        default:
-        {
+        default: {
             switch (channelIndex) {
                 case 0: return MA_CHANNEL_FRONT_LEFT;
                 case 1: return MA_CHANNEL_FRONT_RIGHT;
@@ -46697,153 +45873,67 @@ static ma_channel ma_channel_map_init_standard_channel_sndio(ma_uint32 channelCo
         } break;
     }
 
-    if (channelCount > 6) {
-        if (channelIndex < 32) {    
-            return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 6));
-        }
-    }
-
-    
+    if (channelCount > 6 && channelIndex < 32) { return (ma_channel)(MA_CHANNEL_AUX_0 + (channelIndex - 6)); }
     return MA_CHANNEL_NONE;
 }
-static ma_channel ma_channel_map_init_standard_channel(ma_standard_channel_map standardChannelMap, ma_uint32 channelCount, ma_uint32 channelIndex)
-{
-    if (channelCount == 0 || channelIndex >= channelCount) {
-        return MA_CHANNEL_NONE;
-    }
+static ma_channel ma_channel_map_init_standard_channel(ma_standard_channel_map standardChannelMap, ma_uint32 channelCount, ma_uint32 channelIndex) {
+    if (channelCount == 0 || channelIndex >= channelCount) { return MA_CHANNEL_NONE; }
 
-    switch (standardChannelMap)
-    {
-        case ma_standard_channel_map_alsa:
-        {
-            return ma_channel_map_init_standard_channel_alsa(channelCount, channelIndex);
-        } break;
-
-        case ma_standard_channel_map_rfc3551:
-        {
-            return ma_channel_map_init_standard_channel_rfc3551(channelCount, channelIndex);
-        } break;
-
-        case ma_standard_channel_map_flac:
-        {
-            return ma_channel_map_init_standard_channel_flac(channelCount, channelIndex);
-        } break;
-
-        case ma_standard_channel_map_vorbis:
-        {
-            return ma_channel_map_init_standard_channel_vorbis(channelCount, channelIndex);
-        } break;
-
-        case ma_standard_channel_map_sound4:
-        {
-            return ma_channel_map_init_standard_channel_sound4(channelCount, channelIndex);
-        } break;
-
-        case ma_standard_channel_map_sndio:
-        {
-            return ma_channel_map_init_standard_channel_sndio(channelCount, channelIndex);
-        } break;
-
+    switch (standardChannelMap) {
+        case ma_standard_channel_map_alsa: { return ma_channel_map_init_standard_channel_alsa(channelCount, channelIndex); } break;
+        case ma_standard_channel_map_rfc3551: { return ma_channel_map_init_standard_channel_rfc3551(channelCount, channelIndex); } break;
+        case ma_standard_channel_map_flac: { return ma_channel_map_init_standard_channel_flac(channelCount, channelIndex); } break;
+        case ma_standard_channel_map_vorbis: { return ma_channel_map_init_standard_channel_vorbis(channelCount, channelIndex); } break;
+        case ma_standard_channel_map_sound4: { return ma_channel_map_init_standard_channel_sound4(channelCount, channelIndex); } break;
+        case ma_standard_channel_map_sndio: { return ma_channel_map_init_standard_channel_sndio(channelCount, channelIndex); } break;
         case ma_standard_channel_map_microsoft: 
-        
-        default:
-        {
-            return ma_channel_map_init_standard_channel_microsoft(channelCount, channelIndex);
-        } break;
+        default: { return ma_channel_map_init_standard_channel_microsoft(channelCount, channelIndex); } break;
     }
 }
 
-MA_API void ma_channel_map_init_standard(ma_standard_channel_map standardChannelMap, ma_channel* pChannelMap, size_t channelMapCap, ma_uint32 channels)
-{
+MA_API void ma_channel_map_init_standard(ma_standard_channel_map standardChannelMap, ma_channel* pChannelMap, size_t channelMapCap, ma_uint32 channels) {
     ma_uint32 iChannel;
-
-    if (pChannelMap == NULL || channelMapCap == 0 || channels == 0) {
-        return;
-    }
-
+    if (pChannelMap == NULL || channelMapCap == 0 || channels == 0) { return; }
     for (iChannel = 0; iChannel < channels; iChannel += 1) {
-        if (channelMapCap == 0) {
-            break;  
-        }
-
+        if (channelMapCap == 0) { break; }
         pChannelMap[0] = ma_channel_map_init_standard_channel(standardChannelMap, channels, iChannel);
         pChannelMap   += 1;
         channelMapCap -= 1;
     }
 }
 
-MA_API void ma_channel_map_copy(ma_channel* pOut, const ma_channel* pIn, ma_uint32 channels)
-{
-    if (pOut != NULL && pIn != NULL && channels > 0) {
-        MA_COPY_MEMORY(pOut, pIn, sizeof(*pOut) * channels);
-    }
+MA_API void ma_channel_map_copy(ma_channel* pOut, const ma_channel* pIn, ma_uint32 channels) { if (pOut != NULL && pIn != NULL && channels > 0) { MA_COPY_MEMORY(pOut, pIn, sizeof(*pOut) * channels); }}
+
+MA_API void ma_channel_map_copy_or_default(ma_channel* pOut, size_t channelMapCapOut, const ma_channel* pIn, ma_uint32 channels) {
+    if (pOut == NULL || channels == 0) { return; }
+    if (pIn == NULL) { ma_channel_map_init_standard(ma_standard_channel_map_default, pOut, channelMapCapOut, channels); }
+    else { ma_channel_map_copy(pOut, pIn, channels); }
 }
 
-MA_API void ma_channel_map_copy_or_default(ma_channel* pOut, size_t channelMapCapOut, const ma_channel* pIn, ma_uint32 channels)
-{
-    if (pOut == NULL || channels == 0) {
-        return;
-    }
-
-    if (pIn != NULL) {
-        ma_channel_map_copy(pOut, pIn, channels);
-    } else {
-        ma_channel_map_init_standard(ma_standard_channel_map_default, pOut, channelMapCapOut, channels);
-    }
-}
-
-MA_API ma_bool32 ma_channel_map_is_valid(const ma_channel* pChannelMap, ma_uint32 channels)
-{
+MA_API ma_bool32 ma_channel_map_is_valid(const ma_channel* pChannelMap, ma_uint32 channels) {
     
-    if (channels == 0) {
-        return MA_FALSE;
-    }
+    if (channels == 0) { return MA_FALSE; }
 
     
     if (channels > 1) {
         ma_uint32 iChannel;
-        for (iChannel = 0; iChannel < channels; ++iChannel) {
-            if (ma_channel_map_get_channel(pChannelMap, channels, iChannel) == MA_CHANNEL_MONO) {
-                return MA_FALSE;
-            }
-        }
+        for (iChannel = 0; iChannel < channels; ++iChannel) { if (ma_channel_map_get_channel(pChannelMap, channels, iChannel) == MA_CHANNEL_MONO) { return MA_FALSE; }}
     }
 
     return MA_TRUE;
 }
 
-MA_API ma_bool32 ma_channel_map_is_equal(const ma_channel* pChannelMapA, const ma_channel* pChannelMapB, ma_uint32 channels)
-{
+MA_API ma_bool32 ma_channel_map_is_equal(const ma_channel* pChannelMapA, const ma_channel* pChannelMapB, ma_uint32 channels) {
+    if (pChannelMapA == pChannelMapB) { return MA_TRUE; }
     ma_uint32 iChannel;
-
-    if (pChannelMapA == pChannelMapB) {
-        return MA_TRUE;
-    }
-
-    for (iChannel = 0; iChannel < channels; ++iChannel) {
-        if (ma_channel_map_get_channel(pChannelMapA, channels, iChannel) != ma_channel_map_get_channel(pChannelMapB, channels, iChannel)) {
-            return MA_FALSE;
-        }
-    }
-
+    for (iChannel = 0; iChannel < channels; ++iChannel) { if (ma_channel_map_get_channel(pChannelMapA, channels, iChannel) != ma_channel_map_get_channel(pChannelMapB, channels, iChannel)) { return MA_FALSE; }}
     return MA_TRUE;
 }
 
-MA_API ma_bool32 ma_channel_map_is_blank(const ma_channel* pChannelMap, ma_uint32 channels)
-{
+MA_API ma_bool32 ma_channel_map_is_blank(const ma_channel* pChannelMap, ma_uint32 channels) {
+    if (pChannelMap == NULL) { return MA_FALSE; }
     ma_uint32 iChannel;
-
-    
-    if (pChannelMap == NULL) {
-        return MA_FALSE;
-    }
-
-    for (iChannel = 0; iChannel < channels; ++iChannel) {
-        if (pChannelMap[iChannel] != MA_CHANNEL_NONE) {
-            return MA_FALSE;
-        }
-    }
-
+    for (iChannel = 0; iChannel < channels; ++iChannel) { if (pChannelMap[iChannel] != MA_CHANNEL_NONE) { return MA_FALSE; }}
     return MA_TRUE;
 }
 
@@ -47898,17 +46988,10 @@ MA_API const char* ma_result_description(ma_result result)
     }
 }
 
-MA_API void* ma_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (pAllocationCallbacks != NULL) {
-        if (pAllocationCallbacks->onMalloc != NULL) {
-            return pAllocationCallbacks->onMalloc(sz, pAllocationCallbacks->pUserData);
-        } else {
-            return NULL;    
-        }
-    } else {
-        return ma__malloc_default(sz, NULL);
-    }
+MA_API void* ma_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks) {
+    if (pAllocationCallbacks == NULL) { return ma__malloc_default(sz, NULL); }
+    if (pAllocationCallbacks->onMalloc == NULL) { return NULL; }
+    return pAllocationCallbacks->onMalloc(sz, pAllocationCallbacks->pUserData);
 }
 
 MA_API void* ma_calloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks)
@@ -51455,16 +50538,6 @@ MA_API ma_uint64 ma_dr_mp3_get_mp3_frame_count(ma_dr_mp3* pMP3);
 MA_API ma_bool32 ma_dr_mp3_get_mp3_and_pcm_frame_count(ma_dr_mp3* pMP3, ma_uint64* pMP3FrameCount, ma_uint64* pPCMFrameCount);
 MA_API ma_bool32 ma_dr_mp3_calculate_seek_points(ma_dr_mp3* pMP3, ma_uint32* pSeekPointCount, ma_dr_mp3_seek_point* pSeekPoints);
 MA_API ma_bool32 ma_dr_mp3_bind_seek_table(ma_dr_mp3* pMP3, ma_uint32 seekPointCount, ma_dr_mp3_seek_point* pSeekPoints);
-MA_API float* ma_dr_mp3_open_and_read_pcm_frames_f32(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks);
-MA_API ma_int16* ma_dr_mp3_open_and_read_pcm_frames_s16(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks);
-MA_API float* ma_dr_mp3_open_memory_and_read_pcm_frames_f32(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks);
-MA_API ma_int16* ma_dr_mp3_open_memory_and_read_pcm_frames_s16(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks);
-#ifndef MA_DR_MP3_NO_STDIO
-MA_API float* ma_dr_mp3_open_file_and_read_pcm_frames_f32(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks);
-MA_API ma_int16* ma_dr_mp3_open_file_and_read_pcm_frames_s16(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks);
-#endif
-MA_API void* ma_dr_mp3_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-MA_API void ma_dr_mp3_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks);
 #ifdef __cplusplus
 }
 #endif
@@ -61603,61 +60676,38 @@ MA_API void ma_debug_fill_pcm_frames_with_sine_wave(float* pFramesOut, ma_uint32
     }
     #endif
 }
-MA_API ma_node_graph_config ma_node_graph_config_init(ma_uint32 channels)
-{
+MA_API ma_node_graph_config ma_node_graph_config_init(ma_uint32 channels) {
     ma_node_graph_config config;
-
     MA_ZERO_OBJECT(&config);
     config.channels               = channels;
     config.processingSizeInFrames = 0;
-
     return config;
 }
-static void ma_node_graph_set_is_reading(ma_node_graph* pNodeGraph, ma_bool32 isReading)
-{
+static void ma_node_graph_set_is_reading(ma_node_graph* pNodeGraph, ma_bool32 isReading) {
     MA_ASSERT(pNodeGraph != NULL);
     ma_atomic_exchange_32(&pNodeGraph->isReading, isReading);
 }
 
 #if 0
-static ma_bool32 ma_node_graph_is_reading(ma_node_graph* pNodeGraph)
-{
+static ma_bool32 ma_node_graph_is_reading(ma_node_graph* pNodeGraph) {
     MA_ASSERT(pNodeGraph != NULL);
     return ma_atomic_load_32(&pNodeGraph->isReading);
 }
 #endif
-static void ma_node_graph_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_node_graph_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_node_graph* pNodeGraph = (ma_node_graph*)pNode;
     ma_uint64 framesRead;
-
     ma_node_graph_read_pcm_frames(pNodeGraph, ppFramesOut[0], *pFrameCountOut, &framesRead);
-
     *pFrameCountOut = (ma_uint32)framesRead;    
-
     (void)ppFramesIn;
     (void)pFrameCountIn;
 }
-
-static ma_node_vtable g_node_graph_node_vtable =
-{
-    ma_node_graph_node_process_pcm_frames,
-    NULL,   
-    0,      
-    1,      
-    0       
-};
-
-static void ma_node_graph_endpoint_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static ma_node_vtable g_node_graph_node_vtable = { ma_node_graph_node_process_pcm_frames, NULL, 0, 1, 0 };
+static void ma_node_graph_endpoint_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     MA_ASSERT(pNode != NULL);
     MA_ASSERT(ma_node_get_input_bus_count(pNode)  == 1);
     MA_ASSERT(ma_node_get_output_bus_count(pNode) == 1);
-
-    
     MA_ASSERT(ma_node_get_input_channels(pNode, 0) == ma_node_get_output_channels(pNode, 0));
-
-    
     (void)pNode;
     (void)ppFramesIn;
     (void)pFrameCountIn;
@@ -61665,56 +60715,31 @@ static void ma_node_graph_endpoint_process_pcm_frames(ma_node* pNode, const floa
     (void)pFrameCountOut;
 
 #if 0
-    
-    if (ppFramesIn != NULL) {
-        ma_copy_pcm_frames(ppFramesOut[0], ppFramesIn[0], *pFrameCountOut, ma_format_f32, ma_node_get_output_channels(pNode, 0));
-    }
+    if (ppFramesIn != NULL) { ma_copy_pcm_frames(ppFramesOut[0], ppFramesIn[0], *pFrameCountOut, ma_format_f32, ma_node_get_output_channels(pNode, 0)); }
 #endif
 }
-
-static ma_node_vtable g_node_graph_endpoint_vtable =
-{
-    ma_node_graph_endpoint_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    MA_NODE_FLAG_PASSTHROUGH    
-};
-
-MA_API ma_result ma_node_graph_init(const ma_node_graph_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_node_graph* pNodeGraph)
-{
+static ma_node_vtable g_node_graph_endpoint_vtable = { ma_node_graph_endpoint_process_pcm_frames, NULL, 1, 1, MA_NODE_FLAG_PASSTHROUGH };
+MA_API ma_result ma_node_graph_init(const ma_node_graph_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_node_graph* pNodeGraph) {
     ma_result result;
     ma_node_config baseConfig;
     ma_node_config endpointConfig;
-
-    if (pNodeGraph == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNodeGraph == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pNodeGraph);
     pNodeGraph->processingSizeInFrames = pConfig->processingSizeInFrames;
-
-    
     baseConfig = ma_node_config_init();
     baseConfig.vtable = &g_node_graph_node_vtable;
     baseConfig.pOutputChannels = &pConfig->channels;
-
     result = ma_node_init(pNodeGraph, &baseConfig, pAllocationCallbacks, &pNodeGraph->base);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-    
+    if (result != MA_SUCCESS) { return result; }
     endpointConfig = ma_node_config_init();
     endpointConfig.vtable          = &g_node_graph_endpoint_vtable;
     endpointConfig.pInputChannels  = &pConfig->channels;
     endpointConfig.pOutputChannels = &pConfig->channels;
-
     result = ma_node_init(pNodeGraph, &endpointConfig, pAllocationCallbacks, &pNodeGraph->endpoint);
     if (result != MA_SUCCESS) {
         ma_node_uninit(&pNodeGraph->base, pAllocationCallbacks);
         return result;
     }
-    
     if (pConfig->processingSizeInFrames > 0) {
         pNodeGraph->pProcessingCache = (float*)ma_malloc(pConfig->processingSizeInFrames * pConfig->channels * sizeof(float), pAllocationCallbacks);
         if (pNodeGraph->pProcessingCache == NULL) {
@@ -61723,623 +60748,304 @@ MA_API ma_result ma_node_graph_init(const ma_node_graph_config* pConfig, const m
             return MA_OUT_OF_MEMORY;
         }
     }
-    
     {
         size_t preMixStackSizeInBytes = pConfig->preMixStackSizeInBytes;
-        if (preMixStackSizeInBytes == 0) {
-            preMixStackSizeInBytes = pConfig->channels * MA_DEFAULT_PREMIX_STACK_SIZE_PER_CHANNEL;
-        }
-
+        if (preMixStackSizeInBytes == 0) { preMixStackSizeInBytes = pConfig->channels * MA_DEFAULT_PREMIX_STACK_SIZE_PER_CHANNEL; }
         pNodeGraph->pPreMixStack = ma_stack_init(preMixStackSizeInBytes, pAllocationCallbacks);
         if (pNodeGraph->pPreMixStack == NULL) {
             ma_node_uninit(&pNodeGraph->endpoint, pAllocationCallbacks);
             ma_node_uninit(&pNodeGraph->base, pAllocationCallbacks);
-            if (pNodeGraph->pProcessingCache != NULL) {
-                ma_free(pNodeGraph->pProcessingCache, pAllocationCallbacks);
-            }
-
+            if (pNodeGraph->pProcessingCache != NULL) { ma_free(pNodeGraph->pProcessingCache, pAllocationCallbacks); }
             return MA_OUT_OF_MEMORY;
         }
     }
     return MA_SUCCESS;
 }
 
-MA_API void ma_node_graph_uninit(ma_node_graph* pNodeGraph, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (pNodeGraph == NULL) {
-        return;
-    }
-
+MA_API void ma_node_graph_uninit(ma_node_graph* pNodeGraph, const ma_allocation_callbacks* pAllocationCallbacks) {
+    if (pNodeGraph == NULL) { return; }
     ma_node_uninit(&pNodeGraph->endpoint, pAllocationCallbacks);
     ma_node_uninit(&pNodeGraph->base, pAllocationCallbacks);
-
     if (pNodeGraph->pProcessingCache != NULL) {
         ma_free(pNodeGraph->pProcessingCache, pAllocationCallbacks);
         pNodeGraph->pProcessingCache = NULL;
     }
-
     if (pNodeGraph->pPreMixStack != NULL) {
         ma_stack_uninit(pNodeGraph->pPreMixStack, pAllocationCallbacks);
         pNodeGraph->pPreMixStack = NULL;
     }
 }
 
-MA_API ma_node* ma_node_graph_get_endpoint(ma_node_graph* pNodeGraph)
-{
-    if (pNodeGraph == NULL) {
-        return NULL;
-    }
-
+MA_API ma_node* ma_node_graph_get_endpoint(ma_node_graph* pNodeGraph) {
+    if (pNodeGraph == NULL) { return NULL; }
     return &pNodeGraph->endpoint;
 }
 
-MA_API ma_result ma_node_graph_read_pcm_frames(ma_node_graph* pNodeGraph, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead)
-{
+MA_API ma_result ma_node_graph_read_pcm_frames(ma_node_graph* pNodeGraph, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead) {
     ma_result result = MA_SUCCESS;
     ma_uint64 totalFramesRead;
     ma_uint32 channels;
-
-    if (pFramesRead != NULL) {
-        *pFramesRead = 0;   
-    }
-
-    if (pNodeGraph == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pFramesRead != NULL) { *pFramesRead = 0; }
+    if (pNodeGraph == NULL) { return MA_INVALID_ARGS; }
     channels = ma_node_get_output_channels(&pNodeGraph->endpoint, 0);
-    
     totalFramesRead = 0;
     while (totalFramesRead < frameCount) {
         ma_uint32 framesJustRead;
         ma_uint64 framesToRead;
         float* pRunningFramesOut;
-
         framesToRead = frameCount - totalFramesRead;
-        if (framesToRead > 0xFFFFFFFF) {
-            framesToRead = 0xFFFFFFFF;
-        }
-
+        if (framesToRead > 0xFFFFFFFF) { framesToRead = 0xFFFFFFFF; }
         pRunningFramesOut = (float*)ma_offset_pcm_frames_ptr(pFramesOut, totalFramesRead, ma_format_f32, channels);
-
-        
         if (pNodeGraph->processingCacheFramesRemaining > 0) {
             ma_uint32 framesToReadFromCache;
-
             framesToReadFromCache = (ma_uint32)framesToRead;
-            if (framesToReadFromCache > pNodeGraph->processingCacheFramesRemaining) {
-                framesToReadFromCache = pNodeGraph->processingCacheFramesRemaining;
-            }
-
+            if (framesToReadFromCache > pNodeGraph->processingCacheFramesRemaining) { framesToReadFromCache = pNodeGraph->processingCacheFramesRemaining; }
             MA_COPY_MEMORY(pRunningFramesOut, pNodeGraph->pProcessingCache, framesToReadFromCache * channels * sizeof(float));
             MA_MOVE_MEMORY(pNodeGraph->pProcessingCache, pNodeGraph->pProcessingCache + (framesToReadFromCache * channels), (pNodeGraph->processingCacheFramesRemaining - framesToReadFromCache) * channels * sizeof(float));
             pNodeGraph->processingCacheFramesRemaining -= framesToReadFromCache;
-
             totalFramesRead += framesToReadFromCache;
             continue;
-        } else {
-            
+        }
+        else {
             float* pReadDst = pRunningFramesOut;
-
             if (pNodeGraph->processingSizeInFrames > 0) {
-                if (framesToRead < pNodeGraph->processingSizeInFrames) {
-                    pReadDst = pNodeGraph->pProcessingCache;    
-                }
-
+                if (framesToRead < pNodeGraph->processingSizeInFrames) { pReadDst = pNodeGraph->pProcessingCache; }
                 framesToRead = pNodeGraph->processingSizeInFrames;
             }
-
-            ma_node_graph_set_is_reading(pNodeGraph, MA_TRUE);
-            {
-                result = ma_node_read_pcm_frames(&pNodeGraph->endpoint, 0, pReadDst, (ma_uint32)framesToRead, &framesJustRead, ma_node_get_time(&pNodeGraph->endpoint));
-            }
+            ma_node_graph_set_is_reading(pNodeGraph, MA_TRUE); { result = ma_node_read_pcm_frames(&pNodeGraph->endpoint, 0, pReadDst, (ma_uint32)framesToRead, &framesJustRead, ma_node_get_time(&pNodeGraph->endpoint)); }
             ma_node_graph_set_is_reading(pNodeGraph, MA_FALSE);
-
-            
-            if (pReadDst == pNodeGraph->pProcessingCache) {
-                
-                pNodeGraph->processingCacheFramesRemaining = framesJustRead;
-            } else {
-                
-                totalFramesRead += framesJustRead;
-            }
-
-            if (result != MA_SUCCESS) {
-                break;
-            }
-
-            
-            if (framesJustRead == 0) {
-                break;
-            }
+            if (pReadDst == pNodeGraph->pProcessingCache) { pNodeGraph->processingCacheFramesRemaining = framesJustRead; }
+            else { totalFramesRead += framesJustRead; }
+            if (result != MA_SUCCESS || framesJustRead == 0) { break; }
         }
     }
-
-    
-    if (totalFramesRead < frameCount) {
-        ma_silence_pcm_frames(ma_offset_pcm_frames_ptr(pFramesOut, totalFramesRead, ma_format_f32, channels), (frameCount - totalFramesRead), ma_format_f32, channels);
-    }
-
-    if (pFramesRead != NULL) {
-        *pFramesRead = totalFramesRead;
-    }
-
+    if (totalFramesRead < frameCount) { ma_silence_pcm_frames(ma_offset_pcm_frames_ptr(pFramesOut, totalFramesRead, ma_format_f32, channels), (frameCount - totalFramesRead), ma_format_f32, channels); }
+    if (pFramesRead != NULL) { *pFramesRead = totalFramesRead; }
     return result;
 }
 
-MA_API ma_uint32 ma_node_graph_get_channels(const ma_node_graph* pNodeGraph)
-{
-    if (pNodeGraph == NULL) {
-        return 0;
-    }
-
+MA_API ma_uint32 ma_node_graph_get_channels(const ma_node_graph* pNodeGraph) {
+    if (pNodeGraph == NULL) { return 0; }
     return ma_node_get_output_channels(&pNodeGraph->endpoint, 0);
 }
 
-MA_API ma_uint64 ma_node_graph_get_time(const ma_node_graph* pNodeGraph)
-{
-    if (pNodeGraph == NULL) {
-        return 0;
-    }
-
+MA_API ma_uint64 ma_node_graph_get_time(const ma_node_graph* pNodeGraph) {
+    if (pNodeGraph == NULL) { return 0; }
     return ma_node_get_time(&pNodeGraph->endpoint); 
 }
 
-MA_API ma_result ma_node_graph_set_time(ma_node_graph* pNodeGraph, ma_uint64 globalTime)
-{
-    if (pNodeGraph == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+MA_API ma_result ma_node_graph_set_time(ma_node_graph* pNodeGraph, ma_uint64 globalTime) {
+    if (pNodeGraph == NULL) { return MA_INVALID_ARGS; }
     return ma_node_set_time(&pNodeGraph->endpoint, globalTime); 
 }
 #define MA_NODE_OUTPUT_BUS_FLAG_HAS_READ    0x01    
-
-static ma_result ma_node_output_bus_init(ma_node* pNode, ma_uint32 outputBusIndex, ma_uint32 channels, ma_node_output_bus* pOutputBus)
-{
+static ma_result ma_node_output_bus_init(ma_node* pNode, ma_uint32 outputBusIndex, ma_uint32 channels, ma_node_output_bus* pOutputBus) {
     MA_ASSERT(pOutputBus != NULL);
     MA_ASSERT(outputBusIndex < MA_MAX_NODE_BUS_COUNT);
     MA_ASSERT(outputBusIndex < ma_node_get_output_bus_count(pNode));
     MA_ASSERT(channels < 256);
-
     MA_ZERO_OBJECT(pOutputBus);
-
-    if (channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (channels == 0) { return MA_INVALID_ARGS; }
     pOutputBus->pNode          = pNode;
     pOutputBus->outputBusIndex = (ma_uint8)outputBusIndex;
     pOutputBus->channels       = (ma_uint8)channels;
     pOutputBus->flags          = MA_NODE_OUTPUT_BUS_FLAG_HAS_READ; 
     pOutputBus->volume         = 1;
-
     return MA_SUCCESS;
 }
-
-static void ma_node_output_bus_lock(ma_node_output_bus* pOutputBus)
-{
-    ma_spinlock_lock(&pOutputBus->lock);
+static void ma_node_output_bus_lock(ma_node_output_bus* pOutputBus) { ma_spinlock_lock(&pOutputBus->lock, MA_TRUE); }
+static void ma_node_output_bus_unlock(ma_node_output_bus* pOutputBus) { ma_spinlock_unlock(&pOutputBus->lock); }
+static void ma_node_output_bus_set_has_read(ma_node_output_bus* pOutputBus, ma_bool32 hasRead) {
+    if (hasRead) { ma_atomic_fetch_or_32(&pOutputBus->flags, MA_NODE_OUTPUT_BUS_FLAG_HAS_READ); }
+    else { ma_atomic_fetch_and_32(&pOutputBus->flags, (ma_uint32)~MA_NODE_OUTPUT_BUS_FLAG_HAS_READ); }
 }
-
-static void ma_node_output_bus_unlock(ma_node_output_bus* pOutputBus)
-{
-    ma_spinlock_unlock(&pOutputBus->lock);
-}
-static ma_uint32 ma_node_output_bus_get_channels(const ma_node_output_bus* pOutputBus)
-{
-    return pOutputBus->channels;
-}
-static void ma_node_output_bus_set_has_read(ma_node_output_bus* pOutputBus, ma_bool32 hasRead)
-{
-    if (hasRead) {
-        ma_atomic_fetch_or_32(&pOutputBus->flags, MA_NODE_OUTPUT_BUS_FLAG_HAS_READ);
-    } else {
-        ma_atomic_fetch_and_32(&pOutputBus->flags, (ma_uint32)~MA_NODE_OUTPUT_BUS_FLAG_HAS_READ);
-    }
-}
-
-static ma_bool32 ma_node_output_bus_has_read(ma_node_output_bus* pOutputBus)
-{
-    return (ma_atomic_load_32(&pOutputBus->flags) & MA_NODE_OUTPUT_BUS_FLAG_HAS_READ) != 0;
-}
-static void ma_node_output_bus_set_is_attached(ma_node_output_bus* pOutputBus, ma_bool32 isAttached)
-{
-    ma_atomic_exchange_32(&pOutputBus->isAttached, isAttached);
-}
-
-static ma_bool32 ma_node_output_bus_is_attached(ma_node_output_bus* pOutputBus)
-{
-    return ma_atomic_load_32(&pOutputBus->isAttached);
-}
-static ma_result ma_node_output_bus_set_volume(ma_node_output_bus* pOutputBus, float volume)
-{
+static ma_bool32 ma_node_output_bus_has_read(ma_node_output_bus* pOutputBus) { return (ma_atomic_load_32(&pOutputBus->flags) & MA_NODE_OUTPUT_BUS_FLAG_HAS_READ) != 0; }
+static void ma_node_output_bus_set_is_attached(ma_node_output_bus* pOutputBus, ma_bool32 isAttached) { ma_atomic_exchange_32(&pOutputBus->isAttached, isAttached); }
+static ma_bool32 ma_node_output_bus_is_attached(ma_node_output_bus* pOutputBus) { return ma_atomic_load_32(&pOutputBus->isAttached); }
+static ma_result ma_node_output_bus_set_volume(ma_node_output_bus* pOutputBus, float volume) {
     MA_ASSERT(pOutputBus != NULL);
-
-    if (volume < 0.0f) {
-        volume = 0.0f;
-    }
-
+    if (volume < 0.0f) { volume = 0.0f; }
     ma_atomic_exchange_f32(&pOutputBus->volume, volume);
-
     return MA_SUCCESS;
 }
-
-static float ma_node_output_bus_get_volume(const ma_node_output_bus* pOutputBus)
-{
-    return ma_atomic_load_f32((float*)&pOutputBus->volume);
-}
-static ma_result ma_node_input_bus_init(ma_uint32 channels, ma_node_input_bus* pInputBus)
-{
+static float ma_node_output_bus_get_volume(const ma_node_output_bus* pOutputBus) { return ma_atomic_load_f32((float*)&pOutputBus->volume); }
+static ma_result ma_node_input_bus_init(ma_uint32 channels, ma_node_input_bus* pInputBus) {
     MA_ASSERT(pInputBus != NULL);
     MA_ASSERT(channels < 256);
-
     MA_ZERO_OBJECT(pInputBus);
-
-    if (channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (channels == 0) { return MA_INVALID_ARGS; }
     pInputBus->channels = (ma_uint8)channels;
-
     return MA_SUCCESS;
 }
-
-static void ma_node_input_bus_lock(ma_node_input_bus* pInputBus)
-{
+static void ma_node_input_bus_lock(ma_node_input_bus* pInputBus) {
     MA_ASSERT(pInputBus != NULL);
-
-    ma_spinlock_lock(&pInputBus->lock);
+    ma_spinlock_lock(&pInputBus->lock, MA_TRUE);
 }
-
-static void ma_node_input_bus_unlock(ma_node_input_bus* pInputBus)
-{
+static void ma_node_input_bus_unlock(ma_node_input_bus* pInputBus) {
     MA_ASSERT(pInputBus != NULL);
-
     ma_spinlock_unlock(&pInputBus->lock);
 }
-static void ma_node_input_bus_next_begin(ma_node_input_bus* pInputBus)
-{
-    ma_atomic_fetch_add_32(&pInputBus->nextCounter, 1);
-}
-
-static void ma_node_input_bus_next_end(ma_node_input_bus* pInputBus)
-{
-    ma_atomic_fetch_sub_32(&pInputBus->nextCounter, 1);
-}
-
-static ma_uint32 ma_node_input_bus_get_next_counter(ma_node_input_bus* pInputBus)
-{
-    return ma_atomic_load_32(&pInputBus->nextCounter);
-}
-static ma_uint32 ma_node_input_bus_get_channels(const ma_node_input_bus* pInputBus)
-{
-    return pInputBus->channels;
-}
-static void ma_node_input_bus_detach__no_output_bus_lock(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus)
-{
+static void ma_node_input_bus_next_begin(ma_node_input_bus* pInputBus) { ma_atomic_fetch_add_32(&pInputBus->nextCounter, 1); }
+static void ma_node_input_bus_next_end(ma_node_input_bus* pInputBus) { ma_atomic_fetch_sub_32(&pInputBus->nextCounter, 1); }
+static ma_uint32 ma_node_input_bus_get_next_counter(ma_node_input_bus* pInputBus) { return ma_atomic_load_32(&pInputBus->nextCounter); }
+static ma_uint32 ma_node_input_bus_get_channels(const ma_node_input_bus* pInputBus) { return pInputBus->channels; }
+static void ma_node_input_bus_detach__no_output_bus_lock(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus) {
     MA_ASSERT(pInputBus  != NULL);
     MA_ASSERT(pOutputBus != NULL);
-
-    
     ma_node_output_bus_set_is_attached(pOutputBus, MA_FALSE);
-
-    
-    ma_node_input_bus_lock(pInputBus);
-    {
+    ma_node_input_bus_lock(pInputBus); {
         ma_node_output_bus* pOldPrev = (ma_node_output_bus*)ma_atomic_load_ptr(&pOutputBus->pPrev);
         ma_node_output_bus* pOldNext = (ma_node_output_bus*)ma_atomic_load_ptr(&pOutputBus->pNext);
-
-        if (pOldPrev != NULL) {
-            ma_atomic_exchange_ptr(&pOldPrev->pNext, pOldNext); 
-        }
-        if (pOldNext != NULL) {
-            ma_atomic_exchange_ptr(&pOldNext->pPrev, pOldPrev); 
-        }
+        if (pOldPrev != NULL) { ma_atomic_exchange_ptr(&pOldPrev->pNext, pOldNext); }
+        if (pOldNext != NULL) { ma_atomic_exchange_ptr(&pOldNext->pPrev, pOldPrev); }
     }
     ma_node_input_bus_unlock(pInputBus);
-
-    
     ma_atomic_exchange_ptr(&pOutputBus->pNext, NULL);   
     ma_atomic_exchange_ptr(&pOutputBus->pPrev, NULL);   
-    pOutputBus->pInputNode             = NULL;
+    pOutputBus->pInputNode = NULL;
     pOutputBus->inputNodeInputBusIndex = 0;
-    
-
-    
-    while (ma_node_input_bus_get_next_counter(pInputBus) > 0) {
-        ma_yield();
-    }
-
-    
-    while (ma_atomic_load_32(&pOutputBus->refCount) > 0) {
-        ma_yield();
-    }
-
-    
+    while (ma_node_input_bus_get_next_counter(pInputBus) > 0) { ma_yield(); }
+    while (ma_atomic_load_32(&pOutputBus->refCount) > 0) { ma_yield(); }
 }
-
 #if 0   
-static void ma_node_input_bus_detach(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus)
-{
+static void ma_node_input_bus_detach(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus) {
     MA_ASSERT(pInputBus  != NULL);
     MA_ASSERT(pOutputBus != NULL);
-
-    ma_node_output_bus_lock(pOutputBus);
-    {
-        ma_node_input_bus_detach__no_output_bus_lock(pInputBus, pOutputBus);
-    }
+    ma_node_output_bus_lock(pOutputBus); { ma_node_input_bus_detach__no_output_bus_lock(pInputBus, pOutputBus); }
     ma_node_output_bus_unlock(pOutputBus);
 }
 #endif
-
-static void ma_node_input_bus_attach(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus, ma_node* pNewInputNode, ma_uint32 inputNodeInputBusIndex)
-{
+static void ma_node_input_bus_attach(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus, ma_node* pNewInputNode, ma_uint32 inputNodeInputBusIndex) {
     MA_ASSERT(pInputBus  != NULL);
     MA_ASSERT(pOutputBus != NULL);
-
-    ma_node_output_bus_lock(pOutputBus);
-    {
+    ma_node_output_bus_lock(pOutputBus); {
         ma_node_output_bus* pOldInputNode = (ma_node_output_bus*)ma_atomic_load_ptr(&pOutputBus->pInputNode);
-
-        
-        if (pOldInputNode != NULL) {
-            ma_node_input_bus_detach__no_output_bus_lock(pInputBus, pOutputBus);
-        }
-
-        
+        if (pOldInputNode != NULL) { ma_node_input_bus_detach__no_output_bus_lock(pInputBus, pOutputBus); }
         pOutputBus->pInputNode             = pNewInputNode;                     
         pOutputBus->inputNodeInputBusIndex = (ma_uint8)inputNodeInputBusIndex;
-
-        
-        ma_node_input_bus_lock(pInputBus);
-        {
+        ma_node_input_bus_lock(pInputBus); {
             ma_node_output_bus* pNewPrev = &pInputBus->head;
             ma_node_output_bus* pNewNext = (ma_node_output_bus*)ma_atomic_load_ptr(&pInputBus->head.pNext);
-
-            
             ma_atomic_exchange_ptr(&pOutputBus->pPrev, pNewPrev);
             ma_atomic_exchange_ptr(&pOutputBus->pNext, pNewNext);
-
-            
-            ma_atomic_exchange_ptr(&pInputBus->head.pNext, pOutputBus); 
-
-            
-            if (pNewNext != NULL) {
-                ma_atomic_exchange_ptr(&pNewNext->pPrev,  pOutputBus);
-            }
+            ma_atomic_exchange_ptr(&pInputBus->head.pNext, pOutputBus);
+            if (pNewNext != NULL) { ma_atomic_exchange_ptr(&pNewNext->pPrev,  pOutputBus); }
         }
         ma_node_input_bus_unlock(pInputBus);
-
-        
         ma_node_output_bus_set_is_attached(pOutputBus, MA_TRUE);
     }
     ma_node_output_bus_unlock(pOutputBus);
 }
-
-static ma_node_output_bus* ma_node_input_bus_next(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus)
-{
+static ma_node_output_bus* ma_node_input_bus_next(ma_node_input_bus* pInputBus, ma_node_output_bus* pOutputBus) {
     ma_node_output_bus* pNext;
-
     MA_ASSERT(pInputBus != NULL);
-
-    if (pOutputBus == NULL) {
-        return NULL;
-    }
-
-    ma_node_input_bus_next_begin(pInputBus);
-    {
+    if (pOutputBus == NULL) { return NULL; }
+    ma_node_input_bus_next_begin(pInputBus); {
         pNext = pOutputBus;
         for (;;) {
             pNext = (ma_node_output_bus*)ma_atomic_load_ptr(&pNext->pNext);
-            if (pNext == NULL) {
-                break;      
-            }
-
-            if (ma_node_output_bus_is_attached(pNext) == MA_FALSE) {
-                continue;   
-            }
-
-            
+            if (pNext == NULL) { break; }
+            if (ma_node_output_bus_is_attached(pNext) == MA_FALSE) { continue; }
             break;
         }
-
-        
-        if (pNext != NULL) {
-            ma_atomic_fetch_add_32(&pNext->refCount, 1);
-        }
-
-        
+        if (pNext != NULL) { ma_atomic_fetch_add_32(&pNext->refCount, 1); }
         ma_atomic_fetch_sub_32(&pOutputBus->refCount, 1);
     }
     ma_node_input_bus_next_end(pInputBus);
-
     return pNext;
 }
 
-static ma_node_output_bus* ma_node_input_bus_first(ma_node_input_bus* pInputBus)
-{
-    return ma_node_input_bus_next(pInputBus, &pInputBus->head);
-}
-static ma_result ma_node_input_bus_read_pcm_frames(ma_node* pInputNode, ma_node_input_bus* pInputBus, float* pFramesOut, ma_uint32 frameCount, ma_uint32* pFramesRead, ma_uint64 globalTime)
-{
+static ma_node_output_bus* ma_node_input_bus_first(ma_node_input_bus* pInputBus) { return ma_node_input_bus_next(pInputBus, &pInputBus->head); }
+static ma_result ma_node_input_bus_read_pcm_frames(ma_node* pInputNode, ma_node_input_bus* pInputBus, float* pFramesOut, ma_uint32 frameCount, ma_uint32* pFramesRead, ma_uint64 globalTime) {
     ma_result result = MA_SUCCESS;
     ma_node_output_bus* pOutputBus;
     ma_node_output_bus* pFirst;
     ma_uint32 inputChannels;
     ma_bool32 doesOutputBufferHaveContent = MA_FALSE;
-
-    
     MA_ASSERT(pInputNode  != NULL);
-    MA_ASSERT(pFramesRead != NULL); 
-
-    *pFramesRead = 0;   
-
+    MA_ASSERT(pFramesRead != NULL);
+    *pFramesRead = 0;
     inputChannels = ma_node_input_bus_get_channels(pInputBus);
-
-    
     pFirst = ma_node_input_bus_first(pInputBus);
-    if (pFirst == NULL) {
-        return MA_SUCCESS;  
-    }
-
+    if (pFirst == NULL) { return MA_SUCCESS; }
     for (pOutputBus = pFirst; pOutputBus != NULL; pOutputBus = ma_node_input_bus_next(pInputBus, pOutputBus)) {
         ma_uint32 framesProcessed = 0;
         ma_bool32 isSilentOutput = MA_FALSE;
-
         MA_ASSERT(pOutputBus->pNode != NULL);
         MA_ASSERT(((ma_node_base*)pOutputBus->pNode)->vtable != NULL);
-
         isSilentOutput = (((ma_node_base*)pOutputBus->pNode)->vtable->flags & MA_NODE_FLAG_SILENT_OUTPUT) != 0;
-
         if (pFramesOut != NULL) {
-            
             while (framesProcessed < frameCount) {
                 float* pRunningFramesOut;
                 ma_uint32 framesToRead;
                 ma_uint32 framesJustRead = 0;
-
                 framesToRead = frameCount - framesProcessed;
                 pRunningFramesOut = ma_offset_pcm_frames_ptr_f32(pFramesOut, framesProcessed, inputChannels);
-
-                if (doesOutputBufferHaveContent == MA_FALSE) {
-                    
-                    result = ma_node_read_pcm_frames(pOutputBus->pNode, pOutputBus->outputBusIndex, pRunningFramesOut, framesToRead, &framesJustRead, globalTime + framesProcessed);
-                } else {
-                    
+                if (doesOutputBufferHaveContent == MA_FALSE) { result = ma_node_read_pcm_frames(pOutputBus->pNode, pOutputBus->outputBusIndex, pRunningFramesOut, framesToRead, &framesJustRead, globalTime + framesProcessed); }
+                else {
                     ma_uint32 preMixBufferCapInFrames = ((ma_node_base*)pInputNode)->cachedDataCapInFramesPerBus;
                     float* pPreMixBuffer = (float*)ma_stack_alloc(((ma_node_base*)pInputNode)->pNodeGraph->pPreMixStack, preMixBufferCapInFrames * inputChannels * sizeof(float));
-
-                    if (pPreMixBuffer == NULL) {
-                        
-                        MA_ASSERT(MA_FALSE);
-                    } else {
-                        if (framesToRead > preMixBufferCapInFrames) {
-                            framesToRead = preMixBufferCapInFrames;
-                        }
-
+                    if (pPreMixBuffer == NULL) { MA_ASSERT(MA_FALSE); }
+                    else {
+                        if (framesToRead > preMixBufferCapInFrames) { framesToRead = preMixBufferCapInFrames; }
                         result = ma_node_read_pcm_frames(pOutputBus->pNode, pOutputBus->outputBusIndex, pPreMixBuffer, framesToRead, &framesJustRead, globalTime + framesProcessed);
-                        if (result == MA_SUCCESS || result == MA_AT_END) {
-                            if (isSilentOutput == MA_FALSE) {   
-                                ma_mix_pcm_frames_f32(pRunningFramesOut, pPreMixBuffer, framesJustRead, inputChannels, 1);
-                            }
-                        }
-
-                        
+                        if ((result == MA_SUCCESS || result == MA_AT_END) && isSilentOutput == MA_FALSE) {ma_mix_pcm_frames_f32(pRunningFramesOut, pPreMixBuffer, framesJustRead, inputChannels, 1); }
                         ma_stack_free(((ma_node_base*)pInputNode)->pNodeGraph->pPreMixStack, pPreMixBuffer);
                         pPreMixBuffer = NULL;
                     }
                 }
-
                 framesProcessed += framesJustRead;
-
-                
-                if (result != MA_SUCCESS) {
-                    break;
-                }
-
-                
-                if (framesJustRead == 0) {
-                    break;
-                }
+                if (result != MA_SUCCESS || framesJustRead == 0) { break; }
             }
-
-            
-            if (pOutputBus == pFirst && framesProcessed < frameCount) {
-                ma_silence_pcm_frames(ma_offset_pcm_frames_ptr(pFramesOut, framesProcessed, ma_format_f32, inputChannels), (frameCount - framesProcessed), ma_format_f32, inputChannels);
-            }
-
-            if (isSilentOutput == MA_FALSE) {
-                doesOutputBufferHaveContent = MA_TRUE;
-            }
-        } else {
-            
-            ma_node_read_pcm_frames(pOutputBus->pNode, pOutputBus->outputBusIndex, NULL, frameCount, &framesProcessed, globalTime);
+            if (pOutputBus == pFirst && framesProcessed < frameCount) { ma_silence_pcm_frames(ma_offset_pcm_frames_ptr(pFramesOut, framesProcessed, ma_format_f32, inputChannels), (frameCount - framesProcessed), ma_format_f32, inputChannels); }
+            if (isSilentOutput == MA_FALSE) { doesOutputBufferHaveContent = MA_TRUE; }
         }
+        else { ma_node_read_pcm_frames(pOutputBus->pNode, pOutputBus->outputBusIndex, NULL, frameCount, &framesProcessed, globalTime); }
     }
-
-    
-    if (doesOutputBufferHaveContent == MA_FALSE && pFramesOut != NULL) {
-        ma_silence_pcm_frames(pFramesOut, frameCount, ma_format_f32, inputChannels);
-    }
-
-    
+    if (doesOutputBufferHaveContent == MA_FALSE && pFramesOut != NULL) { ma_silence_pcm_frames(pFramesOut, frameCount, ma_format_f32, inputChannels); }
     *pFramesRead = frameCount;
-
     return result;
 }
-MA_API ma_node_config ma_node_config_init(void)
-{
+MA_API ma_node_config ma_node_config_init(void) {
     ma_node_config config;
-
     MA_ZERO_OBJECT(&config);
     config.initialState   = ma_node_state_started;    
     config.inputBusCount  = MA_NODE_BUS_COUNT_UNKNOWN;
     config.outputBusCount = MA_NODE_BUS_COUNT_UNKNOWN;
-
     return config;
 }
 
-static ma_uint16 ma_node_config_get_cache_size_in_frames(const ma_node_config* pConfig, const ma_node_graph* pNodeGraph)
-{
+static ma_uint16 ma_node_config_get_cache_size_in_frames(const ma_node_config* pConfig, const ma_node_graph* pNodeGraph) {
     ma_uint32 cacheSizeInFrames;
-
     (void)pConfig;
-
-    if (pNodeGraph->processingSizeInFrames > 0) {
-        cacheSizeInFrames = pNodeGraph->processingSizeInFrames;
-    } else {
-        cacheSizeInFrames = MA_DEFAULT_NODE_CACHE_CAP_IN_FRAMES_PER_BUS;
-    }
-
-    if (cacheSizeInFrames > 0xFFFF) {
-        cacheSizeInFrames = 0xFFFF;
-    }
-
+    if (pNodeGraph->processingSizeInFrames > 0) { cacheSizeInFrames = pNodeGraph->processingSizeInFrames; }
+    else { cacheSizeInFrames = MA_DEFAULT_NODE_CACHE_CAP_IN_FRAMES_PER_BUS; }
+    if (cacheSizeInFrames > 0xFFFF) { cacheSizeInFrames = 0xFFFF; }
     return (ma_uint16)cacheSizeInFrames;
 }
-static ma_result ma_node_detach_full(ma_node* pNode);
-
-static float* ma_node_get_cached_input_ptr(ma_node* pNode, ma_uint32 inputBusIndex)
-{
+static void ma_node_detach_full(ma_node* pNode);
+static float* ma_node_get_cached_input_ptr(ma_node* pNode, ma_uint32 inputBusIndex) {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
     ma_uint32 iInputBus;
     float* pBasePtr;
-
     MA_ASSERT(pNodeBase != NULL);
-
-    
     pBasePtr = pNodeBase->pCachedData;
-    for (iInputBus = 0; iInputBus < inputBusIndex; iInputBus += 1) {
-        pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]);
-    }
-
+    for (iInputBus = 0; iInputBus < inputBusIndex; iInputBus += 1) { pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]); }
     return pBasePtr;
 }
 
-static float* ma_node_get_cached_output_ptr(ma_node* pNode, ma_uint32 outputBusIndex)
-{
+static float* ma_node_get_cached_output_ptr(ma_node* pNode, ma_uint32 outputBusIndex) {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
     ma_uint32 iInputBus;
     ma_uint32 iOutputBus;
     float* pBasePtr;
-
     MA_ASSERT(pNodeBase != NULL);
-
-    
     pBasePtr = pNodeBase->pCachedData;
-    for (iInputBus = 0; iInputBus < ma_node_get_input_bus_count(pNodeBase); iInputBus += 1) {
-        pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]);
-    }
-
-    for (iOutputBus = 0; iOutputBus < outputBusIndex; iOutputBus += 1) {
-        pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_output_bus_get_channels(&pNodeBase->pOutputBuses[iOutputBus]);
-    }
-
+    for (iInputBus = 0; iInputBus < ma_node_get_input_bus_count(pNodeBase); iInputBus += 1) { pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]); }
+    for (iOutputBus = 0; iOutputBus < outputBusIndex; iOutputBus += 1) { pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * &pNodeBase->pOutputBuses[iOutputBus]->channels; }
     return pBasePtr;
 }
-typedef struct
-{
+typedef struct {
     size_t sizeInBytes;
     size_t inputBusOffset;
     size_t outputBusOffset;
@@ -62348,57 +61054,30 @@ typedef struct
     ma_uint32 outputBusCount;   
 } ma_node_heap_layout;
 
-static ma_result ma_node_translate_bus_counts(const ma_node_config* pConfig, ma_uint32* pInputBusCount, ma_uint32* pOutputBusCount)
-{
+static ma_result ma_node_translate_bus_counts(const ma_node_config* pConfig, ma_uint32* pInputBusCount, ma_uint32* pOutputBusCount) {
     ma_uint32 inputBusCount;
     ma_uint32 outputBusCount;
-
     MA_ASSERT(pConfig != NULL);
     MA_ASSERT(pInputBusCount  != NULL);
     MA_ASSERT(pOutputBusCount != NULL);
-
-    
-    if (pConfig->vtable->inputBusCount == MA_NODE_BUS_COUNT_UNKNOWN) {
-        inputBusCount = pConfig->inputBusCount;
-    } else {
+    if (pConfig->vtable->inputBusCount == MA_NODE_BUS_COUNT_UNKNOWN) { inputBusCount = pConfig->inputBusCount; }
+    else {
         inputBusCount = pConfig->vtable->inputBusCount;
-
-        if (pConfig->inputBusCount != MA_NODE_BUS_COUNT_UNKNOWN && pConfig->inputBusCount != pConfig->vtable->inputBusCount) {
-            return MA_INVALID_ARGS; 
-        }
+        if (pConfig->inputBusCount != MA_NODE_BUS_COUNT_UNKNOWN && pConfig->inputBusCount != pConfig->vtable->inputBusCount) { return MA_INVALID_ARGS; }
     }
-
-    if (pConfig->vtable->outputBusCount == MA_NODE_BUS_COUNT_UNKNOWN) {
-        outputBusCount = pConfig->outputBusCount;
-    } else {
+    if (pConfig->vtable->outputBusCount == MA_NODE_BUS_COUNT_UNKNOWN) { outputBusCount = pConfig->outputBusCount; }
+    else {
         outputBusCount = pConfig->vtable->outputBusCount;
-
-        if (pConfig->outputBusCount != MA_NODE_BUS_COUNT_UNKNOWN && pConfig->outputBusCount != pConfig->vtable->outputBusCount) {
-            return MA_INVALID_ARGS; 
-        }
+        if (pConfig->outputBusCount != MA_NODE_BUS_COUNT_UNKNOWN && pConfig->outputBusCount != pConfig->vtable->outputBusCount) { return MA_INVALID_ARGS;  }
     }
-
-    
-    if (inputBusCount > MA_MAX_NODE_BUS_COUNT || outputBusCount > MA_MAX_NODE_BUS_COUNT) {
-        return MA_INVALID_ARGS;
-    }
-    
-    if ((inputBusCount > 0 && pConfig->pInputChannels == NULL) || (outputBusCount > 0 && pConfig->pOutputChannels == NULL)) {
-        return MA_INVALID_ARGS; 
-    }
-    
+    if (inputBusCount > MA_MAX_NODE_BUS_COUNT || outputBusCount > MA_MAX_NODE_BUS_COUNT) { return MA_INVALID_ARGS; }
+    if ((inputBusCount > 0 && pConfig->pInputChannels == NULL) || (outputBusCount > 0 && pConfig->pOutputChannels == NULL)) { return MA_INVALID_ARGS; }
     if ((pConfig->vtable->flags & MA_NODE_FLAG_PASSTHROUGH) != 0) {
-        if ((pConfig->vtable->inputBusCount != 0 && pConfig->vtable->inputBusCount != 1) || pConfig->vtable->outputBusCount != 1) {
-            return MA_INVALID_ARGS; 
-        }
-
-        if (pConfig->pInputChannels[0] != pConfig->pOutputChannels[0]) {
-            return MA_INVALID_ARGS; 
-        }
+        if ((pConfig->vtable->inputBusCount != 0 && pConfig->vtable->inputBusCount != 1) || pConfig->vtable->outputBusCount != 1) { return MA_INVALID_ARGS; }
+        if (pConfig->pInputChannels[0] != pConfig->pOutputChannels[0]) { return MA_INVALID_ARGS; }
     }
     *pInputBusCount  = inputBusCount;
     *pOutputBusCount = outputBusCount;
-
     return MA_SUCCESS;
 }
 
@@ -62566,7 +61245,7 @@ MA_API ma_result ma_node_init_preallocated(ma_node_graph* pNodeGraph, const ma_n
             ma_silence_pcm_frames(ma_node_get_cached_input_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iBus]));
         }
         for (iBus = 0; iBus < ma_node_get_output_bus_count(pNodeBase); iBus += 1) {
-            ma_silence_pcm_frames(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_output_bus_get_channels(&pNodeBase->pOutputBuses[iBus]));
+            ma_silence_pcm_frames(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, &pNodeBase->pOutputBuses[iBus]->channels);
         }
     #else
         
@@ -62574,7 +61253,7 @@ MA_API ma_result ma_node_init_preallocated(ma_node_graph* pNodeGraph, const ma_n
             ma_debug_fill_pcm_frames_with_sine_wave(ma_node_get_cached_input_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iBus]), 48000);
         }
         for (iBus = 0; iBus < ma_node_get_output_bus_count(pNodeBase); iBus += 1) {
-            ma_debug_fill_pcm_frames_with_sine_wave(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_output_bus_get_channels(&pNodeBase->pOutputBuses[iBus]), 48000);
+            ma_debug_fill_pcm_frames_with_sine_wave(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, &pNodeBase->pOutputBuses[iBus]->channels, 48000);
         }
     #endif
     }
@@ -62612,21 +61291,13 @@ MA_API ma_result ma_node_init(ma_node_graph* pNodeGraph, const ma_node_config* p
     return MA_SUCCESS;
 }
 
-MA_API void ma_node_uninit(ma_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_node_uninit(ma_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
 
-    if (pNodeBase == NULL) {
-        return;
-    }
-
-    
+    if (pNodeBase == NULL) { return; }
     ma_node_detach_full(pNode);
 
-    
-    if (pNodeBase->_ownsHeap) {
-        ma_free(pNodeBase->_pHeap, pAllocationCallbacks);
-    }
+    if (pNodeBase->_ownsHeap) { ma_free(pNodeBase->_pHeap, pAllocationCallbacks); }
 }
 
 MA_API ma_node_graph* ma_node_get_node_graph(const ma_node* pNode)
@@ -62682,21 +61353,14 @@ MA_API ma_uint32 ma_node_get_output_channels(const ma_node* pNode, ma_uint32 out
         return 0;   
     }
 
-    return ma_node_output_bus_get_channels(&pNodeBase->pOutputBuses[outputBusIndex]);
+    return &pNodeBase->pOutputBuses[outputBusIndex]->channels;
 }
-static ma_result ma_node_detach_full(ma_node* pNode)
-{
+static void ma_node_detach_full(ma_node* pNode) {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
     ma_uint32 iInputBus;
-
-    if (pNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     ma_node_detach_all_output_buses(pNode);
 
-    
     for (iInputBus = 0; iInputBus < ma_node_get_input_bus_count(pNode); iInputBus += 1) {
         ma_node_input_bus* pInputBus;
         ma_node_output_bus* pOutputBus;
@@ -62704,12 +61368,8 @@ static ma_result ma_node_detach_full(ma_node* pNode)
         pInputBus = &pNodeBase->pInputBuses[iInputBus];
 
         
-        for (pOutputBus = (ma_node_output_bus*)ma_atomic_load_ptr(&pInputBus->head.pNext); pOutputBus != NULL; pOutputBus = (ma_node_output_bus*)ma_atomic_load_ptr(&pInputBus->head.pNext)) {
-            ma_node_detach_output_bus(pOutputBus->pNode, pOutputBus->outputBusIndex);   
-        }
+        for (pOutputBus = (ma_node_output_bus*)ma_atomic_load_ptr(&pInputBus->head.pNext); pOutputBus != NULL; pOutputBus = (ma_node_output_bus*)ma_atomic_load_ptr(&pInputBus->head.pNext)) { ma_node_detach_output_bus(pOutputBus->pNode, pOutputBus->outputBusIndex); }
     }
-
-    return MA_SUCCESS;
 }
 
 MA_API ma_result ma_node_detach_output_bus(ma_node* pNode, ma_uint32 outputBusIndex)
@@ -63466,592 +62126,255 @@ MA_API ma_result ma_biquad_node_init(ma_node_graph* pNodeGraph, const ma_biquad_
 
     return result;
 }
-
-MA_API ma_result ma_biquad_node_reinit(const ma_biquad_config* pConfig, ma_biquad_node* pNode)
-{
-    ma_biquad_node* pLPFNode = (ma_biquad_node*)pNode;
-
-    MA_ASSERT(pNode != NULL);
-
-    return ma_biquad_reinit(pConfig, &pLPFNode->biquad);
-}
-
-MA_API void ma_biquad_node_uninit(ma_biquad_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    ma_biquad_node* pLPFNode = (ma_biquad_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
-    ma_node_uninit(pNode, pAllocationCallbacks);
-    ma_biquad_uninit(&pLPFNode->biquad, pAllocationCallbacks);
-}
-
-MA_API ma_lpf_node_config ma_lpf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order)
-{
-    ma_lpf_node_config config;
-
-    config.nodeConfig = ma_node_config_init();
-    config.lpf = ma_lpf_config_init(ma_format_f32, channels, sampleRate, cutoffFrequency, order);
-
-    return config;
-}
-
-static void ma_lpf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_lpf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_lpf_node* pLPFNode = (ma_lpf_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_lpf_process_pcm_frames(&pLPFNode->lpf, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_lpf_node_vtable =
-{
-    ma_lpf_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
-MA_API ma_result ma_lpf_node_init(ma_node_graph* pNodeGraph, const ma_lpf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_lpf_node* pNode)
-{
+static ma_node_vtable g_ma_lpf_node_vtable = { ma_lpf_node_process_pcm_frames, NULL, 1, 1, 0 };
+MA_API ma_result ma_lpf_node_init(ma_node_graph* pNodeGraph, const ma_lpf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_lpf_node* pNode) {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->lpf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->lpf.format != ma_format_f32) { return MA_INVALID_ARGS; }
     result = ma_lpf_init(&pConfig->lpf, pAllocationCallbacks, &pNode->lpf);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_lpf_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->lpf.channels;
     baseNodeConfig.pOutputChannels = &pConfig->lpf.channels;
-
     result = ma_node_init(pNodeGraph, &baseNodeConfig, pAllocationCallbacks, pNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     return result;
 }
-
-MA_API ma_result ma_lpf_node_reinit(const ma_lpf_config* pConfig, ma_lpf_node* pNode)
-{
+MA_API ma_result ma_lpf_node_reinit(const ma_lpf_config* pConfig, ma_lpf_node* pNode) {
     ma_lpf_node* pLPFNode = (ma_lpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     return ma_lpf_reinit(pConfig, &pLPFNode->lpf);
 }
-
-MA_API void ma_lpf_node_uninit(ma_lpf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_lpf_node_uninit(ma_lpf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_lpf_node* pLPFNode = (ma_lpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
+    if (pNode == NULL) { return; }
     ma_node_uninit(pNode, pAllocationCallbacks);
     ma_lpf_uninit(&pLPFNode->lpf, pAllocationCallbacks);
 }
-
-MA_API ma_hpf_node_config ma_hpf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order)
-{
+MA_API ma_hpf_node_config ma_hpf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order) {
     ma_hpf_node_config config;
-
     config.nodeConfig = ma_node_config_init();
     config.hpf = ma_hpf_config_init(ma_format_f32, channels, sampleRate, cutoffFrequency, order);
-
     return config;
 }
-
-static void ma_hpf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_hpf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_hpf_node* pHPFNode = (ma_hpf_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_hpf_process_pcm_frames(&pHPFNode->hpf, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_hpf_node_vtable =
-{
-    ma_hpf_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
-MA_API ma_result ma_hpf_node_init(ma_node_graph* pNodeGraph, const ma_hpf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_hpf_node* pNode)
-{
+static ma_node_vtable g_ma_hpf_node_vtable = { ma_hpf_node_process_pcm_frames, NULL, 1, 1, 0 };
+MA_API ma_result ma_hpf_node_init(ma_node_graph* pNodeGraph, const ma_hpf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_hpf_node* pNode) {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->hpf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->hpf.format != ma_format_f32) { return MA_INVALID_ARGS; }
     result = ma_hpf_init(&pConfig->hpf, pAllocationCallbacks, &pNode->hpf);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_hpf_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->hpf.channels;
     baseNodeConfig.pOutputChannels = &pConfig->hpf.channels;
-
     result = ma_node_init(pNodeGraph, &baseNodeConfig, pAllocationCallbacks, pNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     return result;
 }
-
-MA_API ma_result ma_hpf_node_reinit(const ma_hpf_config* pConfig, ma_hpf_node* pNode)
-{
+MA_API ma_result ma_hpf_node_reinit(const ma_hpf_config* pConfig, ma_hpf_node* pNode) {
     ma_hpf_node* pHPFNode = (ma_hpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     return ma_hpf_reinit(pConfig, &pHPFNode->hpf);
 }
-
-MA_API void ma_hpf_node_uninit(ma_hpf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_hpf_node_uninit(ma_hpf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_hpf_node* pHPFNode = (ma_hpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
+    if (pNode == NULL) { return; }
     ma_node_uninit(pNode, pAllocationCallbacks);
     ma_hpf_uninit(&pHPFNode->hpf, pAllocationCallbacks);
 }
-
-MA_API ma_bpf_node_config ma_bpf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order)
-{
+MA_API ma_bpf_node_config ma_bpf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order) {
     ma_bpf_node_config config;
-
     config.nodeConfig = ma_node_config_init();
     config.bpf = ma_bpf_config_init(ma_format_f32, channels, sampleRate, cutoffFrequency, order);
-
     return config;
 }
-
-static void ma_bpf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_bpf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_bpf_node* pBPFNode = (ma_bpf_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_bpf_process_pcm_frames(&pBPFNode->bpf, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_bpf_node_vtable =
-{
-    ma_bpf_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
-MA_API ma_result ma_bpf_node_init(ma_node_graph* pNodeGraph, const ma_bpf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_bpf_node* pNode)
-{
+static ma_node_vtable g_ma_bpf_node_vtable = { ma_bpf_node_process_pcm_frames, NULL, 1, 1, 0 };
+MA_API ma_result ma_bpf_node_init(ma_node_graph* pNodeGraph, const ma_bpf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_bpf_node* pNode) {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->bpf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->bpf.format != ma_format_f32) { return MA_INVALID_ARGS; }
     result = ma_bpf_init(&pConfig->bpf, pAllocationCallbacks, &pNode->bpf);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_bpf_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->bpf.channels;
     baseNodeConfig.pOutputChannels = &pConfig->bpf.channels;
-
     result = ma_node_init(pNodeGraph, &baseNodeConfig, pAllocationCallbacks, pNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     return result;
 }
-
-MA_API ma_result ma_bpf_node_reinit(const ma_bpf_config* pConfig, ma_bpf_node* pNode)
-{
+MA_API ma_result ma_bpf_node_reinit(const ma_bpf_config* pConfig, ma_bpf_node* pNode) {
     ma_bpf_node* pBPFNode = (ma_bpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     return ma_bpf_reinit(pConfig, &pBPFNode->bpf);
 }
-
-MA_API void ma_bpf_node_uninit(ma_bpf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_bpf_node_uninit(ma_bpf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_bpf_node* pBPFNode = (ma_bpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
+    if (pNode == NULL) { return; }
     ma_node_uninit(pNode, pAllocationCallbacks);
     ma_bpf_uninit(&pBPFNode->bpf, pAllocationCallbacks);
 }
-
-MA_API ma_notch_node_config ma_notch_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double q, double frequency)
-{
+MA_API ma_notch_node_config ma_notch_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double q, double frequency) {
     ma_notch_node_config config;
-
     config.nodeConfig = ma_node_config_init();
     config.notch = ma_notch2_config_init(ma_format_f32, channels, sampleRate, q, frequency);
-
     return config;
 }
-
-static void ma_notch_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_notch_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_notch_node* pBPFNode = (ma_notch_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_notch2_process_pcm_frames(&pBPFNode->notch, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_notch_node_vtable =
-{
-    ma_notch_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
-MA_API ma_result ma_notch_node_init(ma_node_graph* pNodeGraph, const ma_notch_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_notch_node* pNode)
-{
+static ma_node_vtable g_ma_notch_node_vtable = { ma_notch_node_process_pcm_frames, NULL, 1, 1, 0 };
+MA_API ma_result ma_notch_node_init(ma_node_graph* pNodeGraph, const ma_notch_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_notch_node* pNode) {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->notch.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->notch.format != ma_format_f32) { return MA_INVALID_ARGS; }
     result = ma_notch2_init(&pConfig->notch, pAllocationCallbacks, &pNode->notch);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_notch_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->notch.channels;
     baseNodeConfig.pOutputChannels = &pConfig->notch.channels;
-
     result = ma_node_init(pNodeGraph, &baseNodeConfig, pAllocationCallbacks, pNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     return result;
 }
-
-MA_API ma_result ma_notch_node_reinit(const ma_notch_config* pConfig, ma_notch_node* pNode)
-{
+MA_API ma_result ma_notch_node_reinit(const ma_notch_config* pConfig, ma_notch_node* pNode) {
     ma_notch_node* pNotchNode = (ma_notch_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     return ma_notch2_reinit(pConfig, &pNotchNode->notch);
 }
-
-MA_API void ma_notch_node_uninit(ma_notch_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_notch_node_uninit(ma_notch_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_notch_node* pNotchNode = (ma_notch_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
+    if (pNode == NULL) { return; }
     ma_node_uninit(pNode, pAllocationCallbacks);
     ma_notch2_uninit(&pNotchNode->notch, pAllocationCallbacks);
 }
-
-MA_API ma_peak_node_config ma_peak_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency)
-{
+MA_API ma_peak_node_config ma_peak_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency) {
     ma_peak_node_config config;
-
     config.nodeConfig = ma_node_config_init();
     config.peak = ma_peak2_config_init(ma_format_f32, channels, sampleRate, gainDB, q, frequency);
-
     return config;
 }
-
-static void ma_peak_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_peak_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_peak_node* pBPFNode = (ma_peak_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_peak2_process_pcm_frames(&pBPFNode->peak, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_peak_node_vtable =
-{
-    ma_peak_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
-MA_API ma_result ma_peak_node_init(ma_node_graph* pNodeGraph, const ma_peak_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_peak_node* pNode)
-{
+static ma_node_vtable g_ma_peak_node_vtable = { ma_peak_node_process_pcm_frames, NULL, 1, 1, 0 };
+MA_API ma_result ma_peak_node_init(ma_node_graph* pNodeGraph, const ma_peak_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_peak_node* pNode) {
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->peak.format != ma_format_f32) { return MA_INVALID_ARGS; }
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->peak.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_peak2_init(&pConfig->peak, pAllocationCallbacks, &pNode->peak);
     if (result != MA_SUCCESS) {
         ma_node_uninit(pNode, pAllocationCallbacks);
         return result;
     }
-
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_peak_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->peak.channels;
     baseNodeConfig.pOutputChannels = &pConfig->peak.channels;
-
     result = ma_node_init(pNodeGraph, &baseNodeConfig, pAllocationCallbacks, pNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     return result;
 }
-
-MA_API ma_result ma_peak_node_reinit(const ma_peak_config* pConfig, ma_peak_node* pNode)
-{
+MA_API ma_result ma_peak_node_reinit(const ma_peak_config* pConfig, ma_peak_node* pNode) {
     ma_peak_node* pPeakNode = (ma_peak_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     return ma_peak2_reinit(pConfig, &pPeakNode->peak);
 }
-
-MA_API void ma_peak_node_uninit(ma_peak_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_peak_node_uninit(ma_peak_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_peak_node* pPeakNode = (ma_peak_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
+    if (pNode == NULL) { return; }
     ma_node_uninit(pNode, pAllocationCallbacks);
     ma_peak2_uninit(&pPeakNode->peak, pAllocationCallbacks);
 }
-
-MA_API ma_loshelf_node_config ma_loshelf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency)
-{
+MA_API ma_loshelf_node_config ma_loshelf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency) {
     ma_loshelf_node_config config;
-
     config.nodeConfig = ma_node_config_init();
     config.loshelf = ma_loshelf2_config_init(ma_format_f32, channels, sampleRate, gainDB, q, frequency);
-
     return config;
 }
-
-static void ma_loshelf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_loshelf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_loshelf_node* pBPFNode = (ma_loshelf_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_loshelf2_process_pcm_frames(&pBPFNode->loshelf, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_loshelf_node_vtable =
-{
-    ma_loshelf_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
-MA_API ma_result ma_loshelf_node_init(ma_node_graph* pNodeGraph, const ma_loshelf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_loshelf_node* pNode)
-{
-    ma_result result;
-    ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+static ma_node_vtable g_ma_loshelf_node_vtable = { ma_loshelf_node_process_pcm_frames, NULL, 1, 1, 0 };
+MA_API ma_result ma_loshelf_node_init(ma_node_graph* pNodeGraph, const ma_loshelf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_loshelf_node* pNode) {
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->loshelf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
-    result = ma_loshelf2_init(&pConfig->loshelf, pAllocationCallbacks, &pNode->loshelf);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->loshelf.format != ma_format_f32) { return MA_INVALID_ARGS; }
+    ma_node_config baseNodeConfig;
+    ma_result = ma_loshelf2_init(&pConfig->loshelf, pAllocationCallbacks, &pNode->loshelf);
+    if (result != MA_SUCCESS) { return result; }
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_loshelf_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->loshelf.channels;
     baseNodeConfig.pOutputChannels = &pConfig->loshelf.channels;
-
     result = ma_node_init(pNodeGraph, &baseNodeConfig, pAllocationCallbacks, pNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     return result;
 }
-
-MA_API ma_result ma_loshelf_node_reinit(const ma_loshelf_config* pConfig, ma_loshelf_node* pNode)
-{
+MA_API ma_result ma_loshelf_node_reinit(const ma_loshelf_config* pConfig, ma_loshelf_node* pNode) {
     ma_loshelf_node* pLoshelfNode = (ma_loshelf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pNode == NULL) { return MA_INVALID_ARGS; }
     return ma_loshelf2_reinit(pConfig, &pLoshelfNode->loshelf);
 }
-
-MA_API void ma_loshelf_node_uninit(ma_loshelf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_loshelf_node_uninit(ma_loshelf_node* pNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     ma_loshelf_node* pLoshelfNode = (ma_loshelf_node*)pNode;
-
-    if (pNode == NULL) {
-        return;
-    }
-
+    if (pNode == NULL) { return; }
     ma_node_uninit(pNode, pAllocationCallbacks);
     ma_loshelf2_uninit(&pLoshelfNode->loshelf, pAllocationCallbacks);
 }
-
-MA_API ma_hishelf_node_config ma_hishelf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency)
-{
+MA_API ma_hishelf_node_config ma_hishelf_node_config_init(ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency) {
     ma_hishelf_node_config config;
-
     config.nodeConfig = ma_node_config_init();
     config.hishelf = ma_hishelf2_config_init(ma_format_f32, channels, sampleRate, gainDB, q, frequency);
-
     return config;
 }
-
-static void ma_hishelf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_hishelf_node_process_pcm_frames(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_hishelf_node* pBPFNode = (ma_hishelf_node*)pNode;
-
     MA_ASSERT(pNode != NULL);
     (void)pFrameCountIn;
-
     ma_hishelf2_process_pcm_frames(&pBPFNode->hishelf, ppFramesOut[0], ppFramesIn[0], *pFrameCountOut);
 }
-
-static ma_node_vtable g_ma_hishelf_node_vtable =
-{
-    ma_hishelf_node_process_pcm_frames,
-    NULL,   
-    1,      
-    1,      
-    0       
-};
-
+static ma_node_vtable g_ma_hishelf_node_vtable = { ma_hishelf_node_process_pcm_frames, NULL, 1, 1, 0 };
 MA_API ma_result ma_hishelf_node_init(ma_node_graph* pNodeGraph, const ma_hishelf_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_hishelf_node* pNode)
 {
     ma_result result;
@@ -64137,101 +62460,6 @@ static ma_node_vtable g_ma_delay_node_vtable =
     1,  
     MA_NODE_FLAG_CONTINUOUS_PROCESSING  
 };
-
-MA_API ma_result ma_delay_node_init(ma_node_graph* pNodeGraph, const ma_delay_node_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_delay_node* pDelayNode)
-{
-    ma_result result;
-    ma_node_config baseConfig;
-
-    if (pDelayNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    MA_ZERO_OBJECT(pDelayNode);
-
-    result = ma_delay_init(&pConfig->delay, pAllocationCallbacks, &pDelayNode->delay);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    baseConfig = pConfig->nodeConfig;
-    baseConfig.vtable          = &g_ma_delay_node_vtable;
-    baseConfig.pInputChannels  = &pConfig->delay.channels;
-    baseConfig.pOutputChannels = &pConfig->delay.channels;
-
-    result = ma_node_init(pNodeGraph, &baseConfig, pAllocationCallbacks, &pDelayNode->baseNode);
-    if (result != MA_SUCCESS) {
-        ma_delay_uninit(&pDelayNode->delay, pAllocationCallbacks);
-        return result;
-    }
-
-    return result;
-}
-
-MA_API void ma_delay_node_uninit(ma_delay_node* pDelayNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (pDelayNode == NULL) {
-        return;
-    }
-
-    
-    ma_node_uninit(pDelayNode, pAllocationCallbacks);
-    ma_delay_uninit(&pDelayNode->delay, pAllocationCallbacks);
-}
-
-MA_API void ma_delay_node_set_wet(ma_delay_node* pDelayNode, float value)
-{
-    if (pDelayNode == NULL) {
-        return;
-    }
-
-    ma_delay_set_wet(&pDelayNode->delay, value);
-}
-
-MA_API float ma_delay_node_get_wet(const ma_delay_node* pDelayNode)
-{
-    if (pDelayNode == NULL) {
-        return 0;
-    }
-
-    return ma_delay_get_wet(&pDelayNode->delay);
-}
-
-MA_API void ma_delay_node_set_dry(ma_delay_node* pDelayNode, float value)
-{
-    if (pDelayNode == NULL) {
-        return;
-    }
-
-    ma_delay_set_dry(&pDelayNode->delay, value);
-}
-
-MA_API float ma_delay_node_get_dry(const ma_delay_node* pDelayNode)
-{
-    if (pDelayNode == NULL) {
-        return 0;
-    }
-
-    return ma_delay_get_dry(&pDelayNode->delay);
-}
-
-MA_API void ma_delay_node_set_decay(ma_delay_node* pDelayNode, float value)
-{
-    if (pDelayNode == NULL) {
-        return;
-    }
-
-    ma_delay_set_decay(&pDelayNode->delay, value);
-}
-
-MA_API float ma_delay_node_get_decay(const ma_delay_node* pDelayNode)
-{
-    if (pDelayNode == NULL) {
-        return 0;
-    }
-
-    return ma_delay_get_decay(&pDelayNode->delay);
-}
 #endif  
 
 #if !defined(MA_NO_ENGINE) && !defined(MA_NO_NODE_GRAPH)
@@ -64323,45 +62551,21 @@ static ma_uint64 ma_engine_node_get_required_input_frame_count(const ma_engine_n
 
     return inputFrameCount;
 }
-
-static ma_result ma_engine_node_set_volume(ma_engine_node* pEngineNode, float volume)
-{
-    if (pEngineNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+static ma_result ma_engine_node_set_volume(ma_engine_node* pEngineNode, float volume) {
+    if (pEngineNode == NULL) { return MA_INVALID_ARGS; }
     ma_atomic_float_set(&pEngineNode->volume, volume);
-
-    
-    if (pEngineNode->volumeSmoothTimeInPCMFrames == 0) {
-        
-        ma_spatializer_set_master_volume(&pEngineNode->spatializer, volume);
-    } else {
-        
-        ma_gainer_set_gain(&pEngineNode->volumeGainer, volume);
-    }
-
+    if (pEngineNode->volumeSmoothTimeInPCMFrames == 0) { ma_spatializer_set_master_volume(&pEngineNode->spatializer, volume); }
+    else { ma_gainer_set_gain(&pEngineNode->volumeGainer, volume); }
     return MA_SUCCESS;
 }
-
-static ma_result ma_engine_node_get_volume(const ma_engine_node* pEngineNode, float* pVolume)
-{
-    if (pVolume == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+static ma_result ma_engine_node_get_volume(const ma_engine_node* pEngineNode, float* pVolume) {
+    if (pVolume == NULL) { return MA_INVALID_ARGS; }
+    if (pEngineNode == NULL) { return MA_INVALID_ARGS; }
     *pVolume = 0.0f;
-
-    if (pEngineNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pVolume = ma_atomic_float_get((ma_atomic_float*)&pEngineNode->volume);
-
     return MA_SUCCESS;
 }
-static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
-{
+static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut) {
     ma_uint32 frameCountIn;
     ma_uint32 frameCountOut;
     ma_uint32 totalFramesProcessedIn;
@@ -64373,45 +62577,28 @@ static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNo
     ma_bool32 isSpatializationEnabled;
     ma_bool32 isPanningEnabled;
     ma_bool32 isVolumeSmoothingEnabled;
-
     frameCountIn  = *pFrameCountIn;
     frameCountOut = *pFrameCountOut;
-
     channelsIn  = ma_spatializer_get_input_channels(&pEngineNode->spatializer);
     channelsOut = ma_spatializer_get_output_channels(&pEngineNode->spatializer);
-
     totalFramesProcessedIn  = 0;
     totalFramesProcessedOut = 0;
-
-    
-    {
-        ma_uint64 fadeLengthInFrames = ma_atomic_uint64_get(&pEngineNode->fadeSettings.fadeLengthInFrames);
-        if (fadeLengthInFrames != ~(ma_uint64)0) {
-            float fadeVolumeBeg = ma_atomic_float_get(&pEngineNode->fadeSettings.volumeBeg);
-            float fadeVolumeEnd = ma_atomic_float_get(&pEngineNode->fadeSettings.volumeEnd);
-            ma_int64 fadeStartOffsetInFrames = (ma_int64)ma_atomic_uint64_get(&pEngineNode->fadeSettings.absoluteGlobalTimeInFrames);
-            if (fadeStartOffsetInFrames == (ma_int64)(~(ma_uint64)0)) {
-                fadeStartOffsetInFrames = 0;
-            } else {
-                fadeStartOffsetInFrames -= ma_engine_get_time_in_pcm_frames(pEngineNode->pEngine);
-            }
-
-            ma_fader_set_fade_ex(&pEngineNode->fader, fadeVolumeBeg, fadeVolumeEnd, fadeLengthInFrames, fadeStartOffsetInFrames);
-
-            
-            ma_atomic_uint64_set(&pEngineNode->fadeSettings.fadeLengthInFrames, ~(ma_uint64)0);
-        }
+    ma_uint64 fadeLengthInFrames = ma_atomic_uint64_get(&pEngineNode->fadeSettings.fadeLengthInFrames);
+    if (fadeLengthInFrames != ~(ma_uint64)0) {
+        float fadeVolumeBeg = ma_atomic_float_get(&pEngineNode->fadeSettings.volumeBeg);
+        float fadeVolumeEnd = ma_atomic_float_get(&pEngineNode->fadeSettings.volumeEnd);
+        ma_int64 fadeStartOffsetInFrames = (ma_int64)ma_atomic_uint64_get(&pEngineNode->fadeSettings.absoluteGlobalTimeInFrames);
+        if (fadeStartOffsetInFrames == (ma_int64)(~(ma_uint64)0)) { fadeStartOffsetInFrames = 0; }
+        else { fadeStartOffsetInFrames -= ma_engine_get_time_in_pcm_frames(pEngineNode->pEngine); }
+        ma_fader_set_fade_ex(&pEngineNode->fader, fadeVolumeBeg, fadeVolumeEnd, fadeLengthInFrames, fadeStartOffsetInFrames);
+        ma_atomic_uint64_set(&pEngineNode->fadeSettings.fadeLengthInFrames, ~(ma_uint64)0);
     }
-
     isPitchingEnabled        = ma_engine_node_is_pitching_enabled(pEngineNode);
     isFadingEnabled          = pEngineNode->fader.volumeBeg != 1 || pEngineNode->fader.volumeEnd != 1;
     isSpatializationEnabled  = ma_engine_node_is_spatialization_enabled(pEngineNode);
     isPanningEnabled         = pEngineNode->panner.pan != 0 && channelsOut != 1;
     isVolumeSmoothingEnabled = pEngineNode->volumeSmoothTimeInPCMFrames > 0;
-
-    
     while (totalFramesProcessedOut < frameCountOut) {
-        
         const float* pRunningFramesIn;
         float* pRunningFramesOut;
         float* pWorkingBuffer;   
@@ -64422,124 +62609,71 @@ static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNo
         ma_uint32 framesJustProcessedIn;
         ma_uint32 framesJustProcessedOut;
         ma_bool32 isWorkingBufferValid = MA_FALSE;
-
         framesAvailableIn  = frameCountIn  - totalFramesProcessedIn;
         framesAvailableOut = frameCountOut - totalFramesProcessedOut;
-
         pRunningFramesIn  = ma_offset_pcm_frames_const_ptr_f32(ppFramesIn[0], totalFramesProcessedIn, channelsIn);
         pRunningFramesOut = ma_offset_pcm_frames_ptr_f32(ppFramesOut[0], totalFramesProcessedOut, channelsOut);
-
-        if (channelsIn == channelsOut) {
-            
-            pWorkingBuffer = pRunningFramesOut;
-        } else {
-            
+        if (channelsIn == channelsOut) { pWorkingBuffer = pRunningFramesOut; }
+        else {
             pWorkingBuffer = temp;
-            if (framesAvailableOut > tempCapInFrames) {
-                framesAvailableOut = tempCapInFrames;
-            }
+            if (framesAvailableOut > tempCapInFrames) { framesAvailableOut = tempCapInFrames; }
         }
-
-        
         if (isPitchingEnabled) {
             ma_uint64 resampleFrameCountIn  = framesAvailableIn;
             ma_uint64 resampleFrameCountOut = framesAvailableOut;
-
             ma_linear_resampler_process_pcm_frames(&pEngineNode->resampler, pRunningFramesIn, &resampleFrameCountIn, pWorkingBuffer, &resampleFrameCountOut);
             isWorkingBufferValid = MA_TRUE;
-
             framesJustProcessedIn  = (ma_uint32)resampleFrameCountIn;
             framesJustProcessedOut = (ma_uint32)resampleFrameCountOut;
-        } else {
+        } 
+        else {
             framesJustProcessedIn  = ma_min(framesAvailableIn, framesAvailableOut);
             framesJustProcessedOut = framesJustProcessedIn; 
         }
-
-        
         if (isFadingEnabled) {
-            if (isWorkingBufferValid) {
-                ma_fader_process_pcm_frames(&pEngineNode->fader, pWorkingBuffer, pWorkingBuffer, framesJustProcessedOut);   
-            } else {
+            if (isWorkingBufferValid) { ma_fader_process_pcm_frames(&pEngineNode->fader, pWorkingBuffer, pWorkingBuffer, framesJustProcessedOut); }
+            else {
                 ma_fader_process_pcm_frames(&pEngineNode->fader, pWorkingBuffer, pRunningFramesIn, framesJustProcessedOut);
                 isWorkingBufferValid = MA_TRUE;
             }
         }
-
-        
         if (isVolumeSmoothingEnabled) {
-            if (isWorkingBufferValid) {
-                ma_gainer_process_pcm_frames(&pEngineNode->volumeGainer, pWorkingBuffer, pWorkingBuffer, framesJustProcessedOut);
-            } else {
+            if (isWorkingBufferValid) { ma_gainer_process_pcm_frames(&pEngineNode->volumeGainer, pWorkingBuffer, pWorkingBuffer, framesJustProcessedOut); }
+            else {
                 ma_gainer_process_pcm_frames(&pEngineNode->volumeGainer, pWorkingBuffer, pRunningFramesIn, framesJustProcessedOut);
                 isWorkingBufferValid = MA_TRUE;
             }
         }
-
-        
-        if (isWorkingBufferValid == MA_FALSE) {
-            pWorkingBuffer = (float*)pRunningFramesIn;  
-        }
-
-        
+        if (isWorkingBufferValid == MA_FALSE) { pWorkingBuffer = (float*)pRunningFramesIn; }
         if (isSpatializationEnabled) {
             ma_uint32 iListener;
-
-            
-            if (pEngineNode->pinnedListenerIndex != MA_LISTENER_INDEX_CLOSEST && pEngineNode->pinnedListenerIndex < ma_engine_get_listener_count(pEngineNode->pEngine)) {
-                iListener = pEngineNode->pinnedListenerIndex;
-            } else {
+            if (pEngineNode->pinnedListenerIndex != MA_LISTENER_INDEX_CLOSEST && pEngineNode->pinnedListenerIndex < ma_engine_get_listener_count(pEngineNode->pEngine)) { iListener = pEngineNode->pinnedListenerIndex; }
+            else {
                 ma_vec3f spatializerPosition = ma_spatializer_get_position(&pEngineNode->spatializer);
                 iListener = ma_engine_find_closest_listener(pEngineNode->pEngine, spatializerPosition.x, spatializerPosition.y, spatializerPosition.z);
             }
-
             ma_spatializer_process_pcm_frames(&pEngineNode->spatializer, &pEngineNode->pEngine->listeners[iListener], pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut);
-        } else {
-            
+        }
+        else {
             float volume;
-            ma_engine_node_get_volume(pEngineNode, &volume);    
-
+            ma_engine_node_get_volume(pEngineNode, &volume);
             if (channelsIn == channelsOut) {
-                
-                if (isVolumeSmoothingEnabled) {
-                    
-                    ma_copy_pcm_frames(pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut * channelsOut, ma_format_f32, channelsOut);
-                } else {
-                    
-                    ma_copy_and_apply_volume_factor_f32(pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut * channelsOut, volume);
-                }
-            } else {
-                
+                if (isVolumeSmoothingEnabled) { ma_copy_pcm_frames(pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut * channelsOut, ma_format_f32, channelsOut); }
+                else { ma_copy_and_apply_volume_factor_f32(pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut * channelsOut, volume); }
+            }
+            else {
                 ma_channel_map_apply_f32(pRunningFramesOut, NULL, channelsOut, pWorkingBuffer, NULL, channelsIn, framesJustProcessedOut, ma_channel_mix_mode_simple, pEngineNode->monoExpansionMode);
-
-                
-                if (!isVolumeSmoothingEnabled) {
-                    ma_apply_volume_factor_f32(pRunningFramesOut, framesJustProcessedOut * channelsOut, volume);
-                }
+                if (!isVolumeSmoothingEnabled) { ma_apply_volume_factor_f32(pRunningFramesOut, framesJustProcessedOut * channelsOut, volume); }
             }
         }
-
-        
-
-        
-        if (isPanningEnabled) {
-            ma_panner_process_pcm_frames(&pEngineNode->panner, pRunningFramesOut, pRunningFramesOut, framesJustProcessedOut);   
-        }
-
-        
+        if (isPanningEnabled) { ma_panner_process_pcm_frames(&pEngineNode->panner, pRunningFramesOut, pRunningFramesOut, framesJustProcessedOut); }
         totalFramesProcessedIn  += framesJustProcessedIn;
         totalFramesProcessedOut += framesJustProcessedOut;
-
-        
-        if (framesJustProcessedOut == 0) {
-            break;
-        }
+        if (framesJustProcessedOut == 0) { break; }
     }
-
-    
     *pFrameCountIn  = totalFramesProcessedIn;
     *pFrameCountOut = totalFramesProcessedOut;
 }
-
 static void ma_engine_node_process_pcm_frames__sound(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
 {
     
@@ -64965,40 +63099,27 @@ MA_API ma_result ma_engine_node_init(const ma_engine_node_config* pConfig, const
     return MA_SUCCESS;
 }
 
-MA_API void ma_engine_node_uninit(ma_engine_node* pEngineNode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API void ma_engine_node_uninit(ma_engine_node* pEngineNode, const ma_allocation_callbacks* pAllocationCallbacks) {
     
     ma_node_uninit(&pEngineNode->baseNode, pAllocationCallbacks);
 
     
-    if (pEngineNode->volumeSmoothTimeInPCMFrames > 0) {
-        ma_gainer_uninit(&pEngineNode->volumeGainer, pAllocationCallbacks);
-    }
+    if (pEngineNode->volumeSmoothTimeInPCMFrames > 0) { ma_gainer_uninit(&pEngineNode->volumeGainer, pAllocationCallbacks); }
 
     ma_spatializer_uninit(&pEngineNode->spatializer, pAllocationCallbacks);
     ma_linear_resampler_uninit(&pEngineNode->resampler, pAllocationCallbacks);
 
     
-    if (pEngineNode->_ownsHeap) {
-        ma_free(pEngineNode->_pHeap, pAllocationCallbacks);
-    }
-}
-MA_API ma_sound_config ma_sound_config_init(void)
-{
-    return ma_sound_config_init_2(NULL);
+    if (pEngineNode->_ownsHeap) { ma_free(pEngineNode->_pHeap, pAllocationCallbacks); }
 }
 
-MA_API ma_sound_config ma_sound_config_init_2(ma_engine* pEngine)
-{
+MA_API ma_sound_config ma_sound_config_init(ma_engine* pEngine) {
     ma_sound_config config;
 
     MA_ZERO_OBJECT(&config);
 
-    if (pEngine != NULL) {
-        config.monoExpansionMode = pEngine->monoExpansionMode;
-    } else {
-        config.monoExpansionMode = ma_mono_expansion_mode_default;
-    }
+    if (pEngine == NULL) { config.monoExpansionMode = ma_mono_expansion_mode_default; }
+    else { config.monoExpansionMode = pEngine->monoExpansionMode; }
 
     config.rangeEndInPCMFrames     = ~((ma_uint64)0);
     config.loopPointEndInPCMFrames = ~((ma_uint64)0);
@@ -65334,7 +63455,7 @@ MA_API void ma_engine_uninit(ma_engine* pEngine)
     #endif
 
     
-    ma_spinlock_lock(&pEngine->inlinedSoundLock);
+    ma_spinlock_lock(&pEngine->inlinedSoundLock, MA_TRUE);
     {
         for (;;) {
             ma_sound_inlined* pSoundToDelete = pEngine->pInlinedSoundHead;
@@ -65746,7 +63867,7 @@ MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath)
     ma_sound_inlined* pSound = NULL;
     ma_sound_inlined* pNextSound = NULL;
     ma_node* pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
-    ma_spinlock_lock(&pEngine->inlinedSoundLock); {
+    ma_spinlock_lock(&pEngine->inlinedSoundLock, MA_TRUE); {
     ma_uint32 soundFlags = 0;
 
         for (pNextSound = pEngine->pInlinedSoundHead; pNextSound != NULL; pNextSound = pNextSound->pNext) {
@@ -65767,10 +63888,10 @@ MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath)
             if (pSound->pNext != NULL) { pSound->pNext->pPrev = pSound->pPrev; }
             ma_sound_uninit(&pNextSound->sound);
 
-            soundFlags |= MA_SOUND_FLAG_ASYNC;                 
-            soundFlags |= MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT; 
-            soundFlags |= MA_SOUND_FLAG_NO_PITCH;              
-            soundFlags |= MA_SOUND_FLAG_NO_SPATIALIZATION;     
+            soundFlags |= MA_SOUND_FLAG_ASYNC;
+            soundFlags |= MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT;
+            soundFlags |= MA_SOUND_FLAG_NO_PITCH;
+            soundFlags |= MA_SOUND_FLAG_NO_SPATIALIZATION;
 
             result = ma_sound_init_from_file(pEngine, pFilePath, soundFlags, NULL, NULL, &pSound->sound);
             if (result == MA_SUCCESS) {
@@ -65792,11 +63913,11 @@ MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath)
 
     if (result != MA_SUCCESS) { return result; }
     result = ma_sound_start(&pSound->sound);
-    if (result != MA_SUCCESS) {
-        ma_atomic_exchange_32(&pSound->sound.atEnd, MA_TRUE);
+    if (result == MA_SUCCESS) {
+        ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
         return result;
     }
-    ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
+    ma_atomic_exchange_32(&pSound->sound.atEnd, MA_TRUE);
     return result;
 }
 
@@ -65974,7 +64095,7 @@ MA_API ma_result ma_sound_init_from_file(ma_engine* pEngine, const char* pFilePa
         return MA_INVALID_ARGS;
     }
 
-    config = ma_sound_config_init_2(pEngine);
+    config = ma_sound_config_init(pEngine);
     config.pFilePath          = pFilePath;
     config.flags              = flags;
     config.pInitialAttachment = pGroup;
@@ -65991,7 +64112,7 @@ MA_API ma_result ma_sound_init_from_file_w(ma_engine* pEngine, const wchar_t* pF
         return MA_INVALID_ARGS;
     }
 
-    config = ma_sound_config_init_2(pEngine);
+    config = ma_sound_config_init(pEngine);
     config.pFilePathW         = pFilePath;
     config.flags              = flags;
     config.pInitialAttachment = pGroup;
@@ -66031,7 +64152,7 @@ MA_API ma_result ma_sound_init_copy(ma_engine* pEngine, const ma_sound* pExistin
         return result;
     }
 
-    config = ma_sound_config_init_2(pEngine);
+    config = ma_sound_config_init(pEngine);
     config.pDataSource                 = pSound->pResourceManagerDataSource;
     config.flags                       = flags;
     config.pInitialAttachment          = pGroup;
@@ -66055,7 +64176,7 @@ MA_API ma_result ma_sound_init_copy(ma_engine* pEngine, const ma_sound* pExistin
 
 MA_API ma_result ma_sound_init_from_data_source(ma_engine* pEngine, ma_data_source* pDataSource, ma_uint32 flags, ma_sound_group* pGroup, ma_sound* pSound)
 {
-    ma_sound_config config = ma_sound_config_init_2(pEngine);
+    ma_sound_config config = ma_sound_config_init(pEngine);
     config.pDataSource        = pDataSource;
     config.flags              = flags;
     config.pInitialAttachment = pGroup;
@@ -66092,9 +64213,7 @@ MA_API ma_result ma_sound_init_ex(ma_engine* pEngine, const ma_sound_config* pCo
 
 MA_API void ma_sound_uninit(ma_sound* pSound)
 {
-    if (pSound == NULL) {
-        return;
-    }
+    if (pSound == NULL) { return; }
 
     
     ma_engine_node_uninit(&pSound->engineNode, &pSound->engineNode.pEngine->allocationCallbacks);
@@ -66129,31 +64248,14 @@ MA_API ma_data_source* ma_sound_get_data_source(const ma_sound* pSound)
     return pSound->pDataSource;
 }
 
-MA_API ma_result ma_sound_start(ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (ma_sound_is_playing(pSound)) {
-        return MA_SUCCESS;
-    }
-
-    
+MA_API ma_result ma_sound_start(ma_sound* pSound) {
+    if (ma_sound_is_playing(pSound)) { return MA_SUCCESS; }
     if (ma_sound_at_end(pSound)) {
         ma_result result = ma_data_source_seek_to_pcm_frame(pSound->pDataSource, 0);
-        if (result != MA_SUCCESS && result != MA_NOT_IMPLEMENTED) {
-            return result;  
-        }
-
-        
+        if (result != MA_SUCCESS && result != MA_NOT_IMPLEMENTED) { return result; }
         ma_atomic_exchange_32(&pSound->atEnd, MA_FALSE);
     }
-
-    
     ma_node_set_state(pSound, ma_node_state_started);
-
     return MA_SUCCESS;
 }
 
@@ -66972,271 +65074,6 @@ MA_API ma_result ma_sound_group_init_ex(ma_engine* pEngine, const ma_sound_group
 
     return ma_sound_init_ex(pEngine, &soundConfig, pGroup);
 }
-
-MA_API void ma_sound_group_uninit(ma_sound_group* pGroup)
-{
-    ma_sound_uninit(pGroup);
-}
-
-MA_API ma_engine* ma_sound_group_get_engine(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_engine(pGroup);
-}
-
-MA_API ma_result ma_sound_group_start(ma_sound_group* pGroup)
-{
-    return ma_sound_start(pGroup);
-}
-
-MA_API ma_result ma_sound_group_stop(ma_sound_group* pGroup)
-{
-    return ma_sound_stop(pGroup);
-}
-
-MA_API void ma_sound_group_set_volume(ma_sound_group* pGroup, float volume)
-{
-    ma_sound_set_volume(pGroup, volume);
-}
-
-MA_API float ma_sound_group_get_volume(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_volume(pGroup);
-}
-
-MA_API void ma_sound_group_set_pan(ma_sound_group* pGroup, float pan)
-{
-    ma_sound_set_pan(pGroup, pan);
-}
-
-MA_API float ma_sound_group_get_pan(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pan(pGroup);
-}
-
-MA_API void ma_sound_group_set_pan_mode(ma_sound_group* pGroup, ma_pan_mode panMode)
-{
-    ma_sound_set_pan_mode(pGroup, panMode);
-}
-
-MA_API ma_pan_mode ma_sound_group_get_pan_mode(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pan_mode(pGroup);
-}
-
-MA_API void ma_sound_group_set_pitch(ma_sound_group* pGroup, float pitch)
-{
-    ma_sound_set_pitch(pGroup, pitch);
-}
-
-MA_API float ma_sound_group_get_pitch(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pitch(pGroup);
-}
-
-MA_API void ma_sound_group_set_spatialization_enabled(ma_sound_group* pGroup, ma_bool32 enabled)
-{
-    ma_sound_set_spatialization_enabled(pGroup, enabled);
-}
-
-MA_API ma_bool32 ma_sound_group_is_spatialization_enabled(const ma_sound_group* pGroup)
-{
-    return ma_sound_is_spatialization_enabled(pGroup);
-}
-
-MA_API void ma_sound_group_set_pinned_listener_index(ma_sound_group* pGroup, ma_uint32 listenerIndex)
-{
-    ma_sound_set_pinned_listener_index(pGroup, listenerIndex);
-}
-
-MA_API ma_uint32 ma_sound_group_get_pinned_listener_index(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pinned_listener_index(pGroup);
-}
-
-MA_API ma_uint32 ma_sound_group_get_listener_index(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_listener_index(pGroup);
-}
-
-MA_API ma_vec3f ma_sound_group_get_direction_to_listener(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_direction_to_listener(pGroup);
-}
-
-MA_API void ma_sound_group_set_position(ma_sound_group* pGroup, float x, float y, float z)
-{
-    ma_sound_set_position(pGroup, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_group_get_position(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_position(pGroup);
-}
-
-MA_API void ma_sound_group_set_direction(ma_sound_group* pGroup, float x, float y, float z)
-{
-    ma_sound_set_direction(pGroup, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_group_get_direction(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_direction(pGroup);
-}
-
-MA_API void ma_sound_group_set_velocity(ma_sound_group* pGroup, float x, float y, float z)
-{
-    ma_sound_set_velocity(pGroup, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_group_get_velocity(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_velocity(pGroup);
-}
-
-MA_API void ma_sound_group_set_attenuation_model(ma_sound_group* pGroup, ma_attenuation_model attenuationModel)
-{
-    ma_sound_set_attenuation_model(pGroup, attenuationModel);
-}
-
-MA_API ma_attenuation_model ma_sound_group_get_attenuation_model(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_attenuation_model(pGroup);
-}
-
-MA_API void ma_sound_group_set_positioning(ma_sound_group* pGroup, ma_positioning positioning)
-{
-    ma_sound_set_positioning(pGroup, positioning);
-}
-
-MA_API ma_positioning ma_sound_group_get_positioning(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_positioning(pGroup);
-}
-
-MA_API void ma_sound_group_set_rolloff(ma_sound_group* pGroup, float rolloff)
-{
-    ma_sound_set_rolloff(pGroup, rolloff);
-}
-
-MA_API float ma_sound_group_get_rolloff(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_rolloff(pGroup);
-}
-
-MA_API void ma_sound_group_set_min_gain(ma_sound_group* pGroup, float minGain)
-{
-    ma_sound_set_min_gain(pGroup, minGain);
-}
-
-MA_API float ma_sound_group_get_min_gain(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_min_gain(pGroup);
-}
-
-MA_API void ma_sound_group_set_max_gain(ma_sound_group* pGroup, float maxGain)
-{
-    ma_sound_set_max_gain(pGroup, maxGain);
-}
-
-MA_API float ma_sound_group_get_max_gain(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_max_gain(pGroup);
-}
-
-MA_API void ma_sound_group_set_min_distance(ma_sound_group* pGroup, float minDistance)
-{
-    ma_sound_set_min_distance(pGroup, minDistance);
-}
-
-MA_API float ma_sound_group_get_min_distance(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_min_distance(pGroup);
-}
-
-MA_API void ma_sound_group_set_max_distance(ma_sound_group* pGroup, float maxDistance)
-{
-    ma_sound_set_max_distance(pGroup, maxDistance);
-}
-
-MA_API float ma_sound_group_get_max_distance(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_max_distance(pGroup);
-}
-
-MA_API void ma_sound_group_set_cone(ma_sound_group* pGroup, float innerAngleInRadians, float outerAngleInRadians, float outerGain)
-{
-    ma_sound_set_cone(pGroup, innerAngleInRadians, outerAngleInRadians, outerGain);
-}
-
-MA_API void ma_sound_group_get_cone(const ma_sound_group* pGroup, float* pInnerAngleInRadians, float* pOuterAngleInRadians, float* pOuterGain)
-{
-    ma_sound_get_cone(pGroup, pInnerAngleInRadians, pOuterAngleInRadians, pOuterGain);
-}
-
-MA_API void ma_sound_group_set_doppler_factor(ma_sound_group* pGroup, float dopplerFactor)
-{
-    ma_sound_set_doppler_factor(pGroup, dopplerFactor);
-}
-
-MA_API float ma_sound_group_get_doppler_factor(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_doppler_factor(pGroup);
-}
-
-MA_API void ma_sound_group_set_directional_attenuation_factor(ma_sound_group* pGroup, float directionalAttenuationFactor)
-{
-    ma_sound_set_directional_attenuation_factor(pGroup, directionalAttenuationFactor);
-}
-
-MA_API float ma_sound_group_get_directional_attenuation_factor(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_directional_attenuation_factor(pGroup);
-}
-
-MA_API void ma_sound_group_set_fade_in_pcm_frames(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames)
-{
-    ma_sound_set_fade_in_pcm_frames(pGroup, volumeBeg, volumeEnd, fadeLengthInFrames);
-}
-
-MA_API void ma_sound_group_set_fade_in_milliseconds(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds)
-{
-    ma_sound_set_fade_in_milliseconds(pGroup, volumeBeg, volumeEnd, fadeLengthInMilliseconds);
-}
-
-MA_API float ma_sound_group_get_current_fade_volume(ma_sound_group* pGroup)
-{
-    return ma_sound_get_current_fade_volume(pGroup);
-}
-
-MA_API void ma_sound_group_set_start_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    ma_sound_set_start_time_in_pcm_frames(pGroup, absoluteGlobalTimeInFrames);
-}
-
-MA_API void ma_sound_group_set_start_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    ma_sound_set_start_time_in_milliseconds(pGroup, absoluteGlobalTimeInMilliseconds);
-}
-
-MA_API void ma_sound_group_set_stop_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    ma_sound_set_stop_time_in_pcm_frames(pGroup, absoluteGlobalTimeInFrames);
-}
-
-MA_API void ma_sound_group_set_stop_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    ma_sound_set_stop_time_in_milliseconds(pGroup, absoluteGlobalTimeInMilliseconds);
-}
-
-MA_API ma_bool32 ma_sound_group_is_playing(const ma_sound_group* pGroup)
-{
-    return ma_sound_is_playing(pGroup);
-}
-
-MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_time_in_pcm_frames(pGroup);
-}
 #endif  
 
 
@@ -67426,41 +65263,28 @@ static MA_INLINE ma_uint64 ma_dr_wav__bswap64(ma_uint64 n)
            ((n & ((ma_uint64)0x000000FF      )) << 56);
 #endif
 }
-static MA_INLINE ma_int16 ma_dr_wav__bswap_s16(ma_int16 n)
-{
-    return (ma_int16)ma_dr_wav__bswap16((ma_uint16)n);
-}
-static MA_INLINE void ma_dr_wav__bswap_samples_s16(ma_int16* pSamples, ma_uint64 sampleCount)
-{
+static MA_INLINE void ma_dr_wav__bswap_samples_s16(ma_int16* pSamples, ma_uint64 sampleCount) {
     ma_uint64 iSample;
-    for (iSample = 0; iSample < sampleCount; iSample += 1) {
-        pSamples[iSample] = ma_dr_wav__bswap_s16(pSamples[iSample]);
-    }
+    for (iSample = 0; iSample < sampleCount; iSample += 1) { pSamples[iSample] = (ma_int16)ma_dr_wav__bswap16((ma_uint16)(pSamples[iSample])); }
 }
-static MA_INLINE void ma_dr_wav__bswap_s24(ma_uint8* p)
-{
+static MA_INLINE void ma_dr_wav__bswap_s24(ma_uint8* p) {
     ma_uint8 t;
     t = p[0];
     p[0] = p[2];
     p[2] = t;
 }
-static MA_INLINE void ma_dr_wav__bswap_samples_s24(ma_uint8* pSamples, ma_uint64 sampleCount)
-{
+static MA_INLINE void ma_dr_wav__bswap_samples_s24(ma_uint8* pSamples, ma_uint64 sampleCount) {
     ma_uint64 iSample;
     for (iSample = 0; iSample < sampleCount; iSample += 1) {
         ma_uint8* pSample = pSamples + (iSample*3);
         ma_dr_wav__bswap_s24(pSample);
     }
 }
-static MA_INLINE ma_int32 ma_dr_wav__bswap_s32(ma_int32 n)
-{
-    return (ma_int32)ma_dr_wav__bswap32((ma_uint32)n);
-}
 static MA_INLINE void ma_dr_wav__bswap_samples_s32(ma_int32* pSamples, ma_uint64 sampleCount)
 {
     ma_uint64 iSample;
     for (iSample = 0; iSample < sampleCount; iSample += 1) {
-        pSamples[iSample] = ma_dr_wav__bswap_s32(pSamples[iSample]);
+        pSamples[iSample] = (ma_int32)ma_dr_wav__bswap32((ma_uint32)(pSamples[iSample]));
     }
 }
 static MA_INLINE ma_int64 ma_dr_wav__bswap_s64(ma_int64 n)
@@ -70630,10 +68454,6 @@ static unsigned short g_ma_dr_wavMulawTable[256] = {
     0x0174, 0x0164, 0x0154, 0x0144, 0x0134, 0x0124, 0x0114, 0x0104, 0x00F4, 0x00E4, 0x00D4, 0x00C4, 0x00B4, 0x00A4, 0x0094, 0x0084,
     0x0078, 0x0070, 0x0068, 0x0060, 0x0058, 0x0050, 0x0048, 0x0040, 0x0038, 0x0030, 0x0028, 0x0020, 0x0018, 0x0010, 0x0008, 0x0000
 };
-static MA_INLINE ma_int16 ma_dr_wav__alaw_to_s16(ma_uint8 sampleIn)
-{
-    return (short)g_ma_dr_wavAlawTable[sampleIn];
-}
 static MA_INLINE ma_int16 ma_dr_wav__mulaw_to_s16(ma_uint8 sampleIn)
 {
     return (short)g_ma_dr_wavMulawTable[sampleIn];
@@ -70971,7 +68791,7 @@ MA_API void ma_dr_wav_alaw_to_s16(ma_int16* pOut, const ma_uint8* pIn, size_t sa
 {
     size_t i;
     for (i = 0; i < sampleCount; ++i) {
-        pOut[i] = ma_dr_wav__alaw_to_s16(pIn[i]);
+        pOut[i] = (short)g_ma_dr_wavAlawTable[pIn[i]];
     }
 }
 MA_API void ma_dr_wav_mulaw_to_s16(ma_int16* pOut, const ma_uint8* pIn, size_t sampleCount)
@@ -71330,7 +69150,7 @@ MA_API void ma_dr_wav_alaw_to_f32(float* pOut, const ma_uint8* pIn, size_t sampl
         return;
     }
     for (i = 0; i < sampleCount; ++i) {
-        *pOut++ = ma_dr_wav__alaw_to_s16(pIn[i]) / 32768.0f;
+        *pOut++ = (short)g_ma_dr_wavAlawTable[pIn[i]] / 32768.0f;
     }
 }
 MA_API void ma_dr_wav_mulaw_to_f32(float* pOut, const ma_uint8* pIn, size_t sampleCount)
@@ -71680,7 +69500,7 @@ MA_API void ma_dr_wav_alaw_to_s32(ma_int32* pOut, const ma_uint8* pIn, size_t sa
         return;
     }
     for (i = 0; i < sampleCount; ++i) {
-        *pOut++ = ((ma_int32)ma_dr_wav__alaw_to_s16(pIn[i])) << 16;
+        *pOut++ = (ma_int32)g_ma_dr_wavAlawTable[pIn[i]] << 16;
     }
 }
 MA_API void ma_dr_wav_mulaw_to_s32(ma_int32* pOut, const ma_uint8* pIn, size_t sampleCount)
@@ -82505,46 +80325,6 @@ static ma_int16* ma_dr_mp3__full_read_and_close_s16(ma_dr_mp3* pMP3, ma_dr_mp3_c
         *pTotalFrameCount = totalFramesRead;
     }
     return pFrames;
-}
-MA_API float* ma_dr_mp3_open_and_read_pcm_frames_f32(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
-    ma_dr_mp3 mp3;
-    if (ma_dr_mp3_init(&mp3, onRead, onSeek, pUserData, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount); }
-    return NULL;
-}
-MA_API ma_int16* ma_dr_mp3_open_and_read_pcm_frames_s16(ma_dr_mp3_read_proc onRead, ma_dr_mp3_seek_proc onSeek, void* pUserData, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
-    ma_dr_mp3 mp3;
-    if (ma_dr_mp3_init(&mp3, onRead, onSeek, pUserData, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount); }
-    return NULL;
-}
-MA_API float* ma_dr_mp3_open_memory_and_read_pcm_frames_f32(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
-    ma_dr_mp3 mp3;
-    if (ma_dr_mp3_init_memory(&mp3, pData, dataSize, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount); }
-    return NULL;
-}
-MA_API ma_int16* ma_dr_mp3_open_memory_and_read_pcm_frames_s16(const void* pData, size_t dataSize, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
-    ma_dr_mp3 mp3;
-    if (ma_dr_mp3_init_memory(&mp3, pData, dataSize, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount); }
-    return NULL;
-}
-#ifndef MA_DR_MP3_NO_STDIO
-MA_API float* ma_dr_mp3_open_file_and_read_pcm_frames_f32(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
-    ma_dr_mp3 mp3;
-    if (ma_dr_mp3_init_file(&mp3, filePath, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount); }
-    return NULL;
-}
-MA_API ma_int16* ma_dr_mp3_open_file_and_read_pcm_frames_s16(const char* filePath, ma_dr_mp3_config* pConfig, ma_uint64* pTotalFrameCount, const ma_allocation_callbacks* pAllocationCallbacks) {
-    ma_dr_mp3 mp3;
-    if (ma_dr_mp3_init_file(&mp3, filePath, pAllocationCallbacks)) { return ma_dr_mp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount); }
-    return NULL;
-}
-#endif
-MA_API void* ma_dr_mp3_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks) {
-    if (pAllocationCallbacks != NULL) { return ma_dr_mp3__malloc_from_callbacks(sz, pAllocationCallbacks); } 
-    else { return ma_dr_mp3__malloc_default(sz, NULL); }
-}
-MA_API void ma_dr_mp3_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks) {
-    if (pAllocationCallbacks != NULL) { ma_dr_mp3__free_from_callbacks(p, pAllocationCallbacks); } 
-    else { ma_dr_mp3__free_default(p, NULL); }
 }
 #endif
 #endif
