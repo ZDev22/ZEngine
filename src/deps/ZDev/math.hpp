@@ -270,11 +270,11 @@ inline void setValuesInRangeShort(vector<short>& vec, const short value, int min
 inline void setValuesInRangeInt(vector<int>& vec, const int value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 inline void setValuesInRangeLong(vector<long long>& vec, const long long value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 inline void setValuesInRangeFloat(vector<float>& vec, const float value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setZeroChar(std::vector<unsigned char>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(unsigned char)); }
-inline void setZeroShort(std::vector<short>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(short)); }
-inline void setZeroInt(std::vector<int>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(int)); }
-inline void setZeroLong(std::vector<long long>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(long long)); }
-inline void setZeroFloat(std::vector<float>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(float)); }
+inline void setZeroChar(vector<unsigned char>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(unsigned char)); }
+inline void setZeroShort(vector<short>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(short)); }
+inline void setZeroInt(vector<int>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(int)); }
+inline void setZeroLong(vector<long long>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(long long)); }
+inline void setZeroFloat(vector<float>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(float)); }
 inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 

@@ -16,7 +16,6 @@ public:
     Pipeline& getPipeline() { return pipeline; }
     
 private:
-    void createPipeline();
     void createPipelineLayout();
     void initializeSpriteData();
     void createTextureArrayDescriptorSet();
