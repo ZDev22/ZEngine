@@ -61042,7 +61042,7 @@ static float* ma_node_get_cached_output_ptr(ma_node* pNode, ma_uint32 outputBusI
     MA_ASSERT(pNodeBase != NULL);
     pBasePtr = pNodeBase->pCachedData;
     for (iInputBus = 0; iInputBus < ma_node_get_input_bus_count(pNodeBase); iInputBus += 1) { pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]); }
-    for (iOutputBus = 0; iOutputBus < outputBusIndex; iOutputBus += 1) { pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * &pNodeBase->pOutputBuses[iOutputBus]->channels; }
+    for (iOutputBus = 0; iOutputBus < outputBusIndex; iOutputBus += 1) { pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * pNodeBase->pOutputBuses[iOutputBus].channels; }
     return pBasePtr;
 }
 typedef struct {
@@ -61245,7 +61245,7 @@ MA_API ma_result ma_node_init_preallocated(ma_node_graph* pNodeGraph, const ma_n
             ma_silence_pcm_frames(ma_node_get_cached_input_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iBus]));
         }
         for (iBus = 0; iBus < ma_node_get_output_bus_count(pNodeBase); iBus += 1) {
-            ma_silence_pcm_frames(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, &pNodeBase->pOutputBuses[iBus]->channels);
+            ma_silence_pcm_frames(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, pNodeBase->pOutputBuses[iBus].channels);
         }
     #else
         
@@ -61253,7 +61253,7 @@ MA_API ma_result ma_node_init_preallocated(ma_node_graph* pNodeGraph, const ma_n
             ma_debug_fill_pcm_frames_with_sine_wave(ma_node_get_cached_input_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iBus]), 48000);
         }
         for (iBus = 0; iBus < ma_node_get_output_bus_count(pNodeBase); iBus += 1) {
-            ma_debug_fill_pcm_frames_with_sine_wave(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, &pNodeBase->pOutputBuses[iBus]->channels, 48000);
+            ma_debug_fill_pcm_frames_with_sine_wave(ma_node_get_cached_output_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, pNodeBase->pOutputBuses[iBus].channels, 48000);
         }
     #endif
     }
@@ -61353,7 +61353,7 @@ MA_API ma_uint32 ma_node_get_output_channels(const ma_node* pNode, ma_uint32 out
         return 0;   
     }
 
-    return &pNodeBase->pOutputBuses[outputBusIndex]->channels;
+    return pNodeBase->pOutputBuses[outputBusIndex].channels;
 }
 static void ma_node_detach_full(ma_node* pNode) {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
@@ -62342,7 +62342,7 @@ MA_API ma_result ma_loshelf_node_init(ma_node_graph* pNodeGraph, const ma_loshel
     if (pConfig == NULL) { return MA_INVALID_ARGS; }
     if (pConfig->loshelf.format != ma_format_f32) { return MA_INVALID_ARGS; }
     ma_node_config baseNodeConfig;
-    ma_result = ma_loshelf2_init(&pConfig->loshelf, pAllocationCallbacks, &pNode->loshelf);
+    ma_result result = ma_loshelf2_init(&pConfig->loshelf, pAllocationCallbacks, &pNode->loshelf);
     if (result != MA_SUCCESS) { return result; }
     baseNodeConfig = ma_node_config_init();
     baseNodeConfig.vtable          = &g_ma_loshelf_node_vtable;

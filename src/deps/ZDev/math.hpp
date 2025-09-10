@@ -290,54 +290,54 @@ inline constexpr unsigned long long exponent64(unsigned long long value, const u
     for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint128_t exponent128(uint128_t value, const uint128_t exponent) {
+inline constexpr uint128_t exponent128(uint128_t value, const unsigned int exponent) {
     uint128_t oldValue = value;
-    for (uint128_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint256_t exponent256(uint256_t value, const uint256_t exponent) {
+inline constexpr uint256_t exponent256(uint256_t value, const unsigned int exponent) {
     uint256_t oldValue = value;
-    for (uint256_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint512_t exponent512(uint512_t value, const uint512_t exponent) {
+inline constexpr uint512_t exponent512(uint512_t value, const unsigned int exponent) {
     uint512_t oldValue = value;
-    for (uint512_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint1024_t exponent1024(uint1024_t value, const uint1024_t exponent) {
+inline constexpr uint1024_t exponent1024(uint1024_t value, const unsigned int exponent) {
     uint1024_t oldValue = value;
-    for (uint1024_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint2048_t exponent2048(uint2048_t value, const uint2048_t exponent) {
+inline constexpr uint2048_t exponent2048(uint2048_t value, const unsigned long long exponent) {
     uint2048_t oldValue = value;
-    for (uint2048_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint4096_t exponent4096(uint4096_t value, const uint4096_t exponent) {
+inline constexpr uint4096_t exponent4096(uint4096_t value, const unsigned long long exponent) {
     uint4096_t oldValue = value;
-    for (uint4096_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint8192_t exponent8192(uint8192_t value, const uint8192_t exponent) {
+inline constexpr uint8192_t exponent8192(uint8192_t value, const unsigned long long exponent) {
     uint8192_t oldValue = value;
-    for (uint8192_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint16384_t exponent16384(uint16384_t value, const uint16384_t exponent) {
+inline constexpr uint16384_t exponent16384(uint16384_t value, const unsigned long long exponent) {
     uint16384_t oldValue = value;
-    for (uint16384_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint32768_t exponent32768(uint32768_t value, const uint32768_t exponent) {
+inline constexpr uint32768_t exponent32768(uint32768_t value, const unsigned long long exponent) {
     uint32768_t oldValue = value;
-    for (uint32768_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
-inline constexpr uint65536_t exponent65536(uint65536_t value, const uint65536_t exponent) {
+inline constexpr uint65536_t exponent65536(uint65536_t value, const unsigned long long exponent) {
     uint65536_t oldValue = value;
-    for (uint65536_t i = 0; i < exponent; i++) { value *= oldValue; }
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
     return value;
 }
 
@@ -463,6 +463,6 @@ inline glm::vec2 averagePoint(const vector<glm::vec2>& points) {
 
 // Conversions
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
-inline constexpr float degrees(const float radians) { return degrees * PID; }
+inline constexpr float degrees(const float radians) { return radians * PID; }
 inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32) * .5555555555; }
 inline constexpr float fahrenheit(const float celsius) { return (celsius * 2) + 12; }

@@ -39,7 +39,7 @@ public:
     bool keyReleased(const unsigned short key) { return updateKeyState(key) == KEY_RELEASED; }
     bool keysPressed(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (glfwGetKey(window, keysArray[i]) == GLFW_PRESS) return true; } return false; }
     bool keysHit(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) == KEY_HIT) return true; } return false; }
-    bool keysReleased(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) == KEY_RELEASED) return true; } return fa;se; }
+    bool keysReleased(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) == KEY_RELEASED) return true; } return false; }
     bool anyKeyPressed() { for (unsigned char i = 0; i < 107; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) return true; } return false; }
     bool anyKeyHit() { for (unsigned char i = 0; i < 107; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) return true; } return false; }
     bool anyKeyReleased() { for (unsigned char i = 0; i < 107; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) return true; } return false; }

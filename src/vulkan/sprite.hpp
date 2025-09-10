@@ -17,7 +17,7 @@ struct alignas(16) SpriteData {
     uint32_t textureIndex;
     float rotation;
 
-    constexpr void setRotationMatrix() { rotationMatrix = glm::mat2(cos(radians(rotation))), -sin(radians(rotation)), sin(radians(rotation)), cos(radians(rotation))); }
+    constexpr void setRotationMatrix() { rotationMatrix = glm::mat2(cos(radians(rotation))), -sin(radians(rotation)), sin(radians(rotation)), cos(radians(rotation)); }
 };
 
 struct Sprite {
@@ -29,4 +29,4 @@ struct Sprite {
 
 extern std::vector<SpriteData> sprites;
 extern std::vector<Sprite> spriteCPU;
-extern std::vector<std::unique_ptr<Texture>> spriteTextures;de
+extern std::vector<std::unique_ptr<Texture>> spriteTextures;
