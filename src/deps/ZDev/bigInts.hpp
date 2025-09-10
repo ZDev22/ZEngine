@@ -33,7 +33,7 @@ struct uint128_t {
     constexpr uint128_t operator*(const uint128_t& rhs) const { return uint128_t(low * rhs.low, mul_hi(low, rhs.low) + (low * rhs.high) + (rhs.low * high)); }
     constexpr uint128_t& operator*=(const uint128_t& rhs) { *this = *this * rhs; return *this; }
     constexpr uint128_t operator/(uint128_t divisor) const {
-        if (divisor == uint128_t(0))  {return uint128_t(0); }
+        if (divisor == uint128_t(0)) { return uint128_t(0); }
         uint128_t quotient(0);
         uint128_t remainder(0);
 

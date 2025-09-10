@@ -7,4 +7,4 @@ std::vector<std::unique_ptr<Texture>> spriteTextures;
 
 float deltaTime = .0f;
 
-uint16_t imageCount;
+unsigned short imageCount;

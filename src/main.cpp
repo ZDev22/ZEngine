@@ -1,5 +1,7 @@
 #include "vulkan/shaders.hpp"
-#include "deps/glfw/glfw3.h"
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#include "../glfw/glfw3.h"
 #include "vulkan/app.hpp"
 
 int main() {

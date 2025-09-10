@@ -1,6 +1,8 @@
 #pragma once
 
 #define PI 3.1415926535
+#define PIR 0.0174532925
+#define PID 57.2957795131
 #define E 2.7182818284
 #define GOLDENRATIO 1.6180339887
 #define SQRT2 1.4142135624
@@ -27,7 +29,7 @@
 #include <glm/glm.hpp>
 
 // Global
-inline constexpr float clamp(float value, float minValue, float maxValue) {
+inline constexpr float clamp(const float value, const float minValue, const float maxValue) {
     if (value < minValue) { return minValue; }
     if (value > maxValue) { return maxValue; }
     return value;
@@ -74,14 +76,12 @@ inline constexpr float easeOutBounce(const float t) {
 
 // Random
 static unsigned long long state = 381195919421132ULL;
-
 inline unsigned long long xorshift32() {
     state ^= state << 13;
     state ^= state >> 17;
     state ^= state << 5;
     return state;
 }
-
 inline unsigned char randomChar(const unsigned char min, unsigned const char max) { return static_cast<unsigned char>(min + (xorshift32() % (max - min + 1))); }
 inline short randomShort(const short min, const short max) { return static_cast<short>(min + (xorshift32() % (max - min + 1))); }
 inline int randomInt(const int min, const int max) { return static_cast<int>(min + (xorshift32() % (max - min + 1))); }
@@ -140,35 +140,30 @@ inline short averageChar(const vector<unsigned char>& chars) {
     for (size_t i = 0; i < chars.size(); ++i) sum += chars[i];
     return static_cast<short>(sum / static_cast<int>(chars.size()));
 }
-
 inline short averageShort(const vector<short>& shorts) {
     if (shorts.size() == 0) return 0;
     int sum = 0;
     for (size_t i = 0; i < shorts.size(); ++i) sum += shorts[i];
     return static_cast<short>(sum / static_cast<int>(shorts.size()));
 }
-
 inline int averageInt(const vector<int>& ints) {
     if (ints.size() == 0) return 0;
     long long sum = 0;
     for (size_t i = 0; i < ints.size(); ++i) sum += ints[i];
     return static_cast<int>(sum / static_cast<long long>(ints.size()));
 }
-
 inline long long averageLong(const vector<long long>& longs) {
     if (longs.size() == 0) return 0;
     long long sum = 0;
     for (size_t i = 0; i < longs.size(); ++i) sum += longs[i];
     return sum / static_cast<long long>(longs.size());
 }
-
 inline float averageFloat(const vector<float>& floats) {
     if (floats.size() == 0) return 0.0f;
     float sum = 0.0f;
     for (size_t i = 0; i < floats.size(); ++i) sum += floats[i];
     return sum / static_cast<float>(floats.size());
 }
-
 inline bool averageBool(const vector<bool>& bools) {
     if (bools.size() == 0) return randomBool();
     int averageTrue = 0, averageFalse = 0;
@@ -180,7 +175,6 @@ inline bool averageBool(const vector<bool>& bools) {
     if (averageFalse > averageTrue) { return false; }
     return randomBool();
 }
-
 inline short averageMinMaxChar(const vector<unsigned char>& chars) {
     if (chars.size() == 0) return 0;
     unsigned char minVal = chars[0], maxVal = chars[0];
@@ -197,7 +191,6 @@ inline short averageMinMaxChar(const vector<unsigned char>& chars) {
     }
     return static_cast<short>(sum / static_cast<int>(chars.size()));
 }
-
 inline short averageMinMaxShort(const vector<short>& shorts) {
     if (shorts.size() == 0) return 0;
     short minVal = shorts[0], maxVal = shorts[0];
@@ -214,7 +207,6 @@ inline short averageMinMaxShort(const vector<short>& shorts) {
     }
     return static_cast<short>(sum / static_cast<int>(shorts.size()));
 }
-
 inline int averageMinMaxInt(const vector<int>& ints) {
     if (ints.size() == 0) return 0;
     int minVal = ints[0], maxVal = ints[0];
@@ -231,7 +223,6 @@ inline int averageMinMaxInt(const vector<int>& ints) {
     }
     return static_cast<int>(sum / static_cast<long long>(ints.size()));
 }
-
 inline long long averageMinMaxLong(const vector<long long>& longs) {
     if (longs.size() == 0) return 0;
     long long minVal = longs[0], maxVal = longs[0], sum = 0;
@@ -247,7 +238,6 @@ inline long long averageMinMaxLong(const vector<long long>& longs) {
     }
     return sum / static_cast<long long>(longs.size());
 }
-
 inline float averageMinMaxFloat(const vector<float>& floats) {
     if (floats.size() == 0) return 0.0f;
     float minVal = floats[0], maxVal = floats[0], sum = 0.0f;
@@ -270,11 +260,11 @@ inline void setValuesInRangeShort(vector<short>& vec, const short value, int min
 inline void setValuesInRangeInt(vector<int>& vec, const int value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 inline void setValuesInRangeLong(vector<long long>& vec, const long long value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 inline void setValuesInRangeFloat(vector<float>& vec, const float value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setZeroChar(vector<unsigned char>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(unsigned char)); }
-inline void setZeroShort(vector<short>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(short)); }
-inline void setZeroInt(vector<int>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(int)); }
-inline void setZeroLong(vector<long long>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(long long)); }
-inline void setZeroFloat(vector<float>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * sizeof(float)); }
+inline void setZeroChar(vector<unsigned char>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count); }
+inline void setZeroShort(vector<short>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 2); }
+inline void setZeroInt(vector<int>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 4); }
+inline void setZeroLong(vector<long long>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 8); }
+inline void setZeroFloat(vector<float>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 4); }
 inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
@@ -284,8 +274,74 @@ inline constexpr int absoluteInt(const int i) { return (i < 0) ? -i : i; }
 inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i : i; }
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
 
-// Factorials
-inline constexpr unsigned long long  factorial64(int n) {
+// Exponents
+inline constexpr unsigned short exponent16(unsigned short value, const unsigned short exponent) {
+    unsigned short oldValue = value;
+    for (unsigned short i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr unsigned int exponent32(unsigned int value, const unsigned int exponent) {
+    unsigned int oldValue = value;
+    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr unsigned long long exponent64(unsigned long long value, const unsigned long long exponent) {
+    unsigned long long oldValue = value;
+    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint128_t exponent128(uint128_t value, const uint128_t exponent) {
+    uint128_t oldValue = value;
+    for (uint128_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint256_t exponent256(uint256_t value, const uint256_t exponent) {
+    uint256_t oldValue = value;
+    for (uint256_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint512_t exponent512(uint512_t value, const uint512_t exponent) {
+    uint512_t oldValue = value;
+    for (uint512_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint1024_t exponent1024(uint1024_t value, const uint1024_t exponent) {
+    uint1024_t oldValue = value;
+    for (uint1024_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint2048_t exponent2048(uint2048_t value, const uint2048_t exponent) {
+    uint2048_t oldValue = value;
+    for (uint2048_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint4096_t exponent4096(uint4096_t value, const uint4096_t exponent) {
+    uint4096_t oldValue = value;
+    for (uint4096_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint8192_t exponent8192(uint8192_t value, const uint8192_t exponent) {
+    uint8192_t oldValue = value;
+    for (uint8192_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint16384_t exponent16384(uint16384_t value, const uint16384_t exponent) {
+    uint16384_t oldValue = value;
+    for (uint16384_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint32768_t exponent32768(uint32768_t value, const uint32768_t exponent) {
+    uint32768_t oldValue = value;
+    for (uint32768_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+inline constexpr uint65536_t exponent65536(uint65536_t value, const uint65536_t exponent) {
+    uint65536_t oldValue = value;
+    for (uint65536_t i = 0; i < exponent; i++) { value *= oldValue; }
+    return value;
+}
+
+inline constexpr unsigned long long  factorial64(unsigned char n) {
     unsigned long long result = 1;
     unsigned long long i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -295,7 +351,7 @@ inline constexpr unsigned long long  factorial64(int n) {
     for (; i <= n; ++i) { result *= i; }
     return result;
 }
-inline constexpr uint128_t factorial128(int n) {
+inline constexpr uint128_t factorial128(unsigned char n) {
     uint128_t result = uint128_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -305,7 +361,7 @@ inline constexpr uint128_t factorial128(int n) {
     for (; i <= n; ++i) { result *= uint128_t(i); }
     return result;
 }
-inline constexpr uint256_t factorial256(int n) {
+inline constexpr uint256_t factorial256(unsigned char n) {
     uint256_t result = uint256_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -315,7 +371,7 @@ inline constexpr uint256_t factorial256(int n) {
     for (; i <= n; ++i) { result *= uint256_t(i); }
     return result;
 }
-inline constexpr uint512_t factorial512(int n) {
+inline constexpr uint512_t factorial512(unsigned char n) {
     uint512_t result = uint512_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -325,7 +381,7 @@ inline constexpr uint512_t factorial512(int n) {
     for (; i <= n; ++i) { result *= uint512_t(i); }
     return result;
 }
-inline constexpr uint1024_t factorial1024(int n) {
+inline constexpr uint1024_t factorial1024(unsigned char n) {
     uint1024_t result = uint1024_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -335,7 +391,7 @@ inline constexpr uint1024_t factorial1024(int n) {
     for (; i <= n; ++i) { result *= uint1024_t(i); }
     return result;
 }
-inline constexpr uint2048_t factorial2048(int n) {
+inline constexpr uint2048_t factorial2048(unsigned int n) {
     uint2048_t result = uint2048_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -345,7 +401,7 @@ inline constexpr uint2048_t factorial2048(int n) {
     for (; i <= n; ++i) { result *= uint2048_t(i); }
     return result;
 }
-inline constexpr uint4096_t factorial4096(int n) {
+inline constexpr uint4096_t factorial4096(unsigned int n) {
     uint4096_t result = uint4096_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -355,7 +411,7 @@ inline constexpr uint4096_t factorial4096(int n) {
     for (; i <= n; ++i) { result *= uint4096_t(i); }
     return result;
 }
-inline constexpr uint8192_t factorial8192(int n) {
+inline constexpr uint8192_t factorial8192(unsigned int n) {
     uint8192_t result = uint8192_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -365,7 +421,7 @@ inline constexpr uint8192_t factorial8192(int n) {
     for (; i <= n; ++i) { result *= uint8192_t(i); }
     return result;
 }
-inline constexpr uint16384_t factorial16384(int n) {
+inline constexpr uint16384_t factorial16384(unsigned int n) {
     uint16384_t result = uint16384_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -375,7 +431,7 @@ inline constexpr uint16384_t factorial16384(int n) {
     for (; i <= n; ++i) { result *= uint16384_t(i); }
     return result;
 }
-inline constexpr uint32768_t factorial32768(int n) {
+inline constexpr uint32768_t factorial32768(unsigned int n) {
     uint32768_t result = uint32768_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -385,7 +441,7 @@ inline constexpr uint32768_t factorial32768(int n) {
     for (; i <= n; ++i) { result *= uint32768_t(i); }
     return result;
 }
-inline constexpr uint65536_t factorial65536(int n) {
+inline constexpr uint65536_t factorial65536(unsigned int n) {
     uint65536_t result = uint65536_t(1);
     int i = 2;
     for (; i + 3 <= n; i += 4) {
@@ -400,7 +456,13 @@ inline constexpr uint65536_t factorial65536(int n) {
 inline constexpr float slopeOf(const glm::vec2& point1, const glm::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
 inline glm::vec2 averagePoint(const vector<glm::vec2>& points) {
     glm::vec2 avg = glm::vec2(0.f);
-    if (points.size() == 0) return avg;
+    if (points.size() == 0) { return avg; }
     for (size_t i = 0; i < points.size(); ++i) { avg += points[i]; }
     return avg / static_cast<float>(points.size());
 }
+
+// Conversions
+inline constexpr float radians(const float degrees) { return degrees * PIR; }
+inline constexpr float degrees(const float radians) { return degrees * PID; }
+inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32) * .5555555555; }
+inline constexpr float fahrenheit(const float celsius) { return (celsius * 2) + 12; }

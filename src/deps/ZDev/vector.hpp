@@ -99,13 +99,13 @@ public:
     }
 
     void push_back(const T& value) {
-        if (m_size >= m_capacity) reserve(m_capacity ? m_capacity * 3 / 2 : 1);
+        if (m_size >= m_capacity) reserve(m_capacity ? m_capacity += 10 : 1);
         new (m_data + m_size) T(value);
         ++m_size;
     }
 
     void push_back(T&& value) {
-        if (m_size >= m_capacity) reserve(m_capacity ? m_capacity * 3 / 2 : 1);
+        if (m_size >= m_capacity) reserve(m_capacity ? m_capacity += 10 : 1);
         new (m_data + m_size) T(static_cast<T&&>(value));
         ++m_size;
     }

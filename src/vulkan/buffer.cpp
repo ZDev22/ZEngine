@@ -1,7 +1,7 @@
 #include "buffer.hpp"
 #include <cstring>
 
-Buffer::Buffer(Device& device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : device(device), bufferSize(instanceSize * instanceCount) {
+Buffer::Buffer(Device& device, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : device(device), bufferSize(instanceSize * instanceCount) {
     
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;

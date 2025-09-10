@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 extern float deltaTime;
-extern uint16_t imageCount;
+extern unsigned short imageCount;
 
 struct Push { 
     glm::vec2 camera;

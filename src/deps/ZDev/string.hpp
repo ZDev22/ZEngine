@@ -6,7 +6,7 @@ inline size_t stringLength(const char* str) {
     return len;
 }
 
-inline int strCompare(const char* a, const char* b) {
+inline int stringCompare(const char* a, const char* b) {
     while (*a && (*a == *b)) {
         a++;
         b++;
@@ -30,7 +30,7 @@ inline const char* stringContainsItem(const char* str, const char* sub) {
 
 inline int vectorContainsString(const char* target, const char** list, int listSize) {
     for (int i = 0; i < listSize; i++) {
-        if (strCompare(list[i], target) == 0) { return i; }
+        if (stringCompare(list[i], target) == 0) { return i; }
     }
     return -1;
 }
