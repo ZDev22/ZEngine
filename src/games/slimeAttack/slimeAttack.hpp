@@ -12,14 +12,16 @@
 class AudioPlayer;
 class SlimeAttack {
 public:
-    SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push);
+    SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push);
 
     void tick();
     void knockback(float origin);
 private:
     SlimeAttackEnemies slimeAttackEnemies;
+
     Keyboard& keyboard;
     AudioPlayer& audio;
     Pipeline& pipeline;
+    Collision& collision;
     Push& push;
 };

@@ -12,7 +12,7 @@ public:
 
 private:
     void render();
-    
+
     AppWindow window{720, 480};
     Push push{};
     Device device{window};

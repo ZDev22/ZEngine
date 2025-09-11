@@ -33,11 +33,11 @@ struct uint128_t {
     constexpr uint128_t operator*(const uint128_t& rhs) const { return uint128_t(low * rhs.low, mul_hi(low, rhs.low) + (low * rhs.high) + (rhs.low * high)); }
     constexpr uint128_t& operator*=(const uint128_t& rhs) { *this = *this * rhs; return *this; }
     constexpr uint128_t operator/(uint128_t divisor) const {
-        if (divisor == uint128_t(0)) { return uint128_t(0); }
+        if (divisor == 0) { return uint128_t(0); }
         uint128_t quotient(0);
         uint128_t remainder(0);
 
-        for (int i = 127; i >= 0; --i) {
+        for (int i = 127; i < 1; --i) {
             remainder <<= 1;
             remainder.low |= ((*this >> i).low & 1);
 
@@ -54,7 +54,7 @@ struct uint128_t {
 
     constexpr uint128_t operator^(const uint128_t& rhs) const { return uint128_t(low ^ rhs.low, high ^ rhs.high); }
     constexpr uint128_t& operator^=(const uint128_t& rhs) { *this = *this ^ rhs; return *this; }
-    constexpr uint128_t operator%(const uint128_t& rhs) const { if (rhs == uint128_t(0)) { return *this; } return *this - (*this / rhs) * rhs; }
+    constexpr uint128_t operator%(const uint128_t& rhs) const { if (rhs == 0) { return *this; } return *this - (*this / rhs) * rhs; }
 
     constexpr uint128_t operator<<(int n) const {
         uint128_t tmp = *this;
@@ -109,6 +109,10 @@ struct uint128_t {
     constexpr bool operator>(const uint128_t& rhs) const { return (high > rhs.high) || (high == rhs.high && low > rhs.low); }
     constexpr bool operator>=(const uint128_t& rhs) const { return (high > rhs.high) || (high == rhs.high && low >= rhs.low); }
     constexpr bool operator==(const uint128_t& rhs) const { return low == rhs.low && high == rhs.high; }
+    constexpr bool operator==(const unsigned char rhs) const { return low == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return low == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return low == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return low == rhs; }
 
 
     friend std::ostream& operator<<(std::ostream& os, const uint128_t& v) {
@@ -179,7 +183,7 @@ struct uint256_t {
     constexpr explicit uint256_t(unsigned long long v) : words{v,0,0,0} {}
     constexpr uint256_t(unsigned long long w0, unsigned long long w1, unsigned long long w2, unsigned long long w3) : words{w0, w1, w2, w3} {}
 
-    constexpr bool is_zero() const { return words[0]==0 && words[1]==0 && words[2]==0 && words[3]==0; }
+    constexpr bool is_zero() const { return words[0] == 0 && words[1] == 0 && words[2] == 0 && words[3] == 0; }
     constexpr int bit_width() const {
         for (int i = 3; i >= 0; --i) if (words[i] != 0) return i*64 + bit_width64(words[i]);
         return 0;
@@ -284,9 +288,11 @@ struct uint256_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint256_t& rhs) const {
-        return std::equal(words, words + 4, rhs.words);
-    }
+    constexpr bool operator==(const uint256_t& rhs) const { return std::equal(words, words + 4, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint256_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint256_t& rhs) const {
         for (int i = 3; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -517,9 +523,11 @@ struct uint512_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint512_t& rhs) const {
-        return std::equal(words, words + 8, rhs.words);
-    }
+    constexpr bool operator==(const uint512_t& rhs) const { return std::equal(words, words + 8, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint512_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint512_t& rhs) const {
         for (int i = 7; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -750,9 +758,11 @@ struct uint1024_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint1024_t& rhs) const {
-        return std::equal(words, words + 16, rhs.words);
-    }
+    constexpr bool operator==(const uint1024_t& rhs) const { return std::equal(words, words + 16, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint1024_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint1024_t& rhs) const {
         for (int i = 15; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -991,9 +1001,11 @@ struct uint2048_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint2048_t& rhs) const {
-        return std::equal(words, words + 32, rhs.words);
-    }
+    constexpr bool operator==(const uint2048_t& rhs) const { return std::equal(words, words + 32, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint2048_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint2048_t& rhs) const {
         for (int i = 31; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -1248,9 +1260,11 @@ struct uint4096_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint4096_t& rhs) const {
-        return std::equal(words, words + 64, rhs.words);
-    }
+    constexpr bool operator==(const uint4096_t& rhs) const { return std::equal(words, words + 64, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint4096_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint4096_t& rhs) const {
         for (int i = 63; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -1537,9 +1551,11 @@ struct uint8192_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint8192_t& rhs) const {
-        return std::equal(words, words + 128, rhs.words);
-    }
+    constexpr bool operator==(const uint8192_t& rhs) const { return std::equal(words, words + 128, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint8192_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint8192_t& rhs) const {
         for (int i = 127; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -1890,9 +1906,11 @@ struct uint16384_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint16384_t& rhs) const {
-        return std::equal(words, words + 256, rhs.words);
-    }
+    constexpr bool operator==(const uint16384_t& rhs) const { return std::equal(words, words + 256, rhs.words); }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint16384_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint16384_t& rhs) const {
         for (int i = 255; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -2371,10 +2389,11 @@ struct uint32768_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint32768_t& rhs) const {
-        for (size_t i = 0; i < 512; ++i) if (words[i] != rhs.words[i]) return false;
-        return true;
-    }
+    constexpr bool operator==(const uint32768_t& rhs) const { for (size_t i = 0; i < 512; ++i) if (words[i] != rhs.words[i]) return false; return true; }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint32768_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint32768_t& rhs) const {
         for (int i = 511; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }
@@ -2627,10 +2646,11 @@ struct uint65536_t {
         return remainder;
     }
 
-    constexpr bool operator==(const uint65536_t& rhs) const {
-        for (size_t i = 0; i < 1024; ++i) if (words[i] != rhs.words[i]) return false;
-        return true;
-    }
+    constexpr bool operator==(const uint65536_t& rhs) const { for (size_t i = 0; i < 1024; ++i) if (words[i] != rhs.words[i]) return false; return true; }
+    constexpr bool operator==(const unsigned char rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned short rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned int rhs) const { return words[0] == rhs; }
+    constexpr bool operator==(const unsigned long long rhs) const { return words[0] == rhs; }
     constexpr bool operator!=(const uint65536_t& rhs) const { return !(*this == rhs); }
     constexpr bool operator>(const uint65536_t& rhs) const {
         for (int i = 1023; i >= 0; --i) { if (words[i] > rhs.words[i]) return true; if (words[i] < rhs.words[i]) return false; }

@@ -8,12 +8,13 @@
 class AudioPlayer;
 class FlappyBird {
 public:
-    FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push);
+    FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push);
 
     void tick();
 private:
     Keyboard& keyboard;
     AudioPlayer& audio;
     Pipeline& pipeline;
+    Collision& collision;
     Push& push;
 };

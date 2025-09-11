@@ -6,5 +6,3 @@ std::vector<Sprite> spriteCPU;
 std::vector<std::unique_ptr<Texture>> spriteTextures;
 
 float deltaTime = .0f;
-
-unsigned short imageCount;

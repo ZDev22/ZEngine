@@ -4,6 +4,7 @@
 #define KEY_RELEASED 1
 #define KEY_HIT 2
 #define KEY_PRESSED 3
+
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include "../glfw/glfw3.h"
@@ -65,6 +66,8 @@ public:
         for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) { return glfwGetKey(window, keyBinds[i].rebindedKey) == KEY_RELEASED; }}
         return updateKeyState(key) == KEY_RELEASED;
     }
+    bool anyKeyBindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (glfwGetKey(window, keyBinds[i].key) == GLFW_PRESS) return true; } return false; }
+    bool anyKeyRebindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (glfwGetKey(window, keyBinds[i].rebindedKey) == GLFW_PRESS) return true; } return false; }
 
     // Simulate keys
     void simulateKey(const unsigned short key, const unsigned char newKeyState) {

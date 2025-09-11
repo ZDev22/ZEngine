@@ -2,7 +2,7 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-SlimeAttack::SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), push(push), slimeAttackEnemies(*this, pipeline) {}
+SlimeAttack::SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push), slimeAttackEnemies(*this, collision, pipeline) {}
 
 glm::vec2 slimeAttackSpeed = glm::vec2(0.f);
 bool slimeAttackTouchingGround = false;
@@ -53,7 +53,7 @@ void SlimeAttack::tick() {
         slimeAttackSpeed.y += 15.f * deltaTime;
         sprites[0].position += slimeAttackSpeed * glm::vec2(deltaTime);
     
-        if (checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) {
+        if (collision.checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) {
             slimeAttackTouchingGround = true;
             sprites[0].position.y -= slimeAttackSpeed.y * deltaTime;
             slimeAttackSpeed.y = 0;
@@ -63,6 +63,7 @@ void SlimeAttack::tick() {
     
     //Reset stuff for next frame
     keyboard.resetKeys();
+    collision.clearAABB();
 }
 
 void SlimeAttack::knockback(float origin) {

@@ -3,7 +3,7 @@
 
 #include "../../deps/ZDev/collision.hpp"
 
-SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Pipeline& pipeline) : slimeAttack(slimeAttack), pipeline(pipeline) {
+SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision, Pipeline& pipeline) : slimeAttack(slimeAttack), collision(collision), pipeline(pipeline) {
     while (enemies.size() < sprites.size()) {
         Enemy enemy;
         enemy.skip = true;
@@ -68,7 +68,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_SLIME:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f);
 
         Enemy slime;
         slime.health = 2;
@@ -82,7 +82,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_BAT:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f);
         
         Enemy bat;
         bat.health = 3;
@@ -96,7 +96,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_OGRE:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f);
 
         Enemy ogre;
         ogre.health = 6;
@@ -110,7 +110,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
     
     case SLIMEATTACK_ENEMY_TYPE_BOSS:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 1.5f), glm::vec2(1.f, 1.f), 0.f, glm::vec4(1.f));
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 1.5f), glm::vec2(1.f, 1.f), 0.f);
 
         Enemy boss;
         boss.health = 25;
@@ -139,7 +139,7 @@ void SlimeAttackEnemies::simulateEnemies() {
                 enemies[i].speed.y += 1.6f * deltaTime;
                 sprites[i].position += enemies[i].speed * glm::vec2(deltaTime);
 
-                if (checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { 
+                if (collision.checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { 
                     sprites[i].position -= enemies[i].speed * glm::vec2(deltaTime);
                     enemies[i].speed = glm::vec2(0.f); 
                 }
@@ -173,7 +173,7 @@ void SlimeAttackEnemies::simulateEnemies() {
 bool SlimeAttackEnemies::isTouchingEnemies() {
     for (size_t i = 0; i < sprites.size(); i++) {
         if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
-            if (checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) { return true; }
+            if (collision.checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) { return true; }
         }
     }
     return false;
@@ -181,7 +181,7 @@ bool SlimeAttackEnemies::isTouchingEnemies() {
 
 void SlimeAttackEnemies::damageEnemies() {
     for (size_t i = 0; i < sprites.size(); i++) {
-        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) {
+        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && collision.checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) {
             enemies[i].health--;
             if (enemies[i].health <= 0) { 
                 enemies[i].skip = true;

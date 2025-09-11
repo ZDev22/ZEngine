@@ -4,6 +4,7 @@
 
 #define AUDIOPLAYER_IMPLEMENTATION
 #include "../deps/ZDev/audio.hpp"
+#include "../deps/ZDev/collision.hpp"
 
 //#include "../games/flappyBird/flappyBird.hpp"
 #include "../games/slimeAttack/slimeAttack.hpp"
@@ -25,11 +26,11 @@ App::App() : pipeline(device, renderer, "texture") {
 }
 
 void App::run() {
-
     AudioPlayer audio;
+    Collision collision;
 
-    //FlappyBird flappyBird{keyboard, audio, pipeline, push};
-    SlimeAttack slimeAttack{keyboard, audio, pipeline, push};
+    //FlappyBird flappyBird{keyboard, audio, pipeline, collision, push};
+    SlimeAttack slimeAttack{keyboard, audio, pipeline, collision, push};
     //TerminalCalculator terminalCalculator{};
 
     std::thread render(&App::render, this);

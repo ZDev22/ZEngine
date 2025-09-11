@@ -2,7 +2,7 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-FlappyBird::FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), push(push) {}
+FlappyBird::FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push) {}
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -48,7 +48,7 @@ void FlappyBird::tick() {
             sprites[index + 1].position.x = sprites[index].position.x;
             sprites[index + 1].position.y = sprites[index].position.y - 2.f;
 
-            if (flappyBirdStarted && !flappyBirdDead && (checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
+            if (flappyBirdStarted && !flappyBirdDead && (collision.checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || collision.checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
                 flappyBirdDead = true;
                 flappyBirdSpeedY = -1.5f;
                 sprites[0].rotation = 60.f;
@@ -60,4 +60,5 @@ void FlappyBird::tick() {
 
     //Reset stuff for next frame
     keyboard.resetKeys();
+    collision.clearAABB();
 }

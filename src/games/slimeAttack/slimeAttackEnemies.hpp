@@ -13,7 +13,7 @@ class Pipeline;
 class SlimeAttack;
 class SlimeAttackEnemies {
 public:
-    SlimeAttackEnemies(SlimeAttack& slimeAttack, Pipeline& pipeline);
+    SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision, Pipeline& pipeline);
 
     void spawnNewWave();
     void spawnEnemy(const int type);
@@ -22,6 +22,7 @@ public:
     void damageEnemies();
 private:
     SlimeAttack& slimeAttack;
+    Collision& collision;
     Pipeline& pipeline;
 
     struct Enemy { 

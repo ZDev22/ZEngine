@@ -5,47 +5,31 @@ template <typename T>
 class vector {
 public:
     vector() : m_data(nullptr), m_size(0), m_capacity(0) {}
-
     explicit vector(unsigned long long n) : m_data(nullptr), m_size(0), m_capacity(0) {
-        if (n > 0) {
-            m_capacity = m_size = n;
-            m_data = new T[n];
-            for (unsigned long long i = 0; i < n; ++i) new (m_data + i) T();
-        }
+        m_capacity = m_size = n;
+        m_data = new T[n];
+        for (unsigned long long i = 0; i < n; ++i) new (m_data + i) T();
     }
-
     vector(const T* arr, unsigned long long count) : m_data(nullptr), m_size(0), m_capacity(0) {
-        if (count > 0) {
-            m_capacity = m_size = count;
-            m_data = new T[count];
-            for (unsigned long long i = 0; i < count; ++i) new (m_data + i) T(arr[i]);
-        }
+        m_capacity = m_size = count;
+        m_data = new T[count];
+        for (unsigned long long i = 0; i < count; ++i) new (m_data + i) T(arr[i]);
     }
-
     vector(std::initializer_list<T> init) : m_data(nullptr), m_size(0), m_capacity(0) {
-        if (init.size() > 0) {
-            m_capacity = m_size = init.size();
-            m_data = new T[m_capacity];
-            unsigned long long i = 0;
-            for (const T& value : init) {
-                new (m_data + i) T(value);
-                ++i;
-            }
+        m_capacity = m_size = init.size();
+        m_data = new T[m_capacity];
+        unsigned long long i = 0;
+        for (const T& value : init) {
+            new (m_data + i) T(value);
+            ++i;
         }
     }
-
     vector(const vector& other) : m_data(nullptr), m_size(0), m_capacity(0) {
-        if (other.m_size > 0) {
-            m_capacity = m_size = other.m_size;
-            m_data = new T[m_capacity];
-            for (unsigned long long i = 0; i < m_size; ++i) new (m_data + i) T(other.m_data[i]);
-        }
+        m_capacity = m_size = other.m_size;
+        m_data = new T[m_capacity];
+        for (unsigned long long i = 0; i < m_size; ++i) new (m_data + i) T(other.m_data[i]);
     }
-
-    vector(vector&& o) noexcept : m_data(o.m_data), m_size(o.m_size), m_capacity(o.m_capacity) {
-        o.m_data = nullptr; o.m_size = o.m_capacity = 0;
-    }
-
+    vector(vector&& o) noexcept : m_data(o.m_data), m_size(o.m_size), m_capacity(o.m_capacity) { o.m_data = nullptr; o.m_size = o.m_capacity = 0; }
     ~vector() {
         for (unsigned long long i = 0; i < m_size; ++i) m_data[i].~T();
         delete[] m_data;
@@ -74,14 +58,12 @@ public:
 
     vector& operator=(std::initializer_list<T> init) {
         clear();
-        if (init.size() > 0) {
-            m_capacity = m_size = init.size();
-            m_data = new T[m_capacity];
-            unsigned long long i = 0;
-            for (const T& value : init) {
-                new (m_data + i) T(value);
-                ++i;
-            }
+        m_capacity = m_size = init.size();
+        m_data = new T[m_capacity];
+        unsigned long long i = 0;
+        for (const T& value : init) {
+            new (m_data + i) T(value);
+            ++i;
         }
         return *this;
     }
@@ -121,10 +103,7 @@ public:
         return pos;
     }
 
-    void erase(unsigned long long index) {
-        if (index >= m_size) return;
-        erase(m_data + index);
-    }
+    void erase(unsigned long long index) { erase(m_data + index); }
 
     void clear() {
         for (unsigned long long i = 0; i < m_size; ++i) m_data[i].~T();
