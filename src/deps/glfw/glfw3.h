@@ -24,123 +24,102 @@
  * 3. This notice may not be removed or altered from any source
  *    distribution.
  *
- *************************************************************************/
-// MODIFIED
-#ifndef _glfw3_h_
+ *************************************************************************/#ifndef _glfw3_h_
 #define _glfw3_h_
 #ifdef __cplusplus
 extern "C" {
 #endif
 #if !defined(_WIN32) && (defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__))
- #define _WIN32
+#define _WIN32
 #endif
 #include <stddef.h>
 #include <stdint.h>
 #if defined(GLFW_INCLUDE_VULKAN)
-  #include <vulkan/vulkan.h>
+#include <vulkan/vulkan.h>
 #endif
 #if !defined(APIENTRY)
- #if defined(_WIN32)
-  #define APIENTRY __stdcall
- #else
-  #define APIENTRY
- #endif
- #define GLFW_APIENTRY_DEFINED
+#if defined(_WIN32)
+#define APIENTRY __stdcall
+#else
+#define APIENTRY
+#endif
+#define GLFW_APIENTRY_DEFINED
 #endif
 #if !defined(WINGDIAPI) && defined(_WIN32)
- #define WINGDIAPI __declspec(dllimport)
- #define GLFW_WINGDIAPI_DEFINED
+#define WINGDIAPI __declspec(dllimport)
+#define GLFW_WINGDIAPI_DEFINED
 #endif
 #if !defined(CALLBACK) && defined(_WIN32)
- #define CALLBACK __stdcall
- #define GLFW_CALLBACK_DEFINED
+#define CALLBACK __stdcall
+#define GLFW_CALLBACK_DEFINED
 #endif
 #if defined(GLFW_INCLUDE_ES1)
- #include <GLES/gl.h>
- #if defined(GLFW_INCLUDE_GLEXT)
-  #include <GLES/glext.h>
- #endif
+#include <GLES/gl.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GLES/glext.h>
+#endif
 #elif defined(GLFW_INCLUDE_ES2)
- #include <GLES2/gl2.h>
- #if defined(GLFW_INCLUDE_GLEXT)
-  #include <GLES2/gl2ext.h>
- #endif
+#include <GLES2/gl2.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GLES2/gl2ext.h>
+#endif
 #elif defined(GLFW_INCLUDE_ES3)
- #include <GLES3/gl3.h>
- #if defined(GLFW_INCLUDE_GLEXT)
-  #include <GLES2/gl2ext.h>
- #endif
+#include <GLES3/gl3.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GLES3/gl3ext.h>
+#endif
 #elif defined(GLFW_INCLUDE_ES31)
- #include <GLES3/gl31.h>
- #if defined(GLFW_INCLUDE_GLEXT)
-  #include <GLES2/gl2ext.h>
- #endif
+#include <GLES3/gl31.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GLES3/gl3ext.h>
+#endif
 #elif defined(GLFW_INCLUDE_ES32)
- #include <GLES3/gl32.h>
- #if defined(GLFW_INCLUDE_GLEXT)
-  #include <GLES2/gl2ext.h>
- #endif
+#include <GLES3/gl32.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GLES3/gl3ext.h>
+#endif
 #elif defined(GLFW_INCLUDE_GLCOREARB)
- #if defined(__APPLE__)
-  #include <OpenGL/gl3.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <OpenGL/gl3ext.h>
-  #endif
- #else
-  #include <GL/glcorearb.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GL/glext.h>
-  #endif
- #endif
+#if defined(__APPLE__)
+#include <OpenGL/gl3.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <OpenGL/gl3ext.h>
+#endif
+#else
+#include <GL/glcorearb.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GL/glext.h>
+#endif
+#endif
 #elif defined(GLFW_INCLUDE_GLU)
- #if defined(__APPLE__)
-  #if defined(GLFW_INCLUDE_GLU)
-   #include <OpenGL/glu.h>
-  #endif
- #else
-  #if defined(GLFW_INCLUDE_GLU)
-   #include <GL/glu.h>
-  #endif
- #endif
-#elif !defined(GLFW_INCLUDE_NONE) && \
-      !defined(__gl_h_) && \
-      !defined(__gles1_gl_h_) && \
-      !defined(__gles2_gl2_h_) && \
-      !defined(__gles2_gl3_h_) && \
-      !defined(__gles2_gl31_h_) && \
-      !defined(__gles2_gl32_h_) && \
-      !defined(__gl_glcorearb_h_) && \
-      !defined(__gl2_h_) && \
-      !defined(__gl3_h_) && \
-      !defined(__gl31_h_) && \
-      !defined(__gl32_h_) && \
-      !defined(__glcorearb_h_) && \
-      !defined(__GL_H__) && \
-      !defined(__gltypes_h_) && \
-      !defined(__glee_h_)
- #if defined(__APPLE__)
-  #if !defined(GLFW_INCLUDE_GLEXT)
-   #define GL_GLEXT_LEGACY
-  #endif
-  #include <OpenGL/gl.h>
- #else
-  #include <GL/gl.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GL/glext.h>
-  #endif
- #endif
+#if defined(__APPLE__)
+#include <OpenGL/glu.h>
+#else
+#include <GL/glu.h>
+#endif
+#elif !defined(GLFW_INCLUDE_NONE) && !defined(__gl_h_) && !defined(__gles1_gl_h_) && !defined(__gles2_gl2_h_) && !defined(__gles2_gl3_h_) && !defined(__gles2_gl31_h_) && !defined(__gles2_gl32_h_) && !defined(__gl_glcorearb_h_) && !defined(__gl2_h_) && !defined(__gl3_h_) && !defined(__gl31_h_) && !defined(__gl32_h_) && !defined(__glcorearb_h_) && !defined(__GL_H__) && !defined(__gltypes_h_) && !defined(__glee_h_)
+#if defined(__APPLE__)
+#if !defined(GLFW_INCLUDE_GLEXT)
+#define GL_GLEXT_LEGACY
+#endif
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#if defined(GLFW_INCLUDE_GLEXT)
+#include <GL/glext.h>
+#endif
+#endif
 #endif
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
- #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
+#error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
 #endif
 #if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
- #define GLFWAPI __declspec(dllexport)
+#define GLFWAPI __declspec(dllexport)
 #elif defined(_WIN32) && defined(GLFW_DLL)
- #define GLFWAPI __declspec(dllimport)
+#define GLFWAPI __declspec(dllimport)
 #elif defined(__GNUC__) && defined(_GLFW_BUILD_DLL)
- #define GLFWAPI __attribute__((visibility("default")))
+#define GLFWAPI __attribute__((visibility("default")))
 #else
- #define GLFWAPI
+#define GLFWAPI
 #endif
 #define GLFW_VERSION_MAJOR 3
 #define GLFW_VERSION_MINOR 5
@@ -282,7 +261,7 @@ extern "C" {
 #define GLFW_KEY_MENU 348
 #define GLFW_KEY_LAST GLFW_KEY_MENU
 #define GLFW_MOD_SHIFT 0x0001
-#define GLFW_MOD_CONTROL 0x000
+#define GLFW_MOD_CONTROL 0x0002
 #define GLFW_MOD_ALT 0x0004
 #define GLFW_MOD_SUPER 0x0008
 #define GLFW_MOD_CAPS_LOCK 0x0010
@@ -503,35 +482,11 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int
 typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
 typedef void (* GLFWmonitorfun)(GLFWmonitor* monitor, int event);
 typedef void (* GLFWjoystickfun)(int jid, int event);
-typedef struct GLFWvidmode {
-    int width;
-    int height;
-    int redBits;
-    int greenBits;
-    int blueBits;
-    int refreshRate;
-} GLFWvidmode;
-typedef struct GLFWgammaramp {
-    unsigned short* red;
-    unsigned short* green;
-    unsigned short* blue;
-    unsigned int size;
-} GLFWgammaramp;
-typedef struct GLFWimage {
-    int width;
-    int height;
-    unsigned char* pixels;
-} GLFWimage;
-typedef struct GLFWgamepadstate {
-    unsigned char buttons[15];
-    float axes[6];
-} GLFWgamepadstate;
-typedef struct GLFWallocator {
-    GLFWallocatefun allocate;
-    GLFWreallocatefun reallocate;
-    GLFWdeallocatefun deallocate;
-    void* user;
-} GLFWallocator;
+typedef struct GLFWvidmode {int width;int height;int redBits;int greenBits;int blueBits;int refreshRate;} GLFWvidmode;
+typedef struct GLFWgammaramp {unsigned short* red;unsigned short* green;unsigned short* blue;unsigned int size;} GLFWgammaramp;
+typedef struct GLFWimage {int width;int height;unsigned char* pixels;} GLFWimage;
+typedef struct GLFWgamepadstate {unsigned char buttons[15];float axes[6];} GLFWgamepadstate;
+typedef struct GLFWallocator {GLFWallocatefun allocate;GLFWreallocatefun reallocate;GLFWdeallocatefun deallocate;void* user;} GLFWallocator;
 GLFWAPI int glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwInitHint(int hint, int value);
@@ -658,18 +613,25 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count);
 GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, const char* procname);
 GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+#if !defined(GLAPIENTRY)
+#define GLAPIENTRY APIENTRY
+#define GLFW_GLAPIENTRY_DEFINED
 #endif
 #ifdef GLFW_WINGDIAPI_DEFINED
- #undef WINGDIAPI
- #undef GLFW_WINGDIAPI_DEFINED
+#undef WINGDIAPI
+#undef GLFW_WINGDIAPI_DEFINED
 #endif
 #ifdef GLFW_CALLBACK_DEFINED
- #undef CALLBACK
- #undef GLFW_CALLBACK_DEFINED
+#undef CALLBACK
+#undef GLFW_CALLBACK_DEFINED
 #endif
-#ifndef GLAPIENTRY
- #define GLAPIENTRY APIENTRY
- #define GLFW_GLAPIENTRY_DEFINED
+#ifdef GLFW_APIENTRY_DEFINED
+#undef APIENTRY
+#undef GLFW_APIENTRY_DEFINED
+#endif
+#ifdef GLFW_GLAPIENTRY_DEFINED
+#undef GLAPIENTRY
+#undef GLFW_GLAPIENTRY_DEFINED
 #endif
 #ifdef __cplusplus
 }

@@ -17734,7 +17734,7 @@ static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, 
                 BYTE nameFromReg[512];
                 DWORD nameFromRegSize = sizeof(nameFromReg);
                 LONG resultWin32 = ((MA_PFN_RegQueryValueExA)pContext->win32.RegQueryValueExA)(hKey, "Name", 0, NULL, (BYTE*)nameFromReg, (DWORD*)&nameFromRegSize);
-                ((MA_PFN_RegCloseKey)pContext->win32.RegCloseKey)(hKey);]
+                ((MA_PFN_RegCloseKey)pContext->win32.RegCloseKey)(hKey);
                 if (resultWin32 == ERROR_SUCCESS) {
                     char name[1024];
                     if (ma_strcpy_s(name, sizeof(name), pDeviceInfo->name) == 0) {
