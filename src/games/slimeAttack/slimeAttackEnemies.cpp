@@ -9,7 +9,7 @@ SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& coll
         enemy.skip = true;
         enemies.push_back(enemy);
     }
-    //spawnNewWave();
+    spawnNewWave();
 }
 
 void SlimeAttackEnemies::spawnNewWave() {

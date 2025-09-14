@@ -12,8 +12,8 @@ public:
 
     struct SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
+        vector<VkSurfaceFormatKHR> formats;
+        vector<VkPresentModeKHR> presentModes;
     };
     
     struct QueueFamilyIndices {
@@ -33,7 +33,7 @@ public:
     SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
-    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat findSupportedFormat(const vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
     VkCommandBuffer beginSingleTimeCommands();
@@ -54,7 +54,7 @@ private:
     void createLogicalDevice();
     void createCommandPool();
 
-    std::vector<const char*> getRequiredExtensions();
+    vector<const char*> getRequiredExtensions();
     void checkRequiredExtensions();
 
     bool isDeviceSuitable(VkPhysicalDevice device);
@@ -75,5 +75,5 @@ private:
     VkQueue graphicsQueue_;
     VkQueue presentQueue_;
 
-    const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
+    const vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
 };

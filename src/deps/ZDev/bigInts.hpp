@@ -113,9 +113,6 @@ struct uint128_t {
     constexpr bool operator==(const unsigned short rhs) const { return low == rhs; }
     constexpr bool operator==(const unsigned int rhs) const { return low == rhs; }
     constexpr bool operator==(const unsigned long long rhs) const { return low == rhs; }
-    constexpr bool operator==(const short rhs) const { return low == rhs; }
-    constexpr bool operator==(const int rhs) const { return low == rhs; }
-    constexpr bool operator==(const long long rhs) const { return low == rhs; }
 
 
     friend std::ostream& operator<<(std::ostream& os, const uint128_t& v) {

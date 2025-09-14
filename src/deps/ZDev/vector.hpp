@@ -30,6 +30,10 @@ public:
         for (unsigned long long i = 0; i < m_size; ++i) new (m_data + i) T(other.m_data[i]);
     }
     vector(vector&& o) noexcept : m_data(o.m_data), m_size(o.m_size), m_capacity(o.m_capacity) { o.m_data = nullptr; o.m_size = o.m_capacity = 0; }
+    ~vector() {
+        for (unsigned long long i = 0; i < m_size; ++i) m_data[i].~T();
+        delete[] m_data;
+    }
 
     vector& operator=(const vector& other) {
         if (this != &other) {
