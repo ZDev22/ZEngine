@@ -275,180 +275,24 @@ inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i
 inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
 
 // Exponents
-inline constexpr unsigned short exponent16(unsigned short value, const unsigned short exponent) {
-    unsigned short oldValue = value;
-    for (unsigned short i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr unsigned int exponent32(unsigned int value, const unsigned int exponent) {
-    unsigned int oldValue = value;
-    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr unsigned long long exponent64(unsigned long long value, const unsigned long long exponent) {
-    unsigned long long oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint128_t exponent128(uint128_t value, const unsigned int exponent) {
-    uint128_t oldValue = value;
-    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint256_t exponent256(uint256_t value, const unsigned int exponent) {
-    uint256_t oldValue = value;
-    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint512_t exponent512(uint512_t value, const unsigned int exponent) {
-    uint512_t oldValue = value;
-    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint1024_t exponent1024(uint1024_t value, const unsigned int exponent) {
-    uint1024_t oldValue = value;
-    for (unsigned int i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint2048_t exponent2048(uint2048_t value, const unsigned long long exponent) {
-    uint2048_t oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint4096_t exponent4096(uint4096_t value, const unsigned long long exponent) {
-    uint4096_t oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint8192_t exponent8192(uint8192_t value, const unsigned long long exponent) {
-    uint8192_t oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint16384_t exponent16384(uint16384_t value, const unsigned long long exponent) {
-    uint16384_t oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint32768_t exponent32768(uint32768_t value, const unsigned long long exponent) {
-    uint32768_t oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
-    return value;
-}
-inline constexpr uint65536_t exponent65536(uint65536_t value, const unsigned long long exponent) {
-    uint65536_t oldValue = value;
-    for (unsigned long long i = 0; i < exponent; i++) { value *= oldValue; }
+template<unsigned long long bitCount>
+    requires (bitCount % 64 == 0)
+inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> value, unsigned int exponent) {
+    bigInt<bitCount> base = value;
+    for (unsigned int i = 1; i < exponent; i++) { value *= base; }
     return value;
 }
 
-inline constexpr unsigned long long  factorial64(unsigned char n) {
-    unsigned long long result = 1;
-    unsigned long long i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= i * i + 1;
-        result *= i + 2 * i + 3;
-    }
-    for (; i <= n; ++i) { result *= i; }
-    return result;
-}
-inline constexpr uint128_t factorial128(unsigned char n) {
-    uint128_t result = uint128_t(1);
+template<unsigned long long bitCount>
+    requires (bitCount % 64 == 0)
+inline constexpr bigInt<bitCount> factorial(unsigned int exponent) {
+    bigInt<bitCount> result = bigInt<bitCount>(1);
     int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint128_t(i) * uint128_t(i + 1);
-        result *= uint128_t(i + 2) * uint128_t(i + 3);
+    for (; i + 3 <= exponent; i += 4) {
+        result *= bigInt<bitCount>(i) * bigInt<bitCount>(i + 1);
+        result *= bigInt<bitCount>(i + 2) * bigInt<bitCount>(i + 3);
     }
-    for (; i <= n; ++i) { result *= uint128_t(i); }
-    return result;
-}
-inline constexpr uint256_t factorial256(unsigned char n) {
-    uint256_t result = uint256_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint256_t(i) * uint256_t(i + 1);
-        result *= uint256_t(i + 2) * uint256_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint256_t(i); }
-    return result;
-}
-inline constexpr uint512_t factorial512(unsigned char n) {
-    uint512_t result = uint512_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint512_t(i) * uint512_t(i + 1);
-        result *= uint512_t(i + 2) * uint512_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint512_t(i); }
-    return result;
-}
-inline constexpr uint1024_t factorial1024(unsigned char n) {
-    uint1024_t result = uint1024_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint1024_t(i) * uint1024_t(i + 1);
-        result *= uint1024_t(i + 2) * uint1024_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint1024_t(i); }
-    return result;
-}
-inline constexpr uint2048_t factorial2048(unsigned int n) {
-    uint2048_t result = uint2048_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint2048_t(i) * uint2048_t(i + 1);
-        result *= uint2048_t(i + 2) * uint2048_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint2048_t(i); }
-    return result;
-}
-inline constexpr uint4096_t factorial4096(unsigned int n) {
-    uint4096_t result = uint4096_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint4096_t(i) * uint4096_t(i + 1);
-        result *= uint4096_t(i + 2) * uint4096_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint4096_t(i); }
-    return result;
-}
-inline constexpr uint8192_t factorial8192(unsigned int n) {
-    uint8192_t result = uint8192_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint8192_t(i) * uint8192_t(i + 1);
-        result *= uint8192_t(i + 2) * uint8192_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint8192_t(i); }
-    return result;
-}
-inline constexpr uint16384_t factorial16384(unsigned int n) {
-    uint16384_t result = uint16384_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint16384_t(i) * uint16384_t(i + 1);
-        result *= uint16384_t(i + 2) * uint16384_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint16384_t(i); }
-    return result;
-}
-inline constexpr uint32768_t factorial32768(unsigned int n) {
-    uint32768_t result = uint32768_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint32768_t(i) * uint32768_t(i + 1);
-        result *= uint32768_t(i + 2) * uint32768_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint32768_t(i); }
-    return result;
-}
-inline constexpr uint65536_t factorial65536(unsigned int n) {
-    uint65536_t result = uint65536_t(1);
-    int i = 2;
-    for (; i + 3 <= n; i += 4) {
-        result *= uint65536_t(i) * uint65536_t(i + 1);
-        result *= uint65536_t(i + 2) * uint65536_t(i + 3);
-    }
-    for (; i <= n; ++i) { result *= uint65536_t(i); }
+    for (; i <= exponent; ++i) { result *= bigInt<bitCount>(i); }
     return result;
 }
 
