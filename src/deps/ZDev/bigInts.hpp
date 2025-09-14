@@ -7,15 +7,21 @@ struct bigInt {
     unsigned long long words[bytes] = {0};
 
     constexpr bigInt() = default;
-    constexpr explicit bigInt(unsigned long long v) { words[0] = v; for (unsigned int i = 1; i < bytes; ++i) words[i] = 0; }
+    constexpr explicit bigInt(unsigned long long v) { 
+        words[0] = v; 
+        for (unsigned int i = 1; i < bytes; ++i) words[i] = 0; 
+    }
     constexpr bigInt(const unsigned long long* initWords, unsigned int count) {
         unsigned int limit = count < bytes ? count : bytes;
         for (unsigned int i = 0; i < limit; ++i) words[i] = initWords[i];
         for (unsigned int i = limit; i < bytes; ++i) words[i] = 0;
     }
 
-    constexpr bool is_zero() const { for (unsigned int i = 0; i < bytes; ++i) { if (words[i] != 0) return false; } return true; }
-    constexpr bool is_zero_from(unsigned int start) const { for (unsigned int i = start; i < bytes; ++i) { if (words[i] != 0) return false; } return true; }
+    constexpr bool is_zero() const { 
+        for (unsigned int i = 0; i < bytes; ++i) 
+            if (words[i] != 0) return false; 
+        return true; 
+    }
     void zero_words() { for (unsigned int i = 0; i < bytes; ++i) words[i] = 0; }
     unsigned long long div_mod_bigInt64(unsigned long long m) {
         if (m == 0) return 0;
@@ -41,7 +47,7 @@ struct bigInt {
 
     constexpr bigInt operator+(const bigInt& rhs) const {
         bigInt res;
-        unsigned __int128 carry = 0;
+        __uint128_t carry = 0;
         for (unsigned int i = 0; i < bytes; ++i) {
             __uint128_t sum = static_cast<__uint128_t>(words[i]) + rhs.words[i] + carry;
             res.words[i] = static_cast<unsigned long long>(sum);
@@ -49,29 +55,32 @@ struct bigInt {
         }
         return res;
     }
-
+    template<typename T> constexpr bigInt operator+(T rhs) const { return *this + bigInt(rhs); }
     constexpr bigInt& operator+=(const bigInt& rhs) { *this = *this + rhs; return *this; }
+    template<typename T> constexpr bigInt& operator+=(T rhs) { *this = *this + rhs; return *this; }
 
     constexpr bigInt operator-(const bigInt& rhs) const {
         bigInt res;
-        unsigned __int128 borrow = 0;
+        __uint128_t borrow = 0;
         for (unsigned int i = 0; i < bytes; ++i) {
             unsigned long long tmp = words[i] - rhs.words[i] - borrow;
-            borrow = (static_cast<unsigned __int128>(words[i]) < static_cast<unsigned __int128>(rhs.words[i]) + borrow) ? 1 : 0;
+            borrow = (static_cast<__uint128_t>(words[i]) < static_cast<__uint128_t>(rhs.words[i]) + borrow) ? 1 : 0;
             res.words[i] = tmp;
         }
         return res;
     }
-
+    template<typename T> constexpr bigInt operator-(T rhs) const { return *this - bigInt(rhs); }
     constexpr bigInt& operator-=(const bigInt& rhs) { *this = *this - rhs; return *this; }
+    template<typename T> constexpr bigInt& operator-=(T rhs) { *this = *this - rhs; return *this; }
 
     constexpr bigInt operator*(const bigInt& rhs) const {
         unsigned long long res_words[bytes] = {0};
         __uint128_t tmp[bytes * 2] = {0};
-        for (unsigned int i = 0; i < bytes; ++i) {
-            for (unsigned int j = 0; j < bytes; ++j) { if (i + j < bytes * 2) tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j]; }
-        }
-        unsigned __int128 carry = 0;
+        for (unsigned int i = 0; i < bytes; ++i)
+            for (unsigned int j = 0; j < bytes; ++j)
+                if (i + j < bytes * 2)
+                    tmp[i + j] += static_cast<__uint128_t>(words[i]) * rhs.words[j];
+        __uint128_t carry = 0;
         for (unsigned int i = 0; i < bytes; ++i) {
             tmp[i] += carry;
             res_words[i] = static_cast<unsigned long long>(tmp[i]);
@@ -79,13 +88,13 @@ struct bigInt {
         }
         return bigInt(res_words, bytes);
     }
-
+    template<typename T> constexpr bigInt operator*(T rhs) const { return *this * bigInt(rhs); }
     constexpr bigInt& operator*=(const bigInt& rhs) { *this = *this * rhs; return *this; }
+    template<typename T> constexpr bigInt& operator*=(T rhs) { *this = *this * rhs; return *this; }
 
     constexpr bigInt operator/(const bigInt& divisor) const {
         if (divisor.is_zero()) return bigInt(0);
-        bigInt quotient(0);
-        bigInt remainder(0);
+        bigInt quotient(0), remainder(0);
         int bw = bit_width();
         if (bw == 0) return bigInt(0);
         for (int i = bw - 1; i >= 0; --i) {
@@ -94,15 +103,14 @@ struct bigInt {
             remainder.words[0] |= bit;
             if (remainder >= divisor) {
                 remainder -= divisor;
-                int word_idx = i / 64;
-                int bit_idx = i % 64;
-                quotient.words[word_idx] |= 1ULL << bit_idx;
+                quotient.words[i / 64] |= 1ULL << (i % 64);
             }
         }
         return quotient;
     }
-
+    template<typename T> constexpr bigInt operator/(T rhs) const { return *this / bigInt(rhs); }
     constexpr bigInt& operator/=(const bigInt& rhs) { *this = *this / rhs; return *this; }
+    template<typename T> constexpr bigInt& operator/=(T rhs) { *this = *this / rhs; return *this; }
 
     constexpr bigInt operator%(const bigInt& rhs) const {
         if (rhs.is_zero()) return *this;
@@ -117,28 +125,40 @@ struct bigInt {
         }
         return remainder;
     }
+    template<typename T> constexpr bigInt operator%(T rhs) const { return *this % bigInt(rhs); }
 
-    constexpr bool operator==(const bigInt& rhs) const { for (unsigned int i = 0; i < bytes; ++i) { if (words[i] != rhs.words[i]) return false; } return true; }
-    constexpr bool operator==(unsigned char rhs) const { return words[0] == rhs && is_zero_from(1); }
-    constexpr bool operator==(unsigned short rhs) const { return words[0] == rhs && is_zero_from(1); }
-    constexpr bool operator==(unsigned int rhs) const { return words[0] == rhs && is_zero_from(1); }
-    constexpr bool operator==(unsigned long long rhs) const { return words[0] == rhs && is_zero_from(1); }
-
-    constexpr bool operator!=(const bigInt& rhs) const { return !(*this == rhs); }
-
-    constexpr bool operator>(const bigInt& rhs) const {
-        for (int i = bytes - 1; i >= 0; --i) {
-            if (words[i] > rhs.words[i]) return true;
-            if (words[i] < rhs.words[i]) return false;
-        }
-        return false;
+    constexpr bigInt operator&(const bigInt& rhs) const {
+        bigInt res;
+        for (unsigned int i = 0; i < bytes; ++i) res.words[i] = words[i] & rhs.words[i];
+        return res;
     }
+    template<typename T> constexpr bigInt operator&(T rhs) const { return *this & bigInt(rhs); }
+    constexpr bigInt& operator&=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; ++i) words[i] &= rhs.words[i]; return *this; }
+    template<typename T> constexpr bigInt& operator&=(T rhs) { *this &= bigInt(rhs); return *this; }
 
-    constexpr bool operator>=(const bigInt& rhs) const { return (*this > rhs) || (*this == rhs); }
-    constexpr bool operator<(const bigInt& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(const bigInt& rhs) const { return !(*this > rhs); }
+    constexpr bigInt operator|(const bigInt& rhs) const {
+        bigInt res;
+        for (unsigned int i = 0; i < bytes; ++i) res.words[i] = words[i] | rhs.words[i];
+        return res;
+    }
+    template<typename T> constexpr bigInt operator|(T rhs) const { return *this | bigInt(rhs); }
+    constexpr bigInt& operator|=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; ++i) words[i] |= rhs.words[i]; return *this; }
+    template<typename T> constexpr bigInt& operator|=(T rhs) { *this |= bigInt(rhs); return *this; }
 
-    constexpr bigInt operator<<(int n) const { bigInt res = *this; res <<= n; return res; }
+    constexpr bigInt operator^(const bigInt& rhs) const {
+        bigInt res;
+        for (unsigned int i = 0; i < bytes; ++i) res.words[i] = words[i] ^ rhs.words[i];
+        return res;
+    }
+    template<typename T> constexpr bigInt operator^(T rhs) const { return *this ^ bigInt(rhs); }
+    constexpr bigInt& operator^=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; ++i) words[i] ^= rhs.words[i]; return *this; }
+    template<typename T> constexpr bigInt& operator^=(T rhs) { *this ^= bigInt(rhs); return *this; }
+
+    constexpr bigInt operator~() const {
+        bigInt res;
+        for (unsigned int i = 0; i < bytes; ++i) res.words[i] = ~words[i];
+        return res;
+    }
 
     constexpr bigInt& operator<<=(int n) {
         if (n <= 0) return *this;
@@ -151,13 +171,13 @@ struct bigInt {
             if (ni >= static_cast<int>(bytes)) continue;
             unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
-            if (ni + 1 < static_cast<int>(bytes) && bit_shift != 0) nw[ni + 1] |= part >> (64 - bit_shift);
+            if (ni + 1 < static_cast<int>(bytes) && bit_shift != 0) 
+                nw[ni + 1] |= part >> (64 - bit_shift);
         }
         for (unsigned int i = 0; i < bytes; ++i) words[i] = nw[i];
         return *this;
     }
-
-    constexpr bigInt operator>>(int n) const { bigInt res = *this; res >>= n; return res; }
+    constexpr bigInt operator<<(int n) const { bigInt res = *this; res <<= n; return res; }
 
     constexpr bigInt& operator>>=(int n) {
         if (n <= 0) return *this;
@@ -170,19 +190,34 @@ struct bigInt {
             if (ni < 0) continue;
             unsigned long long part = words[i];
             nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
-            if (ni - 1 >= 0 && bit_shift != 0) nw[ni - 1] |= part << (64 - bit_shift);
+            if (ni - 1 >= 0 && bit_shift != 0) 
+                nw[ni - 1] |= part << (64 - bit_shift);
         }
         for (unsigned int i = 0; i < bytes; ++i) words[i] = nw[i];
         return *this;
     }
+    constexpr bigInt operator>>(int n) const { bigInt res = *this; res >>= n; return res; }
 
-    constexpr bigInt operator|(const bigInt& rhs) const {
-        bigInt r;
-        for (unsigned int i = 0; i < bytes; ++i) r.words[i] = words[i] | rhs.words[i];
-        return r;
+    constexpr bool operator==(const bigInt& rhs) const { for (unsigned int i = 0; i < bytes; ++i) { if (words[i] != rhs.words[i]) return false; } return true; }
+    template<typename T> constexpr bool operator==(T rhs) const { return *this == bigInt(rhs); }
+
+    constexpr bool operator!=(const bigInt& rhs) const { return !(*this == rhs); }
+    template<typename T> constexpr bool operator!=(T rhs) const { return *this != bigInt(rhs); }
+
+    constexpr bool operator>(const bigInt& rhs) const {
+        for (int i = bytes - 1; i >= 0; --i) {
+            if (words[i] > rhs.words[i]) return true;
+            if (words[i] < rhs.words[i]) return false;
+        }
+        return false;
     }
-
-    constexpr bigInt& operator|=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; ++i) { words[i] |= rhs.words[i]; } return *this; }
+    template<typename T> constexpr bool operator>(T rhs) const { return *this > bigInt(rhs); }
+    constexpr bool operator>=(const bigInt& rhs) const { return (*this > rhs) || (*this == rhs); }
+    template<typename T> constexpr bool operator>=(T rhs) const { return *this >= bigInt(rhs); }
+    constexpr bool operator<(const bigInt& rhs) const { return rhs > *this; }
+    template<typename T> constexpr bool operator<(T rhs) const { return *this < bigInt(rhs); }
+    constexpr bool operator<=(const bigInt& rhs) const { return !(*this > rhs); }
+    template<typename T> constexpr bool operator<=(T rhs) const { return *this <= bigInt(rhs); }
 };
 
 template<unsigned long long bitCount>
