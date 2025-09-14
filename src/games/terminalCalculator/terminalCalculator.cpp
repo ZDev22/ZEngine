@@ -101,6 +101,7 @@ void TerminalCalculator::terminalCalculatorRun() {
                 else if (operationStr == "easeInOutCirc") { answer = std::to_string(easeInOutCirc(std::stof(num1))); }
                 else if (operationStr == "easeOutBounce") { answer = std::to_string(easeOutBounce(std::stof(num1))); }
             }
+            else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().toString(); }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:

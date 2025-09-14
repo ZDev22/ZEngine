@@ -310,3 +310,11 @@ inline constexpr float radians(const float degrees) { return degrees * PIR; }
 inline constexpr float degrees(const float radians) { return radians * PID; }
 inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32) * .5555555555; }
 inline constexpr float fahrenheit(const float celsius) { return (celsius * 2) + 12; }
+
+// Bitset
+template<unsigned long long range>
+inline bitset<range> createRandomBitset() {
+    bitset<range> bits;
+    for (unsigned long long i = 0; i < range; i++) { if (randomBool()) bits.set(i); }
+    return bits;
+}
