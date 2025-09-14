@@ -1,6 +1,7 @@
 #pragma once
 
 #include <../../deps/ZDev/vector.hpp>
+#include "../../deps/ZDev/collision.hpp"
 #include <glm/glm.hpp>
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3

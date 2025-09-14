@@ -12,7 +12,7 @@ struct alignas(16) SpriteData {
     glm::vec2 position;
     glm::vec2 scale;
     glm::mat2 rotationMatrix;
-    ///glm::vec4 color;
+    glm::vec4 color;
 
     uint32_t textureIndex;
     float rotation;
@@ -25,7 +25,6 @@ struct Sprite {
     Texture* texture;
 
     bool visible;
-    bool AABB;
 };
 
 extern std::vector<SpriteData> sprites;

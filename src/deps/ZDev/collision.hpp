@@ -6,9 +6,9 @@
 class Collision {
 public:
     struct AABBS {
-        glm::vec2 min(3.402823466e+38f, 3.402823466e+38f);
-        glm::vec2 max(-3.402823466e+38f, -3.402823466e+38f);
-        unsigned int ID:
+        glm::vec2 min = glm::vec2(3.402823466e+38f, 3.402823466e+38f);
+        glm::vec2 max = glm::vec2(-3.402823466e+38f, -3.402823466e+38f);
+        unsigned int ID;
     };
 
     bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) { // Collision for square objects like textures

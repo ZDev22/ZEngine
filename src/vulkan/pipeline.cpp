@@ -189,20 +189,20 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<glm::vec2>& positio
     return std::make_shared<Model>(device, vertices);
 }
 
-void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation) {
+void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, glm::vec2 position, glm::vec2 scale, float rotation, glm::vec4 color) {
     if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
 
     sprite.model = model;
+    if (textureIndex < 0 || textureIndex >= MAX_TEXTURES) { throw("Out of bounds texture!"); }
     sprite.texture = spriteTextures[textureIndex].get();
     sprite.visible = true;
-    sprite.AABB = false;
 
     spriteData.position = position;
     spriteData.scale = scale;
     spriteData.rotation = rotation;
-    //spriteData.color = color;
+    spriteData.color = color;
     spriteData.textureIndex = textureIndex;
 
     sprites.push_back(spriteData);
@@ -271,12 +271,12 @@ void Pipeline::loadFlappyBird() {
     fonts = { "Bullpen3D.ttf" };
     loadTextures();
 
-    createSprite(squareModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f);
+    createSprite(squareModel, 0, glm::vec2(-.7f, -.2f), glm::vec2(.1f, .1f), 0.f, glm::vec4(1.f));
 
     for (float i = 1.f; i < 5.f; i++) {
         float y = randomFloat(.4f, 1.4f);
-        createSprite(squareModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f);
-        createSprite(squareModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f);
+        createSprite(squareModel, 1, glm::vec2(i, y), glm::vec2(.15f, 1.5f), 0.f, glm::vec4(1.f));
+        createSprite(squareModel, 1, glm::vec2(i, y - 2.f), glm::vec2(.15f, 1.5f), 180.f, glm::vec4(1.f));
     }
 }
 
@@ -285,8 +285,8 @@ void Pipeline::loadSlimeAttack() {
     fonts = {};
     loadTextures();
     
-    createSprite(squareModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f);
-    createSprite(squareModel, 1, glm::vec2(0.f, .7f), glm::vec2(2.f, .15f), 0.f);
+    createSprite(squareModel, 1, glm::vec2(0.f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
+    createSprite(squareModel, 1, glm::vec2(0.f, .7f), glm::vec2(2.f, .15f), 0.f, glm::vec4(1.f));
 }
 
 void Pipeline::loadTerminalCalculator() {
@@ -294,5 +294,5 @@ void Pipeline::loadTerminalCalculator() {
     fonts = {};
     loadTextures();
     
-    createSprite(squareModel, 0, glm::vec2(0.f), glm::vec2(2.f, 1.f), 0.f);
+    createSprite(squareModel, 0, glm::vec2(0.f), glm::vec2(2.f, 1.f), 0.f, glm::vec4(1.f));
 }

@@ -68,7 +68,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_SLIME:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f);
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
 
         Enemy slime;
         slime.health = 2;
@@ -82,7 +82,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_BAT:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f);
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
         
         Enemy bat;
         bat.health = 3;
@@ -96,7 +96,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_OGRE:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f);
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(x, -.5f), glm::vec2(.15f, .15f), 0.f, glm::vec4(1.f));
 
         Enemy ogre;
         ogre.health = 6;
@@ -110,7 +110,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
     
     case SLIMEATTACK_ENEMY_TYPE_BOSS:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 1.5f), glm::vec2(1.f, 1.f), 0.f);
+        pipeline.createSprite(pipeline.getSquareModel(), type, glm::vec2(0.f, 1.5f), glm::vec2(1.f, 1.f), 0.f, glm::vec4(1.f));
 
         Enemy boss;
         boss.health = 25;

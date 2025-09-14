@@ -2,7 +2,7 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-FlappyBird::FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push) {}
+FlappyBird::FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push) {}
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -60,5 +60,4 @@ void FlappyBird::tick() {
 
     //Reset stuff for next frame
     keyboard.resetKeys();
-    collision.clearAABB();
 }

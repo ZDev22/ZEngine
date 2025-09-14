@@ -2,6 +2,7 @@
 
 #include "../../deps/ZDev/audio.hpp"
 #include "../../deps/ZDev/keyboard.hpp"
+#include "../../deps/ZDev/collision.hpp"
 #include "../../vulkan/pipeline.hpp"
 #include "../../vulkan/global.hpp"
 
@@ -13,8 +14,8 @@ public:
     void tick();
 private:
     Keyboard& keyboard;
+    Collision& collision;
     AudioPlayer& audio;
     Pipeline& pipeline;
-    Collision& collision;
     Push& push;
 };
