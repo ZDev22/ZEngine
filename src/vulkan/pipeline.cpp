@@ -248,8 +248,8 @@ void Pipeline::loadSprites() {
         { .5f,  .5f}  // Top-Left
     });
 
-    //loadFlappyBird();
-    loadSlimeAttack();
+    loadFlappyBird();
+    //loadSlimeAttack();
     //loadTerminalCalculator();
 
     for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", glm::vec2(.0f), .1f, glm::vec4(1.f)); }
