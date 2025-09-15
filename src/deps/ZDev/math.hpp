@@ -41,13 +41,11 @@ inline constexpr float smoothStep(const float edge0, const float edge1, const fl
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * (3 - 2 * t);
 }
-
 inline constexpr float smootherStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
-
 inline constexpr float linearInterpolate(const float a, const float b, const float t) { return a + (b - a) * t; }
 inline constexpr float easeInSine(const float t) { return 1 - cos((t * PI) / 2); }
 inline constexpr float easeOutSine(const float t) { return sin((t * PI) / 2); }
@@ -59,14 +57,12 @@ inline constexpr float easeInOutExpo(const float t) {
     if (t < .5f) { return pow(2, 20 * t - 10) / 2; }
     return (2 - pow(2, -20 * t + 10)) / 2;
 }
-
 inline constexpr float easeInCirc(const float t) { return 1 - sqrt(1 - t * t); }
 inline constexpr float easeOutCirc(const float t) { return sqrt(1 - (t - 1) * (t - 1)); }
 inline constexpr float easeInOutCirc(const float t) {
     if (t < .5f) { return (1 - sqrt(1 - 4 * t * t)) / 2; }
     return (sqrt(1 - pow(-2 * t + 2, 2)) + 1) / 2;
 }
-
 inline constexpr float easeOutBounce(const float t) {
     if (t < 4.f / 11.f) { return (121.f * t * t) / 16.f; } 
     else if (t < 8.f / 11.f) { return (363.f / 40.f * t * t) - (99.f / 10.f * t) + 17.f / 5.f; }
@@ -117,13 +113,13 @@ public:
 
     unsigned int getRandomValue() {
         unsigned long long offset = 0ULL;
-        for (size_t i = 0; i < weights.size(); i++) {
+        for (unsigned int i = 0; i < weights.size(); i++) {
             weights[i].offset = offset;
             offset += weights[i].weight;
         }
 
         unsigned long long number = randomUnsignedLong(0ULL, 18446744073709551615ULL);
-        for (size_t i = 0; i < weights.size(); i++) { if (number >= weights[i].offset && number < weights[i].offset + weights[i].weight) { return weights[i].value; }}
+        for (unsigned int i = 0; i < weights.size(); i++) { if (number >= weights[i].offset && number < weights[i].offset + weights[i].weight) { return weights[i].value; }}
         return -1;
     }
 
@@ -134,40 +130,16 @@ private:
 };    
 
 // Averages
-inline short averageChar(const vector<unsigned char>& chars) {
-    if (chars.size() == 0) return 0;
-    int sum = 0;
-    for (size_t i = 0; i < chars.size(); ++i) sum += chars[i];
-    return static_cast<short>(sum / static_cast<int>(chars.size()));
-}
-inline short averageShort(const vector<short>& shorts) {
-    if (shorts.size() == 0) return 0;
-    int sum = 0;
-    for (size_t i = 0; i < shorts.size(); ++i) sum += shorts[i];
-    return static_cast<short>(sum / static_cast<int>(shorts.size()));
-}
-inline int averageInt(const vector<int>& ints) {
-    if (ints.size() == 0) return 0;
-    long long sum = 0;
-    for (size_t i = 0; i < ints.size(); ++i) sum += ints[i];
-    return static_cast<int>(sum / static_cast<long long>(ints.size()));
-}
-inline long long averageLong(const vector<long long>& longs) {
-    if (longs.size() == 0) return 0;
-    long long sum = 0;
-    for (size_t i = 0; i < longs.size(); ++i) sum += longs[i];
-    return sum / static_cast<long long>(longs.size());
-}
-inline float averageFloat(const vector<float>& floats) {
-    if (floats.size() == 0) return 0.0f;
-    float sum = 0.0f;
-    for (size_t i = 0; i < floats.size(); ++i) sum += floats[i];
-    return sum / static_cast<float>(floats.size());
+template<typename T>
+inline T average(const vector<T>& items) {
+    T sum = 0;
+    for (unsigned int i = 0; i < items.size(); ++i) sum += items[i];
+    return sum / items.size();
 }
 inline bool averageBool(const vector<bool>& bools) {
     if (bools.size() == 0) return randomBool();
     int averageTrue = 0, averageFalse = 0;
-    for (size_t i = 0; i < bools.size(); ++i) {
+    for (unsigned int i = 0; i < bools.size(); ++i) {
         if (bools[i]) { averageTrue++; }
         else { averageFalse++; }
     }
@@ -175,104 +147,46 @@ inline bool averageBool(const vector<bool>& bools) {
     if (averageFalse > averageTrue) { return false; }
     return randomBool();
 }
-inline short averageMinMaxChar(const vector<unsigned char>& chars) {
-    if (chars.size() == 0) return 0;
-    unsigned char minVal = chars[0], maxVal = chars[0];
-    int sum = 0;
+template<typename T>
+inline T averageMinMax(const vector<T>& items) {
+    T minVal = items[0], maxVal = items[0];
+    unsigned long long sum = 0;
 
-    for (size_t i = 0; i < chars.size(); ++i) {
-        unsigned char a = chars[i];
+    for (unsigned int i = 0; i < items.size(); ++i) {
+        unsigned long long a = items[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (size_t i = 0; i < chars.size(); ++i) {
-        unsigned char a = chars[i];
+    for (unsigned int i = 0; i < items.size(); ++i) {
+        unsigned long long a = items[i];
         if (a != minVal && a != maxVal) sum += a;
     }
-    return static_cast<short>(sum / static_cast<int>(chars.size()));
-}
-inline short averageMinMaxShort(const vector<short>& shorts) {
-    if (shorts.size() == 0) return 0;
-    short minVal = shorts[0], maxVal = shorts[0];
-    int sum = 0;
-
-    for (size_t i = 0; i < shorts.size(); ++i) {
-        short a = shorts[i];
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (size_t i = 0; i < shorts.size(); ++i) {
-        short a = shorts[i];
-        if (a != minVal && a != maxVal) sum += a;
-    }
-    return static_cast<short>(sum / static_cast<int>(shorts.size()));
-}
-inline int averageMinMaxInt(const vector<int>& ints) {
-    if (ints.size() == 0) return 0;
-    int minVal = ints[0], maxVal = ints[0];
-    long long sum = 0;
-
-    for (size_t i = 0; i < ints.size(); ++i) {
-        int a = ints[i];
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (size_t i = 0; i < ints.size(); ++i) {
-        int a = ints[i];
-        if (a != minVal && a != maxVal) sum += a;
-    }
-    return static_cast<int>(sum / static_cast<long long>(ints.size()));
-}
-inline long long averageMinMaxLong(const vector<long long>& longs) {
-    if (longs.size() == 0) return 0;
-    long long minVal = longs[0], maxVal = longs[0], sum = 0;
-
-    for (size_t i = 0; i < longs.size(); ++i) {
-        long long a = longs[i];
-        if (a < minVal) { minVal = a; }
-        else if (a > maxVal) { maxVal = a; }
-    }
-    for (size_t i = 0; i < longs.size(); ++i) {
-        long long a = longs[i];
-        if (a != minVal && a != maxVal) sum += a;
-    }
-    return sum / static_cast<long long>(longs.size());
+    return static_cast<short>(sum / items.size());
 }
 inline float averageMinMaxFloat(const vector<float>& floats) {
-    if (floats.size() == 0) return 0.0f;
-    float minVal = floats[0], maxVal = floats[0], sum = 0.0f;
+    float minVal = floats[0], maxVal = floats[0], sum = 0.f;
 
-    for (size_t i = 0; i < floats.size(); ++i) {
+    for (unsigned int i = 0; i < floats.size(); ++i) {
         float a = floats[i];
         if (a < minVal) { minVal = a; }
         else if (a > maxVal) { maxVal = a; }
     }
-    for (size_t i = 0; i < floats.size(); ++i) {
+    for (unsigned int i = 0; i < floats.size(); ++i) {
         float a = floats[i];
         if (a != minVal && a != maxVal) sum += a;
     }
-    return sum / static_cast<float>(floats.size());
+    return sum / floats.size();
 }
 
 // Values
-inline void setValuesInRangeChar(vector<unsigned char>& vec, const unsigned char value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setValuesInRangeShort(vector<short>& vec, const short value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setValuesInRangeInt(vector<int>& vec, const int value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setValuesInRangeLong(vector<long long>& vec, const long long value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setValuesInRangeFloat(vector<float>& vec, const float value, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-inline void setZeroChar(vector<unsigned char>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count); }
-inline void setZeroShort(vector<short>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 2); }
-inline void setZeroInt(vector<int>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 4); }
-inline void setZeroLong(vector<long long>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 8); }
-inline void setZeroFloat(vector<float>& vec, size_t startIndex, size_t count) { std::memset(vec.data() + startIndex, 0, count * 4); }
+template<typename T> setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+template<typename T> setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
 inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
 // Cmath debloated functions
-inline constexpr short absoluteShort(const short i) { return (i < 0) ? -i : i; }
-inline constexpr int absoluteInt(const int i) { return (i < 0) ? -i : i; }
-inline constexpr long long absoluteLong(const long long i) { return (i < 0) ? -i : i; }
-inline constexpr float absoluteFloat(const float i) { return (i < 0.f) ? -i : i; }
+template<typename T>
+inline constexpr T absolute(const T i) { return i < 0 ? -i : i; }
 
 // Exponents
 template<unsigned long long bitCount>
@@ -286,13 +200,32 @@ inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> value, unsigned int 
 template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> factorial(unsigned int exponent) {
-    bigInt<bitCount> result = bigInt<bitCount>(1);
+    bigInt<bitCount> result = 1;
     int i = 2;
     for (; i + 3 <= exponent; i += 4) {
-        result *= bigInt<bitCount>(i) * bigInt<bitCount>(i + 1);
-        result *= bigInt<bitCount>(i + 2) * bigInt<bitCount>(i + 3);
+        result *= i * (i + 1);
+        result *= (i + 2) * (i + 3);
     }
-    for (; i <= exponent; ++i) { result *= bigInt<bitCount>(i); }
+    for (; i <= exponent; ++i) { result *= i; }
+    return result;
+}
+
+template<unsigned long long bitCount>
+    requires (bitCount % 64 == 0)
+inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
+    vector<bigInt<bitCount / 2>> legs;
+    bigInt<bitCount / 2> result = 1;
+    for (int q = exponent; q > 0; q--) {
+        int i = 2;
+        for (; i + 3 <= q; i += 4) {
+            result *= i * (i + 1);
+            result *= (i + 2) * (i + 3);
+        }
+        for (; i <= q; ++i) { result *= i; }
+        legs.push_back(result);
+        result = 1;
+    }
+    for (int i = 0; i < legs.size(); i++) { result *= legs[i]; }
     return result;
 }
 
@@ -301,7 +234,7 @@ inline constexpr float slopeOf(const glm::vec2& point1, const glm::vec2& point2)
 inline glm::vec2 averagePoint(const vector<glm::vec2>& points) {
     glm::vec2 avg = glm::vec2(0.f);
     if (points.size() == 0) { return avg; }
-    for (size_t i = 0; i < points.size(); ++i) { avg += points[i]; }
+    for (unsigned int i = 0; i < points.size(); ++i) { avg += points[i]; }
     return avg / static_cast<float>(points.size());
 }
 
