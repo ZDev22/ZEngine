@@ -15,7 +15,7 @@ public:
         dataA.setRotationMatrix();
         dataB.setRotationMatrix();
 
-        return absoluteFloat(dataA.position.x - dataB.position.x) <= (absoluteFloat(dataA.rotationMatrix[0][0]) * (dataA.scale.x * .5f) + absoluteFloat(dataA.rotationMatrix[0][1]) * (dataA.scale.y * .5f) + absoluteFloat(dataB.rotationMatrix[0][0]) * (dataB.scale.x * .5f) + absoluteFloat(dataB.rotationMatrix[0][1]) * (dataB.scale.y * .5f)) && absoluteFloat(dataA.position.y - dataB.position.y) <= (absoluteFloat(dataA.rotationMatrix[0][1]) * (dataA.scale.x * .5f) + absoluteFloat(dataA.rotationMatrix[0][0]) * (dataA.scale.y * .5f) + absoluteFloat(dataB.rotationMatrix[0][1]) * (dataB.scale.x * .5f) + absoluteFloat(dataB.rotationMatrix[0][0]) * (dataB.scale.y * .5f));
+        return absolute(dataA.position.x - dataB.position.x) <= (absolute(dataA.rotationMatrix[0][0]) * (dataA.scale.x * .5f) + absolute(dataA.rotationMatrix[0][1]) * (dataA.scale.y * .5f) + absolute(dataB.rotationMatrix[0][0]) * (dataB.scale.x * .5f) + absolute(dataB.rotationMatrix[0][1]) * (dataB.scale.y * .5f)) && absolute(dataA.position.y - dataB.position.y) <= (absolute(dataA.rotationMatrix[0][1]) * (dataA.scale.x * .5f) + absolute(dataA.rotationMatrix[0][0]) * (dataA.scale.y * .5f) + absolute(dataB.rotationMatrix[0][1]) * (dataB.scale.x * .5f) + absolute(dataB.rotationMatrix[0][0]) * (dataB.scale.y * .5f));
     }
 
     bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const unsigned int spriteAID, const Sprite& spriteB, SpriteData& dataB, const unsigned int spriteBID) { // Calculate AABB for sprites with more than 4 verticies, save data to be used later the same frame

@@ -151,13 +151,13 @@ void SlimeAttackEnemies::simulateEnemies() {
                     enemies[i].speed = glm::vec2(sprites[0].position.x >= sprites[i].position.x ? .5f : -.5f, 1.5f);
                     enemies[i].speed.y -=  1.f * deltaTime;
 
-                    if (absoluteFloat(sprites[i].position.x) >= .9f) { enemies[i].speed.x = 0.f; }
+                    if (absolute(sprites[i].position.x) >= .9f) { enemies[i].speed.x = 0.f; }
                 }
                 break;
 
             case SLIMEATTACK_ENEMY_TYPE_OGRE:
                 enemies[i].cooldown += deltaTime;
-                if (enemies[i].cooldown > 2.5f) { if (absoluteFloat(sprites[0].position.x - sprites[i].position.x) <= .2f) { slimeAttack.knockback(sprites[i].position.x); }}
+                if (enemies[i].cooldown > 2.5f) { if (absolute(sprites[0].position.x - sprites[i].position.x) <= .2f) { slimeAttack.knockback(sprites[i].position.x); }}
                 enemies[i].speed.x += (sprites[0].position.x >= sprites[i].position.x ? -.1f : .1f) * deltaTime;
                 break;
 

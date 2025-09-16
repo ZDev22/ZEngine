@@ -65,6 +65,7 @@ void TerminalCalculator::terminalCalculatorRun() {
             std::cin >> operationStr;
 
             if (operationStr == "factorial") { answer = toString<8192>(factorial<8192>(std::stoi(num1))); }
+            else if (operationStr == "superFactorial") { answer = toString<16384>(superFactorial<16384>(std::stoi(num1))); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(std::sqrt(std::stof(num1))); }
             else if (operationStr == "lerp") {
                 std::cout << "\nsmoothStep\nsmootherStep\nlerp\neaseInSine\neaseOutSine\neaseInOutSine\neaseInExpo\neaseOutExpo\neaseInOutExpo\neaseInCirc\neaseOutCirc\neaseInOutCirc\neaseOutBounce\n\nChoose one: ";

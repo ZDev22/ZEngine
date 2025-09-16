@@ -76,7 +76,7 @@ void Device::setupDebugMessenger() {
     if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
         std::cerr << "Warning: Failed to create debug messenger." << std::endl;
         debugMessenger = VK_NULL_HANDLE;
-    } 
+    }
 }
 
 void Device::pickPhysicalDevice() {

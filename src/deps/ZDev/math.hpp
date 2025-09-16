@@ -21,6 +21,7 @@
 #define BERNOUILLI .0787456776
 
 #include <cmath>
+#include <vector>
 #include <cstring>
 
 #include "vector.hpp"
@@ -179,8 +180,10 @@ inline float averageMinMaxFloat(const vector<float>& floats) {
 }
 
 // Values
-template<typename T> setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-template<typename T> setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
+template<typename T>
+void setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+template<typename T>
+void setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
 inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
@@ -213,8 +216,8 @@ inline constexpr bigInt<bitCount> factorial(unsigned int exponent) {
 template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
-    vector<bigInt<bitCount / 2>> legs;
-    bigInt<bitCount / 2> result = 1;
+    std::vector<bigInt<bitCount>> legs;
+    bigInt<bitCount> result = 1;
     for (int q = exponent; q > 0; q--) {
         int i = 2;
         for (; i + 3 <= q; i += 4) {
@@ -225,7 +228,7 @@ inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
         legs.push_back(result);
         result = 1;
     }
-    for (int i = 0; i < legs.size(); i++) { result *= legs[i]; }
+    for (int i = 0; i < exponent; i++) { result *= legs[i]; }
     return result;
 }
 
