@@ -52,11 +52,14 @@ void App::run() {
         }
 
         glfwPollEvents();
+        keyboard.updateMouse();
 
         //flappyBird.tick();
         //slimeAttack.tick();
         terminalCalculator.tick();
 
+        keyboard.resetKeys();
+        collision.clearAABB();
         renderSystem->updateSprites();
         shouldClose = window.shouldClose();
 

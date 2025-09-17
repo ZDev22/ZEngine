@@ -60,9 +60,6 @@ void SlimeAttack::tick() {
         }
         else { slimeAttackTouchingGround = false; }
     }
-    
-    //Reset stuff for next frame
-    keyboard.resetKeys();
 }
 
 void SlimeAttack::knockback(float origin) {

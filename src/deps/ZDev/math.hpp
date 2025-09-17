@@ -79,14 +79,10 @@ inline unsigned long long xorshift32() {
     state ^= state << 5;
     return state;
 }
-inline unsigned char randomChar(const unsigned char min, unsigned const char max) { return static_cast<unsigned char>(min + (xorshift32() % (max - min + 1))); }
-inline short randomShort(const short min, const short max) { return static_cast<short>(min + (xorshift32() % (max - min + 1))); }
-inline int randomInt(const int min, const int max) { return static_cast<int>(min + (xorshift32() % (max - min + 1))); }
-inline long long randomLong(const long long min, const long long max) { return static_cast<long long>(min + (xorshift32() % (max - min + 1))); }
-inline unsigned short randomUnsignedShort(const unsigned short min, const unsigned short max) { return static_cast<unsigned short>(min + (xorshift32() % (max - min + 1))); }
-inline unsigned int randomUnsignedInt(const unsigned int min, const unsigned int max) { return static_cast<unsigned int>(min + (xorshift32() % (max - min + 1))); }
-inline unsigned long long randomUnsignedLong(const unsigned long long min, const unsigned long long max) { return static_cast<unsigned long long>(min + (xorshift32() % (max - min + 1))); }
+template<typename T>
+inline T random(const T min, const T max) { return static_cast<T>(min + (xorshift32() & (max - min + 1))); }
 inline float randomFloat(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
+inline float randomDouble(const float min, const float max) { return min + (max - min) * (static_cast<double>(xorshift32()) / 170141183460469231731687303715884105727.0); }
 inline bool randomBool() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table

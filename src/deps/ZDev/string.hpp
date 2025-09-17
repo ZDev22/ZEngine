@@ -1,12 +1,12 @@
 #pragma once
 
-inline size_t stringLength(const char* str) {
-    size_t len = 0;
+inline unsigned int charLength(const char* str) {
+    unsigned int len = 0;
     while (str[len] != '\0') len++;
     return len;
 }
 
-inline int stringCompare(const char* a, const char* b) {
+inline int charCompare(const char* a, const char* b) {
     while (*a && (*a == *b)) {
         a++;
         b++;
@@ -28,43 +28,38 @@ inline const char* stringContainsItem(const char* str, const char* sub) {
     return nullptr;
 }
 
-inline int vectorContainsString(const char* target, const char** list, int listSize) {
-    for (int i = 0; i < listSize; i++) {
-        if (stringCompare(list[i], target) == 0) { return i; }
-    }
-    return -1;
-}
+inline int vectorContainsString(const char* target, const char** list, int listSize) { for (int i = 0; i < listSize; i++) { if (charCompare(list[i], target) == 0) return i; } return -1; }
 
 inline bool stringStartsWithItem(const char* str, const char* item) {
-    size_t i = 0;
+    unsigned int i = 0;
     while (item[i] != '\0') {
-        if (str[i] != item[i]) return false;
+        if (str[i] != item[i]) { return false; }
         i++;
     }
     return true;
 }
 
 inline bool stringEndsWithItem(const char* str, const char* item) {
-    size_t strLen = stringLength(str);
-    size_t itemLen = stringLength(item);
+    unsigned int strLen = charLength(str);
+    unsigned int itemLen = stringLength(item);
     if (itemLen > strLen) return false;
 
-    size_t start = strLen - itemLen;
-    for (size_t i = 0; i < itemLen; i++) {
+    unsigned int start = strLen - itemLen;
+    for (unsigned int i = 0; i < itemLen; i++) {
         if (str[start + i] != item[i]) return false;
     }
     return true;
 }
 
 inline int itemIndexInString(const char* str, const char* item) {
-    size_t strLen = stringLength(str);
-    size_t itemLen = stringLength(item);
+    unsigned int strLen = stringLength(str);
+    unsigned int itemLen = stringLength(item);
 
     if (itemLen == 0 || itemLen > strLen) return -1;
 
-    for (size_t i = 0; i <= strLen - itemLen; i++) {
+    for (unsigned int i = 0; i <= strLen - itemLen; i++) {
         bool match = true;
-        for (size_t j = 0; j < itemLen; j++) {
+        for (unsigned int j = 0; j < itemLen; j++) {
             if (str[i + j] != item[j]) {
                 match = false;
                 break;

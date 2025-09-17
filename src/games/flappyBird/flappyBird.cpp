@@ -38,26 +38,23 @@ void FlappyBird::tick() {
     }
     else { if (keyboard.keyPressed(GLFW_KEY_SPACE)) { flappyBirdStarted = true; }}
 
-    for (size_t i = 1; i < (sprites.size()) / 2; i++) {
-            size_t index = ((i - 1) * 2) + 1;
-            sprites[index].position.x -= .5f * deltaTime;
-            if (sprites[index].position.x < -1.5f) {
-                sprites[index].position.x = 1.5f;
-                sprites[index].position.y = randomFloat(.4f, 1.4f);
-            }
-            sprites[index + 1].position.x = sprites[index].position.x;
-            sprites[index + 1].position.y = sprites[index].position.y - 2.f;
-
-            if (flappyBirdStarted && !flappyBirdDead && (collision.checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || collision.checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
-                flappyBirdDead = true;
-                flappyBirdSpeedY = -1.5f;
-                sprites[0].rotation = 60.f;
-                sprites[0].textureIndex = 1;
-
-                audio.play("assets/sounds/hit.mp3");
-            }
+    for (unsigned int i = 1; i < (sprites.size()) / 2; i++) {
+        unsigned int index = ((i - 1) * 2) + 1;
+        sprites[index].position.x -= .5f * deltaTime;
+        if (sprites[index].position.x < -1.5f) {
+            sprites[index].position.x = 1.5f;
+            sprites[index].position.y = randomFloat(.4f, 1.4f);
         }
+        sprites[index + 1].position.x = sprites[index].position.x;
+        sprites[index + 1].position.y = sprites[index].position.y - 2.f;
 
-    //Reset stuff for next frame
-    keyboard.resetKeys();
+        if (flappyBirdStarted && !flappyBirdDead && (collision.checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || collision.checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
+            flappyBirdDead = true;
+            flappyBirdSpeedY = -1.5f;
+            sprites[0].rotation = 60.f;
+            sprites[0].textureIndex = 1;
+
+            audio.play("assets/sounds/hit.mp3");
+        }
+    }
 }
