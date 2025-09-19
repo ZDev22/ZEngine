@@ -1,5 +1,12 @@
 #pragma once
 
+#include "vector.hpp"
+
+struct StringIndex {
+    unsigned int begin;
+    unsigned int end;
+};
+
 inline unsigned int charLength(const char* str) {
     unsigned int len = 0;
     while (str[len] != '\0') len++;
@@ -68,4 +75,43 @@ inline int itemIndexInString(const char* str, const char* item) {
         if (match) return (int)i;
     }
     return -1;
+}
+
+inline unsigned int howManyItemsInString(char item, const char* str, unsigned int strSize) {
+    unsigned int items = 0;
+    for (unsigned int i = 0; i < strSize; i++) { if (str[i] == item) { items++; }}
+    return items;
+}
+
+inline vector<unsigned int> itemIndexsInString(char item, const char* str, unsigned int strSize) {
+    vector<unsigned int> items;
+    for (unsigned int i = 0; i < strSize; i++) { if (str[i] == item) { items.push_back(i); }}
+    return items;
+}
+
+inline unsigned int howManyStringsInString(const char* item, unsigned int itemSize, const char* str, unsigned int strSize) {
+    unsigned int items = 0;
+    for (unsigned int i = 0; i < strSize; i++) {
+        if (str[i] == item[i]) {
+            for (unsigned int q = 1; q < itemSize; q++) { if (str[i + q] != item[i + q]) { break; }}
+            if (q == itemSize) { items++; }
+        }
+    }
+    return items;
+}
+
+inline vector<StringIndex> stringIndexsInString(const char* item, unsigned int itemSize, const char* str, unsigned int strSize) {
+    vector<StringIndex> items = 0;
+    for (unsigned int i = 0; i < strSize; i++) {
+        if (str[i] == item[i]) {
+            for (unsigned int q = 1; q < itemSize; q++) { if (str[i + q] != item[i + q]) { break; }}
+            if (q == itemSize) {
+                StringIndex strIndex;
+                strIndex.begin = i;
+                strIndex.end = i + q;
+                items.push_back(strIndex);
+            }
+        }
+    }
+    return items;
 }
