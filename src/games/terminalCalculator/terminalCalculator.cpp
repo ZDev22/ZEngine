@@ -5,11 +5,11 @@
 #include <string>
 #include <iostream>
 
-std::string operationType = "";
+std::string operationType;
 unsigned char selectedOperation = 0;
 std::string num1 = "0";
-char operation = '+';
-std::string operationStr = "";
+std::string operation = "+";
+std::string operationStr;
 std::string num2 = "0";
 std::string num3 = "0";
 std::string answer = "0";
@@ -46,13 +46,16 @@ void TerminalCalculator::terminalCalculatorRun() {
             std::cout << std::endl << "Num2: ";
             std::cin >> num2;
 
-            switch (operation) {
-            case '+': answer = std::to_string(std::stof(num1) + std::stof(num2)); break;
-            case '-': answer = std::to_string(std::stof(num1) - std::stof(num2)); break;
-            case '/': answer = std::to_string(std::stof(num1) / std::stof(num2)); break;
-            case '*': answer = std::to_string(std::stof(num1) * std::stof(num2)); break;
-            case '%': answer = std::to_string(std::stoi(num1) % std::stoi(num2)); break;
-            case '^': answer = std::to_string(pow(std::stof(num1), std::stof(num2))); break;
+            if (operation == "+") { answer = std::to_string(std::stof(num1) + std::stof(num2)); }
+            else if (operation == "-") { answer = std::to_string(std::stof(num1) - std::stof(num2)); }
+            else if (operation == "/") { answer = std::to_string(std::stof(num1) / std::stof(num2)); }
+            else if (operation == "*") { answer = std::to_string(std::stof(num1) * std::stof(num2)); }
+            else if (operation == "&") { answer = std::to_string(std::stoi(num1) % std::stoi(num2)); }
+            else if (operation == "^") { answer = std::to_string(pow(std::stof(num1), std::stof(num2))); }
+            else if (operation == "+d") {
+                bigDouble<128> dnum1 = std::stod(num1);
+                bigDouble<128> dnum2 = std::stod(num2);
+                answer = doubleToString<128>(dnum1 + dnum2);
             }
 
             std::cout << std::endl << "Answer: " << answer << std::endl;
@@ -103,12 +106,11 @@ void TerminalCalculator::terminalCalculatorRun() {
                 else if (operationStr == "easeOutBounce") { answer = std::to_string(easeOutBounce(std::stof(num1))); }
             }
             else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().toString(); }
+            else if (operationStr == "fahrenheit") { answer = std::to_string(fahrenheit(std::stoi(num1))); }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:
-            switch (operation) {
-            case '&': answer = std::to_string(std::stoi(num1) & std::stoi(num2)); break;
-            }
+            if (operation == "&") { answer = std::to_string(std::stoi(num1) & std::stoi(num2)); }
             break;
         }
     }

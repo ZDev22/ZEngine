@@ -86,45 +86,46 @@ inline float randomDouble(const float min, const float max) { return min + (max 
 inline bool randomBool() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table
-class WeightTable {
+struct WeightTable {
 public:
     struct WeightTableValues {
         unsigned int weight;
         int value;
         unsigned int ID;
-        unsigned long long offset;
+        unsigned int offset;
     };
-
-    WeightTable() {}
 
     void addItem(unsigned int weight, int value) {
         WeightTableValues weightValues;
         weightValues.weight = weight;
         weightValues.value = value;
-        weightValues.ID = static_cast<unsigned int>(weights.size());
+        weightValues.ID = weights.size();
         weightValues.offset = 0;
         weights.push_back(weightValues);
     }
 
-    void removeItem(unsigned int ID) { weights.erase(ID); }
+    void removeItem(unsigned int ID) {
+        weights.erase(weights.begin() + ID);
+        for (unsigned int i = ID - 2; i < weights.size(); i++) { weights[i].ID = i; }
+    }
 
     unsigned int getRandomValue() {
-        unsigned long long offset = 0ULL;
+        unsigned long long offset = 0;
         for (unsigned int i = 0; i < weights.size(); i++) {
             weights[i].offset = offset;
             offset += weights[i].weight;
         }
 
-        unsigned long long number = randomUnsignedLong(0ULL, 18446744073709551615ULL);
+        unsigned long long number = random(0ULL, offset);
         for (unsigned int i = 0; i < weights.size(); i++) { if (number >= weights[i].offset && number < weights[i].offset + weights[i].weight) { return weights[i].value; }}
         return -1;
     }
 
-    vector<WeightTableValues> getTable() const { return weights; }
+    std::vector<WeightTableValues> getTable() const { return weights; }
 
 private:
-    vector<WeightTableValues> weights;
-};    
+    std::vector<WeightTableValues> weights;
+};
 
 // Averages
 template<typename T>

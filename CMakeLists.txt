@@ -49,9 +49,6 @@ foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    endif()
 endforeach()
 
-list(APPEND SOURCES src/vulkan/global.cpp)
-message(STATUS "Sources: ${SOURCES}")
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 add_executable(main ${SOURCES})
 

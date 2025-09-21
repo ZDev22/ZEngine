@@ -1,7 +1,17 @@
 # A C++ Vulkan engine supporting windows and linux
 
 ## How to use:
-### WINDOWS: Add mingw64 from MSYS2, and CMake to your system PATH.
+### WINDOWS:
+- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/)
+- Launch MSYS2 MSYS (the purple one)
+- Run the following commands to download a C++ compiler:
+- pacman -Syu
+- pacman -S --needed base-devel mingw-w64-x86_64-toolchain
+- In the windows search bar, look up "environmental variables"
+- Go to "advanced"
+- Add C:\msys64\ucrt64\bin to your system PATH
+- Add C:\msys64\mingw64\bin
+- Download the Windows CMake Installer from [https://cmake.org/download/](https://cmake.org/download/)
 ### LINUX: *(type 'y' on all promps)*
 ```bash
 sudo apt update

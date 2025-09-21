@@ -46,33 +46,33 @@ public:
     bool keysPressed(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (glfwGetKey(window, keysArray[i]) != GLFW_PRESS) return false; } return true; }
     bool keysHit(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) != KEY_HIT) return false; } return true; }
     bool keysReleased(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) != KEY_RELEASED) return false; } return true; }
-    bool keysIdle(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (glfwGetKey(window, key) != GLFW_RELEASE) return false; } return true; }
+    bool keysIdle(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (glfwGetKey(window, keysArray[i]) != GLFW_RELEASE) return false; } return true; }
     bool anyKeyPressed() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) return true; } return false; }
     bool anyKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) return true; } return false; }
     bool anyKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) return true; } return false; }
-    bool anyKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, key) == GLFW_RELEASE) return true; } return false; }
+    bool anyKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) return true; } return false; }
     short whatKeyPressed() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) return glfwKeys[i]; } return -1; }
     short whatKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) return glfwKeys[i]; } return -1; }
     short whatKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) return glfwKeys[i]; } return -1; }
-    short whatKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, key) == GLFW_RELEASE;) return glfwKeys[i]; } return -1; }
+    short whatKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) return glfwKeys[i]; } return -1; }
     vector<short> whatKeysPressed() {
         vector<short> keysPressed;
-        for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) keysPressed.push_back(glfwKeys[i]) }
+        for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) keysPressed.push_back(glfwKeys[i]); }
         return keysPressed;
     }
     vector<short> whatKeysHit() {
         vector<short> keysHit;
-        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(key) == KEY_HIT;) keysHit.push_back(glfwKeys[i]) }
+        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) keysHit.push_back(glfwKeys[i]); }
         return keysHit;
     }
     vector<short> whatKeysReleased() {
         vector<short> keysReleased;
-        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(key) == KEY_RELEASED;) keysReleased.push_back(glfwKeys[i]) }
+        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) keysReleased.push_back(glfwKeys[i]);}
         return keysReleased;
     }
     vector<short> whatKeysIdle() {
         vector<short> keysIdle;
-        for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) keysIdle.push_back(glfwKeys[i]) }
+        for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) keysIdle.push_back(glfwKeys[i]); }
         return keysIdle;
     }
 
@@ -165,8 +165,8 @@ public:
     void lockAllKeys() { std::memset(keys + 104, 1, 104); }
 
     // MOUSE
-    updateMouse() {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;) {
+    void updateMouse() {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
             mouseState[0] = true;
             if (mouseState[1] == KEY_IDLE) { mouseState[1] = KEY_HIT; }
             else { mouseState[1] = KEY_PRESSED; }
@@ -177,7 +177,7 @@ public:
             else { mouseState[1] = KEY_IDLE; }
         }
 
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;) {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
             mouseState[2] = true;
             if (mouseState[3] == KEY_IDLE) { mouseState[3] = KEY_HIT; }
             else { mouseState[3] = KEY_PRESSED; }
