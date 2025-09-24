@@ -27,8 +27,6 @@
 #include "vector.hpp"
 #include "bigInts.hpp"
 
-#include <glm/glm.hpp>
-
 // Global
 inline constexpr float clamp(const float value, const float minValue, const float maxValue) {
     if (value < minValue) { return minValue; }
@@ -230,9 +228,9 @@ inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
 }
 
 // Points
-inline constexpr float slopeOf(const glm::vec2& point1, const glm::vec2& point2) { return ((point2.y - point1.y) / (point2.x - point1.x)); }
-inline glm::vec2 averagePoint(const vector<glm::vec2>& points) {
-    glm::vec2 avg = glm::vec2(0.f);
+inline constexpr float slopeOf(const float[2] point1, const float[2] point2) { return ((point2[1] - point1[1]) / (point2[0] - point1[0])); }
+inline float[2] averagePoint(const vector<float[2]>& points) {
+    float[2] avg = float2{0.f};
     if (points.size() == 0) { return avg; }
     for (unsigned int i = 0; i < points.size(); ++i) { avg += points[i]; }
     return avg / static_cast<float>(points.size());

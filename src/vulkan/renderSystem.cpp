@@ -33,7 +33,8 @@ void RenderSystem::initializeSpriteData() {
     spriteDataBuffer = std::make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     spriteDataBuffer->map();
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
-    push.camera = glm::vec2(0.f);
+    push.camera[0] = 0.f;
+    push.camera[1] = 0.f;
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {

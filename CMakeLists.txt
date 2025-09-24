@@ -9,8 +9,6 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG")
 
 set(GLFW_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/glfw)
 set(GLFW_INCLUDE_DIR ${GLFW_BASE_DIR})
-set(GLM_DIR ${CMAKE_SOURCE_DIR}/src/deps/glm)
-set(GLM_INCLUDE_DIR ${GLM_DIR})
 set(VULKAN_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan)
 
 if(WIN32)
@@ -54,7 +52,6 @@ add_executable(main ${SOURCES})
 
 target_include_directories(main PRIVATE
    "${VULKAN_INCLUDE_DIR}"
-   "${GLM_INCLUDE_DIR}"
    "${GLFW_INCLUDE_DIR}"
    "${CMAKE_SOURCE_DIR}/src"
    "${CMAKE_SOURCE_DIR}/src/include"

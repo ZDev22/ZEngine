@@ -8,7 +8,6 @@
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include "../glfw/glfw3.h"
-#include <glm/glm.hpp>
 
 #include "vector.hpp"
 #include <cstring>
@@ -189,7 +188,7 @@ public:
         }
     }
 
-    glm::vec2 getMousePosition() { glfwGetCursorPos(window, &mousePosition[0], &mousePosition[1]); return glm::vec2(mousePosition[0], mousePosition[1]); }
+    float[2] getMousePosition() { glfwGetCursorPos(window, &mousePosition[0], &mousePosition[1]); return float[2](mousePosition[0], mousePosition[1]); }
     void setMousePosition(double newPosition[2]) { glfwSetCursorPos(window, newPosition[0], newPosition[1]); }
     bool LMBPressed() { return mouseState[0]; }
     bool RMBPressed() { return mouseState[2]; }

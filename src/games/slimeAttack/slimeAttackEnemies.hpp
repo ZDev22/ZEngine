@@ -2,7 +2,6 @@
 
 #include <../../deps/ZDev/vector.hpp>
 #include "../../deps/ZDev/collision.hpp"
-#include <glm/glm.hpp>
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
 #define SLIMEATTACK_ENEMY_TYPE_SLIME 4
@@ -30,7 +29,7 @@ private:
         int health;
         float cooldown;
         float spawnCooldown;
-        glm::vec2 speed;
+        float[2] speed;
         bool skip;
     };
     vector<Enemy> enemies = {};

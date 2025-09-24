@@ -8,8 +8,6 @@
 
 #include "slimeAttackEnemies.hpp"
 
-#include <glm/glm.hpp>
-
 class AudioPlayer;
 class SlimeAttack {
 public:

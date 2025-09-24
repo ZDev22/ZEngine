@@ -4,13 +4,11 @@
 
 #include <memory>
 
-#include <glm/glm.hpp>
-
 class Model {
 public:
     struct Vertex {
-        glm::vec2 position;
-        glm::vec2 texCoord;
+        float[2] position;
+        float[2] texCoord;
 
         static VkVertexInputBindingDescription getBindingDescription() {
             VkVertexInputBindingDescription bindingDescription{};
