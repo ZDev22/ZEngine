@@ -33,15 +33,15 @@ public:
             const auto& verticesB = spriteB.model->getVertices();
 
             for (size_t i = 0; i < verticesB.size(); i++) {
-                float px = verticesB[i].position[0] * dataB.scale[0];
-                float py = verticesB[i].position[1] * dataB.scale[1];
-                float transformed[2] = { dataB.rotationMatrix[0] * px + dataB.rotationMatrix[1] * py, dataB.rotationMatrix[2] * px + dataB.rotationMatrix[3] * py};
-                transformed[0] += dataB.position[0];
-                transformed[1] += dataB.position[1];
-                if (transformed[0] < b.min[0]) b.min[0] = transformed[0];
-                if (transformed[1] < b.min[1]) b.min[1] = transformed[1];
-                if (transformed[0] > b.max[0]) b.max[0] = transformed[0];
-                if (transformed[1] > b.max[1]) b.max[1] = transformed[1];
+                float pxB = verticesB[i].position[0] * dataB.scale[0];
+                float pyB = verticesB[i].position[1] * dataB.scale[1];
+                float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
+                transformedB[0] += dataB.position[0];
+                transformedB[1] += dataB.position[1];
+                if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
+                if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
+                if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
+                if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
             }
 
             AABB.push_back(b);
@@ -53,15 +53,15 @@ public:
             const auto& verticesA = spriteA.model->getVertices();
 
             for (size_t i = 0; i < verticesA.size(); i++) {
-                float px = verticesA[i].position[0] * dataA.scale[0];
-                float py = verticesA[i].position[1] * dataA.scale[1];
-                float transformed[2] = { dataA.rotationMatrix[0] * px + dataA.rotationMatrix[1] * py, dataA.rotationMatrix[2] * px + dataA.rotationMatrix[3] * py};
-                transformed[0] += dataA.position[0];
-                transformed[1] += dataA.position[1];
-                if (transformed[0] < a.min[0]) a.min[0] = transformed[0];
-                if (transformed[1] < a.min[1]) a.min[1] = transformed[1];
-                if (transformed[0] > a.max[0]) a.max[0] = transformed[0];
-                if (transformed[1] > a.max[1]) a.max[1] = transformed[1];
+                float pxA = verticesA[i].position[0] * dataA.scale[0];
+                float pyA = verticesA[i].position[1] * dataA.scale[1];
+                float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                transformedA[0] += dataA.position[0];
+                transformedA[1] += dataA.position[1];
+                if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
+                if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
+                if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
+                if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
             }
 
             AABB.push_back(a);
@@ -81,81 +81,81 @@ public:
 
             if (verticesA.size() > verticesB.size()) {
                 for (size_t i = 0; i < verticesA.size(); i++) {
-                    float px = verticesA[i].position[0] * dataA.scale[0];
-                    float py = verticesA[i].position[1] * dataA.scale[1];
-                    float transformed[2] = { dataA.rotationMatrix[0] * px + dataA.rotationMatrix[1] * py, dataA.rotationMatrix[2] * px + dataA.rotationMatrix[3] * py};
-                    transformed[0] += dataA.position[0];
-                    transformed[1] += dataA.position[1];
-                    if (transformed[0] < a.min[0]) a.min[0] = transformed[0];
-                    if (transformed[1] < a.min[1]) a.min[1] = transformed[1];
-                    if (transformed[0] > a.max[0]) a.max[0] = transformed[0];
-                    if (transformed[1] > a.max[1]) a.max[1] = transformed[1];
+                    float pxA = verticesA[i].position[0] * dataA.scale[0];
+                    float pyA = verticesA[i].position[1] * dataA.scale[1];
+                    float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                    transformedA[0] += dataA.position[0];
+                    transformedA[1] += dataA.position[1];
+                    if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
+                    if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
+                    if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
+                    if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
 
                     if (i < verticesB.size()) {
-                        float px = verticesB[i].position[0] * dataB.scale[0];
-                        float py = verticesB[i].position[1] * dataB.scale[1];
-                        float transformed[2] = { dataB.rotationMatrix[0] * px + dataB.rotationMatrix[1] * py, dataB.rotationMatrix[2] * px + dataB.rotationMatrix[3] * py};
-                        transformed[0] += dataB.position[0];
-                        transformed[1] += dataB.position[1];
-                        if (transformed[0] < b.min[0]) b.min[0] = transformed[0];
-                        if (transformed[1] < b.min[1]) b.min[1] = transformed[1];
-                        if (transformed[0] > b.max[0]) b.max[0] = transformed[0];
-                        if (transformed[1] > b.max[1]) b.max[1] = transformed[1];
+                        float pxB = verticesB[i].position[0] * dataB.scale[0];
+                        float pyB = verticesB[i].position[1] * dataB.scale[1];
+                        float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
+                        transformedB[0] += dataB.position[0];
+                        transformedB[1] += dataB.position[1];
+                        if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
+                        if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
+                        if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
+                        if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
                     }
                 }
             }
             else if (verticesA.size() < verticesB.size()) {
                 for (size_t i = 0; i < verticesB.size(); i++) {
-                    float px = verticesB[i].position[0] * dataB.scale[0];
-                    float py = verticesB[i].position[1] * dataB.scale[1];
-                    float transformed[2] = {
-                        dataB.rotationMatrix[0] * px + dataB.rotationMatrix[1] * py,
-                        dataB.rotationMatrix[2] * px + dataB.rotationMatrix[3] * py
+                    float pxB = verticesB[i].position[0] * dataB.scale[0];
+                    float pyB = verticesB[i].position[1] * dataB.scale[1];
+                    float transformedB[2] = {
+                        dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB,
+                        dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB
                     };
-                    transformed[0] += dataB.position[0];
-                    transformed[1] += dataB.position[1];
+                    transformedB[0] += dataB.position[0];
+                    transformedB[1] += dataB.position[1];
 
-                    if (transformed[0] < b.min[0]) b.min[0] = transformed[0];
-                    if (transformed[1] < b.min[1]) b.min[1] = transformed[1];
-                    if (transformed[0] > b.max[0]) b.max[0] = transformed[0];
-                    if (transformed[1] > b.max[1]) b.max[1] = transformed[1];
+                    if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
+                    if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
+                    if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
+                    if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
 
                     if (i < verticesA.size()) {
-                        float px = verticesA[i].position[0] * dataA.scale[0];
-                        float py = verticesA[i].position[1] * dataA.scale[1];
-                        float transformed[2] = { dataA.rotationMatrix[0] * px + dataA.rotationMatrix[1] * py, dataA.rotationMatrix[2] * px + dataA.rotationMatrix[3] * py};
-                        transformed[0] += dataA.position[0];
-                        transformed[1] += dataA.position[1];
-                        if (transformed[0] < a.min[0]) a.min[0] = transformed[0];
-                        if (transformed[1] < a.min[1]) a.min[1] = transformed[1];
-                        if (transformed[0] > a.max[0]) a.max[0] = transformed[0];
-                        if (transformed[1] > a.max[1]) a.max[1] = transformed[1];
+                        float pxA = verticesA[i].position[0] * dataA.scale[0];
+                        float pyA = verticesA[i].position[1] * dataA.scale[1];
+                        float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                        transformedA[0] += dataA.position[0];
+                        transformedA[1] += dataA.position[1];
+                        if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
+                        if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
+                        if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
+                        if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
                     }
                 }
             }
             else {
                 for (size_t i = 0; i < verticesA.size(); i++) {
-                    float px = verticesA[i].position[0] * dataA.scale[0];
-                    float py = verticesA[i].position[1] * dataA.scale[1];
-                    float transformed[2] = { dataA.rotationMatrix[0] * px + dataA.rotationMatrix[1] * py, dataA.rotationMatrix[2] * px + dataA.rotationMatrix[3] * py};
-                    transformed[0] += dataA.position[0];
-                    transformed[1] += dataA.position[1];
+                    float pxA = verticesA[i].position[0] * dataA.scale[0];
+                    float pyA = verticesA[i].position[1] * dataA.scale[1];
+                    float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                    transformedA[0] += dataA.position[0];
+                    transformedA[1] += dataA.position[1];
 
-                    if (transformed[0] < a.min[0]) a.min[0] = transformed[0];
-                    if (transformed[1] < a.min[1]) a.min[1] = transformed[1];
-                    if (transformed[0] > a.max[0]) a.max[0] = transformed[0];
-                    if (transformed[1] > a.max[1]) a.max[1] = transformed[1];
+                    if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
+                    if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
+                    if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
+                    if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
 
-                    float px = verticesB[i].position[0] * dataB.scale[0];
-                    float py = verticesB[i].position[1] * dataB.scale[1];
-                    float transformed[2] = { dataB.rotationMatrix[0] * px + dataB.rotationMatrix[1] * py, dataB.rotationMatrix[2] * px + dataB.rotationMatrix[3] * py};
-                    transformed[0] += dataB.position[0];
-                    transformed[1] += dataB.position[1];
+                    float pxB = verticesB[i].position[0] * dataB.scale[0];
+                    float pyB = verticesB[i].position[1] * dataB.scale[1];
+                    float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
+                    transformedB[0] += dataB.position[0];
+                    transformedB[1] += dataB.position[1];
 
-                    if (transformed[0] < b.min[0]) b.min[0] = transformed[0];
-                    if (transformed[1] < b.min[1]) b.min[1] = transformed[1];
-                    if (transformed[0] > b.max[0]) b.max[0] = transformed[0];
-                    if (transformed[1] > b.max[1]) b.max[1] = transformed[1];
+                    if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
+                    if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
+                    if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
+                    if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
                 }
             }
             AABB.push_back(a);

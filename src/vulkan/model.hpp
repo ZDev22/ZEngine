@@ -7,8 +7,8 @@
 class Model {
 public:
     struct Vertex {
-        float[2] position;
-        float[2] texCoord;
+        float position[2];
+        float texCoord[2];
 
         static VkVertexInputBindingDescription getBindingDescription() {
             VkVertexInputBindingDescription bindingDescription{};

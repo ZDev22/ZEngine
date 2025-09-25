@@ -180,16 +180,27 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     return shaderModule;
 }
 
-std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float[2]>& positions) {
+std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) {
+    if (positions.size() % 2 != 0) {
+        throw std::runtime_error("Positions size must be a multiple of 2");
+    }
 
     std::vector<Model::Vertex> vertices;
-    vertices.reserve(positions.size());
-    for (size_t i = 0; i < positions.size(); i++) { vertices.emplace_back(positions[i], {positions[i] + {.5f, .5f}}); }
+    vertices.reserve(positions.size() / 2);
+
+    for (size_t i = 0; i < positions.size(); i += 2) {
+        Model::Vertex v{};
+        v.position[0] = positions[i];
+        v.position[1] = positions[i + 1];
+        v.texCoord[0] = positions[i] + 0.5f;
+        v.texCoord[1] = positions[i + 1] + 0.5f;
+        vertices.push_back(v);
+    }
 
     return std::make_shared<Model>(device, vertices);
 }
 
-void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, float[2]& position, float[2]& scale, float rotation, float[4]& color) {
+void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a) {
     if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
@@ -199,17 +210,22 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, floa
     sprite.texture = spriteTextures[textureIndex].get();
     sprite.visible = true;
 
-    spriteData.position = position;
-    spriteData.scale = scale;
+    spriteData.position[0] = positionx;
+    spriteData.position[1] = positiony;
+    spriteData.scale[0] = scalex;
+    spriteData.scale[1] = scaley;
     spriteData.rotation = rotation;
-    spriteData.color = color;
+    spriteData.color[0] = r;
+    spriteData.color[1] = g;
+    spriteData.color[2] = b;
+    spriteData.color[3] = a;
     spriteData.textureIndex = textureIndex;
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
 }
 
-void Pipeline::createText(const std::string& file, const std::string& text, float[2]& position, float fontSize, float[4]& color) {
+void Pipeline::createText(const std::string& file, const std::string& text, float positionx, float positiony, float fontSize, float r, float g, float b, float a) {
     if (spriteTextures.size() < MAX_TEXTURES) {
         spriteTextures.push_back(createFontTexture(device, *this, file, 32.f, 512, descriptorSetLayout, descriptorPool, fontCharData));
         Texture* fontTexture = spriteTextures[spriteTextures.size() - 1].get();
@@ -225,13 +241,13 @@ void Pipeline::createText(const std::string& file, const std::string& text, floa
             float yoff = cd.yoff * scaleFactor;
             float width = (cd.x1 - cd.x0) * scaleFactor;
             float height = (cd.y1 - cd.y0) * scaleFactor;
-            float[2] pos = {position.x + xoff + width / 2, position.y + yoff + height / 2};
-            float[2] scale = {width, height};
-            float[2] uvOffset = {cd.x0 / (float)atlasSize, cd.y0 / (float)atlasSize};
-            float[2] uvScale = {(cd.x1 - cd.x0) / (float)atlasSize, (cd.y1 - cd.y0) / (float)atlasSize};
+            float pos[2] = {positionx + xoff + width / 2, positiony + yoff + height / 2};
+            float scale[2] = {width, height};
+            float uvOffset[2] = {cd.x0 / (float)atlasSize, cd.y0 / (float)atlasSize};
+            float uvScale[2] = {(cd.x1 - cd.x0) / (float)atlasSize, (cd.y1 - cd.y0) / (float)atlasSize};
 
             //createSprite(quadModel, spriteTextures.size() - 1, pos, scale, 0.f, color, uvOffset, uvScale);
-            position[0] += cd.xadvance * scaleFactor;
+            positionx += cd.xadvance * scaleFactor;
         }
     }
     else { throw("There are too many textures to store this font!"); }
@@ -242,17 +258,17 @@ void Pipeline::loadSprites() {
     spriteCPU.clear();
 
     squareModel = makeModel({
-        {-.5f, -.5f}, // Bottom-Left
-        { .5f, -.5f}, // Bottom-Right
-        {-.5f,  .5f}, // Top-Right
-        { .5f,  .5f}  // Top-Left
+        -.5f, -.5f, // Bottom-Left
+        .5f, -.5f, // Bottom-Right
+        -.5f, .5f, // Top-Right
+        .5f, .5f  // Top-Left
     });
 
     //loadFlappyBird();
-    //loadSlimeAttack();
-    loadTerminalCalculator();
+    loadSlimeAttack();
+    //loadTerminalCalculator();
 
-    for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", {0.f, 0.f}, .1f, {1.f, 1.f, 1.f, 1.f}); }
+    for (int i = 0; i < fonts.size(); i++) { createText(fonts[i], "Hello", 0.f, 0.f, .1f, 1.f, 1.f, 1.f, 1.f); }
 }
 
 void Pipeline::loadTextures() {
@@ -261,9 +277,7 @@ void Pipeline::loadTextures() {
     spriteTextures.clear();
     spriteTextures.reserve(MAX_TEXTURES);
 
-    for (const auto& path : texturePaths) {
-        spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this));
-    }
+    for (const auto& path : texturePaths) { spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this)); }
 }
 
 void Pipeline::loadFlappyBird() {
@@ -271,12 +285,12 @@ void Pipeline::loadFlappyBird() {
     fonts = { "Bullpen3D.ttf" };
     loadTextures();
 
-    createSprite(squareModel, 0, {-.7f, -.2f}, {.1f, .1f}, 0.f, {1.f, 1.f, 1.f, 1.f});
+    createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
     for (float i = 1.f; i < 5.f; i++) {
-        float y = randomFloat(.4f, 1.4f);
-        createSprite(squareModel, 1, {i, y}, {.15f, 1.5f}, 0.f, {1.f, 1.f, 1.f, 1.f});
-        createSprite(squareModel, 1, {i, y - 2.f}, {.15f, 1.5f}, 180.f, {1.f, 1.f, 1.f, 1.f});
+        float y = random(.4f, 1.4f);
+        createSprite(squareModel, 1, i, y, .15f, 1.5f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, 1, i, y - 2.f, .15f, 1.5f, 180.f, 1.f, 1.f, 1.f, 1.f);
     }
 }
 
@@ -284,15 +298,15 @@ void Pipeline::loadSlimeAttack() {
     texturePaths = { "flappyBird.png", "pipe.png" };
     fonts = {};
     loadTextures();
-    
-    createSprite(squareModel, 1, {0.f, 0.f}, {.15f, .15f}, 0.f, {1.f, 1.f, 1.f, 1.f});
-    createSprite(squareModel, 1, {0.f, .7f}, {2.f, .15f}, 0.f, {1.f, 1.f, 1.f, 1.f});
+
+    createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }
 
 void Pipeline::loadTerminalCalculator() {
     texturePaths = { "terminalCalculator.png" };
     fonts = {};
     loadTextures();
-    
-    createSprite(squareModel, 0, {0.f, 0.f}, {2.f, 1.f}, 0.f, {1.f, 1.f, 1.f, 1.f});
+
+    createSprite(squareModel, 0, 0.f, 0.f, 2.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }

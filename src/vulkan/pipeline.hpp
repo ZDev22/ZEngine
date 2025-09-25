@@ -18,9 +18,9 @@ public:
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);
-    std::shared_ptr<Model> makeModel(const std::vector<float[2]>& positions);
-    void createSprite(std::shared_ptr<Model> model, int textureIndex, float[2]& position, float[2]& scale, float rotation, float[4]& color);
-    void createText(const std::string& file, const std::string& text, float[2]& position, float fontSize, float[4]& color);
+    std::shared_ptr<Model> makeModel(const std::vector<float>& positions);
+    void createSprite(std::shared_ptr<Model> model, int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a);
+    void createText(const std::string& file, const std::string& text, float positionx, float positiony, float fontSize, float r, float g, float b, float a);
     std::shared_ptr<Model> getSquareModel() { return squareModel; }
 
 private:

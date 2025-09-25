@@ -4,7 +4,7 @@
 
 SlimeAttack::SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push), slimeAttackEnemies(*this, collision, pipeline) {}
 
-float[2] slimeAttackSpeed = {0.f};
+float slimeAttackSpeed[2] = {0.f};
 bool slimeAttackTouchingGround = false;
 bool slimeAttackIsDead = false;
 int health = 3;
@@ -21,7 +21,7 @@ void SlimeAttack::tick() {
         if (slimeAttackTimer >= 1.f) {
             slimeAttackIsDead = false;
             slimeAttackTimer = 0.f;
-            slimeAttackSpeed[0] 0.f;
+            slimeAttackSpeed[0] = 0.f;
             slimeAttackSpeed[1] = 0.f;
             sprites[0].position[0] = 0.f;
             sprites[0].position[1] = -.5f;

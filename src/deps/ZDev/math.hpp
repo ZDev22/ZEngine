@@ -78,10 +78,10 @@ inline unsigned long long xorshift32() {
     return state;
 }
 template<typename T>
-inline T random(const T min, const T max) { return static_cast<T>(min + (xorshift32() & (max - min + 1))); }
-inline float randomFloat(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
-inline float randomDouble(const float min, const float max) { return min + (max - min) * (static_cast<double>(xorshift32()) / 170141183460469231731687303715884105727.0); }
-inline bool randomBool() { return (xorshift32() & 1ULL) == 0ULL; }
+inline T random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
+inline float random(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
+inline float random(const double min, const double max) { return min + (max - min) * (static_cast<double>(xorshift32()) / 170141183460469231731687303715884105727.0); }
+inline bool random() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table
 struct WeightTable {
@@ -133,7 +133,7 @@ inline T average(const vector<T>& items) {
     return sum / items.size();
 }
 inline bool averageBool(const vector<bool>& bools) {
-    if (bools.size() == 0) return randomBool();
+    if (bools.size() == 0) return random();
     int averageTrue = 0, averageFalse = 0;
     for (unsigned int i = 0; i < bools.size(); ++i) {
         if (bools[i]) { averageTrue++; }
@@ -141,7 +141,7 @@ inline bool averageBool(const vector<bool>& bools) {
     }
     if (averageTrue > averageFalse) { return true; }
     if (averageFalse > averageTrue) { return false; }
-    return randomBool();
+    return random();
 }
 template<typename T>
 inline T averageMinMax(const vector<T>& items) {
@@ -227,15 +227,6 @@ inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
     return result;
 }
 
-// Points
-inline constexpr float slopeOf(const float[2] point1, const float[2] point2) { return ((point2[1] - point1[1]) / (point2[0] - point1[0])); }
-inline float[2] averagePoint(const vector<float[2]>& points) {
-    float[2] avg = float2{0.f};
-    if (points.size() == 0) { return avg; }
-    for (unsigned int i = 0; i < points.size(); ++i) { avg += points[i]; }
-    return avg / static_cast<float>(points.size());
-}
-
 // Conversions
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
 inline constexpr float degrees(const float radians) { return radians * PID; }
@@ -246,6 +237,6 @@ inline constexpr float fahrenheit(const float celsius) { return (celsius * 2) + 
 template<unsigned long long range>
 inline bitset<range> createRandomBitset() {
     bitset<range> bits;
-    for (unsigned long long i = 0; i < range; i++) { if (randomBool()) bits.set(i); }
+    for (unsigned long long i = 0; i < range; i++) { if (random()) bits.set(i); }
     return bits;
 }

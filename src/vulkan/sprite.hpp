@@ -9,15 +9,20 @@
 #define MAX_TEXTURES 66
 
 struct alignas(16) SpriteData {
-    float[2] position;
-    float[2] scale;
-    float[4] rotationMatrix;
-    float[4] color;
+    float position[2];
+    float scale[2];
+    float rotationMatrix[4];
+    float color[4];
 
     uint32_t textureIndex;
     float rotation;
 
-    constexpr void setRotationMatrix() { rotationMatrix = {cos(radians(rotation)), -sin(radians(rotation)), sin(radians(rotation)), cos(radians(rotation))}; }
+    constexpr void setRotationMatrix() {
+        rotationMatrix[0] = cos(radians(rotation));
+        rotationMatrix[1] = -sin(radians(rotation));
+        rotationMatrix[2] = sin(radians(rotation));
+        rotationMatrix[3] = cos(radians(rotation));
+    }
 };
 
 struct Sprite {

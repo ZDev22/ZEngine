@@ -188,8 +188,10 @@ public:
         }
     }
 
-    float[2] getMousePosition() { glfwGetCursorPos(window, &mousePosition[0], &mousePosition[1]); return float[2](mousePosition[0], mousePosition[1]); }
+    void updateMousePosition() { glfwGetCursorPos(window, &mousePosition[0], &mousePosition[1]); }
     void setMousePosition(double newPosition[2]) { glfwSetCursorPos(window, newPosition[0], newPosition[1]); }
+    float getMouseX() { return mousePosition[0]; }
+    float getMouseY() { return mousePosition[1]; }
     bool LMBPressed() { return mouseState[0]; }
     bool RMBPressed() { return mouseState[2]; }
     bool LMBHit() { return mouseState[1] == KEY_HIT; }

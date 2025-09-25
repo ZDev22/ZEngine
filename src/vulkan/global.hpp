@@ -6,5 +6,5 @@ extern float deltaTime;
 extern unsigned short imageCount;
 
 struct Push { 
-    float[2] camera;
+    float camera[2];
 };

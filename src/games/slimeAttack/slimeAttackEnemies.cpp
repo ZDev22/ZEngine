@@ -62,20 +62,20 @@ void SlimeAttackEnemies::spawnNewWave() {
 
 void SlimeAttackEnemies::spawnEnemy(const int type) {
     aliveEnemies++;
-    float x = randomBool() ? -.9f : .9f;
+    float x = random() ? -.9f : .9f;
 
     switch(type) {
 
     case SLIMEATTACK_ENEMY_TYPE_SLIME:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, {x, -.5f}, {.15f, .15f}, 0.f, {1.f});
+        pipeline.createSprite(pipeline.getSquareModel(), type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
         Enemy slime;
         slime.health = 2;
         slime.cooldown = 1.f;
-        slime.spawnCooldown = randomFloat(0.f, 3.f);
+        slime.spawnCooldown = random(0.f, 3.f);
         slime.speed[0] = 0.f;
-        slime.speed[1] = 0.f
+        slime.speed[1] = 0.f;
         slime.skip = false;
 
         enemies.push_back(slime);
@@ -83,12 +83,12 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_BAT:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, {x, -.5f}, {.15f, .15f}, 0.f, {1.f, 1.f, 1.f, 1.f});
+        pipeline.createSprite(pipeline.getSquareModel(), type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
         
         Enemy bat;
         bat.health = 3;
         bat.cooldown = 1.f;
-        bat.spawnCooldown = randomFloat(0.f, 3.f);
+        bat.spawnCooldown = random(0.f, 3.f);
         bat.speed[0] = 0.f;
         bat.speed[1] = 0.f;
         bat.skip = false;
@@ -98,12 +98,12 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_OGRE:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, {x, -.5f}, {.15f, .15f}, 0.f, {1.f});
+        pipeline.createSprite(pipeline.getSquareModel(), type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
         Enemy ogre;
         ogre.health = 6;
         ogre.cooldown = 1.f;
-        ogre.spawnCooldown = randomFloat(0.f, 3.f);
+        ogre.spawnCooldown = random(0.f, 3.f);
         ogre.speed[0] = 0.f;
         ogre.speed[1] = 0.f;
         ogre.skip = false;
@@ -113,12 +113,12 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
     
     case SLIMEATTACK_ENEMY_TYPE_BOSS:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, {0.f, 1.5f}, {1.f, 1.f}, 0.f, {1.f});
+        pipeline.createSprite(pipeline.getSquareModel(), type, 0.f, 1.5f, 1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
         Enemy boss;
         boss.health = 25;
         boss.cooldown = .5f;
-        boss.spawnCooldown = randomFloat(0.f, 3.f);
+        boss.spawnCooldown = random(0.f, 3.f);
         boss.speed[0] = 0.f;
         boss.speed[1] = .1f;
         boss.skip = false;
@@ -137,15 +137,17 @@ void SlimeAttackEnemies::simulateEnemies() {
             case SLIMEATTACK_ENEMY_TYPE_SLIME:
                 enemies[i].cooldown += deltaTime;
                 if (enemies[i].cooldown > 2.5f) {
-                    enemies[i].speed[0] = sprites[0].positionfloat[0] >= sprites[i].positionfloat[0] ? .2f : -.2f;
+                    enemies[i].speed[0] = sprites[0].position[0] >= sprites[i].position[0] ? .2f : -.2f;
                     enemies[i].speed[1] = -10.f;
                     enemies[i].cooldown = 0.f;
                 }
-                enemies[i].speedfloat[1] += 1.6f * deltaTime;
-                sprites[i].position += enemies[i].speed * {deltaTime, deltaTime};
+                enemies[i].speed[1] += 1.6f * deltaTime;
+                sprites[i].position[0] += enemies[i].speed[0] * deltaTime;
+                sprites[i].position[1] += enemies[i].speed[1] * deltaTime;
 
                 if (collision.checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { 
-                    sprites[i].position -= enemies[i].speed * {deltaTime, deltaTime};
+                    sprites[i].position[0] -= enemies[i].speed[0] * deltaTime;
+                    sprites[i].position[1] -= enemies[i].speed[1] * deltaTime;
                     enemies[i].speed[0] = 0.f; 
                     enemies[i].speed[1] = 0.f;
                 }
@@ -154,24 +156,24 @@ void SlimeAttackEnemies::simulateEnemies() {
             case SLIMEATTACK_ENEMY_TYPE_BAT:
                 enemies[i].cooldown += deltaTime;
                 if (enemies[i].cooldown > 2.f) {
-                    enemies[i].speed[0] = sprites[0].positionfloat[0] >= sprites[i].positionfloat[0] ? .5f : -.5f;
-                    nemies[i].speed[1] = 1.5f;
-                    enemies[i].speedfloat[1] -=  1.f * deltaTime;
-                    if (absolute(sprites[i].positionfloat[0]) >= .9f) { enemies[i].speedfloat[0] = 0.f; }
+                    enemies[i].speed[0] = sprites[0].position[0] >= sprites[i].position[0] ? .5f : -.5f;
+                    enemies[i].speed[1] = 1.5f;
+                    enemies[i].speed[1] -=  1.f * deltaTime;
+                    if (absolute(sprites[i].position[0]) >= .9f) { enemies[i].speed[0] = 0.f; }
                 }
                 break;
 
             case SLIMEATTACK_ENEMY_TYPE_OGRE:
                 enemies[i].cooldown += deltaTime;
-                if (enemies[i].cooldown > 2.5f) { if (absolute(sprites[0].positionfloat[0] - sprites[i].positionfloat[0]) <= .2f) { slimeAttack.knockback(sprites[i].positionfloat[0]); }}
-                enemies[i].speedfloat[0] += (sprites[0].positionfloat[0] >= sprites[i].positionfloat[0] ? -.1f : .1f) * deltaTime;
+                if (enemies[i].cooldown > 2.5f) { if (absolute(sprites[0].position[0] - sprites[i].position[0]) <= .2f) { slimeAttack.knockback(sprites[i].position[0]); }}
+                enemies[i].speed[0] += (sprites[0].position[0] >= sprites[i].position[0] ? -.1f : .1f) * deltaTime;
                 break;
 
             case SLIMEATTACK_ENEMY_TYPE_BOSS:
                 break;
             }
 
-            if (enemies[i].speedfloat[1] <= -1.5f) { enemies[i].speedfloat[1] = -1.5f; }
+            if (enemies[i].speed[1] <= -1.5f) { enemies[i].speed[1] = -1.5f; }
         }
     }
 }

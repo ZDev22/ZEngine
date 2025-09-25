@@ -6,8 +6,8 @@
 #include "../deps/ZDev/audio.hpp"
 
 //#include "../games/flappyBird/flappyBird.hpp"
-//#include "../games/slimeAttack/slimeAttack.hpp"
-#include "../games/terminalCalculator/terminalCalculator.hpp"
+#include "../games/slimeAttack/slimeAttack.hpp"
+//#include "../games/terminalCalculator/terminalCalculator.hpp"
 
 std::chrono::high_resolution_clock::time_point appcpslastTime;
 std::chrono::high_resolution_clock::time_point appcpscurrentTime;
@@ -30,8 +30,8 @@ void App::run() {
     Collision collision;
 
     //FlappyBird flappyBird{keyboard, audio, pipeline, collision, push};
-    //SlimeAttack slimeAttack{keyboard, audio, pipeline, collision, push};
-    TerminalCalculator terminalCalculator{};
+    SlimeAttack slimeAttack{keyboard, audio, pipeline, collision, push};
+    //TerminalCalculator terminalCalculator{};
 
     std::thread render(&App::render, this);
     render.detach();
@@ -55,8 +55,8 @@ void App::run() {
         keyboard.updateMouse();
 
         //flappyBird.tick();
-        //slimeAttack.tick();
-        terminalCalculator.tick();
+        slimeAttack.tick();
+        //terminalCalculator.tick();
 
         keyboard.resetKeys();
         collision.clearAABB();

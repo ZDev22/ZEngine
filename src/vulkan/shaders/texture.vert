@@ -8,9 +8,10 @@ layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) flat out uint fragTextureIndex;
 
 struct SpriteData {
-    float[2] position;
-    float[2] scale;
-    float[4] color;
+    vec2 position;
+    vec2 scale;
+    mat2 rotationMatrix;
+    vec4 color;
     uint textureIndex;
     float rotation;
 };

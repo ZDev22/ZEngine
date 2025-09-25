@@ -29,7 +29,7 @@ private:
         int health;
         float cooldown;
         float spawnCooldown;
-        float[2] speed;
+        float speed[2];
         bool skip;
     };
     vector<Enemy> enemies = {};
