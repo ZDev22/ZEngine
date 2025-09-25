@@ -5,8 +5,8 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "../miniaudio.h"
 
-//#include "../games/flappyBird/flappyBird.hpp"
-#include "../games/slimeAttack/slimeAttack.hpp"
+#include "../games/flappyBird/flappyBird.hpp"
+//#include "../games/slimeAttack/slimeAttack.hpp"
 //#include "../games/terminalCalculator/terminalCalculator.hpp"
 
 std::chrono::high_resolution_clock::time_point appcpslastTime;
@@ -30,8 +30,8 @@ void App::run() {
     Collision collision;
     ma_engine_init(nullptr, &audio);
 
-    //FlappyBird flappyBird{keyboard, audio, pipeline, collision};
-    SlimeAttack slimeAttack{keyboard, pipeline, collision};
+    FlappyBird flappyBird{keyboard, audio, pipeline, collision};
+    //SlimeAttack slimeAttack{keyboard, pipeline, collision};
     //TerminalCalculator terminalCalculator{};
 
     std::thread render(&App::render, this);
@@ -55,8 +55,8 @@ void App::run() {
         glfwPollEvents();
         keyboard.updateMouse();
 
-        //flappyBird.tick();
-        slimeAttack.tick();
+        flappyBird.tick();
+        //slimeAttack.tick();
         //terminalCalculator.tick();
 
         keyboard.resetKeys();

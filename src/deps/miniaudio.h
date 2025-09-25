@@ -31,39 +31,27 @@ extern "C" {
     #define MA_SIZEOF_PTR   4
 #endif
 #include <stddef.h>
-#if defined(MA_USE_STDINT)
-    #include <stdint.h>
-    typedef int8_t   ma_int8;
-    typedef uint8_t  ma_uint8;
-    typedef int16_t  ma_int16;
-    typedef uint16_t ma_uint16;
-    typedef int32_t  ma_int32;
-    typedef uint32_t ma_uint32;
-    typedef int64_t  ma_int64;
-    typedef uint64_t ma_uint64;
+typedef   signed char           ma_int8;
+typedef unsigned char           ma_uint8;
+typedef   signed short          ma_int16;
+typedef unsigned short          ma_uint16;
+typedef   signed int            ma_int32;
+typedef unsigned int            ma_uint32;
+#if defined(_MSC_VER) && !defined(__clang__)
+    typedef   signed __int64    ma_int64;
+    typedef unsigned __int64    ma_uint64;
 #else
-    typedef   signed char           ma_int8;
-    typedef unsigned char           ma_uint8;
-    typedef   signed short          ma_int16;
-    typedef unsigned short          ma_uint16;
-    typedef   signed int            ma_int32;
-    typedef unsigned int            ma_uint32;
-    #if defined(_MSC_VER) && !defined(__clang__)
-        typedef   signed __int64    ma_int64;
-        typedef unsigned __int64    ma_uint64;
-    #else
-        #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wlong-long"
-            #if defined(__clang__)
-                #pragma GCC diagnostic ignored "-Wc++11-long-long"
-            #endif
+    #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wlong-long"
+        #if defined(__clang__)
+            #pragma GCC diagnostic ignored "-Wc++11-long-long"
         #endif
-        typedef   signed long long  ma_int64;
-        typedef unsigned long long  ma_uint64;
-        #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-            #pragma GCC diagnostic pop
-        #endif
+    #endif
+    typedef   signed long long  ma_int64;
+    typedef unsigned long long  ma_uint64;
+    #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
+        #pragma GCC diagnostic pop
     #endif
 #endif
 
@@ -5031,10 +5019,6 @@ MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGr
 #ifdef __cplusplus
 }
 #endif
-#endif  
-
-#if defined(Q_CREATOR_RUN) || defined(__INTELLISENSE__) || defined(__CDT_PARSER__)
-#define MINIAUDIO_IMPLEMENTATION
 #endif
 
 
@@ -5054,13 +5038,9 @@ MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGr
     #include <strings.h>    
     #include <wchar.h>      
 #endif
-#ifdef _MSC_VER
-    #include <float.h>      
-#endif
 
 #if defined(MA_WIN32)
     #include <windows.h>
-
     
     #ifndef STGM_READ
     #define STGM_READ   0x00000000L
@@ -5068,7 +5048,6 @@ MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGr
     #ifndef CLSCTX_ALL
     #define CLSCTX_ALL  23
     #endif
-
     
     typedef struct ma_IUnknown  ma_IUnknown;
 #endif
@@ -5079,15 +5058,7 @@ MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGr
 #include <pthread.h>
 #endif
 
-#ifdef MA_NX
-#include <time.h>       
-#endif
-
-#include <sys/stat.h>   
-
-#ifdef MA_EMSCRIPTEN
-#include <emscripten/emscripten.h>
-#endif
+#include <sys/stat.h>
 
 #if !defined(MA_64BIT) && !defined(MA_32BIT)
 #ifdef _WIN32
@@ -5109,13 +5080,10 @@ MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGr
 #endif
 #endif
 
-#if !defined(MA_64BIT) && !defined(MA_32BIT)
-#include <stdint.h>
 #if INTPTR_MAX == INT64_MAX
 #define MA_64BIT
 #else
 #define MA_32BIT
-#endif
 #endif
 
 #if defined(__arm__) || defined(_M_ARM)
@@ -66175,93 +66143,56 @@ MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint
     return ma_spatializer_listener_is_enabled(&pEngine->listeners[listenerIndex]);
 }
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath)
-{
+MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath) {
     ma_result result = MA_SUCCESS;
     ma_sound_inlined* pSound = NULL;
     ma_sound_inlined* pNextSound = NULL;
     ma_uint32 nodeInputBusIndex = 0;
     ma_node* pNode = nullptr;
     pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
-    
-    ma_spinlock_lock(&pEngine->inlinedSoundLock);
-    {
+
+    ma_spinlock_lock(&pEngine->inlinedSoundLock); {
         ma_uint32 soundFlags = 0;
 
         for (pNextSound = pEngine->pInlinedSoundHead; pNextSound != NULL; pNextSound = pNextSound->pNext) {
             if (ma_sound_at_end(&pNextSound->sound)) {
-                
                 pSound = pNextSound;
                 ma_atomic_fetch_sub_32(&pEngine->inlinedSoundCount, 1);
                 break;
             }
         }
 
-        if (pSound != NULL) {
-            
-            if (pEngine->pInlinedSoundHead == pSound) {
-                pEngine->pInlinedSoundHead =  pSound->pNext;
-            }
+        pSound = (ma_sound_inlined*)ma_malloc(sizeof(*pSound), &pEngine->allocationCallbacks);
 
-            if (pSound->pPrev != NULL) {
-                pSound->pPrev->pNext = pSound->pNext;
-            }
-            if (pSound->pNext != NULL) {
-                pSound->pNext->pPrev = pSound->pPrev;
-            }
+        soundFlags |= MA_SOUND_FLAG_ASYNC;                 
+        soundFlags |= MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT; 
+        soundFlags |= MA_SOUND_FLAG_NO_PITCH;              
+        soundFlags |= MA_SOUND_FLAG_NO_SPATIALIZATION;     
 
+        result = ma_sound_init_from_file(pEngine, pFilePath, soundFlags, NULL, NULL, &pSound->sound);
+        if (result == MA_SUCCESS) {
             
-            ma_sound_uninit(&pNextSound->sound);
-        } else {
-            
-            pSound = (ma_sound_inlined*)ma_malloc(sizeof(*pSound), &pEngine->allocationCallbacks);
-        }
-
-        if (pSound != NULL) {   
-            
-            soundFlags |= MA_SOUND_FLAG_ASYNC;                 
-            soundFlags |= MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT; 
-            soundFlags |= MA_SOUND_FLAG_NO_PITCH;              
-            soundFlags |= MA_SOUND_FLAG_NO_SPATIALIZATION;     
-
-            result = ma_sound_init_from_file(pEngine, pFilePath, soundFlags, NULL, NULL, &pSound->sound);
+            result = ma_node_attach_output_bus(pSound, 0, pNode, nodeInputBusIndex);
             if (result == MA_SUCCESS) {
                 
-                result = ma_node_attach_output_bus(pSound, 0, pNode, nodeInputBusIndex);
-                if (result == MA_SUCCESS) {
-                    
-                    pSound->pNext = pEngine->pInlinedSoundHead;
-                    pSound->pPrev = NULL;
+                pSound->pNext = pEngine->pInlinedSoundHead;
+                pSound->pPrev = NULL;
 
-                    pEngine->pInlinedSoundHead = pSound;    
-                    if (pSound->pNext != NULL) {
-                        pSound->pNext->pPrev = pSound;
-                    }
-                } else {
-                    ma_free(pSound, &pEngine->allocationCallbacks);
-                }
-            } else {
-                ma_free(pSound, &pEngine->allocationCallbacks);
+                pEngine->pInlinedSoundHead = pSound;    
+                if (pSound->pNext != NULL) { pSound->pNext->pPrev = pSound; }
             }
-        } else {
-            result = MA_OUT_OF_MEMORY;
+            else { ma_free(pSound, &pEngine->allocationCallbacks); }
         }
+        else { ma_free(pSound, &pEngine->allocationCallbacks); }
     }
     ma_spinlock_unlock(&pEngine->inlinedSoundLock);
 
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    
     result = ma_sound_start(&pSound->sound);
-    if (result != MA_SUCCESS) {
-        
-        ma_atomic_exchange_32(&pSound->sound.atEnd, MA_TRUE);
+    if (result == MA_SUCCESS) {
+        ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
         return result;
     }
-
-    ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
+    ma_atomic_exchange_32(&pSound->sound.atEnd, MA_TRUE);
     return result;
 }
 #endif

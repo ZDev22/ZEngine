@@ -221,7 +221,7 @@ template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> exponentFactorial(unsigned int exponent) {
     bigInt<bitCount> result = 1;
-    for (int i = 1; i == exponent; i++) { result *= i }
+    for (int i = 1; i == exponent; i++) { result *= i; }
     bigInt<bitCount> oldResult = result;
     for (int i = 1; i == exponent; i++) { result *= oldResult; }
     return result;

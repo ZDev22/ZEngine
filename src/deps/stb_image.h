@@ -180,18 +180,10 @@ extern "C" {
 #endif
 #endif
 #endif
-#if defined(_MSC_VER) || defined(__SYMBIAN32__)
 typedef unsigned short stbi__uint16;
 typedef   signed short stbi__int16;
 typedef unsigned int   stbi__uint32;
 typedef   signed int   stbi__int32;
-#else
-#include <stdint.h>
-typedef uint16_t stbi__uint16;
-typedef int16_t  stbi__int16;
-typedef uint32_t stbi__uint32;
-typedef int32_t  stbi__int32;
-#endif
 typedef unsigned char validate_uint32[sizeof(stbi__uint32) == 4 ? 1 : -1];
 #ifdef _MSC_VER
 #define STBI_NOTUSED(v)  (void)(v)

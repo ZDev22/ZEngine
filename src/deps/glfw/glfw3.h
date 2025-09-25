@@ -34,7 +34,6 @@ extern "C" {
 #define _WIN32
 #endif
 #include <stddef.h>
-#include <stdint.h>
 #if defined(GLFW_INCLUDE_VULKAN)
 #include <vulkan/vulkan.h>
 #endif
@@ -601,8 +600,8 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 GLFWAPI double glfwGetTime(void);
 GLFWAPI void glfwSetTime(double time);
-GLFWAPI uint64_t glfwGetTimerValue(void);
-GLFWAPI uint64_t glfwGetTimerFrequency(void);
+GLFWAPI unsigned long long glfwGetTimerValue(void);
+GLFWAPI unsigned long long glfwGetTimerFrequency(void);
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* window);
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
 GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
@@ -610,9 +609,9 @@ GLFWAPI void glfwSwapInterval(int interval);
 GLFWAPI int glfwExtensionSupported(const char* extension);
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 GLFWAPI int glfwVulkanSupported(void);
-GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count);
+GLFWAPI const char** glfwGetRequiredInstanceExtensions(unsigned int* count);
 GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, const char* procname);
-GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, unsigned int queuefamily);
 GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 #if !defined(GLAPIENTRY)
 #define GLAPIENTRY APIENTRY
