@@ -78,10 +78,10 @@ inline unsigned long long xorshift32() {
     return state;
 }
 template<typename T>
-inline T random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
-inline float random(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
-inline float random(const double min, const double max) { return min + (max - min) * (static_cast<double>(xorshift32()) / 170141183460469231731687303715884105727.0); }
-inline bool random() { return (xorshift32() & 1ULL) == 0ULL; }
+inline T Random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
+inline float Random(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
+inline float Random(const double min, const double max) { return min + (max - min) * (static_cast<double>(xorshift32()) / 170141183460469231731687303715884105727.0); }
+inline bool Random() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table
 struct WeightTable {
@@ -114,7 +114,7 @@ public:
             offset += weights[i].weight;
         }
 
-        unsigned long long number = random(0ULL, offset);
+        unsigned long long number = Random(0ULL, offset);
         for (unsigned int i = 0; i < weights.size(); i++) { if (number >= weights[i].offset && number < weights[i].offset + weights[i].weight) { return weights[i].value; }}
         return -1;
     }
@@ -133,7 +133,7 @@ inline T average(const vector<T>& items) {
     return sum / items.size();
 }
 inline bool averageBool(const vector<bool>& bools) {
-    if (bools.size() == 0) return random();
+    if (bools.size() == 0) return Random();
     int averageTrue = 0, averageFalse = 0;
     for (unsigned int i = 0; i < bools.size(); ++i) {
         if (bools[i]) { averageTrue++; }
@@ -141,7 +141,7 @@ inline bool averageBool(const vector<bool>& bools) {
     }
     if (averageTrue > averageFalse) { return true; }
     if (averageFalse > averageTrue) { return false; }
-    return random();
+    return Random();
 }
 template<typename T>
 inline T averageMinMax(const vector<T>& items) {
@@ -237,6 +237,6 @@ inline constexpr float fahrenheit(const float celsius) { return (celsius * 2) + 
 template<unsigned long long range>
 inline bitset<range> createRandomBitset() {
     bitset<range> bits;
-    for (unsigned long long i = 0; i < range; i++) { if (random()) bits.set(i); }
+    for (unsigned long long i = 0; i < range; i++) { if (Random()) bits.set(i); }
     return bits;
 }

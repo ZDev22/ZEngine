@@ -62,7 +62,7 @@ void SlimeAttackEnemies::spawnNewWave() {
 
 void SlimeAttackEnemies::spawnEnemy(const int type) {
     aliveEnemies++;
-    float x = random() ? -.9f : .9f;
+    float x = Random() ? -.9f : .9f;
 
     switch(type) {
 
@@ -73,7 +73,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
         Enemy slime;
         slime.health = 2;
         slime.cooldown = 1.f;
-        slime.spawnCooldown = random(0.f, 3.f);
+        slime.spawnCooldown = Random(0.f, 3.f);
         slime.speed[0] = 0.f;
         slime.speed[1] = 0.f;
         slime.skip = false;
@@ -88,7 +88,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
         Enemy bat;
         bat.health = 3;
         bat.cooldown = 1.f;
-        bat.spawnCooldown = random(0.f, 3.f);
+        bat.spawnCooldown = Random(0.f, 3.f);
         bat.speed[0] = 0.f;
         bat.speed[1] = 0.f;
         bat.skip = false;
@@ -103,7 +103,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
         Enemy ogre;
         ogre.health = 6;
         ogre.cooldown = 1.f;
-        ogre.spawnCooldown = random(0.f, 3.f);
+        ogre.spawnCooldown = Random(0.f, 3.f);
         ogre.speed[0] = 0.f;
         ogre.speed[1] = 0.f;
         ogre.skip = false;
@@ -118,7 +118,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
         Enemy boss;
         boss.health = 25;
         boss.cooldown = .5f;
-        boss.spawnCooldown = random(0.f, 3.f);
+        boss.spawnCooldown = Random(0.f, 3.f);
         boss.speed[0] = 0.f;
         boss.speed[1] = .1f;
         boss.skip = false;

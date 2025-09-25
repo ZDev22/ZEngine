@@ -43,7 +43,7 @@ void FlappyBird::tick() {
         sprites[index].position[0] -= .5f * deltaTime;
         if (sprites[index].position[0] < -1.5f) {
             sprites[index].position[0] = 1.5f;
-            sprites[index].position[1] = random(.4f, 1.4f);
+            sprites[index].position[1] = Random(.4f, 1.4f);
         }
         sprites[index + 1].position[0] = sprites[index].position[0];
         sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;

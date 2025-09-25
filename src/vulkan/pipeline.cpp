@@ -288,7 +288,7 @@ void Pipeline::loadFlappyBird() {
     createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
     for (float i = 1.f; i < 5.f; i++) {
-        float y = random(.4f, 1.4f);
+        float y = Random(.4f, 1.4f);
         createSprite(squareModel, 1, i, y, .15f, 1.5f, 0.f, 1.f, 1.f, 1.f, 1.f);
         createSprite(squareModel, 1, i, y - 2.f, .15f, 1.5f, 180.f, 1.f, 1.f, 1.f, 1.f);
     }
