@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../deps/ZDev/audio.hpp"
+#include "../../deps/miniaudio.h"
 #include "../../deps/ZDev/keyboard.hpp"
 #include "../../deps/ZDev/collision.hpp"
 #include "../../vulkan/pipeline.hpp"
@@ -9,13 +9,12 @@
 class AudioPlayer;
 class FlappyBird {
 public:
-    FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push);
+    FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision);
 
     void tick();
 private:
     Keyboard& keyboard;
     Collision& collision;
-    AudioPlayer& audio;
     Pipeline& pipeline;
-    Push& push;
+    ma_engine& audio;
 };

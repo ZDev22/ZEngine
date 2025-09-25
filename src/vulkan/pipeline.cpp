@@ -18,7 +18,7 @@ void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBu
 std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
     if (!file.is_open()) { throw("failed to open file: " + filepath); }
-    size_t fileSize = static_cast<size_t>(file.tellg());
+    unsigned int fileSize = static_cast<unsigned int>(file.tellg());
     std::vector<char> buffer(fileSize);
     file.seekg(0);
     file.read(buffer.data(), fileSize);
@@ -188,7 +188,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) 
     std::vector<Model::Vertex> vertices;
     vertices.reserve(positions.size() / 2);
 
-    for (size_t i = 0; i < positions.size(); i += 2) {
+    for (unsigned int i = 0; i < positions.size(); i += 2) {
         Model::Vertex v{};
         v.position[0] = positions[i];
         v.position[1] = positions[i + 1];

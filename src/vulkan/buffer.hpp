@@ -8,7 +8,7 @@ public:
 
     VkBuffer getBuffer() const { return buffer; }
     void map();
-    void writeToBuffer(const void* data, size_t size);
+    void writeToBuffer(const void* data, unsigned int size);
     void unmap();
 
 private:

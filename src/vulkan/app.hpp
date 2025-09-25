@@ -14,7 +14,7 @@ private:
     void render();
     
     AppWindow window{720, 480};
-    Push push{};
+    Push vertex{};
     Device device{window};
     Renderer renderer{window, device};
     Keyboard keyboard{window.getWindow()};

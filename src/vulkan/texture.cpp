@@ -35,7 +35,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
     void* data;
     vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, pixels, static_cast<size_t>(imageSize));
+    memcpy(data, pixels, static_cast<unsigned int>(imageSize));
     vkUnmapMemory(device.device(), stagingBufferMemory);
 
     stbi_image_free(pixels);
@@ -89,7 +89,7 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
 
     void* data;
     vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, rgbaPixels.data(), static_cast<size_t>(imageSize));
+    memcpy(data, rgbaPixels.data(), static_cast<unsigned int>(imageSize));
     vkUnmapMemory(device.device(), stagingBufferMemory);
 
     VkImageCreateInfo imageInfo{};

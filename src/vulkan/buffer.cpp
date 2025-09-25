@@ -29,7 +29,7 @@ void Buffer::map() {
     mapped = static_cast<char*>(temp);
 }
 
-void Buffer::writeToBuffer(const void* data, size_t size) { std::memcpy(mapped, data, size); }
+void Buffer::writeToBuffer(const void* data, unsigned int size) { std::memcpy(mapped, data, size); }
 void Buffer::unmap() {
     if (mapped) {
         vkUnmapMemory(device.device(), memory);

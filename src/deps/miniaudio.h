@@ -4887,8 +4887,7 @@ MA_API void ma_engine_listener_set_enabled(ma_engine* pEngine, ma_uint32 listene
 MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint32 listenerIndex);
 
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result ma_engine_play_sound_ex(ma_engine* pEngine, const char* pFilePath, ma_node* pNode, ma_uint32 nodeInputBusIndex);
-MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath, ma_sound_group* pGroup);   
+MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath);
 #endif
 
 #ifndef MA_NO_RESOURCE_MANAGER
@@ -66176,22 +66175,14 @@ MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint
     return ma_spatializer_listener_is_enabled(&pEngine->listeners[listenerIndex]);
 }
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result ma_engine_play_sound_ex(ma_engine* pEngine, const char* pFilePath, ma_node* pNode, ma_uint32 nodeInputBusIndex)
+MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath)
 {
     ma_result result = MA_SUCCESS;
     ma_sound_inlined* pSound = NULL;
     ma_sound_inlined* pNextSound = NULL;
-
-    if (pEngine == NULL || pFilePath == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pNode == NULL) {
-        pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
-        nodeInputBusIndex = 0;
-    }
-
+    ma_uint32 nodeInputBusIndex = 0;
+    ma_node* pNode = nullptr;
+    pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
     
     ma_spinlock_lock(&pEngine->inlinedSoundLock);
     {
@@ -66272,11 +66263,6 @@ MA_API ma_result ma_engine_play_sound_ex(ma_engine* pEngine, const char* pFilePa
 
     ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
     return result;
-}
-
-MA_API ma_result ma_engine_play_sound(ma_engine* pEngine, const char* pFilePath, ma_sound_group* pGroup)
-{
-    return ma_engine_play_sound_ex(pEngine, pFilePath, pGroup, 0);
 }
 #endif
 static ma_result ma_sound_preinit(ma_engine* pEngine, ma_sound* pSound)

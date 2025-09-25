@@ -92,7 +92,7 @@ void Device::pickPhysicalDevice() {
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     short highScore = 0;
-    for (size_t i = 0; i < devices.size(); ++i) { 
+    for (unsigned int i = 0; i < devices.size(); ++i) { 
         short newScore = isDeviceSuitable(devices[i]);
         if (newScore > highScore) {
             highScore = newScore;

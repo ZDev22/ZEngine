@@ -1,6 +1,6 @@
 #include "renderSystem.hpp"
 
-RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), push(push), descriptorSetLayout(descriptorSetLayout) {
+RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
     initializeSpriteData();
     createTextureArrayDescriptorSet();
@@ -33,15 +33,15 @@ void RenderSystem::initializeSpriteData() {
     spriteDataBuffer = std::make_unique<Buffer>(device, bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     spriteDataBuffer->map();
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
-    push.camera[0] = 0.f;
-    push.camera[1] = 0.f;
+    vertex.camera[0] = 0.f;
+    vertex.camera[1] = 0.f;
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
     std::vector<VkDescriptorImageInfo> imageInfos;
     imageInfos.reserve(MAX_TEXTURES);
 
-    for (size_t i = 0; i < MAX_TEXTURES; i++) {
+    for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
         Texture* texture = spriteTextures[i].get();
         if (!texture) continue;
 
@@ -106,9 +106,9 @@ void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
     pipeline.bind(commandBuffer);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);
-    vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &push);
+    vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &vertex);
 
-    for (size_t i = 0; i < spriteCPU.size(); i++) {
+    for (unsigned int i = 0; i < spriteCPU.size(); i++) {
         if (spriteCPU[i].visible) {
             spriteCPU[i].model->bind(commandBuffer);
             spriteCPU[i].model->draw(commandBuffer, 1, i);

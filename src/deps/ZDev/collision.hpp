@@ -32,7 +32,7 @@ public:
             b.ID = spriteBID;
             const auto& verticesB = spriteB.model->getVertices();
 
-            for (size_t i = 0; i < verticesB.size(); i++) {
+            for (unsigned int i = 0; i < verticesB.size(); i++) {
                 float pxB = verticesB[i].position[0] * dataB.scale[0];
                 float pyB = verticesB[i].position[1] * dataB.scale[1];
                 float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
@@ -52,7 +52,7 @@ public:
             a.ID = spriteAID;
             const auto& verticesA = spriteA.model->getVertices();
 
-            for (size_t i = 0; i < verticesA.size(); i++) {
+            for (unsigned int i = 0; i < verticesA.size(); i++) {
                 float pxA = verticesA[i].position[0] * dataA.scale[0];
                 float pyA = verticesA[i].position[1] * dataA.scale[1];
                 float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
@@ -80,7 +80,7 @@ public:
             const auto& verticesB = spriteB.model->getVertices();
 
             if (verticesA.size() > verticesB.size()) {
-                for (size_t i = 0; i < verticesA.size(); i++) {
+                for (unsigned int i = 0; i < verticesA.size(); i++) {
                     float pxA = verticesA[i].position[0] * dataA.scale[0];
                     float pyA = verticesA[i].position[1] * dataA.scale[1];
                     float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
@@ -105,7 +105,7 @@ public:
                 }
             }
             else if (verticesA.size() < verticesB.size()) {
-                for (size_t i = 0; i < verticesB.size(); i++) {
+                for (unsigned int i = 0; i < verticesB.size(); i++) {
                     float pxB = verticesB[i].position[0] * dataB.scale[0];
                     float pyB = verticesB[i].position[1] * dataB.scale[1];
                     float transformedB[2] = {
@@ -134,7 +134,7 @@ public:
                 }
             }
             else {
-                for (size_t i = 0; i < verticesA.size(); i++) {
+                for (unsigned int i = 0; i < verticesA.size(); i++) {
                     float pxA = verticesA[i].position[0] * dataA.scale[0];
                     float pyA = verticesA[i].position[1] * dataA.scale[1];
                     float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};

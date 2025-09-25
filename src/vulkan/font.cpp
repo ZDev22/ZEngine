@@ -4,12 +4,12 @@
 #include "font.hpp"
 #include "pipeline.hpp"
 
-unsigned char* loadTTF(const std::string& filepath, size_t& fileSize) {
+unsigned char* loadTTF(const std::string& filepath, unsigned int& fileSize) {
     FILE* file = std::fopen(filepath.c_str(), "rb");
     if (!file) { throw("Failed to open font file: " + filepath); }
 
     std::fseek(file, 0, SEEK_END);
-    fileSize = static_cast<size_t>(std::ftell(file));
+    fileSize = static_cast<unsigned int>(std::ftell(file));
     std::rewind(file);
 
     unsigned char* buffer = new unsigned char[fileSize];
@@ -24,7 +24,7 @@ unsigned char* loadTTF(const std::string& filepath, size_t& fileSize) {
 }
 
 std::unique_ptr<Texture> createFontTexture(Device& device, Pipeline& pipeline, const std::string& ttfPath, float pixelHeight, int atlasSize, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, std::vector<stbtt_bakedchar>& outCharData) {
-    size_t fileSize = 0;
+    unsigned int fileSize = 0;
     unsigned char* ttfData = loadTTF("assets/fonts/" + ttfPath, fileSize);
 
     std::vector<unsigned char> grayscale(atlasSize * atlasSize);

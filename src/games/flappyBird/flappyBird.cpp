@@ -2,7 +2,7 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-FlappyBird::FlappyBird(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push) {}
+FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision) {}
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -20,12 +20,12 @@ void FlappyBird::tick() {
                 sprites[0].rotation = 60.f;
                 sprites[0].textureIndex = 0;
 
-                audio.play("assets/sounds/chirp.mp3");
+                playSound(&audio, "assets/sounds/chirp.mp3");
             }
 
             if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
                 flappyBirdDead = true;
-                audio.play("assets/sounds/hit.mp3");
+                playSound(&audio, "assets/sounds/hit.mp3");
             }
         }
         else if (sprites[0].position[1] > 2.5f) {
@@ -54,7 +54,7 @@ void FlappyBird::tick() {
             sprites[0].rotation = 60.f;
             sprites[0].textureIndex = 1;
 
-            audio.play("assets/sounds/hit.mp3");
+            playSound(&audio, "assets/sounds/hit.mp3");
         }
     }
 }

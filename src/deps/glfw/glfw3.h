@@ -24,7 +24,8 @@
  * 3. This notice may not be removed or altered from any source
  *    distribution.
  *
- *************************************************************************/#ifndef _glfw3_h_
+ *************************************************************************/
+#ifndef _glfw3_h_
 #define _glfw3_h_
 #ifdef __cplusplus
 extern "C" {

@@ -7,7 +7,7 @@
 
 class RenderSystem {
 public:
-    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& push, VkDescriptorSetLayout descriptorSetLayout);
+    RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();
 
     void renderSprites(VkCommandBuffer commandBuffer);
@@ -23,7 +23,7 @@ private:
     Device& device;
     AppWindow& window;
     Renderer& renderer;
-    Push& push;
+    Push& vertex;
     Pipeline pipeline;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;

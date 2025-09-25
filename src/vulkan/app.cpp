@@ -2,8 +2,8 @@
 
 #include <thread>
 
-#define AUDIOPLAYER_IMPLEMENTATION
-#include "../deps/ZDev/audio.hpp"
+#define MINIAUDIO_IMPLEMENTATION
+#include "../miniaudio.h"
 
 //#include "../games/flappyBird/flappyBird.hpp"
 #include "../games/slimeAttack/slimeAttack.hpp"
@@ -21,16 +21,17 @@ bool shouldClose = false;
 
 App::App() : pipeline(device, renderer, "texture") {
     pipeline.loadSprites();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, push, pipeline.getDescriptorSetLayout());
+    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, vertex, pipeline.getDescriptorSetLayout());
 }
 
 void App::run() {
 
-    AudioPlayer audio;
+    ma_engine audio;
     Collision collision;
+    ma_engine_init(nullptr, &audio);
 
-    //FlappyBird flappyBird{keyboard, audio, pipeline, collision, push};
-    SlimeAttack slimeAttack{keyboard, audio, pipeline, collision, push};
+    //FlappyBird flappyBird{keyboard, audio, pipeline, collision};
+    SlimeAttack slimeAttack{keyboard, pipeline, collision};
     //TerminalCalculator terminalCalculator{};
 
     std::thread render(&App::render, this);
@@ -66,6 +67,7 @@ void App::run() {
         appcps++;
     }
 
+    ma_engine_uninit(&audio);
     vkDeviceWaitIdle(device.device());
 }
 

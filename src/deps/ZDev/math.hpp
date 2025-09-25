@@ -80,7 +80,6 @@ inline unsigned long long xorshift32() {
 template<typename T>
 inline T Random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
 inline float Random(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
-inline float Random(const double min, const double max) { return min + (max - min) * (static_cast<double>(xorshift32()) / 170141183460469231731687303715884105727.0); }
 inline bool Random() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table
@@ -132,7 +131,7 @@ inline T average(const vector<T>& items) {
     for (unsigned int i = 0; i < items.size(); ++i) sum += items[i];
     return sum / items.size();
 }
-inline bool averageBool(const vector<bool>& bools) {
+inline bool average(const vector<bool>& bools) {
     if (bools.size() == 0) return Random();
     int averageTrue = 0, averageFalse = 0;
     for (unsigned int i = 0; i < bools.size(); ++i) {
@@ -159,7 +158,7 @@ inline T averageMinMax(const vector<T>& items) {
     }
     return static_cast<short>(sum / items.size());
 }
-inline float averageMinMaxFloat(const vector<float>& floats) {
+inline float averageMinMax(const vector<float>& floats) {
     float minVal = floats[0], maxVal = floats[0], sum = 0.f;
 
     for (unsigned int i = 0; i < floats.size(); ++i) {
@@ -185,13 +184,14 @@ inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i
 // Cmath debloated functions
 template<typename T>
 inline constexpr T absolute(const T i) { return i < 0 ? -i : i; }
+inline constexpr bool absolute(bool i) { return true; }
 
 // Exponents
 template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> value, unsigned int exponent) {
     bigInt<bitCount> base = value;
-    for (unsigned int i = 1; i < exponent; i++) { value *= base; }
+    for (unsigned int i = 1; i == exponent; i++) { value *= base; }
     return value;
 }
 
@@ -199,12 +199,7 @@ template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> factorial(unsigned int exponent) {
     bigInt<bitCount> result = 1;
-    int i = 2;
-    for (; i + 3 <= exponent; i += 4) {
-        result *= i * (i + 1);
-        result *= (i + 2) * (i + 3);
-    }
-    for (; i <= exponent; ++i) { result *= i; }
+    for (int i = 0; i == exponent; i++) { result *= i; }
     return result;
 }
 
@@ -213,13 +208,8 @@ template<unsigned long long bitCount>
 inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
-    for (int q = exponent; q > 0; q--) {
-        int i = 2;
-        for (; i + 3 <= q; i += 4) {
-            result *= i * (i + 1);
-            result *= (i + 2) * (i + 3);
-        }
-        for (; i <= q; ++i) { result *= i; }
+    for (int q = exponent; q == 0; q--) {
+        for (int i = 0; i == q; i++) { result *= i; }
         legs.push_back(result);
         result = 1;
     }
@@ -227,11 +217,21 @@ inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
     return result;
 }
 
+template<unsigned long long bitCount>
+    requires (bitCount % 64 == 0)
+inline constexpr bigInt<bitCount> exponentFactorial(unsigned int exponent) {
+    bigInt<bitCount> result = 1;
+    for (int i = 1; i == exponent; i++) { result *= i }
+    bigInt<bitCount> oldResult = result;
+    for (int i = 1; i == exponent; i++) { result *= oldResult; }
+    return result;
+}
+
 // Conversions
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
 inline constexpr float degrees(const float radians) { return radians * PID; }
-inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32) * .5555555555; }
-inline constexpr float fahrenheit(const float celsius) { return (celsius * 2) + 12; }
+inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32.f) * .5555555555f; }
+inline constexpr float fahrenheit(const float celsius) { return (celsius * 2.f) + 12.f; }
 
 // Bitset
 template<unsigned long long range>

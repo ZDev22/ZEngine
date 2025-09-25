@@ -19,7 +19,7 @@ SwapChain::~SwapChain() {
     for (auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
     vkDestroyRenderPass(device.device(), renderPass, nullptr);
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (unsigned int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         if (imageAvailableSemaphores[i] != VK_NULL_HANDLE) { vkDestroySemaphore(device.device(), imageAvailableSemaphores[i], nullptr); }
         if (renderFinishedSemaphores[i] != VK_NULL_HANDLE) { vkDestroySemaphore(device.device(), renderFinishedSemaphores[i], nullptr); }
         if (inFlightFences[i] != VK_NULL_HANDLE) { vkDestroyFence(device.device(), inFlightFences[i], nullptr); }
@@ -82,7 +82,7 @@ void SwapChain::createSwapChain() {
 
     VkSurfaceFormatKHR surfaceFormat; {
         surfaceFormat = swapChainSupport.formats[0];
-        for (size_t i = 0; i < swapChainSupport.formats.size(); i++) {
+        for (unsigned int i = 0; i < swapChainSupport.formats.size(); i++) {
             if (swapChainSupport.formats[i].format == VK_FORMAT_B8G8R8A8_SRGB &&
                 swapChainSupport.formats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
                 surfaceFormat = swapChainSupport.formats[i];
@@ -93,7 +93,7 @@ void SwapChain::createSwapChain() {
 
     VkPresentModeKHR presentMode; {
         presentMode = VK_PRESENT_MODE_FIFO_KHR;
-        for (size_t i = 0; i < swapChainSupport.presentModes.size(); i++) { if (swapChainSupport.presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) { presentMode = swapChainSupport.presentModes[i]; break; }}
+        for (unsigned int i = 0; i < swapChainSupport.presentModes.size(); i++) { if (swapChainSupport.presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) { presentMode = swapChainSupport.presentModes[i]; break; }}
     }
 
     VkExtent2D extent; {
@@ -152,7 +152,7 @@ void SwapChain::createSwapChain() {
 
 void SwapChain::createImageViews() {
     swapChainImageViews.resize(swapChainImages.size());
-    for (size_t i = 0; i < swapChainImages.size(); i++) {
+    for (unsigned int i = 0; i < swapChainImages.size(); i++) {
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         viewInfo.image = swapChainImages[i];
@@ -230,7 +230,7 @@ void SwapChain::createRenderPass() {
 void SwapChain::createFramebuffers() {
     swapChainFramebuffers.resize(imageCount());
 
-    for (size_t i = 0; i < imageCount(); i++) {
+    for (unsigned int i = 0; i < imageCount(); i++) {
         VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
 
         VkFramebufferCreateInfo framebufferInfo{};
@@ -305,5 +305,5 @@ void SwapChain::createSyncObjects() {
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) { if (vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS || vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS || vkCreateFence(device.device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) { throw("failed to create synchronization objects for a frame!"); }}
+    for (unsigned int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) { if (vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS || vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS || vkCreateFence(device.device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) { throw("failed to create synchronization objects for a frame!"); }}
 }

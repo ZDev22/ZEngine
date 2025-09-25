@@ -2,7 +2,7 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-SlimeAttack::SlimeAttack(Keyboard& keyboard, AudioPlayer& audio, Pipeline& pipeline, Collision& collision, Push& push) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), push(push), slimeAttackEnemies(*this, collision, pipeline) {}
+SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Collision& collision) : keyboard(keyboard), pipeline(pipeline), collision(collision), slimeAttackEnemies(*this, collision, pipeline) {}
 
 float slimeAttackSpeed[2] = {0.f};
 bool slimeAttackTouchingGround = false;
