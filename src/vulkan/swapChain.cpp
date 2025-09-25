@@ -35,12 +35,12 @@ void SwapChain::init() {
     createSyncObjects();
 }
 
-VkResult SwapChain::acquireNextImage(uint32_t* imageIndex) {
+VkResult SwapChain::acquireNextImage(unsigned int* imageIndex) {
     vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE, 18446744073709551615ULL);
     return vkAcquireNextImageKHR(device.device(), swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex);
 }
 
-VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex) {
+VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
     if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
     imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
@@ -107,7 +107,7 @@ void SwapChain::createSwapChain() {
         else { extent = swapChainSupport.capabilities.currentExtent; }
     }
 
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+    unsigned int imageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) { imageCount = swapChainSupport.capabilities.maxImageCount; }
 
     VkSwapchainCreateInfoKHR createInfo = {};
@@ -122,7 +122,7 @@ void SwapChain::createSwapChain() {
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     Device::QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
-    uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
+    unsigned int queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
 
     if (indices.graphicsFamily != indices.presentFamily) {
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;

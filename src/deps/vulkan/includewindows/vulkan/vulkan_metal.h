@@ -207,7 +207,7 @@ typedef struct VkImportMemoryMetalHandleInfoEXT {
 typedef struct VkMemoryMetalHandlePropertiesEXT {
     VkStructureType    sType;
     void*              pNext;
-    uint32_t           memoryTypeBits;
+    unsigned int           memoryTypeBits;
 } VkMemoryMetalHandlePropertiesEXT;
 
 typedef struct VkMemoryGetMetalHandleInfoEXT {

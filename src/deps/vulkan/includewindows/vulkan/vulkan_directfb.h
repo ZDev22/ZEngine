@@ -33,7 +33,7 @@ typedef struct VkDirectFBSurfaceCreateInfoEXT {
 } VkDirectFBSurfaceCreateInfoEXT;
 
 typedef VkResult (VKAPI_PTR *PFN_vkCreateDirectFBSurfaceEXT)(VkInstance instance, const VkDirectFBSurfaceCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
-typedef VkBool32 (VKAPI_PTR *PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT)(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, IDirectFB* dfb);
+typedef VkBool32 (VKAPI_PTR *PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT)(VkPhysicalDevice physicalDevice, unsigned int queueFamilyIndex, IDirectFB* dfb);
 
 #ifndef VK_NO_PROTOTYPES
 #ifndef VK_ONLY_EXPORTED_PROTOTYPES
@@ -47,7 +47,7 @@ VKAPI_ATTR VkResult VKAPI_CALL vkCreateDirectFBSurfaceEXT(
 #ifndef VK_ONLY_EXPORTED_PROTOTYPES
 VKAPI_ATTR VkBool32 VKAPI_CALL vkGetPhysicalDeviceDirectFBPresentationSupportEXT(
     VkPhysicalDevice                            physicalDevice,
-    uint32_t                                    queueFamilyIndex,
+    unsigned int                                    queueFamilyIndex,
     IDirectFB*                                  dfb);
 #endif
 #endif

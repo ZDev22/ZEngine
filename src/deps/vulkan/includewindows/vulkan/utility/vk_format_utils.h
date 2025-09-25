@@ -131,7 +131,7 @@ enum VKU_FORMAT_COMPATIBILITY_CLASS {
 //     VK_IMAGE_ASPECT_PLANE_1_BIT -> 1
 //     VK_IMAGE_ASPECT_PLANE_2_BIT -> 2
 //     <any other value> -> VKU_FORMAT_INVALID_INDEX
-inline uint32_t vkuGetPlaneIndex(VkImageAspectFlagBits aspect);
+inline uint vkuGetPlaneIndex(VkImageAspectFlagBits aspect);
 
 // Returns whether a VkFormat is of the numerical format BOOL
 // Format must only contain one numerical format, so formats like D16_UNORM_S8_UINT always return false
@@ -223,10 +223,10 @@ inline bool vkuFormatHasDepth(VkFormat format) { return (vkuFormatIsDepthOnly(fo
 inline bool vkuFormatHasStencil(VkFormat format) { return (vkuFormatIsStencilOnly(format) || vkuFormatIsDepthAndStencil(format)); }
 
 // Returns the size of the depth component in bits if it has one. Otherwise it returns 0
-inline uint32_t vkuFormatDepthSize(VkFormat format);
+inline uint vkuFormatDepthSize(VkFormat format);
 
 // Returns the size of the stencil component in bits if it has one. Otherwise it returns 0
-inline uint32_t vkuFormatStencilSize(VkFormat format);
+inline uint vkuFormatStencilSize(VkFormat format);
 
 // Returns the numerical type of the depth component if it has one.  Otherwise it returns VKU_FORMAT_NUMERICAL_TYPE_NONE
 inline enum VKU_FORMAT_NUMERICAL_TYPE vkuFormatDepthNumericalType(VkFormat format);
@@ -254,7 +254,7 @@ inline bool vkuFormatIsYChromaSubsampled(VkFormat format);
 inline bool vkuFormatIsSinglePlane_422(VkFormat format);
 
 // Returns number of planes in format (which is 1 by default)
-inline uint32_t vkuFormatPlaneCount(VkFormat format);
+inline uint vkuFormatPlaneCount(VkFormat format);
 
 // Returns whether a VkFormat is multiplane
 // Note - Formats like VK_FORMAT_G8B8G8R8_422_UNORM are NOT multi-planar, they require a
@@ -274,7 +274,7 @@ inline VkExtent2D vkuFindMultiplaneExtentDivisors(VkFormat mp_fmt, VkImageAspect
 inline bool vkuFormatIsDepthStencilWithColorSizeCompatible(VkFormat color_format, VkFormat ds_format, VkImageAspectFlags aspect_mask);
 
 // Returns the count of components in a VkFormat
-inline uint32_t vkuFormatComponentCount(VkFormat format);
+inline uint vkuFormatComponentCount(VkFormat format);
 
 // Returns the texel block extent of a VkFormat
 inline VkExtent3D vkuFormatTexelBlockExtent(VkFormat format);
@@ -284,12 +284,12 @@ inline enum VKU_FORMAT_COMPATIBILITY_CLASS vkuFormatCompatibilityClass(VkFormat 
 
 // Returns the number of texels inside a texel block
 // Will always be 1 when not using compressed block formats
-inline uint32_t vkuFormatTexelsPerBlock(VkFormat format);
+inline uint vkuFormatTexelsPerBlock(VkFormat format);
 
 // Returns the number of bytes in a single Texel Block.
 // When dealing with a depth/stencil format, need to consider using vkuFormatStencilSize or vkuFormatDepthSize.
 // When dealing with mulit-planar formats, need to consider using vkuGetPlaneIndex.
-inline uint32_t vkuFormatTexelBlockSize(VkFormat format);
+inline uint vkuFormatTexelBlockSize(VkFormat format);
 
 // Returns whether a VkFormat contains only 8-bit sized components
 inline bool vkuFormatIs8bit(VkFormat format);
@@ -304,7 +304,7 @@ inline bool vkuFormatIs32bit(VkFormat format);
 inline bool vkuFormatIs64bit(VkFormat format);
 
 // Returns whether a VkFormat has a component of a given size
-inline bool vkuFormatHasComponentSize(VkFormat format, uint32_t size);
+inline bool vkuFormatHasComponentSize(VkFormat format, uint size);
 
 // Returns whether a VkFormat has a Red color component
 inline bool vkuFormatHasRed(VkFormat format);
@@ -347,16 +347,16 @@ enum VKU_FORMAT_COMPONENT_TYPE {
 
 struct VKU_FORMAT_COMPONENT_INFO {
     enum VKU_FORMAT_COMPONENT_TYPE type;
-    uint32_t size;  // bits
+    uint size;  // bits
 };
 
 // Generic information for all formats
 struct VKU_FORMAT_INFO {
     enum VKU_FORMAT_COMPATIBILITY_CLASS compatibility;
-    uint32_t texel_block_size;  // bytes
-    uint32_t texels_per_block;
+    uint texel_block_size;  // bytes
+    uint texels_per_block;
     VkExtent3D block_extent;
-    uint32_t component_count;
+    uint component_count;
     struct VKU_FORMAT_COMPONENT_INFO components[VKU_FORMAT_MAX_COMPONENTS];
 };
 const struct VKU_FORMAT_INFO vku_formats[265] = {
@@ -644,8 +644,8 @@ inline const struct VKU_FORMAT_INFO vkuGetFormatInfo(VkFormat format) {
 }
 
 struct VKU_FORMAT_PER_PLANE_COMPATIBILITY {
-    uint32_t width_divisor;
-    uint32_t height_divisor;
+    uint width_divisor;
+    uint height_divisor;
     VkFormat compatible_format;
 };
 
@@ -1301,7 +1301,7 @@ bool vkuFormatIsStencilOnly(VkFormat format) {
 
 // Returns size of depth component in bits
 // Returns zero if no depth component
-uint32_t vkuFormatDepthSize(VkFormat format) {
+uint vkuFormatDepthSize(VkFormat format) {
     switch (format) {
         case VK_FORMAT_D16_UNORM:
         case VK_FORMAT_D16_UNORM_S8_UINT:
@@ -1319,7 +1319,7 @@ uint32_t vkuFormatDepthSize(VkFormat format) {
 
 // Returns size of stencil component in bits
 // Returns zero if no stencil component
-uint32_t vkuFormatStencilSize(VkFormat format) {
+uint vkuFormatStencilSize(VkFormat format) {
     switch (format) {
         case VK_FORMAT_D16_UNORM_S8_UINT:
         case VK_FORMAT_D24_UNORM_S8_UINT:
@@ -1553,7 +1553,7 @@ bool vkuFormatIsSinglePlane_422(VkFormat format) {
 }
 
 // Returns number of planes in format (which is 1 by default)
-uint32_t vkuFormatPlaneCount(VkFormat format) {
+uint vkuFormatPlaneCount(VkFormat format) {
     switch (format) {
         case VK_FORMAT_G8_B8R8_2PLANE_420_UNORM:
         case VK_FORMAT_G8_B8R8_2PLANE_422_UNORM:
@@ -1590,7 +1590,7 @@ uint32_t vkuFormatPlaneCount(VkFormat format) {
 
 // Will return VK_FORMAT_UNDEFINED if given a plane aspect that doesn't exist for the format
 inline VkFormat vkuFindMultiplaneCompatibleFormat(VkFormat mp_fmt, VkImageAspectFlagBits plane_aspect) {
-    const uint32_t plane_idx = vkuGetPlaneIndex(plane_aspect);
+    const uint plane_idx = vkuGetPlaneIndex(plane_aspect);
     const struct VKU_FORMAT_MULTIPLANE_COMPATIBILITY multiplane_compatibility = vkuGetFormatCompatibility(mp_fmt);
     if ((multiplane_compatibility.per_plane[0].compatible_format == VK_FORMAT_UNDEFINED) || (plane_idx >= VKU_FORMAT_MAX_PLANES)) {
         return VK_FORMAT_UNDEFINED;
@@ -1601,7 +1601,7 @@ inline VkFormat vkuFindMultiplaneCompatibleFormat(VkFormat mp_fmt, VkImageAspect
 
 inline VkExtent2D vkuFindMultiplaneExtentDivisors(VkFormat mp_fmt, VkImageAspectFlagBits plane_aspect) {
     VkExtent2D divisors = {1, 1};
-    const uint32_t plane_idx = vkuGetPlaneIndex(plane_aspect);
+    const uint plane_idx = vkuGetPlaneIndex(plane_aspect);
     const struct VKU_FORMAT_MULTIPLANE_COMPATIBILITY multiplane_compatibility = vkuGetFormatCompatibility(mp_fmt);
     if ((multiplane_compatibility.per_plane[0].compatible_format == VK_FORMAT_UNDEFINED) || (plane_idx >= VKU_FORMAT_MAX_PLANES)) {
         return divisors;
@@ -1639,15 +1639,15 @@ inline bool vkuFormatIsDepthStencilWithColorSizeCompatible(VkFormat color_format
     return valid;
 }
 
-inline uint32_t vkuFormatComponentCount(VkFormat format) { return vkuGetFormatInfo(format).component_count; }
+inline uint vkuFormatComponentCount(VkFormat format) { return vkuGetFormatInfo(format).component_count; }
 
 inline VkExtent3D vkuFormatTexelBlockExtent(VkFormat format) { return vkuGetFormatInfo(format).block_extent; }
 
 inline enum VKU_FORMAT_COMPATIBILITY_CLASS vkuFormatCompatibilityClass(VkFormat format) { return vkuGetFormatInfo(format).compatibility; }
 
-inline uint32_t vkuFormatTexelsPerBlock(VkFormat format) { return vkuGetFormatInfo(format).texels_per_block; }
+inline uint vkuFormatTexelsPerBlock(VkFormat format) { return vkuGetFormatInfo(format).texels_per_block; }
 
-inline uint32_t vkuFormatTexelBlockSize(VkFormat format) { return vkuGetFormatInfo(format).texel_block_size; }
+inline uint vkuFormatTexelBlockSize(VkFormat format) { return vkuGetFormatInfo(format).texel_block_size; }
 
 inline bool vkuFormatIs8bit(VkFormat format) {
     switch (format) {
@@ -1801,7 +1801,7 @@ inline bool vkuFormatIs64bit(VkFormat format) {
     }
 }
 
-inline bool vkuFormatHasComponentSize(VkFormat format, uint32_t size) {
+inline bool vkuFormatHasComponentSize(VkFormat format, uint size) {
     const struct VKU_FORMAT_INFO format_info = vkuGetFormatInfo(format);
     bool equal_component_size = false;
     for (size_t i = 0; i < VKU_FORMAT_MAX_COMPONENTS; i++) {
@@ -1827,7 +1827,7 @@ inline bool vkuFormatHasBlue(VkFormat format) { return vkuFormatHasComponentType
 
 inline bool vkuFormatHasAlpha(VkFormat format) { return vkuFormatHasComponentType(format, VKU_FORMAT_COMPONENT_TYPE_A); }
 
-inline uint32_t vkuGetPlaneIndex(VkImageAspectFlagBits aspect) {
+inline uint vkuGetPlaneIndex(VkImageAspectFlagBits aspect) {
     switch (aspect) {
         case VK_IMAGE_ASPECT_PLANE_0_BIT:
             return 0;

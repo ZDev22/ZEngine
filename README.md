@@ -2,16 +2,18 @@
 
 ## How to use:
 ### WINDOWS:
-- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/)
+- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
 - Launch MSYS2 MSYS (the purple one)
 - Run the following commands to download a C++ compiler:
-- pacman -Syu
-- pacman -S --needed base-devel mingw-w64-x86_64-toolchain
-- In the windows search bar, look up "environmental variables"
+```bash
+pacman -Syu
+pacman -S --needed base-devel mingw-w64-x86_64-toolchain
+```
+- In the windows search bar, look up "Edit environment variables"
 - Go to "advanced"
-- Add C:\msys64\ucrt64\bin to your system PATH
-- Add C:\msys64\mingw64\bin
-- Download the Windows CMake Installer from [https://cmake.org/download/](https://cmake.org/download/)
+- Add C:\msys64\ucrt64\bin to your user PATH
+- Add C:\msys64\mingw64\bin to your user PATH
+- Download the **Windows x64 Installer** from [https://cmake.org/download/](https://cmake.org/download/)
 ### LINUX: *(type 'y' on all promps)*
 ```bash
 sudo apt update
@@ -20,8 +22,9 @@ sudo apt install cmake
 sudo apt install libx11-dev
 sudo apt install gdb
 ```
+### GENERAL:
 - Install **@category:debuggers cppdbg** to run the program in VSCode/VSCodium 
-- Include the bin folder from VULKAN in you environmental variables *if you want to edit shaders!*
+- If you want to edit shaders, include the bin folder from VULKAN in you environmental variables
 
 ## How do make your own games:
 
@@ -36,7 +39,7 @@ sudo apt install gdb
 ## Third party dependencies:
 [GLM (Math) {Modified}](https://github.com/icaven/glm)  
 [GLFW (Window) {Modified}](https://www.glfw.org/download)  
-[VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)  
+[VULKAN (Graphics) {Modified}](https://vulkan.lunarg.com/sdk/home)  
 [MINIAUDIO (Audio) {Modified}](https://miniaud.io/)  
 [STB-LIBRARIES (Image loader, font text rasterizer) {Modified}](https://github.com/nothings/stb)  
 ## Build commands:

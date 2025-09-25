@@ -62,7 +62,7 @@ void Device::createInstance() {
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+    createInfo.enabledExtensionCount = static_cast<unsigned int>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
@@ -80,7 +80,7 @@ void Device::setupDebugMessenger() {
 }
 
 void Device::pickPhysicalDevice() {
-    uint32_t deviceCount = 0;
+    unsigned int deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
     if (deviceCount == 0) { std::cout << "Found no GPUS!" << std::endl; }
     else if (deviceCount == 1) { std::cout << "Found 1 GPU" << std::endl; }
@@ -112,11 +112,11 @@ void Device::createLogicalDevice() {
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     float queuePriority = 1.0f;
 
-    std::vector<uint32_t> uniqueQueueFamilies;
+    std::vector<unsigned int> uniqueQueueFamilies;
     uniqueQueueFamilies.push_back(indices.graphicsFamily);
     if (indices.presentFamily != indices.graphicsFamily) { uniqueQueueFamilies.push_back(indices.presentFamily); }
 
-    for (uint32_t queueFamily : uniqueQueueFamilies) {
+    for (unsigned int queueFamily : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -131,11 +131,11 @@ void Device::createLogicalDevice() {
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
-    createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+    createInfo.queueCreateInfoCount = static_cast<unsigned int>(queueCreateInfos.size());
     createInfo.pEnabledFeatures = &deviceFeatures;
 
     std::vector<const char*> updatedDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(updatedDeviceExtensions.size());
+    createInfo.enabledExtensionCount = static_cast<unsigned int>(updatedDeviceExtensions.size());
     createInfo.ppEnabledExtensionNames = updatedDeviceExtensions.data();
     createInfo.enabledLayerCount = 0;
 
@@ -173,7 +173,7 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
 }
 
 std::vector<const char*> Device::getRequiredExtensions() {
-    uint32_t glfwExtensionCount = 0;
+    unsigned int glfwExtensionCount = 0;
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
     if (!glfwExtensions || glfwExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
@@ -184,7 +184,7 @@ std::vector<const char*> Device::getRequiredExtensions() {
 }
 
 void Device::hasGflwRequiredInstanceExtensions() {
-    uint32_t extensionCount = 0;
+    unsigned int extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
     std::vector<VkExtensionProperties> extensions(extensionCount);
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
@@ -199,7 +199,7 @@ void Device::hasGflwRequiredInstanceExtensions() {
 }
 
 bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
-    uint32_t extensionCount;
+    unsigned int extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
@@ -218,7 +218,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 
 Device::QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
-    uint32_t queueFamilyCount = 0;
+    unsigned int queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
     std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
@@ -244,13 +244,13 @@ Device::QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
 Device::SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
     SwapChainSupportDetails details;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
-    uint32_t formatCount;
+    unsigned int formatCount;
     vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
     if (formatCount != 0) {
         details.formats.resize(formatCount);
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
     }
-    uint32_t presentModeCount;
+    unsigned int presentModeCount;
     vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
     if (presentModeCount != 0) {
         details.presentModes.resize(presentModeCount);
@@ -269,10 +269,10 @@ VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidates, Vk
     throw("failed to find supported format");
 }
 
-uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+unsigned int Device::findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }}
+    for (unsigned int i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }}
     throw("Failed to find suitable memory type");
 }
 
@@ -339,7 +339,7 @@ void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize siz
     endSingleTimeCommands(commandBuffer);
 }
 
-void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount) {
+void Device::copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
     VkBufferImageCopy region{};
     region.bufferOffset = 0;

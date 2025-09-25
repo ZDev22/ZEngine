@@ -435,7 +435,7 @@ namespace VULKAN_HPP_NAMESPACE
       using ReturnType = decltype( std::declval<DestructorType>().free( PoolType(), 0u, nullptr, Dispatcher() ) );
 
       template <class Dispatcher>
-      using DestroyFunctionPointerType = ReturnType<Dispatcher> ( DestructorType::* )( PoolType, uint32_t, const HandleType *, const Dispatcher & ) const;
+      using DestroyFunctionPointerType = ReturnType<Dispatcher> ( DestructorType::* )( PoolType, unsigned int, const HandleType *, const Dispatcher & ) const;
 
       PoolFreeShared() = default;
 

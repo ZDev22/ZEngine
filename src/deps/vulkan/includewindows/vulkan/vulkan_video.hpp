@@ -561,18 +561,18 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t aspect_ratio_info_present_flag  : 1;
-      uint32_t overscan_info_present_flag      : 1;
-      uint32_t overscan_appropriate_flag       : 1;
-      uint32_t video_signal_type_present_flag  : 1;
-      uint32_t video_full_range_flag           : 1;
-      uint32_t color_description_present_flag  : 1;
-      uint32_t chroma_loc_info_present_flag    : 1;
-      uint32_t timing_info_present_flag        : 1;
-      uint32_t fixed_frame_rate_flag           : 1;
-      uint32_t bitstream_restriction_flag      : 1;
-      uint32_t nal_hrd_parameters_present_flag : 1;
-      uint32_t vcl_hrd_parameters_present_flag : 1;
+      unsigned int aspect_ratio_info_present_flag  : 1;
+      unsigned int overscan_info_present_flag      : 1;
+      unsigned int overscan_appropriate_flag       : 1;
+      unsigned int video_signal_type_present_flag  : 1;
+      unsigned int video_full_range_flag           : 1;
+      unsigned int color_description_present_flag  : 1;
+      unsigned int chroma_loc_info_present_flag    : 1;
+      unsigned int timing_info_present_flag        : 1;
+      unsigned int fixed_frame_rate_flag           : 1;
+      unsigned int bitstream_restriction_flag      : 1;
+      unsigned int nal_hrd_parameters_present_flag : 1;
+      unsigned int vcl_hrd_parameters_present_flag : 1;
     };
 
     struct H264HrdParameters
@@ -615,17 +615,17 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint8_t                                                                          cpb_cnt_minus1                          = {};
-      uint8_t                                                                          bit_rate_scale                          = {};
-      uint8_t                                                                          cpb_size_scale                          = {};
-      uint8_t                                                                          reserved1                               = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H264_CPB_CNT_LIST_SIZE> bit_rate_value_minus1                   = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H264_CPB_CNT_LIST_SIZE> cpb_size_value_minus1                   = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H264_CPB_CNT_LIST_SIZE>  cbr_flag                                = {};
-      uint32_t                                                                         initial_cpb_removal_delay_length_minus1 = {};
-      uint32_t                                                                         cpb_removal_delay_length_minus1         = {};
-      uint32_t                                                                         dpb_output_delay_length_minus1          = {};
-      uint32_t                                                                         time_offset_length                      = {};
+      unsigned char                                                                          cpb_cnt_minus1                          = {};
+      unsigned char                                                                          bit_rate_scale                          = {};
+      unsigned char                                                                          cpb_size_scale                          = {};
+      unsigned char                                                                          reserved1                               = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H264_CPB_CNT_LIST_SIZE> bit_rate_value_minus1                   = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H264_CPB_CNT_LIST_SIZE> cpb_size_value_minus1                   = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H264_CPB_CNT_LIST_SIZE>  cbr_flag                                = {};
+      unsigned int                                                                         initial_cpb_removal_delay_length_minus1 = {};
+      unsigned int                                                                         cpb_removal_delay_length_minus1         = {};
+      unsigned int                                                                         dpb_output_delay_length_minus1          = {};
+      unsigned int                                                                         time_offset_length                      = {};
     };
 
     struct H264SequenceParameterSetVui
@@ -672,19 +672,19 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264SpsVuiFlags    flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264AspectRatioIdc aspect_ratio_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264AspectRatioIdc::eUnspecified;
-      uint16_t                                                                    sar_width                           = {};
-      uint16_t                                                                    sar_height                          = {};
-      uint8_t                                                                     video_format                        = {};
-      uint8_t                                                                     colour_primaries                    = {};
-      uint8_t                                                                     transfer_characteristics            = {};
-      uint8_t                                                                     matrix_coefficients                 = {};
-      uint32_t                                                                    num_units_in_tick                   = {};
-      uint32_t                                                                    time_scale                          = {};
-      uint8_t                                                                     max_num_reorder_frames              = {};
-      uint8_t                                                                     max_dec_frame_buffering             = {};
-      uint8_t                                                                     chroma_sample_loc_type_top_field    = {};
-      uint8_t                                                                     chroma_sample_loc_type_bottom_field = {};
-      uint32_t                                                                    reserved1                           = {};
+      unsigned short                                                                    sar_width                           = {};
+      unsigned short                                                                    sar_height                          = {};
+      unsigned char                                                                     video_format                        = {};
+      unsigned char                                                                     colour_primaries                    = {};
+      unsigned char                                                                     transfer_characteristics            = {};
+      unsigned char                                                                     matrix_coefficients                 = {};
+      unsigned int                                                                    num_units_in_tick                   = {};
+      unsigned int                                                                    time_scale                          = {};
+      unsigned char                                                                     max_num_reorder_frames              = {};
+      unsigned char                                                                     max_dec_frame_buffering             = {};
+      unsigned char                                                                     chroma_sample_loc_type_top_field    = {};
+      unsigned char                                                                     chroma_sample_loc_type_bottom_field = {};
+      unsigned int                                                                    reserved1                           = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264HrdParameters * pHrdParameters                      = {};
     };
 
@@ -731,22 +731,22 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t constraint_set0_flag                 : 1;
-      uint32_t constraint_set1_flag                 : 1;
-      uint32_t constraint_set2_flag                 : 1;
-      uint32_t constraint_set3_flag                 : 1;
-      uint32_t constraint_set4_flag                 : 1;
-      uint32_t constraint_set5_flag                 : 1;
-      uint32_t direct_8x8_inference_flag            : 1;
-      uint32_t mb_adaptive_frame_field_flag         : 1;
-      uint32_t frame_mbs_only_flag                  : 1;
-      uint32_t delta_pic_order_always_zero_flag     : 1;
-      uint32_t separate_colour_plane_flag           : 1;
-      uint32_t gaps_in_frame_num_value_allowed_flag : 1;
-      uint32_t qpprime_y_zero_transform_bypass_flag : 1;
-      uint32_t frame_cropping_flag                  : 1;
-      uint32_t seq_scaling_matrix_present_flag      : 1;
-      uint32_t vui_parameters_present_flag          : 1;
+      unsigned int constraint_set0_flag                 : 1;
+      unsigned int constraint_set1_flag                 : 1;
+      unsigned int constraint_set2_flag                 : 1;
+      unsigned int constraint_set3_flag                 : 1;
+      unsigned int constraint_set4_flag                 : 1;
+      unsigned int constraint_set5_flag                 : 1;
+      unsigned int direct_8x8_inference_flag            : 1;
+      unsigned int mb_adaptive_frame_field_flag         : 1;
+      unsigned int frame_mbs_only_flag                  : 1;
+      unsigned int delta_pic_order_always_zero_flag     : 1;
+      unsigned int separate_colour_plane_flag           : 1;
+      unsigned int gaps_in_frame_num_value_allowed_flag : 1;
+      unsigned int qpprime_y_zero_transform_bypass_flag : 1;
+      unsigned int frame_cropping_flag                  : 1;
+      unsigned int seq_scaling_matrix_present_flag      : 1;
+      unsigned int vui_parameters_present_flag          : 1;
     };
 
     struct H264ScalingLists
@@ -785,11 +785,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint16_t scaling_list_present_mask       = {};
-      uint16_t use_default_scaling_matrix_mask = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<uint8_t, STD_VIDEO_H264_SCALING_LIST_4X4_NUM_LISTS, STD_VIDEO_H264_SCALING_LIST_4X4_NUM_ELEMENTS>
+      unsigned short scaling_list_present_mask       = {};
+      unsigned short use_default_scaling_matrix_mask = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<unsigned char, STD_VIDEO_H264_SCALING_LIST_4X4_NUM_LISTS, STD_VIDEO_H264_SCALING_LIST_4X4_NUM_ELEMENTS>
         ScalingList4x4 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<uint8_t, STD_VIDEO_H264_SCALING_LIST_8X8_NUM_LISTS, STD_VIDEO_H264_SCALING_LIST_8X8_NUM_ELEMENTS>
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<unsigned char, STD_VIDEO_H264_SCALING_LIST_8X8_NUM_LISTS, STD_VIDEO_H264_SCALING_LIST_8X8_NUM_ELEMENTS>
         ScalingList8x8 = {};
     };
 
@@ -846,25 +846,25 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264LevelIdc        level_idc = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264LevelIdc::e1_0;
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264ChromaFormatIdc chroma_format_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264ChromaFormatIdc::eMonochrome;
-      uint8_t                                                       seq_parameter_set_id      = {};
-      uint8_t                                                       bit_depth_luma_minus8     = {};
-      uint8_t                                                       bit_depth_chroma_minus8   = {};
-      uint8_t                                                       log2_max_frame_num_minus4 = {};
+      unsigned char                                                       seq_parameter_set_id      = {};
+      unsigned char                                                       bit_depth_luma_minus8     = {};
+      unsigned char                                                       bit_depth_chroma_minus8   = {};
+      unsigned char                                                       log2_max_frame_num_minus4 = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PocType pic_order_cnt_type     = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PocType::e0;
-      int32_t                                                       offset_for_non_ref_pic = {};
-      int32_t                                                       offset_for_top_to_bottom_field                   = {};
-      uint8_t                                                       log2_max_pic_order_cnt_lsb_minus4                = {};
-      uint8_t                                                       num_ref_frames_in_pic_order_cnt_cycle            = {};
-      uint8_t                                                       max_num_ref_frames                               = {};
-      uint8_t                                                       reserved1                                        = {};
-      uint32_t                                                      pic_width_in_mbs_minus1                          = {};
-      uint32_t                                                      pic_height_in_map_units_minus1                   = {};
-      uint32_t                                                      frame_crop_left_offset                           = {};
-      uint32_t                                                      frame_crop_right_offset                          = {};
-      uint32_t                                                      frame_crop_top_offset                            = {};
-      uint32_t                                                      frame_crop_bottom_offset                         = {};
-      uint32_t                                                      reserved2                                        = {};
-      const int32_t *                                               pOffsetForRefFrame                               = {};
+      int                                                       offset_for_non_ref_pic = {};
+      int                                                       offset_for_top_to_bottom_field                   = {};
+      unsigned char                                                       log2_max_pic_order_cnt_lsb_minus4                = {};
+      unsigned char                                                       num_ref_frames_in_pic_order_cnt_cycle            = {};
+      unsigned char                                                       max_num_ref_frames                               = {};
+      unsigned char                                                       reserved1                                        = {};
+      unsigned int                                                      pic_width_in_mbs_minus1                          = {};
+      unsigned int                                                      pic_height_in_map_units_minus1                   = {};
+      unsigned int                                                      frame_crop_left_offset                           = {};
+      unsigned int                                                      frame_crop_right_offset                          = {};
+      unsigned int                                                      frame_crop_top_offset                            = {};
+      unsigned int                                                      frame_crop_bottom_offset                         = {};
+      unsigned int                                                      reserved2                                        = {};
+      const int *                                               pOffsetForRefFrame                               = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264ScalingLists *            pScalingLists            = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264SequenceParameterSetVui * pSequenceParameterSetVui = {};
     };
@@ -908,14 +908,14 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t transform_8x8_mode_flag                      : 1;
-      uint32_t redundant_pic_cnt_present_flag               : 1;
-      uint32_t constrained_intra_pred_flag                  : 1;
-      uint32_t deblocking_filter_control_present_flag       : 1;
-      uint32_t weighted_pred_flag                           : 1;
-      uint32_t bottom_field_pic_order_in_frame_present_flag : 1;
-      uint32_t entropy_coding_mode_flag                     : 1;
-      uint32_t pic_scaling_matrix_present_flag              : 1;
+      unsigned int transform_8x8_mode_flag                      : 1;
+      unsigned int redundant_pic_cnt_present_flag               : 1;
+      unsigned int constrained_intra_pred_flag                  : 1;
+      unsigned int deblocking_filter_control_present_flag       : 1;
+      unsigned int weighted_pred_flag                           : 1;
+      unsigned int bottom_field_pic_order_in_frame_present_flag : 1;
+      unsigned int entropy_coding_mode_flag                     : 1;
+      unsigned int pic_scaling_matrix_present_flag              : 1;
     };
 
     struct H264PictureParameterSet
@@ -959,16 +959,16 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PpsFlags          flags                                = {};
-      uint8_t                                                                 seq_parameter_set_id                 = {};
-      uint8_t                                                                 pic_parameter_set_id                 = {};
-      uint8_t                                                                 num_ref_idx_l0_default_active_minus1 = {};
-      uint8_t                                                                 num_ref_idx_l1_default_active_minus1 = {};
+      unsigned char                                                                 seq_parameter_set_id                 = {};
+      unsigned char                                                                 pic_parameter_set_id                 = {};
+      unsigned char                                                                 num_ref_idx_l0_default_active_minus1 = {};
+      unsigned char                                                                 num_ref_idx_l1_default_active_minus1 = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264WeightedBipredIdc weighted_bipred_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264WeightedBipredIdc::eDefault;
-      int8_t                                                                     pic_init_qp_minus26           = {};
-      int8_t                                                                     pic_init_qs_minus26           = {};
-      int8_t                                                                     chroma_qp_index_offset        = {};
-      int8_t                                                                     second_chroma_qp_index_offset = {};
+      signed char                                                                     pic_init_qp_minus26           = {};
+      signed char                                                                     pic_init_qs_minus26           = {};
+      signed char                                                                     chroma_qp_index_offset        = {};
+      signed char                                                                     second_chroma_qp_index_offset = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264ScalingLists * pScalingLists                 = {};
     };
 #endif
@@ -1013,12 +1013,12 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t field_pic_flag           : 1;
-      uint32_t is_intra                 : 1;
-      uint32_t IdrPicFlag               : 1;
-      uint32_t bottom_field_flag        : 1;
-      uint32_t is_reference             : 1;
-      uint32_t complementary_field_pair : 1;
+      unsigned int field_pic_flag           : 1;
+      unsigned int is_intra                 : 1;
+      unsigned int IdrPicFlag               : 1;
+      unsigned int bottom_field_flag        : 1;
+      unsigned int is_reference             : 1;
+      unsigned int complementary_field_pair : 1;
     };
 
     struct DecodeH264PictureInfo
@@ -1059,13 +1059,13 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeH264PictureInfoFlags                     flags                = {};
-      uint8_t                                                                                          seq_parameter_set_id = {};
-      uint8_t                                                                                          pic_parameter_set_id = {};
-      uint8_t                                                                                          reserved1            = {};
-      uint8_t                                                                                          reserved2            = {};
-      uint16_t                                                                                         frame_num            = {};
-      uint16_t                                                                                         idr_pic_id           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int32_t, STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE> PicOrderCnt          = {};
+      unsigned char                                                                                          seq_parameter_set_id = {};
+      unsigned char                                                                                          pic_parameter_set_id = {};
+      unsigned char                                                                                          reserved1            = {};
+      unsigned char                                                                                          reserved2            = {};
+      unsigned short                                                                                         frame_num            = {};
+      unsigned short                                                                                         idr_pic_id           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int, STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE> PicOrderCnt          = {};
     };
 
     struct DecodeH264ReferenceInfoFlags
@@ -1104,10 +1104,10 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t top_field_flag               : 1;
-      uint32_t bottom_field_flag            : 1;
-      uint32_t used_for_long_term_reference : 1;
-      uint32_t is_non_existing              : 1;
+      unsigned int top_field_flag               : 1;
+      unsigned int bottom_field_flag            : 1;
+      unsigned int used_for_long_term_reference : 1;
+      unsigned int is_non_existing              : 1;
     };
 
     struct DecodeH264ReferenceInfo
@@ -1146,9 +1146,9 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeH264ReferenceInfoFlags                   flags       = {};
-      uint16_t                                                                                         FrameNum    = {};
-      uint16_t                                                                                         reserved    = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int32_t, STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE> PicOrderCnt = {};
+      unsigned short                                                                                         FrameNum    = {};
+      unsigned short                                                                                         reserved    = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int, STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE> PicOrderCnt = {};
     };
 #endif
 
@@ -1191,10 +1191,10 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t luma_weight_l0_flag   = {};
-      uint32_t chroma_weight_l0_flag = {};
-      uint32_t luma_weight_l1_flag   = {};
-      uint32_t chroma_weight_l1_flag = {};
+      unsigned int luma_weight_l0_flag   = {};
+      unsigned int chroma_weight_l0_flag = {};
+      unsigned int luma_weight_l1_flag   = {};
+      unsigned int chroma_weight_l1_flag = {};
     };
 
     struct EncodeH264WeightTable
@@ -1237,16 +1237,16 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264WeightTableFlags                                    flags                    = {};
-      uint8_t                                                                                                         luma_log2_weight_denom   = {};
-      uint8_t                                                                                                         chroma_log2_weight_denom = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_weight_l0           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_offset_l0           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_weight_l0         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_offset_l0         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_weight_l1           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_offset_l1           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_weight_l1         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_offset_l1         = {};
+      unsigned char                                                                                                         luma_log2_weight_denom   = {};
+      unsigned char                                                                                                         chroma_log2_weight_denom = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_weight_l0           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_offset_l0           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_weight_l0         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_offset_l0         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_weight_l1           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF>                                   luma_offset_l1           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_weight_l1         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H264_MAX_NUM_LIST_REF, STD_VIDEO_H264_MAX_CHROMA_PLANES> chroma_offset_l1         = {};
     };
 
     struct EncodeH264SliceHeaderFlags
@@ -1285,9 +1285,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t direct_spatial_mv_pred_flag      : 1;
-      uint32_t num_ref_idx_active_override_flag : 1;
-      uint32_t reserved                         : 30;
+      unsigned int direct_spatial_mv_pred_flag      : 1;
+      unsigned int num_ref_idx_active_override_flag : 1;
+      unsigned int reserved                         : 30;
     };
 
     struct EncodeH264PictureInfoFlags
@@ -1327,12 +1327,12 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t IdrPicFlag                         : 1;
-      uint32_t is_reference                       : 1;
-      uint32_t no_output_of_prior_pics_flag       : 1;
-      uint32_t long_term_reference_flag           : 1;
-      uint32_t adaptive_ref_pic_marking_mode_flag : 1;
-      uint32_t reserved                           : 27;
+      unsigned int IdrPicFlag                         : 1;
+      unsigned int is_reference                       : 1;
+      unsigned int no_output_of_prior_pics_flag       : 1;
+      unsigned int long_term_reference_flag           : 1;
+      unsigned int adaptive_ref_pic_marking_mode_flag : 1;
+      unsigned int reserved                           : 27;
     };
 
     struct EncodeH264ReferenceInfoFlags
@@ -1370,8 +1370,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t used_for_long_term_reference : 1;
-      uint32_t reserved                     : 31;
+      unsigned int used_for_long_term_reference : 1;
+      unsigned int reserved                     : 31;
     };
 
     struct EncodeH264ReferenceListsInfoFlags
@@ -1410,9 +1410,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t ref_pic_list_modification_flag_l0 : 1;
-      uint32_t ref_pic_list_modification_flag_l1 : 1;
-      uint32_t reserved                          : 30;
+      unsigned int ref_pic_list_modification_flag_l0 : 1;
+      unsigned int ref_pic_list_modification_flag_l1 : 1;
+      unsigned int reserved                          : 30;
     };
 
     struct EncodeH264RefListModEntry
@@ -1453,8 +1453,8 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264ModificationOfPicNumsIdc modification_of_pic_nums_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264ModificationOfPicNumsIdc::eShortTermSubtract;
-      uint16_t abs_diff_pic_num_minus1 = {};
-      uint16_t long_term_pic_num       = {};
+      unsigned short abs_diff_pic_num_minus1 = {};
+      unsigned short long_term_pic_num       = {};
     };
 
     struct EncodeH264RefPicMarkingEntry
@@ -1496,10 +1496,10 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264MemMgmtControlOp memory_management_control_operation =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264MemMgmtControlOp::eEnd;
-      uint16_t difference_of_pic_nums_minus1 = {};
-      uint16_t long_term_pic_num             = {};
-      uint16_t long_term_frame_idx           = {};
-      uint16_t max_long_term_frame_idx_plus1 = {};
+      unsigned short difference_of_pic_nums_minus1 = {};
+      unsigned short long_term_pic_num             = {};
+      unsigned short long_term_frame_idx           = {};
+      unsigned short max_long_term_frame_idx_plus1 = {};
     };
 
     struct EncodeH264ReferenceListsInfo
@@ -1543,14 +1543,14 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264ReferenceListsInfoFlags    flags                        = {};
-      uint8_t                                                                                num_ref_idx_l0_active_minus1 = {};
-      uint8_t                                                                                num_ref_idx_l1_active_minus1 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF>         RefPicList0                  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H264_MAX_NUM_LIST_REF>         RefPicList1                  = {};
-      uint8_t                                                                                refList0ModOpCount           = {};
-      uint8_t                                                                                refList1ModOpCount           = {};
-      uint8_t                                                                                refPicMarkingOpCount         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 7>                                       reserved1                    = {};
+      unsigned char                                                                                num_ref_idx_l0_active_minus1 = {};
+      unsigned char                                                                                num_ref_idx_l1_active_minus1 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H264_MAX_NUM_LIST_REF>         RefPicList0                  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H264_MAX_NUM_LIST_REF>         RefPicList1                  = {};
+      unsigned char                                                                                refList0ModOpCount           = {};
+      unsigned char                                                                                refList1ModOpCount           = {};
+      unsigned char                                                                                refPicMarkingOpCount         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 7>                                       reserved1                    = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264RefListModEntry *    pRefList0ModOperations       = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264RefListModEntry *    pRefList1ModOperations       = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264RefPicMarkingEntry * pRefPicMarkingOperations     = {};
@@ -1594,15 +1594,15 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264PictureInfoFlags flags                = {};
-      uint8_t                                                                      seq_parameter_set_id = {};
-      uint8_t                                                                      pic_parameter_set_id = {};
-      uint16_t                                                                     idr_pic_id           = {};
+      unsigned char                                                                      seq_parameter_set_id = {};
+      unsigned char                                                                      pic_parameter_set_id = {};
+      unsigned short                                                                     idr_pic_id           = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PictureType            primary_pic_type =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PictureType::eP;
-      uint32_t                                                                               frame_num   = {};
-      int32_t                                                                                PicOrderCnt = {};
-      uint8_t                                                                                temporal_id = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 3>                                       reserved1   = {};
+      unsigned int                                                                               frame_num   = {};
+      int                                                                                PicOrderCnt = {};
+      unsigned char                                                                                temporal_id = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 3>                                       reserved1   = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264ReferenceListsInfo * pRefLists   = {};
     };
 
@@ -1645,11 +1645,11 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264ReferenceInfoFlags flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PictureType              primary_pic_type =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264PictureType::eP;
-      uint32_t FrameNum            = {};
-      int32_t  PicOrderCnt         = {};
-      uint16_t long_term_pic_num   = {};
-      uint16_t long_term_frame_idx = {};
-      uint8_t  temporal_id         = {};
+      unsigned int FrameNum            = {};
+      int  PicOrderCnt         = {};
+      unsigned short long_term_pic_num   = {};
+      unsigned short long_term_frame_idx = {};
+      unsigned char  temporal_id         = {};
     };
 
     struct EncodeH264SliceHeader
@@ -1691,12 +1691,12 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH264SliceHeaderFlags flags             = {};
-      uint32_t                                                                     first_mb_in_slice = {};
+      unsigned int                                                                     first_mb_in_slice = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264SliceType    slice_type = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264SliceType::eP;
-      int8_t                                                             slice_alpha_c0_offset_div2 = {};
-      int8_t                                                             slice_beta_offset_div2     = {};
-      int8_t                                                             slice_qp_delta             = {};
-      uint8_t                                                            reserved1                  = {};
+      signed char                                                             slice_alpha_c0_offset_div2 = {};
+      signed char                                                             slice_beta_offset_div2     = {};
+      signed char                                                             slice_qp_delta             = {};
+      unsigned char                                                            reserved1                  = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264CabacInitIdc cabac_init_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264CabacInitIdc::e0;
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H264DisableDeblockingFilterIdc disable_deblocking_filter_idc =
@@ -1744,9 +1744,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE> max_latency_increase_plus1   = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>  max_dec_pic_buffering_minus1 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>  max_num_reorder_pics         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE> max_latency_increase_plus1   = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>  max_dec_pic_buffering_minus1 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>  max_num_reorder_pics         = {};
     };
 
     struct H265SubLayerHrdParameters
@@ -1786,11 +1786,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> bit_rate_value_minus1    = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> cpb_size_value_minus1    = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> cpb_size_du_value_minus1 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> bit_rate_du_value_minus1 = {};
-      uint32_t                                                                         cbr_flag                 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> bit_rate_value_minus1    = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> cpb_size_value_minus1    = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> cpb_size_du_value_minus1 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H265_CPB_CNT_LIST_SIZE> bit_rate_du_value_minus1 = {};
+      unsigned int                                                                         cbr_flag                 = {};
     };
 
     struct H265HrdFlags
@@ -1833,13 +1833,13 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t nal_hrd_parameters_present_flag           : 1;
-      uint32_t vcl_hrd_parameters_present_flag           : 1;
-      uint32_t sub_pic_hrd_params_present_flag           : 1;
-      uint32_t sub_pic_cpb_params_in_pic_timing_sei_flag : 1;
-      uint32_t fixed_pic_rate_general_flag               : 8;
-      uint32_t fixed_pic_rate_within_cvs_flag            : 8;
-      uint32_t low_delay_hrd_flag                        : 8;
+      unsigned int nal_hrd_parameters_present_flag           : 1;
+      unsigned int vcl_hrd_parameters_present_flag           : 1;
+      unsigned int sub_pic_hrd_params_present_flag           : 1;
+      unsigned int sub_pic_cpb_params_in_pic_timing_sei_flag : 1;
+      unsigned int fixed_pic_rate_general_flag               : 8;
+      unsigned int fixed_pic_rate_within_cvs_flag            : 8;
+      unsigned int low_delay_hrd_flag                        : 8;
     };
 
     struct H265HrdParameters
@@ -1886,18 +1886,18 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265HrdFlags                      flags                                        = {};
-      uint8_t                                                                             tick_divisor_minus2                          = {};
-      uint8_t                                                                             du_cpb_removal_delay_increment_length_minus1 = {};
-      uint8_t                                                                             dpb_output_delay_du_length_minus1            = {};
-      uint8_t                                                                             bit_rate_scale                               = {};
-      uint8_t                                                                             cpb_size_scale                               = {};
-      uint8_t                                                                             cpb_size_du_scale                            = {};
-      uint8_t                                                                             initial_cpb_removal_delay_length_minus1      = {};
-      uint8_t                                                                             au_cpb_removal_delay_length_minus1           = {};
-      uint8_t                                                                             dpb_output_delay_length_minus1               = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>   cpb_cnt_minus1                               = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>  elemental_duration_in_tc_minus1              = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, 3>                                   reserved                                     = {};
+      unsigned char                                                                             tick_divisor_minus2                          = {};
+      unsigned char                                                                             du_cpb_removal_delay_increment_length_minus1 = {};
+      unsigned char                                                                             dpb_output_delay_du_length_minus1            = {};
+      unsigned char                                                                             bit_rate_scale                               = {};
+      unsigned char                                                                             cpb_size_scale                               = {};
+      unsigned char                                                                             cpb_size_du_scale                            = {};
+      unsigned char                                                                             initial_cpb_removal_delay_length_minus1      = {};
+      unsigned char                                                                             au_cpb_removal_delay_length_minus1           = {};
+      unsigned char                                                                             dpb_output_delay_length_minus1               = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>   cpb_cnt_minus1                               = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, STD_VIDEO_H265_SUBLAYERS_LIST_SIZE>  elemental_duration_in_tc_minus1              = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, 3>                                   reserved                                     = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265SubLayerHrdParameters * pSubLayerHrdParametersNal                    = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265SubLayerHrdParameters * pSubLayerHrdParametersVcl                    = {};
     };
@@ -1940,10 +1940,10 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t vps_temporal_id_nesting_flag             : 1;
-      uint32_t vps_sub_layer_ordering_info_present_flag : 1;
-      uint32_t vps_timing_info_present_flag             : 1;
-      uint32_t vps_poc_proportional_to_timing_flag      : 1;
+      unsigned int vps_temporal_id_nesting_flag             : 1;
+      unsigned int vps_sub_layer_ordering_info_present_flag : 1;
+      unsigned int vps_timing_info_present_flag             : 1;
+      unsigned int vps_poc_proportional_to_timing_flag      : 1;
     };
 
     struct H265ProfileTierLevelFlags
@@ -1984,11 +1984,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t general_tier_flag                  : 1;
-      uint32_t general_progressive_source_flag    : 1;
-      uint32_t general_interlaced_source_flag     : 1;
-      uint32_t general_non_packed_constraint_flag : 1;
-      uint32_t general_frame_only_constraint_flag : 1;
+      unsigned int general_tier_flag                  : 1;
+      unsigned int general_progressive_source_flag    : 1;
+      unsigned int general_interlaced_source_flag     : 1;
+      unsigned int general_non_packed_constraint_flag : 1;
+      unsigned int general_frame_only_constraint_flag : 1;
     };
 
     struct H265ProfileTierLevel
@@ -2072,14 +2072,14 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265VpsFlags                 flags                             = {};
-      uint8_t                                                                        vps_video_parameter_set_id        = {};
-      uint8_t                                                                        vps_max_sub_layers_minus1         = {};
-      uint8_t                                                                        reserved1                         = {};
-      uint8_t                                                                        reserved2                         = {};
-      uint32_t                                                                       vps_num_units_in_tick             = {};
-      uint32_t                                                                       vps_time_scale                    = {};
-      uint32_t                                                                       vps_num_ticks_poc_diff_one_minus1 = {};
-      uint32_t                                                                       reserved3                         = {};
+      unsigned char                                                                        vps_video_parameter_set_id        = {};
+      unsigned char                                                                        vps_max_sub_layers_minus1         = {};
+      unsigned char                                                                        reserved1                         = {};
+      unsigned char                                                                        reserved2                         = {};
+      unsigned int                                                                       vps_num_units_in_tick             = {};
+      unsigned int                                                                       vps_time_scale                    = {};
+      unsigned int                                                                       vps_num_ticks_poc_diff_one_minus1 = {};
+      unsigned int                                                                       reserved3                         = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265DecPicBufMgr *     pDecPicBufMgr                     = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265HrdParameters *    pHrdParameters                    = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ProfileTierLevel * pProfileTierLevel                 = {};
@@ -2122,16 +2122,16 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<uint8_t, STD_VIDEO_H265_SCALING_LIST_4X4_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_4X4_NUM_ELEMENTS>
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<unsigned char, STD_VIDEO_H265_SCALING_LIST_4X4_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_4X4_NUM_ELEMENTS>
         ScalingList4x4 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<uint8_t, STD_VIDEO_H265_SCALING_LIST_8X8_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_8X8_NUM_ELEMENTS>
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<unsigned char, STD_VIDEO_H265_SCALING_LIST_8X8_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_8X8_NUM_ELEMENTS>
         ScalingList8x8 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<uint8_t, STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_16X16_NUM_ELEMENTS>
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<unsigned char, STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_16X16_NUM_ELEMENTS>
         ScalingList16x16 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<uint8_t, STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_32X32_NUM_ELEMENTS>
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<unsigned char, STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS, STD_VIDEO_H265_SCALING_LIST_32X32_NUM_ELEMENTS>
                                                                                                  ScalingList32x32       = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS> ScalingListDCCoef16x16 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS> ScalingListDCCoef32x32 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS> ScalingListDCCoef16x16 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS> ScalingListDCCoef32x32 = {};
     };
 
     struct H265SpsVuiFlags
@@ -2180,24 +2180,24 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t aspect_ratio_info_present_flag          : 1;
-      uint32_t overscan_info_present_flag              : 1;
-      uint32_t overscan_appropriate_flag               : 1;
-      uint32_t video_signal_type_present_flag          : 1;
-      uint32_t video_full_range_flag                   : 1;
-      uint32_t colour_description_present_flag         : 1;
-      uint32_t chroma_loc_info_present_flag            : 1;
-      uint32_t neutral_chroma_indication_flag          : 1;
-      uint32_t field_seq_flag                          : 1;
-      uint32_t frame_field_info_present_flag           : 1;
-      uint32_t default_display_window_flag             : 1;
-      uint32_t vui_timing_info_present_flag            : 1;
-      uint32_t vui_poc_proportional_to_timing_flag     : 1;
-      uint32_t vui_hrd_parameters_present_flag         : 1;
-      uint32_t bitstream_restriction_flag              : 1;
-      uint32_t tiles_fixed_structure_flag              : 1;
-      uint32_t motion_vectors_over_pic_boundaries_flag : 1;
-      uint32_t restricted_ref_pic_lists_flag           : 1;
+      unsigned int aspect_ratio_info_present_flag          : 1;
+      unsigned int overscan_info_present_flag              : 1;
+      unsigned int overscan_appropriate_flag               : 1;
+      unsigned int video_signal_type_present_flag          : 1;
+      unsigned int video_full_range_flag                   : 1;
+      unsigned int colour_description_present_flag         : 1;
+      unsigned int chroma_loc_info_present_flag            : 1;
+      unsigned int neutral_chroma_indication_flag          : 1;
+      unsigned int field_seq_flag                          : 1;
+      unsigned int frame_field_info_present_flag           : 1;
+      unsigned int default_display_window_flag             : 1;
+      unsigned int vui_timing_info_present_flag            : 1;
+      unsigned int vui_poc_proportional_to_timing_flag     : 1;
+      unsigned int vui_hrd_parameters_present_flag         : 1;
+      unsigned int bitstream_restriction_flag              : 1;
+      unsigned int tiles_fixed_structure_flag              : 1;
+      unsigned int motion_vectors_over_pic_boundaries_flag : 1;
+      unsigned int restricted_ref_pic_lists_flag           : 1;
     };
 
     struct H265SequenceParameterSetVui
@@ -2250,29 +2250,29 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265SpsVuiFlags    flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265AspectRatioIdc aspect_ratio_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265AspectRatioIdc::eUnspecified;
-      uint16_t                                                                    sar_width                           = {};
-      uint16_t                                                                    sar_height                          = {};
-      uint8_t                                                                     video_format                        = {};
-      uint8_t                                                                     colour_primaries                    = {};
-      uint8_t                                                                     transfer_characteristics            = {};
-      uint8_t                                                                     matrix_coeffs                       = {};
-      uint8_t                                                                     chroma_sample_loc_type_top_field    = {};
-      uint8_t                                                                     chroma_sample_loc_type_bottom_field = {};
-      uint8_t                                                                     reserved1                           = {};
-      uint8_t                                                                     reserved2                           = {};
-      uint16_t                                                                    def_disp_win_left_offset            = {};
-      uint16_t                                                                    def_disp_win_right_offset           = {};
-      uint16_t                                                                    def_disp_win_top_offset             = {};
-      uint16_t                                                                    def_disp_win_bottom_offset          = {};
-      uint32_t                                                                    vui_num_units_in_tick               = {};
-      uint32_t                                                                    vui_time_scale                      = {};
-      uint32_t                                                                    vui_num_ticks_poc_diff_one_minus1   = {};
-      uint16_t                                                                    min_spatial_segmentation_idc        = {};
-      uint16_t                                                                    reserved3                           = {};
-      uint8_t                                                                     max_bytes_per_pic_denom             = {};
-      uint8_t                                                                     max_bits_per_min_cu_denom           = {};
-      uint8_t                                                                     log2_max_mv_length_horizontal       = {};
-      uint8_t                                                                     log2_max_mv_length_vertical         = {};
+      unsigned short                                                                    sar_width                           = {};
+      unsigned short                                                                    sar_height                          = {};
+      unsigned char                                                                     video_format                        = {};
+      unsigned char                                                                     colour_primaries                    = {};
+      unsigned char                                                                     transfer_characteristics            = {};
+      unsigned char                                                                     matrix_coeffs                       = {};
+      unsigned char                                                                     chroma_sample_loc_type_top_field    = {};
+      unsigned char                                                                     chroma_sample_loc_type_bottom_field = {};
+      unsigned char                                                                     reserved1                           = {};
+      unsigned char                                                                     reserved2                           = {};
+      unsigned short                                                                    def_disp_win_left_offset            = {};
+      unsigned short                                                                    def_disp_win_right_offset           = {};
+      unsigned short                                                                    def_disp_win_top_offset             = {};
+      unsigned short                                                                    def_disp_win_bottom_offset          = {};
+      unsigned int                                                                    vui_num_units_in_tick               = {};
+      unsigned int                                                                    vui_time_scale                      = {};
+      unsigned int                                                                    vui_num_ticks_poc_diff_one_minus1   = {};
+      unsigned short                                                                    min_spatial_segmentation_idc        = {};
+      unsigned short                                                                    reserved3                           = {};
+      unsigned char                                                                     max_bytes_per_pic_denom             = {};
+      unsigned char                                                                     max_bits_per_min_cu_denom           = {};
+      unsigned char                                                                     log2_max_mv_length_horizontal       = {};
+      unsigned char                                                                     log2_max_mv_length_vertical         = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265HrdParameters * pHrdParameters                      = {};
     };
 
@@ -2312,7 +2312,7 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::
-        ArrayWrapper2D<uint16_t, STD_VIDEO_H265_PREDICTOR_PALETTE_COMPONENTS_LIST_SIZE, STD_VIDEO_H265_PREDICTOR_PALETTE_COMP_ENTRIES_LIST_SIZE>
+        ArrayWrapper2D<unsigned short, STD_VIDEO_H265_PREDICTOR_PALETTE_COMPONENTS_LIST_SIZE, STD_VIDEO_H265_PREDICTOR_PALETTE_COMP_ENTRIES_LIST_SIZE>
           PredictorPaletteEntries = {};
     };
 
@@ -2373,36 +2373,36 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t sps_temporal_id_nesting_flag                    : 1;
-      uint32_t separate_colour_plane_flag                      : 1;
-      uint32_t conformance_window_flag                         : 1;
-      uint32_t sps_sub_layer_ordering_info_present_flag        : 1;
-      uint32_t scaling_list_enabled_flag                       : 1;
-      uint32_t sps_scaling_list_data_present_flag              : 1;
-      uint32_t amp_enabled_flag                                : 1;
-      uint32_t sample_adaptive_offset_enabled_flag             : 1;
-      uint32_t pcm_enabled_flag                                : 1;
-      uint32_t pcm_loop_filter_disabled_flag                   : 1;
-      uint32_t long_term_ref_pics_present_flag                 : 1;
-      uint32_t sps_temporal_mvp_enabled_flag                   : 1;
-      uint32_t strong_intra_smoothing_enabled_flag             : 1;
-      uint32_t vui_parameters_present_flag                     : 1;
-      uint32_t sps_extension_present_flag                      : 1;
-      uint32_t sps_range_extension_flag                        : 1;
-      uint32_t transform_skip_rotation_enabled_flag            : 1;
-      uint32_t transform_skip_context_enabled_flag             : 1;
-      uint32_t implicit_rdpcm_enabled_flag                     : 1;
-      uint32_t explicit_rdpcm_enabled_flag                     : 1;
-      uint32_t extended_precision_processing_flag              : 1;
-      uint32_t intra_smoothing_disabled_flag                   : 1;
-      uint32_t high_precision_offsets_enabled_flag             : 1;
-      uint32_t persistent_rice_adaptation_enabled_flag         : 1;
-      uint32_t cabac_bypass_alignment_enabled_flag             : 1;
-      uint32_t sps_scc_extension_flag                          : 1;
-      uint32_t sps_curr_pic_ref_enabled_flag                   : 1;
-      uint32_t palette_mode_enabled_flag                       : 1;
-      uint32_t sps_palette_predictor_initializers_present_flag : 1;
-      uint32_t intra_boundary_filtering_disabled_flag          : 1;
+      unsigned int sps_temporal_id_nesting_flag                    : 1;
+      unsigned int separate_colour_plane_flag                      : 1;
+      unsigned int conformance_window_flag                         : 1;
+      unsigned int sps_sub_layer_ordering_info_present_flag        : 1;
+      unsigned int scaling_list_enabled_flag                       : 1;
+      unsigned int sps_scaling_list_data_present_flag              : 1;
+      unsigned int amp_enabled_flag                                : 1;
+      unsigned int sample_adaptive_offset_enabled_flag             : 1;
+      unsigned int pcm_enabled_flag                                : 1;
+      unsigned int pcm_loop_filter_disabled_flag                   : 1;
+      unsigned int long_term_ref_pics_present_flag                 : 1;
+      unsigned int sps_temporal_mvp_enabled_flag                   : 1;
+      unsigned int strong_intra_smoothing_enabled_flag             : 1;
+      unsigned int vui_parameters_present_flag                     : 1;
+      unsigned int sps_extension_present_flag                      : 1;
+      unsigned int sps_range_extension_flag                        : 1;
+      unsigned int transform_skip_rotation_enabled_flag            : 1;
+      unsigned int transform_skip_context_enabled_flag             : 1;
+      unsigned int implicit_rdpcm_enabled_flag                     : 1;
+      unsigned int explicit_rdpcm_enabled_flag                     : 1;
+      unsigned int extended_precision_processing_flag              : 1;
+      unsigned int intra_smoothing_disabled_flag                   : 1;
+      unsigned int high_precision_offsets_enabled_flag             : 1;
+      unsigned int persistent_rice_adaptation_enabled_flag         : 1;
+      unsigned int cabac_bypass_alignment_enabled_flag             : 1;
+      unsigned int sps_scc_extension_flag                          : 1;
+      unsigned int sps_curr_pic_ref_enabled_flag                   : 1;
+      unsigned int palette_mode_enabled_flag                       : 1;
+      unsigned int sps_palette_predictor_initializers_present_flag : 1;
+      unsigned int intra_boundary_filtering_disabled_flag          : 1;
     };
 
     struct H265ShortTermRefPicSetFlags
@@ -2440,8 +2440,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t inter_ref_pic_set_prediction_flag : 1;
-      uint32_t delta_rps_sign                    : 1;
+      unsigned int inter_ref_pic_set_prediction_flag : 1;
+      unsigned int delta_rps_sign                    : 1;
     };
 
     struct H265ShortTermRefPicSet
@@ -2485,19 +2485,19 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ShortTermRefPicSetFlags flags                    = {};
-      uint32_t                                                                      delta_idx_minus1         = {};
-      uint16_t                                                                      use_delta_flag           = {};
-      uint16_t                                                                      abs_delta_rps_minus1     = {};
-      uint16_t                                                                      used_by_curr_pic_flag    = {};
-      uint16_t                                                                      used_by_curr_pic_s0_flag = {};
-      uint16_t                                                                      used_by_curr_pic_s1_flag = {};
-      uint16_t                                                                      reserved1                = {};
-      uint8_t                                                                       reserved2                = {};
-      uint8_t                                                                       reserved3                = {};
-      uint8_t                                                                       num_negative_pics        = {};
-      uint8_t                                                                       num_positive_pics        = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, STD_VIDEO_H265_MAX_DPB_SIZE>   delta_poc_s0_minus1      = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, STD_VIDEO_H265_MAX_DPB_SIZE>   delta_poc_s1_minus1      = {};
+      unsigned int                                                                      delta_idx_minus1         = {};
+      unsigned short                                                                      use_delta_flag           = {};
+      unsigned short                                                                      abs_delta_rps_minus1     = {};
+      unsigned short                                                                      used_by_curr_pic_flag    = {};
+      unsigned short                                                                      used_by_curr_pic_s0_flag = {};
+      unsigned short                                                                      used_by_curr_pic_s1_flag = {};
+      unsigned short                                                                      reserved1                = {};
+      unsigned char                                                                       reserved2                = {};
+      unsigned char                                                                       reserved3                = {};
+      unsigned char                                                                       num_negative_pics        = {};
+      unsigned char                                                                       num_positive_pics        = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, STD_VIDEO_H265_MAX_DPB_SIZE>   delta_poc_s0_minus1      = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, STD_VIDEO_H265_MAX_DPB_SIZE>   delta_poc_s1_minus1      = {};
     };
 
     struct H265LongTermRefPicsSps
@@ -2535,8 +2535,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t                                                                                  used_by_curr_pic_lt_sps_flag = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_H265_MAX_LONG_TERM_REF_PICS_SPS> lt_ref_pic_poc_lsb_sps       = {};
+      unsigned int                                                                                  used_by_curr_pic_lt_sps_flag = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_H265_MAX_LONG_TERM_REF_PICS_SPS> lt_ref_pic_poc_lsb_sps       = {};
     };
 
     struct H265SequenceParameterSet
@@ -2601,36 +2601,36 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265SpsFlags        flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ChromaFormatIdc chroma_format_idc =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ChromaFormatIdc::eMonochrome;
-      uint32_t                                                                              pic_width_in_luma_samples                     = {};
-      uint32_t                                                                              pic_height_in_luma_samples                    = {};
-      uint8_t                                                                               sps_video_parameter_set_id                    = {};
-      uint8_t                                                                               sps_max_sub_layers_minus1                     = {};
-      uint8_t                                                                               sps_seq_parameter_set_id                      = {};
-      uint8_t                                                                               bit_depth_luma_minus8                         = {};
-      uint8_t                                                                               bit_depth_chroma_minus8                       = {};
-      uint8_t                                                                               log2_max_pic_order_cnt_lsb_minus4             = {};
-      uint8_t                                                                               log2_min_luma_coding_block_size_minus3        = {};
-      uint8_t                                                                               log2_diff_max_min_luma_coding_block_size      = {};
-      uint8_t                                                                               log2_min_luma_transform_block_size_minus2     = {};
-      uint8_t                                                                               log2_diff_max_min_luma_transform_block_size   = {};
-      uint8_t                                                                               max_transform_hierarchy_depth_inter           = {};
-      uint8_t                                                                               max_transform_hierarchy_depth_intra           = {};
-      uint8_t                                                                               num_short_term_ref_pic_sets                   = {};
-      uint8_t                                                                               num_long_term_ref_pics_sps                    = {};
-      uint8_t                                                                               pcm_sample_bit_depth_luma_minus1              = {};
-      uint8_t                                                                               pcm_sample_bit_depth_chroma_minus1            = {};
-      uint8_t                                                                               log2_min_pcm_luma_coding_block_size_minus3    = {};
-      uint8_t                                                                               log2_diff_max_min_pcm_luma_coding_block_size  = {};
-      uint8_t                                                                               reserved1                                     = {};
-      uint8_t                                                                               reserved2                                     = {};
-      uint8_t                                                                               palette_max_size                              = {};
-      uint8_t                                                                               delta_palette_max_predictor_size              = {};
-      uint8_t                                                                               motion_vector_resolution_control_idc          = {};
-      uint8_t                                                                               sps_num_palette_predictor_initializers_minus1 = {};
-      uint32_t                                                                              conf_win_left_offset                          = {};
-      uint32_t                                                                              conf_win_right_offset                         = {};
-      uint32_t                                                                              conf_win_top_offset                           = {};
-      uint32_t                                                                              conf_win_bottom_offset                        = {};
+      unsigned int                                                                              pic_width_in_luma_samples                     = {};
+      unsigned int                                                                              pic_height_in_luma_samples                    = {};
+      unsigned char                                                                               sps_video_parameter_set_id                    = {};
+      unsigned char                                                                               sps_max_sub_layers_minus1                     = {};
+      unsigned char                                                                               sps_seq_parameter_set_id                      = {};
+      unsigned char                                                                               bit_depth_luma_minus8                         = {};
+      unsigned char                                                                               bit_depth_chroma_minus8                       = {};
+      unsigned char                                                                               log2_max_pic_order_cnt_lsb_minus4             = {};
+      unsigned char                                                                               log2_min_luma_coding_block_size_minus3        = {};
+      unsigned char                                                                               log2_diff_max_min_luma_coding_block_size      = {};
+      unsigned char                                                                               log2_min_luma_transform_block_size_minus2     = {};
+      unsigned char                                                                               log2_diff_max_min_luma_transform_block_size   = {};
+      unsigned char                                                                               max_transform_hierarchy_depth_inter           = {};
+      unsigned char                                                                               max_transform_hierarchy_depth_intra           = {};
+      unsigned char                                                                               num_short_term_ref_pic_sets                   = {};
+      unsigned char                                                                               num_long_term_ref_pics_sps                    = {};
+      unsigned char                                                                               pcm_sample_bit_depth_luma_minus1              = {};
+      unsigned char                                                                               pcm_sample_bit_depth_chroma_minus1            = {};
+      unsigned char                                                                               log2_min_pcm_luma_coding_block_size_minus3    = {};
+      unsigned char                                                                               log2_diff_max_min_pcm_luma_coding_block_size  = {};
+      unsigned char                                                                               reserved1                                     = {};
+      unsigned char                                                                               reserved2                                     = {};
+      unsigned char                                                                               palette_max_size                              = {};
+      unsigned char                                                                               delta_palette_max_predictor_size              = {};
+      unsigned char                                                                               motion_vector_resolution_control_idc          = {};
+      unsigned char                                                                               sps_num_palette_predictor_initializers_minus1 = {};
+      unsigned int                                                                              conf_win_left_offset                          = {};
+      unsigned int                                                                              conf_win_right_offset                         = {};
+      unsigned int                                                                              conf_win_top_offset                           = {};
+      unsigned int                                                                              conf_win_bottom_offset                        = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ProfileTierLevel *        pProfileTierLevel                             = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265DecPicBufMgr *            pDecPicBufMgr                                 = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ScalingLists *            pScalingLists                                 = {};
@@ -2698,37 +2698,37 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t dependent_slice_segments_enabled_flag           : 1;
-      uint32_t output_flag_present_flag                        : 1;
-      uint32_t sign_data_hiding_enabled_flag                   : 1;
-      uint32_t cabac_init_present_flag                         : 1;
-      uint32_t constrained_intra_pred_flag                     : 1;
-      uint32_t transform_skip_enabled_flag                     : 1;
-      uint32_t cu_qp_delta_enabled_flag                        : 1;
-      uint32_t pps_slice_chroma_qp_offsets_present_flag        : 1;
-      uint32_t weighted_pred_flag                              : 1;
-      uint32_t weighted_bipred_flag                            : 1;
-      uint32_t transquant_bypass_enabled_flag                  : 1;
-      uint32_t tiles_enabled_flag                              : 1;
-      uint32_t entropy_coding_sync_enabled_flag                : 1;
-      uint32_t uniform_spacing_flag                            : 1;
-      uint32_t loop_filter_across_tiles_enabled_flag           : 1;
-      uint32_t pps_loop_filter_across_slices_enabled_flag      : 1;
-      uint32_t deblocking_filter_control_present_flag          : 1;
-      uint32_t deblocking_filter_override_enabled_flag         : 1;
-      uint32_t pps_deblocking_filter_disabled_flag             : 1;
-      uint32_t pps_scaling_list_data_present_flag              : 1;
-      uint32_t lists_modification_present_flag                 : 1;
-      uint32_t slice_segment_header_extension_present_flag     : 1;
-      uint32_t pps_extension_present_flag                      : 1;
-      uint32_t cross_component_prediction_enabled_flag         : 1;
-      uint32_t chroma_qp_offset_list_enabled_flag              : 1;
-      uint32_t pps_curr_pic_ref_enabled_flag                   : 1;
-      uint32_t residual_adaptive_colour_transform_enabled_flag : 1;
-      uint32_t pps_slice_act_qp_offsets_present_flag           : 1;
-      uint32_t pps_palette_predictor_initializers_present_flag : 1;
-      uint32_t monochrome_palette_flag                         : 1;
-      uint32_t pps_range_extension_flag                        : 1;
+      unsigned int dependent_slice_segments_enabled_flag           : 1;
+      unsigned int output_flag_present_flag                        : 1;
+      unsigned int sign_data_hiding_enabled_flag                   : 1;
+      unsigned int cabac_init_present_flag                         : 1;
+      unsigned int constrained_intra_pred_flag                     : 1;
+      unsigned int transform_skip_enabled_flag                     : 1;
+      unsigned int cu_qp_delta_enabled_flag                        : 1;
+      unsigned int pps_slice_chroma_qp_offsets_present_flag        : 1;
+      unsigned int weighted_pred_flag                              : 1;
+      unsigned int weighted_bipred_flag                            : 1;
+      unsigned int transquant_bypass_enabled_flag                  : 1;
+      unsigned int tiles_enabled_flag                              : 1;
+      unsigned int entropy_coding_sync_enabled_flag                : 1;
+      unsigned int uniform_spacing_flag                            : 1;
+      unsigned int loop_filter_across_tiles_enabled_flag           : 1;
+      unsigned int pps_loop_filter_across_slices_enabled_flag      : 1;
+      unsigned int deblocking_filter_control_present_flag          : 1;
+      unsigned int deblocking_filter_override_enabled_flag         : 1;
+      unsigned int pps_deblocking_filter_disabled_flag             : 1;
+      unsigned int pps_scaling_list_data_present_flag              : 1;
+      unsigned int lists_modification_present_flag                 : 1;
+      unsigned int slice_segment_header_extension_present_flag     : 1;
+      unsigned int pps_extension_present_flag                      : 1;
+      unsigned int cross_component_prediction_enabled_flag         : 1;
+      unsigned int chroma_qp_offset_list_enabled_flag              : 1;
+      unsigned int pps_curr_pic_ref_enabled_flag                   : 1;
+      unsigned int residual_adaptive_colour_transform_enabled_flag : 1;
+      unsigned int pps_slice_act_qp_offsets_present_flag           : 1;
+      unsigned int pps_palette_predictor_initializers_present_flag : 1;
+      unsigned int monochrome_palette_flag                         : 1;
+      unsigned int pps_range_extension_flag                        : 1;
     };
 
     struct H265PictureParameterSet
@@ -2786,39 +2786,39 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265PpsFlags                                      flags                                     = {};
-      uint8_t                                                                                             pps_pic_parameter_set_id                  = {};
-      uint8_t                                                                                             pps_seq_parameter_set_id                  = {};
-      uint8_t                                                                                             sps_video_parameter_set_id                = {};
-      uint8_t                                                                                             num_extra_slice_header_bits               = {};
-      uint8_t                                                                                             num_ref_idx_l0_default_active_minus1      = {};
-      uint8_t                                                                                             num_ref_idx_l1_default_active_minus1      = {};
-      int8_t                                                                                              init_qp_minus26                           = {};
-      uint8_t                                                                                             diff_cu_qp_delta_depth                    = {};
-      int8_t                                                                                              pps_cb_qp_offset                          = {};
-      int8_t                                                                                              pps_cr_qp_offset                          = {};
-      int8_t                                                                                              pps_beta_offset_div2                      = {};
-      int8_t                                                                                              pps_tc_offset_div2                        = {};
-      uint8_t                                                                                             log2_parallel_merge_level_minus2          = {};
-      uint8_t                                                                                             log2_max_transform_skip_block_size_minus2 = {};
-      uint8_t                                                                                             diff_cu_chroma_qp_offset_depth            = {};
-      uint8_t                                                                                             chroma_qp_offset_list_len_minus1          = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H265_CHROMA_QP_OFFSET_LIST_SIZE>             cb_qp_offset_list                         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H265_CHROMA_QP_OFFSET_LIST_SIZE>             cr_qp_offset_list                         = {};
-      uint8_t                                                                                             log2_sao_offset_scale_luma                = {};
-      uint8_t                                                                                             log2_sao_offset_scale_chroma              = {};
-      int8_t                                                                                              pps_act_y_qp_offset_plus5                 = {};
-      int8_t                                                                                              pps_act_cb_qp_offset_plus5                = {};
-      int8_t                                                                                              pps_act_cr_qp_offset_plus3                = {};
-      uint8_t                                                                                             pps_num_palette_predictor_initializers    = {};
-      uint8_t                                                                                             luma_bit_depth_entry_minus8               = {};
-      uint8_t                                                                                             chroma_bit_depth_entry_minus8             = {};
-      uint8_t                                                                                             num_tile_columns_minus1                   = {};
-      uint8_t                                                                                             num_tile_rows_minus1                      = {};
-      uint8_t                                                                                             reserved1                                 = {};
-      uint8_t                                                                                             reserved2                                 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, STD_VIDEO_H265_CHROMA_QP_OFFSET_TILE_COLS_LIST_SIZE> column_width_minus1                       = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, STD_VIDEO_H265_CHROMA_QP_OFFSET_TILE_ROWS_LIST_SIZE> row_height_minus1                         = {};
-      uint32_t                                                                                            reserved3                                 = {};
+      unsigned char                                                                                             pps_pic_parameter_set_id                  = {};
+      unsigned char                                                                                             pps_seq_parameter_set_id                  = {};
+      unsigned char                                                                                             sps_video_parameter_set_id                = {};
+      unsigned char                                                                                             num_extra_slice_header_bits               = {};
+      unsigned char                                                                                             num_ref_idx_l0_default_active_minus1      = {};
+      unsigned char                                                                                             num_ref_idx_l1_default_active_minus1      = {};
+      signed char                                                                                              init_qp_minus26                           = {};
+      unsigned char                                                                                             diff_cu_qp_delta_depth                    = {};
+      signed char                                                                                              pps_cb_qp_offset                          = {};
+      signed char                                                                                              pps_cr_qp_offset                          = {};
+      signed char                                                                                              pps_beta_offset_div2                      = {};
+      signed char                                                                                              pps_tc_offset_div2                        = {};
+      unsigned char                                                                                             log2_parallel_merge_level_minus2          = {};
+      unsigned char                                                                                             log2_max_transform_skip_block_size_minus2 = {};
+      unsigned char                                                                                             diff_cu_chroma_qp_offset_depth            = {};
+      unsigned char                                                                                             chroma_qp_offset_list_len_minus1          = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H265_CHROMA_QP_OFFSET_LIST_SIZE>             cb_qp_offset_list                         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H265_CHROMA_QP_OFFSET_LIST_SIZE>             cr_qp_offset_list                         = {};
+      unsigned char                                                                                             log2_sao_offset_scale_luma                = {};
+      unsigned char                                                                                             log2_sao_offset_scale_chroma              = {};
+      signed char                                                                                              pps_act_y_qp_offset_plus5                 = {};
+      signed char                                                                                              pps_act_cb_qp_offset_plus5                = {};
+      signed char                                                                                              pps_act_cr_qp_offset_plus3                = {};
+      unsigned char                                                                                             pps_num_palette_predictor_initializers    = {};
+      unsigned char                                                                                             luma_bit_depth_entry_minus8               = {};
+      unsigned char                                                                                             chroma_bit_depth_entry_minus8             = {};
+      unsigned char                                                                                             num_tile_columns_minus1                   = {};
+      unsigned char                                                                                             num_tile_rows_minus1                      = {};
+      unsigned char                                                                                             reserved1                                 = {};
+      unsigned char                                                                                             reserved2                                 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, STD_VIDEO_H265_CHROMA_QP_OFFSET_TILE_COLS_LIST_SIZE> column_width_minus1                       = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, STD_VIDEO_H265_CHROMA_QP_OFFSET_TILE_ROWS_LIST_SIZE> row_height_minus1                         = {};
+      unsigned int                                                                                            reserved3                                 = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ScalingLists *                          pScalingLists                             = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265PredictorPaletteEntries *               pPredictorPaletteEntries                  = {};
     };
@@ -2863,10 +2863,10 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t IrapPicFlag                     : 1;
-      uint32_t IdrPicFlag                      : 1;
-      uint32_t IsReference                     : 1;
-      uint32_t short_term_ref_pic_set_sps_flag : 1;
+      unsigned int IrapPicFlag                     : 1;
+      unsigned int IdrPicFlag                      : 1;
+      unsigned int IsReference                     : 1;
+      unsigned int short_term_ref_pic_set_sps_flag : 1;
     };
 
     struct DecodeH265PictureInfo
@@ -2910,16 +2910,16 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeH265PictureInfoFlags               flags                        = {};
-      uint8_t                                                                                    sps_video_parameter_set_id   = {};
-      uint8_t                                                                                    pps_seq_parameter_set_id     = {};
-      uint8_t                                                                                    pps_pic_parameter_set_id     = {};
-      uint8_t                                                                                    NumDeltaPocsOfRefRpsIdx      = {};
-      int32_t                                                                                    PicOrderCntVal               = {};
-      uint16_t                                                                                   NumBitsForSTRefPicSetInSlice = {};
-      uint16_t                                                                                   reserved                     = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE> RefPicSetStCurrBefore        = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE> RefPicSetStCurrAfter         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE> RefPicSetLtCurr              = {};
+      unsigned char                                                                                    sps_video_parameter_set_id   = {};
+      unsigned char                                                                                    pps_seq_parameter_set_id     = {};
+      unsigned char                                                                                    pps_pic_parameter_set_id     = {};
+      unsigned char                                                                                    NumDeltaPocsOfRefRpsIdx      = {};
+      int                                                                                    PicOrderCntVal               = {};
+      unsigned short                                                                                   NumBitsForSTRefPicSetInSlice = {};
+      unsigned short                                                                                   reserved                     = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE> RefPicSetStCurrBefore        = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE> RefPicSetStCurrAfter         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE> RefPicSetLtCurr              = {};
     };
 
     struct DecodeH265ReferenceInfoFlags
@@ -2957,8 +2957,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t used_for_long_term_reference : 1;
-      uint32_t unused_for_reference         : 1;
+      unsigned int used_for_long_term_reference : 1;
+      unsigned int unused_for_reference         : 1;
     };
 
     struct DecodeH265ReferenceInfo
@@ -2997,7 +2997,7 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeH265ReferenceInfoFlags flags          = {};
-      int32_t                                                                        PicOrderCntVal = {};
+      int                                                                        PicOrderCntVal = {};
     };
 #endif
 
@@ -3040,10 +3040,10 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint16_t luma_weight_l0_flag   = {};
-      uint16_t chroma_weight_l0_flag = {};
-      uint16_t luma_weight_l1_flag   = {};
-      uint16_t chroma_weight_l1_flag = {};
+      unsigned short luma_weight_l0_flag   = {};
+      unsigned short chroma_weight_l0_flag = {};
+      unsigned short luma_weight_l1_flag   = {};
+      unsigned short chroma_weight_l1_flag = {};
     };
 
     struct EncodeH265WeightTable
@@ -3087,16 +3087,16 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265WeightTableFlags                                    flags                          = {};
-      uint8_t                                                                                                         luma_log2_weight_denom         = {};
-      int8_t                                                                                                          delta_chroma_log2_weight_denom = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   delta_luma_weight_l0           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   luma_offset_l0                 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_weight_l0         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_offset_l0         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   delta_luma_weight_l1           = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   luma_offset_l1                 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_weight_l1         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_offset_l1         = {};
+      unsigned char                                                                                                         luma_log2_weight_denom         = {};
+      signed char                                                                                                          delta_chroma_log2_weight_denom = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   delta_luma_weight_l0           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   luma_offset_l0                 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_weight_l0         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_offset_l0         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   delta_luma_weight_l1           = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF>                                   luma_offset_l1                 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_weight_l1         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<signed char, STD_VIDEO_H265_MAX_NUM_LIST_REF, STD_VIDEO_H265_MAX_CHROMA_PLANES> delta_chroma_offset_l1         = {};
     };
 
     struct EncodeH265SliceSegmentHeaderFlags
@@ -3142,19 +3142,19 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t first_slice_segment_in_pic_flag              : 1;
-      uint32_t dependent_slice_segment_flag                 : 1;
-      uint32_t slice_sao_luma_flag                          : 1;
-      uint32_t slice_sao_chroma_flag                        : 1;
-      uint32_t num_ref_idx_active_override_flag             : 1;
-      uint32_t mvd_l1_zero_flag                             : 1;
-      uint32_t cabac_init_flag                              : 1;
-      uint32_t cu_chroma_qp_offset_enabled_flag             : 1;
-      uint32_t deblocking_filter_override_flag              : 1;
-      uint32_t slice_deblocking_filter_disabled_flag        : 1;
-      uint32_t collocated_from_l0_flag                      : 1;
-      uint32_t slice_loop_filter_across_slices_enabled_flag : 1;
-      uint32_t reserved                                     : 20;
+      unsigned int first_slice_segment_in_pic_flag              : 1;
+      unsigned int dependent_slice_segment_flag                 : 1;
+      unsigned int slice_sao_luma_flag                          : 1;
+      unsigned int slice_sao_chroma_flag                        : 1;
+      unsigned int num_ref_idx_active_override_flag             : 1;
+      unsigned int mvd_l1_zero_flag                             : 1;
+      unsigned int cabac_init_flag                              : 1;
+      unsigned int cu_chroma_qp_offset_enabled_flag             : 1;
+      unsigned int deblocking_filter_override_flag              : 1;
+      unsigned int slice_deblocking_filter_disabled_flag        : 1;
+      unsigned int collocated_from_l0_flag                      : 1;
+      unsigned int slice_loop_filter_across_slices_enabled_flag : 1;
+      unsigned int reserved                                     : 20;
     };
 
     struct EncodeH265SliceSegmentHeader
@@ -3200,18 +3200,18 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265SliceSegmentHeaderFlags flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265SliceType slice_type = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265SliceType::eB;
-      uint32_t                                                        slice_segment_address        = {};
-      uint8_t                                                         collocated_ref_idx           = {};
-      uint8_t                                                         MaxNumMergeCand              = {};
-      int8_t                                                          slice_cb_qp_offset           = {};
-      int8_t                                                          slice_cr_qp_offset           = {};
-      int8_t                                                          slice_beta_offset_div2       = {};
-      int8_t                                                          slice_tc_offset_div2         = {};
-      int8_t                                                          slice_act_y_qp_offset        = {};
-      int8_t                                                          slice_act_cb_qp_offset       = {};
-      int8_t                                                          slice_act_cr_qp_offset       = {};
-      int8_t                                                          slice_qp_delta               = {};
-      uint16_t                                                        reserved1                    = {};
+      unsigned int                                                        slice_segment_address        = {};
+      unsigned char                                                         collocated_ref_idx           = {};
+      unsigned char                                                         MaxNumMergeCand              = {};
+      signed char                                                          slice_cb_qp_offset           = {};
+      signed char                                                          slice_cr_qp_offset           = {};
+      signed char                                                          slice_beta_offset_div2       = {};
+      signed char                                                          slice_tc_offset_div2         = {};
+      signed char                                                          slice_act_y_qp_offset        = {};
+      signed char                                                          slice_act_cb_qp_offset       = {};
+      signed char                                                          slice_act_cr_qp_offset       = {};
+      signed char                                                          slice_qp_delta               = {};
+      unsigned short                                                        reserved1                    = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265WeightTable * pWeightTable = {};
     };
 
@@ -3251,9 +3251,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t ref_pic_list_modification_flag_l0 : 1;
-      uint32_t ref_pic_list_modification_flag_l1 : 1;
-      uint32_t reserved                          : 30;
+      unsigned int ref_pic_list_modification_flag_l0 : 1;
+      unsigned int ref_pic_list_modification_flag_l1 : 1;
+      unsigned int reserved                          : 30;
     };
 
     struct EncodeH265ReferenceListsInfo
@@ -3294,12 +3294,12 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265ReferenceListsInfoFlags flags                        = {};
-      uint8_t                                                                             num_ref_idx_l0_active_minus1 = {};
-      uint8_t                                                                             num_ref_idx_l1_active_minus1 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>      RefPicList0                  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>      RefPicList1                  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>      list_entry_l0                = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_NUM_LIST_REF>      list_entry_l1                = {};
+      unsigned char                                                                             num_ref_idx_l0_active_minus1 = {};
+      unsigned char                                                                             num_ref_idx_l1_active_minus1 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_NUM_LIST_REF>      RefPicList0                  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_NUM_LIST_REF>      RefPicList1                  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_NUM_LIST_REF>      list_entry_l0                = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_NUM_LIST_REF>      list_entry_l1                = {};
     };
 
     struct EncodeH265PictureInfoFlags
@@ -3342,16 +3342,16 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t is_reference                    : 1;
-      uint32_t IrapPicFlag                     : 1;
-      uint32_t used_for_long_term_reference    : 1;
-      uint32_t discardable_flag                : 1;
-      uint32_t cross_layer_bla_flag            : 1;
-      uint32_t pic_output_flag                 : 1;
-      uint32_t no_output_of_prior_pics_flag    : 1;
-      uint32_t short_term_ref_pic_set_sps_flag : 1;
-      uint32_t slice_temporal_mvp_enabled_flag : 1;
-      uint32_t reserved                        : 23;
+      unsigned int is_reference                    : 1;
+      unsigned int IrapPicFlag                     : 1;
+      unsigned int used_for_long_term_reference    : 1;
+      unsigned int discardable_flag                : 1;
+      unsigned int cross_layer_bla_flag            : 1;
+      unsigned int pic_output_flag                 : 1;
+      unsigned int no_output_of_prior_pics_flag    : 1;
+      unsigned int short_term_ref_pic_set_sps_flag : 1;
+      unsigned int slice_temporal_mvp_enabled_flag : 1;
+      unsigned int reserved                        : 23;
     };
 
     struct EncodeH265LongTermRefPics
@@ -3391,13 +3391,13 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint8_t                                                                                  num_long_term_sps          = {};
-      uint8_t                                                                                  num_long_term_pics         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_LONG_TERM_REF_PICS_SPS> lt_idx_sps                 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_LONG_TERM_PICS>         poc_lsb_lt                 = {};
-      uint16_t                                                                                 used_by_curr_pic_lt_flag   = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_DELTA_POC>              delta_poc_msb_present_flag = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_H265_MAX_DELTA_POC>              delta_poc_msb_cycle_lt     = {};
+      unsigned char                                                                                  num_long_term_sps          = {};
+      unsigned char                                                                                  num_long_term_pics         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_LONG_TERM_REF_PICS_SPS> lt_idx_sps                 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_LONG_TERM_PICS>         poc_lsb_lt                 = {};
+      unsigned short                                                                                 used_by_curr_pic_lt_flag   = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_DELTA_POC>              delta_poc_msb_present_flag = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_H265_MAX_DELTA_POC>              delta_poc_msb_cycle_lt     = {};
     };
 
     struct EncodeH265PictureInfo
@@ -3441,13 +3441,13 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265PictureInfoFlags flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265PictureType pic_type = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265PictureType::eP;
-      uint8_t                                                           sps_video_parameter_set_id               = {};
-      uint8_t                                                           pps_seq_parameter_set_id                 = {};
-      uint8_t                                                           pps_pic_parameter_set_id                 = {};
-      uint8_t                                                           short_term_ref_pic_set_idx               = {};
-      int32_t                                                           PicOrderCntVal                           = {};
-      uint8_t                                                           TemporalId                               = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 7>                  reserved1                                = {};
+      unsigned char                                                           sps_video_parameter_set_id               = {};
+      unsigned char                                                           pps_seq_parameter_set_id                 = {};
+      unsigned char                                                           pps_pic_parameter_set_id                 = {};
+      unsigned char                                                           short_term_ref_pic_set_idx               = {};
+      int                                                           PicOrderCntVal                           = {};
+      unsigned char                                                           TemporalId                               = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 7>                  reserved1                                = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265ReferenceListsInfo * pRefLists           = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265ShortTermRefPicSet *       pShortTermRefPicSet = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265LongTermRefPics *    pLongTermRefPics    = {};
@@ -3489,9 +3489,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t used_for_long_term_reference : 1;
-      uint32_t unused_for_reference         : 1;
-      uint32_t reserved                     : 30;
+      unsigned int used_for_long_term_reference : 1;
+      unsigned int unused_for_reference         : 1;
+      unsigned int reserved                     : 30;
     };
 
     struct EncodeH265ReferenceInfo
@@ -3531,8 +3531,8 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeH265ReferenceInfoFlags flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265PictureType pic_type       = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::H265PictureType::eP;
-      int32_t                                                           PicOrderCntVal = {};
-      uint8_t                                                           TemporalId     = {};
+      int                                                           PicOrderCntVal = {};
+      unsigned char                                                           TemporalId     = {};
     };
 #endif
 
@@ -3574,8 +3574,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t color_range : 1;
-      uint32_t reserved    : 31;
+      unsigned int color_range : 1;
+      unsigned int reserved    : 31;
     };
 
     struct VP9ColorConfig
@@ -3615,10 +3615,10 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9ColorConfigFlags flags         = {};
-      uint8_t                                                               BitDepth      = {};
-      uint8_t                                                               subsampling_x = {};
-      uint8_t                                                               subsampling_y = {};
-      uint8_t                                                               reserved1     = {};
+      unsigned char                                                               BitDepth      = {};
+      unsigned char                                                               subsampling_x = {};
+      unsigned char                                                               subsampling_y = {};
+      unsigned char                                                               reserved1     = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9ColorSpace color_space = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9ColorSpace::eUnknown;
     };
 
@@ -3658,9 +3658,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t loop_filter_delta_enabled : 1;
-      uint32_t loop_filter_delta_update  : 1;
-      uint32_t reserved                  : 30;
+      unsigned int loop_filter_delta_enabled : 1;
+      unsigned int loop_filter_delta_update  : 1;
+      unsigned int reserved                  : 30;
     };
 
     struct VP9LoopFilter
@@ -3701,12 +3701,12 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9LoopFilterFlags                flags                   = {};
-      uint8_t                                                                             loop_filter_level       = {};
-      uint8_t                                                                             loop_filter_sharpness   = {};
-      uint8_t                                                                             update_ref_delta        = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_VP9_MAX_REF_FRAMES>          loop_filter_ref_deltas  = {};
-      uint8_t                                                                             update_mode_delta       = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_VP9_LOOP_FILTER_ADJUSTMENTS> loop_filter_mode_deltas = {};
+      unsigned char                                                                             loop_filter_level       = {};
+      unsigned char                                                                             loop_filter_sharpness   = {};
+      unsigned char                                                                             update_ref_delta        = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_VP9_MAX_REF_FRAMES>          loop_filter_ref_deltas  = {};
+      unsigned char                                                                             update_mode_delta       = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_VP9_LOOP_FILTER_ADJUSTMENTS> loop_filter_mode_deltas = {};
     };
 
     struct VP9SegmentationFlags
@@ -3746,11 +3746,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t segmentation_update_map          : 1;
-      uint32_t segmentation_temporal_update     : 1;
-      uint32_t segmentation_update_data         : 1;
-      uint32_t segmentation_abs_or_delta_update : 1;
-      uint32_t reserved                         : 28;
+      unsigned int segmentation_update_map          : 1;
+      unsigned int segmentation_temporal_update     : 1;
+      unsigned int segmentation_update_data         : 1;
+      unsigned int segmentation_abs_or_delta_update : 1;
+      unsigned int reserved                         : 28;
     };
 
     struct VP9Segmentation
@@ -3790,10 +3790,10 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9SegmentationFlags                               flags                   = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_VP9_MAX_SEGMENTATION_TREE_PROBS>             segmentation_tree_probs = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_VP9_MAX_SEGMENTATION_PRED_PROB>              segmentation_pred_prob  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_VP9_MAX_SEGMENTS>                            FeatureEnabled          = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int16_t, STD_VIDEO_VP9_MAX_SEGMENTS, STD_VIDEO_VP9_SEG_LVL_MAX> FeatureData             = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_VP9_MAX_SEGMENTATION_TREE_PROBS>             segmentation_tree_probs = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_VP9_MAX_SEGMENTATION_PRED_PROB>              segmentation_pred_prob  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_VP9_MAX_SEGMENTS>                            FeatureEnabled          = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<short, STD_VIDEO_VP9_MAX_SEGMENTS, STD_VIDEO_VP9_SEG_LVL_MAX> FeatureData             = {};
     };
 #endif
 
@@ -3838,15 +3838,15 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t error_resilient_mode         : 1;
-      uint32_t intra_only                   : 1;
-      uint32_t allow_high_precision_mv      : 1;
-      uint32_t refresh_frame_context        : 1;
-      uint32_t frame_parallel_decoding_mode : 1;
-      uint32_t segmentation_enabled         : 1;
-      uint32_t show_frame                   : 1;
-      uint32_t UsePrevFrameMvs              : 1;
-      uint32_t reserved                     : 24;
+      unsigned int error_resilient_mode         : 1;
+      unsigned int intra_only                   : 1;
+      unsigned int allow_high_precision_mv      : 1;
+      unsigned int refresh_frame_context        : 1;
+      unsigned int frame_parallel_decoding_mode : 1;
+      unsigned int segmentation_enabled         : 1;
+      unsigned int show_frame                   : 1;
+      unsigned int UsePrevFrameMvs              : 1;
+      unsigned int reserved                     : 24;
     };
 
     struct DecodeVP9PictureInfo
@@ -3893,19 +3893,19 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeVP9PictureInfoFlags flags   = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9Profile                profile = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9Profile::e0;
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9FrameType frame_type          = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9FrameType::eKey;
-      uint8_t                                                        frame_context_idx   = {};
-      uint8_t                                                        reset_frame_context = {};
-      uint8_t                                                        refresh_frame_flags = {};
-      uint8_t                                                        ref_frame_sign_bias_mask = {};
+      unsigned char                                                        frame_context_idx   = {};
+      unsigned char                                                        reset_frame_context = {};
+      unsigned char                                                        refresh_frame_flags = {};
+      unsigned char                                                        ref_frame_sign_bias_mask = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9InterpolationFilter interpolation_filter =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9InterpolationFilter::eEighttap;
-      uint8_t                                                                   base_q_idx     = {};
-      int8_t                                                                    delta_q_y_dc   = {};
-      int8_t                                                                    delta_q_uv_dc  = {};
-      int8_t                                                                    delta_q_uv_ac  = {};
-      uint8_t                                                                   tile_cols_log2 = {};
-      uint8_t                                                                   tile_rows_log2 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, 3>                         reserved1      = {};
+      unsigned char                                                                   base_q_idx     = {};
+      signed char                                                                    delta_q_y_dc   = {};
+      signed char                                                                    delta_q_uv_dc  = {};
+      signed char                                                                    delta_q_uv_ac  = {};
+      unsigned char                                                                   tile_cols_log2 = {};
+      unsigned char                                                                   tile_rows_log2 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, 3>                         reserved1      = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9ColorConfig *  pColorConfig   = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9LoopFilter *   pLoopFilter    = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::VP9Segmentation * pSegmentation  = {};
@@ -3951,11 +3951,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t mono_chrome                    : 1;
-      uint32_t color_range                    : 1;
-      uint32_t separate_uv_delta_q            : 1;
-      uint32_t color_description_present_flag : 1;
-      uint32_t reserved                       : 28;
+      unsigned int mono_chrome                    : 1;
+      unsigned int color_range                    : 1;
+      unsigned int separate_uv_delta_q            : 1;
+      unsigned int color_description_present_flag : 1;
+      unsigned int reserved                       : 28;
     };
 
     struct AV1ColorConfig
@@ -3996,10 +3996,10 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1ColorConfigFlags flags         = {};
-      uint8_t                                                               BitDepth      = {};
-      uint8_t                                                               subsampling_x = {};
-      uint8_t                                                               subsampling_y = {};
-      uint8_t                                                               reserved1     = {};
+      unsigned char                                                               BitDepth      = {};
+      unsigned char                                                               subsampling_x = {};
+      unsigned char                                                               subsampling_y = {};
+      unsigned char                                                               reserved1     = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1ColorPrimaries   color_primaries =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1ColorPrimaries::eBt709;
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TransferCharacteristics transfer_characteristics =
@@ -4045,8 +4045,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t equal_picture_interval : 1;
-      uint32_t reserved               : 31;
+      unsigned int equal_picture_interval : 1;
+      unsigned int reserved               : 31;
     };
 
     struct AV1TimingInfo
@@ -4086,9 +4086,9 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TimingInfoFlags flags                         = {};
-      uint32_t                                                             num_units_in_display_tick     = {};
-      uint32_t                                                             time_scale                    = {};
-      uint32_t                                                             num_ticks_per_picture_minus_1 = {};
+      unsigned int                                                             num_units_in_display_tick     = {};
+      unsigned int                                                             time_scale                    = {};
+      unsigned int                                                             num_ticks_per_picture_minus_1 = {};
     };
 
     struct AV1LoopFilterFlags
@@ -4127,9 +4127,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t loop_filter_delta_enabled : 1;
-      uint32_t loop_filter_delta_update  : 1;
-      uint32_t reserved                  : 30;
+      unsigned int loop_filter_delta_enabled : 1;
+      unsigned int loop_filter_delta_update  : 1;
+      unsigned int reserved                  : 30;
     };
 
     struct AV1LoopFilter
@@ -4170,12 +4170,12 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1LoopFilterFlags                   flags                   = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_LOOP_FILTER_STRENGTHS> loop_filter_level       = {};
-      uint8_t                                                                                loop_filter_sharpness   = {};
-      uint8_t                                                                                update_ref_delta        = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_AV1_TOTAL_REFS_PER_FRAME>       loop_filter_ref_deltas  = {};
-      uint8_t                                                                                update_mode_delta       = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_AV1_LOOP_FILTER_ADJUSTMENTS>    loop_filter_mode_deltas = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_LOOP_FILTER_STRENGTHS> loop_filter_level       = {};
+      unsigned char                                                                                loop_filter_sharpness   = {};
+      unsigned char                                                                                update_ref_delta        = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_AV1_TOTAL_REFS_PER_FRAME>       loop_filter_ref_deltas  = {};
+      unsigned char                                                                                update_mode_delta       = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_AV1_LOOP_FILTER_ADJUSTMENTS>    loop_filter_mode_deltas = {};
     };
 
     struct AV1QuantizationFlags
@@ -4213,9 +4213,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t using_qmatrix : 1;
-      uint32_t diff_uv_delta : 1;
-      uint32_t reserved      : 30;
+      unsigned int using_qmatrix : 1;
+      unsigned int diff_uv_delta : 1;
+      unsigned int reserved      : 30;
     };
 
     struct AV1Quantization
@@ -4256,15 +4256,15 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1QuantizationFlags flags      = {};
-      uint8_t                                                                base_q_idx = {};
-      int8_t                                                                 DeltaQYDc  = {};
-      int8_t                                                                 DeltaQUDc  = {};
-      int8_t                                                                 DeltaQUAc  = {};
-      int8_t                                                                 DeltaQVDc  = {};
-      int8_t                                                                 DeltaQVAc  = {};
-      uint8_t                                                                qm_y       = {};
-      uint8_t                                                                qm_u       = {};
-      uint8_t                                                                qm_v       = {};
+      unsigned char                                                                base_q_idx = {};
+      signed char                                                                 DeltaQYDc  = {};
+      signed char                                                                 DeltaQUDc  = {};
+      signed char                                                                 DeltaQUAc  = {};
+      signed char                                                                 DeltaQVDc  = {};
+      signed char                                                                 DeltaQVAc  = {};
+      unsigned char                                                                qm_y       = {};
+      unsigned char                                                                qm_u       = {};
+      unsigned char                                                                qm_v       = {};
     };
 
     struct AV1Segmentation
@@ -4302,8 +4302,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_SEGMENTS>                            FeatureEnabled = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int16_t, STD_VIDEO_AV1_MAX_SEGMENTS, STD_VIDEO_AV1_SEG_LVL_MAX> FeatureData    = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_SEGMENTS>                            FeatureEnabled = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<short, STD_VIDEO_AV1_MAX_SEGMENTS, STD_VIDEO_AV1_SEG_LVL_MAX> FeatureData    = {};
     };
 
     struct AV1TileInfoFlags
@@ -4341,8 +4341,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t uniform_tile_spacing_flag : 1;
-      uint32_t reserved                  : 31;
+      unsigned int uniform_tile_spacing_flag : 1;
+      unsigned int reserved                  : 31;
     };
 
     struct AV1TileInfo
@@ -4384,15 +4384,15 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TileInfoFlags flags                   = {};
-      uint8_t                                                            TileCols                = {};
-      uint8_t                                                            TileRows                = {};
-      uint16_t                                                           context_update_tile_id  = {};
-      uint8_t                                                            tile_size_bytes_minus_1 = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 7>                   reserved1               = {};
-      const uint16_t *                                                   pMiColStarts            = {};
-      const uint16_t *                                                   pMiRowStarts            = {};
-      const uint16_t *                                                   pWidthInSbsMinus1       = {};
-      const uint16_t *                                                   pHeightInSbsMinus1      = {};
+      unsigned char                                                            TileCols                = {};
+      unsigned char                                                            TileRows                = {};
+      unsigned short                                                           context_update_tile_id  = {};
+      unsigned char                                                            tile_size_bytes_minus_1 = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 7>                   reserved1               = {};
+      const unsigned short *                                                   pMiColStarts            = {};
+      const unsigned short *                                                   pMiRowStarts            = {};
+      const unsigned short *                                                   pWidthInSbsMinus1       = {};
+      const unsigned short *                                                   pHeightInSbsMinus1      = {};
     };
 
     struct AV1CDEF
@@ -4432,12 +4432,12 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint8_t                                                                                cdef_damping_minus_3 = {};
-      uint8_t                                                                                cdef_bits            = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_y_pri_strength  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_y_sec_strength  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_uv_pri_strength = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_uv_sec_strength = {};
+      unsigned char                                                                                cdef_damping_minus_3 = {};
+      unsigned char                                                                                cdef_bits            = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_y_pri_strength  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_y_sec_strength  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_uv_pri_strength = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_CDEF_FILTER_STRENGTHS> cdef_uv_sec_strength = {};
     };
 
     struct AV1LoopRestoration
@@ -4476,7 +4476,7 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::ArrayWrapper1D<StdVideoAV1FrameRestorationType, STD_VIDEO_AV1_MAX_NUM_PLANES> FrameRestorationType = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint16_t, STD_VIDEO_AV1_MAX_NUM_PLANES>                        LoopRestorationSize  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned short, STD_VIDEO_AV1_MAX_NUM_PLANES>                        LoopRestorationSize  = {};
     };
 
     struct AV1GlobalMotion
@@ -4514,8 +4514,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_NUM_REF_FRAMES>                                     GmType    = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int32_t, STD_VIDEO_AV1_NUM_REF_FRAMES, STD_VIDEO_AV1_GLOBAL_MOTION_PARAMS> gm_params = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_NUM_REF_FRAMES>                                     GmType    = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper2D<int, STD_VIDEO_AV1_NUM_REF_FRAMES, STD_VIDEO_AV1_GLOBAL_MOTION_PARAMS> gm_params = {};
     };
 
     struct AV1FilmGrainFlags
@@ -4554,11 +4554,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t chroma_scaling_from_luma : 1;
-      uint32_t overlap_flag             : 1;
-      uint32_t clip_to_restricted_range : 1;
-      uint32_t update_grain             : 1;
-      uint32_t reserved                 : 28;
+      unsigned int chroma_scaling_from_luma : 1;
+      unsigned int overlap_flag             : 1;
+      unsigned int clip_to_restricted_range : 1;
+      unsigned int update_grain             : 1;
+      unsigned int reserved                 : 28;
     };
 
     struct AV1FilmGrain
@@ -4605,30 +4605,30 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FilmGrainFlags            flags                     = {};
-      uint8_t                                                                        grain_scaling_minus_8     = {};
-      uint8_t                                                                        ar_coeff_lag              = {};
-      uint8_t                                                                        ar_coeff_shift_minus_6    = {};
-      uint8_t                                                                        grain_scale_shift         = {};
-      uint16_t                                                                       grain_seed                = {};
-      uint8_t                                                                        film_grain_params_ref_idx = {};
-      uint8_t                                                                        num_y_points              = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_NUM_Y_POINTS>  point_y_value             = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_NUM_Y_POINTS>  point_y_scaling           = {};
-      uint8_t                                                                        num_cb_points             = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_NUM_CB_POINTS> point_cb_value            = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_NUM_CB_POINTS> point_cb_scaling          = {};
-      uint8_t                                                                        num_cr_points             = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_NUM_CR_POINTS> point_cr_value            = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_MAX_NUM_CR_POINTS> point_cr_scaling          = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_AV1_MAX_NUM_POS_LUMA>   ar_coeffs_y_plus_128      = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_AV1_MAX_NUM_POS_CHROMA> ar_coeffs_cb_plus_128     = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_AV1_MAX_NUM_POS_CHROMA> ar_coeffs_cr_plus_128     = {};
-      uint8_t                                                                        cb_mult                   = {};
-      uint8_t                                                                        cb_luma_mult              = {};
-      uint16_t                                                                       cb_offset                 = {};
-      uint8_t                                                                        cr_mult                   = {};
-      uint8_t                                                                        cr_luma_mult              = {};
-      uint16_t                                                                       cr_offset                 = {};
+      unsigned char                                                                        grain_scaling_minus_8     = {};
+      unsigned char                                                                        ar_coeff_lag              = {};
+      unsigned char                                                                        ar_coeff_shift_minus_6    = {};
+      unsigned char                                                                        grain_scale_shift         = {};
+      unsigned short                                                                       grain_seed                = {};
+      unsigned char                                                                        film_grain_params_ref_idx = {};
+      unsigned char                                                                        num_y_points              = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_NUM_Y_POINTS>  point_y_value             = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_NUM_Y_POINTS>  point_y_scaling           = {};
+      unsigned char                                                                        num_cb_points             = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_NUM_CB_POINTS> point_cb_value            = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_NUM_CB_POINTS> point_cb_scaling          = {};
+      unsigned char                                                                        num_cr_points             = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_NUM_CR_POINTS> point_cr_value            = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_MAX_NUM_CR_POINTS> point_cr_scaling          = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_AV1_MAX_NUM_POS_LUMA>   ar_coeffs_y_plus_128      = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_AV1_MAX_NUM_POS_CHROMA> ar_coeffs_cb_plus_128     = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_AV1_MAX_NUM_POS_CHROMA> ar_coeffs_cr_plus_128     = {};
+      unsigned char                                                                        cb_mult                   = {};
+      unsigned char                                                                        cb_luma_mult              = {};
+      unsigned short                                                                       cb_offset                 = {};
+      unsigned char                                                                        cr_mult                   = {};
+      unsigned char                                                                        cr_luma_mult              = {};
+      unsigned short                                                                       cr_offset                 = {};
     };
 
     struct AV1SequenceHeaderFlags
@@ -4675,26 +4675,26 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t still_picture                      : 1;
-      uint32_t reduced_still_picture_header       : 1;
-      uint32_t use_128x128_superblock             : 1;
-      uint32_t enable_filter_intra                : 1;
-      uint32_t enable_intra_edge_filter           : 1;
-      uint32_t enable_interintra_compound         : 1;
-      uint32_t enable_masked_compound             : 1;
-      uint32_t enable_warped_motion               : 1;
-      uint32_t enable_dual_filter                 : 1;
-      uint32_t enable_order_hint                  : 1;
-      uint32_t enable_jnt_comp                    : 1;
-      uint32_t enable_ref_frame_mvs               : 1;
-      uint32_t frame_id_numbers_present_flag      : 1;
-      uint32_t enable_superres                    : 1;
-      uint32_t enable_cdef                        : 1;
-      uint32_t enable_restoration                 : 1;
-      uint32_t film_grain_params_present          : 1;
-      uint32_t timing_info_present_flag           : 1;
-      uint32_t initial_display_delay_present_flag : 1;
-      uint32_t reserved                           : 13;
+      unsigned int still_picture                      : 1;
+      unsigned int reduced_still_picture_header       : 1;
+      unsigned int use_128x128_superblock             : 1;
+      unsigned int enable_filter_intra                : 1;
+      unsigned int enable_intra_edge_filter           : 1;
+      unsigned int enable_interintra_compound         : 1;
+      unsigned int enable_masked_compound             : 1;
+      unsigned int enable_warped_motion               : 1;
+      unsigned int enable_dual_filter                 : 1;
+      unsigned int enable_order_hint                  : 1;
+      unsigned int enable_jnt_comp                    : 1;
+      unsigned int enable_ref_frame_mvs               : 1;
+      unsigned int frame_id_numbers_present_flag      : 1;
+      unsigned int enable_superres                    : 1;
+      unsigned int enable_cdef                        : 1;
+      unsigned int enable_restoration                 : 1;
+      unsigned int film_grain_params_present          : 1;
+      unsigned int timing_info_present_flag           : 1;
+      unsigned int initial_display_delay_present_flag : 1;
+      unsigned int reserved                           : 13;
     };
 
     struct AV1SequenceHeader
@@ -4739,16 +4739,16 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1SequenceHeaderFlags flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1Profile seq_profile       = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1Profile::eMain;
-      uint8_t                                                      frame_width_bits_minus_1           = {};
-      uint8_t                                                      frame_height_bits_minus_1          = {};
-      uint16_t                                                     max_frame_width_minus_1            = {};
-      uint16_t                                                     max_frame_height_minus_1           = {};
-      uint8_t                                                      delta_frame_id_length_minus_2      = {};
-      uint8_t                                                      additional_frame_id_length_minus_1 = {};
-      uint8_t                                                      order_hint_bits_minus_1            = {};
-      uint8_t                                                      seq_force_integer_mv               = {};
-      uint8_t                                                      seq_force_screen_content_tools     = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 5>             reserved1                          = {};
+      unsigned char                                                      frame_width_bits_minus_1           = {};
+      unsigned char                                                      frame_height_bits_minus_1          = {};
+      unsigned short                                                     max_frame_width_minus_1            = {};
+      unsigned short                                                     max_frame_height_minus_1           = {};
+      unsigned char                                                      delta_frame_id_length_minus_2      = {};
+      unsigned char                                                      additional_frame_id_length_minus_1 = {};
+      unsigned char                                                      order_hint_bits_minus_1            = {};
+      unsigned char                                                      seq_force_integer_mv               = {};
+      unsigned char                                                      seq_force_screen_content_tools     = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 5>             reserved1                          = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1ColorConfig * pColorConfig           = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TimingInfo *  pTimingInfo            = {};
     };
@@ -4804,36 +4804,36 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t error_resilient_mode             : 1;
-      uint32_t disable_cdf_update               : 1;
-      uint32_t use_superres                     : 1;
-      uint32_t render_and_frame_size_different  : 1;
-      uint32_t allow_screen_content_tools       : 1;
-      uint32_t is_filter_switchable             : 1;
-      uint32_t force_integer_mv                 : 1;
-      uint32_t frame_size_override_flag         : 1;
-      uint32_t buffer_removal_time_present_flag : 1;
-      uint32_t allow_intrabc                    : 1;
-      uint32_t frame_refs_short_signaling       : 1;
-      uint32_t allow_high_precision_mv          : 1;
-      uint32_t is_motion_mode_switchable        : 1;
-      uint32_t use_ref_frame_mvs                : 1;
-      uint32_t disable_frame_end_update_cdf     : 1;
-      uint32_t allow_warped_motion              : 1;
-      uint32_t reduced_tx_set                   : 1;
-      uint32_t reference_select                 : 1;
-      uint32_t skip_mode_present                : 1;
-      uint32_t delta_q_present                  : 1;
-      uint32_t delta_lf_present                 : 1;
-      uint32_t delta_lf_multi                   : 1;
-      uint32_t segmentation_enabled             : 1;
-      uint32_t segmentation_update_map          : 1;
-      uint32_t segmentation_temporal_update     : 1;
-      uint32_t segmentation_update_data         : 1;
-      uint32_t UsesLr                           : 1;
-      uint32_t usesChromaLr                     : 1;
-      uint32_t apply_grain                      : 1;
-      uint32_t reserved                         : 3;
+      unsigned int error_resilient_mode             : 1;
+      unsigned int disable_cdf_update               : 1;
+      unsigned int use_superres                     : 1;
+      unsigned int render_and_frame_size_different  : 1;
+      unsigned int allow_screen_content_tools       : 1;
+      unsigned int is_filter_switchable             : 1;
+      unsigned int force_integer_mv                 : 1;
+      unsigned int frame_size_override_flag         : 1;
+      unsigned int buffer_removal_time_present_flag : 1;
+      unsigned int allow_intrabc                    : 1;
+      unsigned int frame_refs_short_signaling       : 1;
+      unsigned int allow_high_precision_mv          : 1;
+      unsigned int is_motion_mode_switchable        : 1;
+      unsigned int use_ref_frame_mvs                : 1;
+      unsigned int disable_frame_end_update_cdf     : 1;
+      unsigned int allow_warped_motion              : 1;
+      unsigned int reduced_tx_set                   : 1;
+      unsigned int reference_select                 : 1;
+      unsigned int skip_mode_present                : 1;
+      unsigned int delta_q_present                  : 1;
+      unsigned int delta_lf_present                 : 1;
+      unsigned int delta_lf_multi                   : 1;
+      unsigned int segmentation_enabled             : 1;
+      unsigned int segmentation_update_map          : 1;
+      unsigned int segmentation_temporal_update     : 1;
+      unsigned int segmentation_update_data         : 1;
+      unsigned int UsesLr                           : 1;
+      unsigned int usesChromaLr                     : 1;
+      unsigned int apply_grain                      : 1;
+      unsigned int reserved                         : 3;
     };
 
     struct DecodeAV1PictureInfo
@@ -4880,21 +4880,21 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeAV1PictureInfoFlags flags  = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FrameType frame_type          = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FrameType::eKey;
-      uint32_t                                                       current_frame_id    = {};
-      uint8_t                                                        OrderHint           = {};
-      uint8_t                                                        primary_ref_frame   = {};
-      uint8_t                                                        refresh_frame_flags = {};
-      uint8_t                                                        reserved1           = {};
+      unsigned int                                                       current_frame_id    = {};
+      unsigned char                                                        OrderHint           = {};
+      unsigned char                                                        primary_ref_frame   = {};
+      unsigned char                                                        refresh_frame_flags = {};
+      unsigned char                                                        reserved1           = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1InterpolationFilter interpolation_filter =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1InterpolationFilter::eEighttap;
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TxMode TxMode       = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TxMode::eOnly4X4;
-      uint8_t                                                     delta_q_res  = {};
-      uint8_t                                                     delta_lf_res = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_SKIP_MODE_FRAMES> SkipModeFrame    = {};
-      uint8_t                                                                       coded_denom      = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 3>                              reserved2        = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_NUM_REF_FRAMES>   OrderHints       = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_AV1_NUM_REF_FRAMES>  expectedFrameId  = {};
+      unsigned char                                                     delta_q_res  = {};
+      unsigned char                                                     delta_lf_res = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_SKIP_MODE_FRAMES> SkipModeFrame    = {};
+      unsigned char                                                                       coded_denom      = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 3>                              reserved2        = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_NUM_REF_FRAMES>   OrderHints       = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_AV1_NUM_REF_FRAMES>  expectedFrameId  = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TileInfo *         pTileInfo        = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1Quantization *     pQuantization    = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1Segmentation *     pSegmentation    = {};
@@ -4941,9 +4941,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t disable_frame_end_update_cdf : 1;
-      uint32_t segmentation_enabled         : 1;
-      uint32_t reserved                     : 30;
+      unsigned int disable_frame_end_update_cdf : 1;
+      unsigned int segmentation_enabled         : 1;
+      unsigned int reserved                     : 30;
     };
 
     struct DecodeAV1ReferenceInfo
@@ -4983,10 +4983,10 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::DecodeAV1ReferenceInfoFlags flags            = {};
-      uint8_t                                                                       frame_type       = {};
-      uint8_t                                                                       RefFrameSignBias = {};
-      uint8_t                                                                       OrderHint        = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_NUM_REF_FRAMES>   SavedOrderHints  = {};
+      unsigned char                                                                       frame_type       = {};
+      unsigned char                                                                       RefFrameSignBias = {};
+      unsigned char                                                                       OrderHint        = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_NUM_REF_FRAMES>   SavedOrderHints  = {};
     };
 #endif
 
@@ -5031,11 +5031,11 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint8_t  buffer_delay_length_minus_1            = {};
-      uint8_t  buffer_removal_time_length_minus_1     = {};
-      uint8_t  frame_presentation_time_length_minus_1 = {};
-      uint8_t  reserved1                              = {};
-      uint32_t num_units_in_decoding_tick             = {};
+      unsigned char  buffer_delay_length_minus_1            = {};
+      unsigned char  buffer_removal_time_length_minus_1     = {};
+      unsigned char  frame_presentation_time_length_minus_1 = {};
+      unsigned char  reserved1                              = {};
+      unsigned int num_units_in_decoding_tick             = {};
     };
 
     struct EncodeAV1ExtensionHeader
@@ -5073,8 +5073,8 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint8_t temporal_id = {};
-      uint8_t spatial_id  = {};
+      unsigned char temporal_id = {};
+      unsigned char spatial_id  = {};
     };
 
     struct EncodeAV1OperatingPointInfoFlags
@@ -5113,10 +5113,10 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t decoder_model_present_for_this_op         : 1;
-      uint32_t low_delay_mode_flag                       : 1;
-      uint32_t initial_display_delay_present_for_this_op : 1;
-      uint32_t reserved                                  : 29;
+      unsigned int decoder_model_present_for_this_op         : 1;
+      unsigned int low_delay_mode_flag                       : 1;
+      unsigned int initial_display_delay_present_for_this_op : 1;
+      unsigned int reserved                                  : 29;
     };
 
     struct EncodeAV1OperatingPointInfo
@@ -5157,12 +5157,12 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeAV1OperatingPointInfoFlags flags                         = {};
-      uint16_t                                                                           operating_point_idc           = {};
-      uint8_t                                                                            seq_level_idx                 = {};
-      uint8_t                                                                            seq_tier                      = {};
-      uint32_t                                                                           decoder_buffer_delay          = {};
-      uint32_t                                                                           encoder_buffer_delay          = {};
-      uint8_t                                                                            initial_display_delay_minus_1 = {};
+      unsigned short                                                                           operating_point_idc           = {};
+      unsigned char                                                                            seq_level_idx                 = {};
+      unsigned char                                                                            seq_tier                      = {};
+      unsigned int                                                                           decoder_buffer_delay          = {};
+      unsigned int                                                                           encoder_buffer_delay          = {};
+      unsigned char                                                                            initial_display_delay_minus_1 = {};
     };
 
     struct EncodeAV1PictureInfoFlags
@@ -5213,36 +5213,36 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t error_resilient_mode             : 1;
-      uint32_t disable_cdf_update               : 1;
-      uint32_t use_superres                     : 1;
-      uint32_t render_and_frame_size_different  : 1;
-      uint32_t allow_screen_content_tools       : 1;
-      uint32_t is_filter_switchable             : 1;
-      uint32_t force_integer_mv                 : 1;
-      uint32_t frame_size_override_flag         : 1;
-      uint32_t buffer_removal_time_present_flag : 1;
-      uint32_t allow_intrabc                    : 1;
-      uint32_t frame_refs_short_signaling       : 1;
-      uint32_t allow_high_precision_mv          : 1;
-      uint32_t is_motion_mode_switchable        : 1;
-      uint32_t use_ref_frame_mvs                : 1;
-      uint32_t disable_frame_end_update_cdf     : 1;
-      uint32_t allow_warped_motion              : 1;
-      uint32_t reduced_tx_set                   : 1;
-      uint32_t skip_mode_present                : 1;
-      uint32_t delta_q_present                  : 1;
-      uint32_t delta_lf_present                 : 1;
-      uint32_t delta_lf_multi                   : 1;
-      uint32_t segmentation_enabled             : 1;
-      uint32_t segmentation_update_map          : 1;
-      uint32_t segmentation_temporal_update     : 1;
-      uint32_t segmentation_update_data         : 1;
-      uint32_t UsesLr                           : 1;
-      uint32_t usesChromaLr                     : 1;
-      uint32_t show_frame                       : 1;
-      uint32_t showable_frame                   : 1;
-      uint32_t reserved                         : 3;
+      unsigned int error_resilient_mode             : 1;
+      unsigned int disable_cdf_update               : 1;
+      unsigned int use_superres                     : 1;
+      unsigned int render_and_frame_size_different  : 1;
+      unsigned int allow_screen_content_tools       : 1;
+      unsigned int is_filter_switchable             : 1;
+      unsigned int force_integer_mv                 : 1;
+      unsigned int frame_size_override_flag         : 1;
+      unsigned int buffer_removal_time_present_flag : 1;
+      unsigned int allow_intrabc                    : 1;
+      unsigned int frame_refs_short_signaling       : 1;
+      unsigned int allow_high_precision_mv          : 1;
+      unsigned int is_motion_mode_switchable        : 1;
+      unsigned int use_ref_frame_mvs                : 1;
+      unsigned int disable_frame_end_update_cdf     : 1;
+      unsigned int allow_warped_motion              : 1;
+      unsigned int reduced_tx_set                   : 1;
+      unsigned int skip_mode_present                : 1;
+      unsigned int delta_q_present                  : 1;
+      unsigned int delta_lf_present                 : 1;
+      unsigned int delta_lf_multi                   : 1;
+      unsigned int segmentation_enabled             : 1;
+      unsigned int segmentation_update_map          : 1;
+      unsigned int segmentation_temporal_update     : 1;
+      unsigned int segmentation_update_data         : 1;
+      unsigned int UsesLr                           : 1;
+      unsigned int usesChromaLr                     : 1;
+      unsigned int show_frame                       : 1;
+      unsigned int showable_frame                   : 1;
+      unsigned int reserved                         : 3;
     };
 
     struct EncodeAV1PictureInfo
@@ -5291,23 +5291,23 @@ namespace VULKAN_HPP_NAMESPACE
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeAV1PictureInfoFlags flags = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FrameType frame_type         = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FrameType::eKey;
-      uint32_t                                                       frame_presentation_time = {};
-      uint32_t                                                       current_frame_id        = {};
-      uint8_t                                                        order_hint              = {};
-      uint8_t                                                        primary_ref_frame       = {};
-      uint8_t                                                        refresh_frame_flags     = {};
-      uint8_t                                                        coded_denom             = {};
-      uint16_t                                                       render_width_minus_1    = {};
-      uint16_t                                                       render_height_minus_1   = {};
+      unsigned int                                                       frame_presentation_time = {};
+      unsigned int                                                       current_frame_id        = {};
+      unsigned char                                                        order_hint              = {};
+      unsigned char                                                        primary_ref_frame       = {};
+      unsigned char                                                        refresh_frame_flags     = {};
+      unsigned char                                                        coded_denom             = {};
+      unsigned short                                                       render_width_minus_1    = {};
+      unsigned short                                                       render_height_minus_1   = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1InterpolationFilter interpolation_filter =
         VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1InterpolationFilter::eEighttap;
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TxMode TxMode       = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TxMode::eOnly4X4;
-      uint8_t                                                     delta_q_res  = {};
-      uint8_t                                                     delta_lf_res = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, STD_VIDEO_AV1_NUM_REF_FRAMES>        ref_order_hint         = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<int8_t, STD_VIDEO_AV1_REFS_PER_FRAME>         ref_frame_idx          = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 3>                                   reserved1              = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint32_t, STD_VIDEO_AV1_REFS_PER_FRAME>       delta_frame_id_minus_1 = {};
+      unsigned char                                                     delta_q_res  = {};
+      unsigned char                                                     delta_lf_res = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, STD_VIDEO_AV1_NUM_REF_FRAMES>        ref_order_hint         = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<signed char, STD_VIDEO_AV1_REFS_PER_FRAME>         ref_frame_idx          = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 3>                                   reserved1              = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned int, STD_VIDEO_AV1_REFS_PER_FRAME>       delta_frame_id_minus_1 = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1TileInfo *              pTileInfo              = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1Quantization *          pQuantization          = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1Segmentation *          pSegmentation          = {};
@@ -5316,7 +5316,7 @@ namespace VULKAN_HPP_NAMESPACE
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1LoopRestoration *       pLoopRestoration       = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1GlobalMotion *          pGlobalMotion          = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeAV1ExtensionHeader * pExtensionHeader       = {};
-      const uint32_t *                                                                   pBufferRemovalTimes    = {};
+      const unsigned int *                                                                   pBufferRemovalTimes    = {};
     };
 
     struct EncodeAV1ReferenceInfoFlags
@@ -5355,9 +5355,9 @@ namespace VULKAN_HPP_NAMESPACE
       }
 
     public:
-      uint32_t disable_frame_end_update_cdf : 1;
-      uint32_t segmentation_enabled         : 1;
-      uint32_t reserved                     : 30;
+      unsigned int disable_frame_end_update_cdf : 1;
+      unsigned int segmentation_enabled         : 1;
+      unsigned int reserved                     : 30;
     };
 
     struct EncodeAV1ReferenceInfo
@@ -5397,10 +5397,10 @@ namespace VULKAN_HPP_NAMESPACE
 
     public:
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeAV1ReferenceInfoFlags flags      = {};
-      uint32_t                                                                      RefFrameId = {};
+      unsigned int                                                                      RefFrameId = {};
       VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FrameType frame_type = VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::AV1FrameType::eKey;
-      uint8_t                                                        OrderHint  = {};
-      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<uint8_t, 3>               reserved1  = {};
+      unsigned char                                                        OrderHint  = {};
+      VULKAN_HPP_NAMESPACE::ArrayWrapper1D<unsigned char, 3>               reserved1  = {};
       const VULKAN_HPP_NAMESPACE::VULKAN_HPP_VIDEO_NAMESPACE::EncodeAV1ExtensionHeader * pExtensionHeader = {};
     };
 #endif

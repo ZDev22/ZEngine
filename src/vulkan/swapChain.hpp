@@ -19,14 +19,14 @@ public:
     unsigned int imageCount() { return swapChainImages.size(); }
     VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
     VkExtent2D getSwapChainExtent() { return swapChainExtent; }
-    uint32_t width() { return swapChainExtent.width; }
-    uint32_t height() { return swapChainExtent.height; }
+    unsigned int width() { return swapChainExtent.width; }
+    unsigned int height() { return swapChainExtent.height; }
     float extentAspectRatio() { return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height); }
     
-    VkResult acquireNextImage(uint32_t* imageIndex);
+    VkResult acquireNextImage(unsigned int* imageIndex);
 
     bool compareSwapFormats(const SwapChain& swapChain) const { return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat == swapChainImageFormat; }
-    VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+    VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex);
     VkSwapchainKHR getSwapChain() { return swapChain; }
 
 private:

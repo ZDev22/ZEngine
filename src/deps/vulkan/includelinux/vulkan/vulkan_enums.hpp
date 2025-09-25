@@ -3998,7 +3998,7 @@ namespace VULKAN_HPP_NAMESPACE
   };
 
   template <>
-  struct IndexTypeValue<uint16_t>
+  struct IndexTypeValue<unsigned short>
   {
     static VULKAN_HPP_CONST_OR_CONSTEXPR IndexType value = IndexType::eUint16;
   };
@@ -4006,11 +4006,11 @@ namespace VULKAN_HPP_NAMESPACE
   template <>
   struct CppType<IndexType, IndexType::eUint16>
   {
-    using Type = uint16_t;
+    using Type = unsigned short;
   };
 
   template <>
-  struct IndexTypeValue<uint32_t>
+  struct IndexTypeValue<unsigned int>
   {
     static VULKAN_HPP_CONST_OR_CONSTEXPR IndexType value = IndexType::eUint32;
   };
@@ -4018,11 +4018,11 @@ namespace VULKAN_HPP_NAMESPACE
   template <>
   struct CppType<IndexType, IndexType::eUint32>
   {
-    using Type = uint32_t;
+    using Type = unsigned int;
   };
 
   template <>
-  struct IndexTypeValue<uint8_t>
+  struct IndexTypeValue<unsigned char>
   {
     static VULKAN_HPP_CONST_OR_CONSTEXPR IndexType value = IndexType::eUint8;
   };
@@ -4030,7 +4030,7 @@ namespace VULKAN_HPP_NAMESPACE
   template <>
   struct CppType<IndexType, IndexType::eUint8>
   {
-    using Type = uint8_t;
+    using Type = unsigned char;
   };
 
   // wrapper class for enum VkStencilFaceFlagBits, see https://registry.khronos.org/vulkan/specs/latest/man/html/VkStencilFaceFlagBits.html
@@ -8288,25 +8288,25 @@ namespace VULKAN_HPP_NAMESPACE
   template <>
   struct CppType<LayerSettingTypeEXT, LayerSettingTypeEXT::eInt32>
   {
-    using Type = int32_t;
+    using Type = int;
   };
 
   template <>
   struct CppType<LayerSettingTypeEXT, LayerSettingTypeEXT::eInt64>
   {
-    using Type = int64_t;
+    using Type = long long;
   };
 
   template <>
   struct CppType<LayerSettingTypeEXT, LayerSettingTypeEXT::eUint32>
   {
-    using Type = uint32_t;
+    using Type = unsigned int;
   };
 
   template <>
   struct CppType<LayerSettingTypeEXT, LayerSettingTypeEXT::eUint64>
   {
-    using Type = uint64_t;
+    using Type = unsigned long long;
   };
 
   template <>
@@ -8333,10 +8333,10 @@ namespace VULKAN_HPP_NAMESPACE
     switch ( layerSettingType )
     {
       case LayerSettingTypeEXT::eBool32: return std::is_same<T, VULKAN_HPP_NAMESPACE::Bool32>::value;
-      case LayerSettingTypeEXT::eInt32: return std::is_same<T, int32_t>::value;
-      case LayerSettingTypeEXT::eInt64: return std::is_same<T, int64_t>::value;
-      case LayerSettingTypeEXT::eUint32: return std::is_same<T, uint32_t>::value;
-      case LayerSettingTypeEXT::eUint64: return std::is_same<T, uint64_t>::value;
+      case LayerSettingTypeEXT::eInt32: return std::is_same<T, int>::value;
+      case LayerSettingTypeEXT::eInt64: return std::is_same<T, long long>::value;
+      case LayerSettingTypeEXT::eUint32: return std::is_same<T, unsigned int>::value;
+      case LayerSettingTypeEXT::eUint64: return std::is_same<T, unsigned long long>::value;
       case LayerSettingTypeEXT::eFloat32: return std::is_same<T, float>::value;
       case LayerSettingTypeEXT::eFloat64: return std::is_same<T, double>::value;
       case LayerSettingTypeEXT::eString: return std::is_same<T, char *>::value;

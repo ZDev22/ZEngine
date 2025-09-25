@@ -43,8 +43,8 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<uint32_t>(texWidth);
-    imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+    imageInfo.extent.width = static_cast<unsigned int>(texWidth);
+    imageInfo.extent.height = static_cast<unsigned int>(texHeight);
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
@@ -57,7 +57,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
     device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1);
+    device.copyBufferToImage(stagingBuffer, image, static_cast<unsigned int>(texWidth), static_cast<unsigned int>(texHeight), 1);
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
@@ -95,8 +95,8 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<uint32_t>(size);
-    imageInfo.extent.height = static_cast<uint32_t>(size);
+    imageInfo.extent.width = static_cast<unsigned int>(size);
+    imageInfo.extent.height = static_cast<unsigned int>(size);
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
@@ -109,7 +109,7 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
 
     device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    device.copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(size), static_cast<uint32_t>(size), 1);
+    device.copyBufferToImage(stagingBuffer, image, static_cast<unsigned int>(size), static_cast<unsigned int>(size), 1);
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     vkDestroyBuffer(device.device(), stagingBuffer, nullptr);

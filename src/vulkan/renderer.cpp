@@ -29,13 +29,13 @@ void Renderer::createCommandBuffers() {
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandPool = device.getCommandPool();
-    allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+    allocInfo.commandBufferCount = static_cast<unsigned int>(commandBuffers.size());
 
     if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) { throw("failed to allocate command buffers!"); }
 }
 
 void Renderer::freeCommandBuffers() {
-    vkFreeCommandBuffers(device.device(), device.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+    vkFreeCommandBuffers(device.device(), device.getCommandPool(), static_cast<unsigned int>(commandBuffers.size()), commandBuffers.data());
     commandBuffers.clear();
 }
 

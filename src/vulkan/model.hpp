@@ -35,7 +35,7 @@ public:
     Model(Device& device, const std::vector<Vertex>& vertices);
 
     void bind(VkCommandBuffer commandBuffer);
-    void draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t firstInstance = 0);
+    void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance = 0);
 
     const std::vector<Vertex>& getVertices() const { return vertices; }
 

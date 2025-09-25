@@ -53,21 +53,21 @@ struct AHardwareBuffer;
 typedef struct VkAndroidHardwareBufferUsageANDROID {
     VkStructureType    sType;
     void*              pNext;
-    uint64_t           androidHardwareBufferUsage;
+    unsigned long long           androidHardwareBufferUsage;
 } VkAndroidHardwareBufferUsageANDROID;
 
 typedef struct VkAndroidHardwareBufferPropertiesANDROID {
     VkStructureType    sType;
     void*              pNext;
     VkDeviceSize       allocationSize;
-    uint32_t           memoryTypeBits;
+    unsigned int           memoryTypeBits;
 } VkAndroidHardwareBufferPropertiesANDROID;
 
 typedef struct VkAndroidHardwareBufferFormatPropertiesANDROID {
     VkStructureType                  sType;
     void*                            pNext;
     VkFormat                         format;
-    uint64_t                         externalFormat;
+    unsigned long long                         externalFormat;
     VkFormatFeatureFlags             formatFeatures;
     VkComponentMapping               samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion    suggestedYcbcrModel;
@@ -91,14 +91,14 @@ typedef struct VkMemoryGetAndroidHardwareBufferInfoANDROID {
 typedef struct VkExternalFormatANDROID {
     VkStructureType    sType;
     void*              pNext;
-    uint64_t           externalFormat;
+    unsigned long long           externalFormat;
 } VkExternalFormatANDROID;
 
 typedef struct VkAndroidHardwareBufferFormatProperties2ANDROID {
     VkStructureType                  sType;
     void*                            pNext;
     VkFormat                         format;
-    uint64_t                         externalFormat;
+    unsigned long long                         externalFormat;
     VkFormatFeatureFlags2            formatFeatures;
     VkComponentMapping               samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion    suggestedYcbcrModel;

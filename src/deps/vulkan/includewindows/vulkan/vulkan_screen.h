@@ -33,7 +33,7 @@ typedef struct VkScreenSurfaceCreateInfoQNX {
 } VkScreenSurfaceCreateInfoQNX;
 
 typedef VkResult (VKAPI_PTR *PFN_vkCreateScreenSurfaceQNX)(VkInstance instance, const VkScreenSurfaceCreateInfoQNX* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
-typedef VkBool32 (VKAPI_PTR *PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX)(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, struct _screen_window* window);
+typedef VkBool32 (VKAPI_PTR *PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX)(VkPhysicalDevice physicalDevice, unsigned int queueFamilyIndex, struct _screen_window* window);
 
 #ifndef VK_NO_PROTOTYPES
 #ifndef VK_ONLY_EXPORTED_PROTOTYPES
@@ -47,7 +47,7 @@ VKAPI_ATTR VkResult VKAPI_CALL vkCreateScreenSurfaceQNX(
 #ifndef VK_ONLY_EXPORTED_PROTOTYPES
 VKAPI_ATTR VkBool32 VKAPI_CALL vkGetPhysicalDeviceScreenPresentationSupportQNX(
     VkPhysicalDevice                            physicalDevice,
-    uint32_t                                    queueFamilyIndex,
+    unsigned int                                    queueFamilyIndex,
     struct _screen_window*                      window);
 #endif
 #endif
@@ -61,15 +61,15 @@ typedef struct VkScreenBufferPropertiesQNX {
     VkStructureType    sType;
     void*              pNext;
     VkDeviceSize       allocationSize;
-    uint32_t           memoryTypeBits;
+    unsigned int           memoryTypeBits;
 } VkScreenBufferPropertiesQNX;
 
 typedef struct VkScreenBufferFormatPropertiesQNX {
     VkStructureType                  sType;
     void*                            pNext;
     VkFormat                         format;
-    uint64_t                         externalFormat;
-    uint64_t                         screenUsage;
+    unsigned long long                         externalFormat;
+    unsigned long long                         screenUsage;
     VkFormatFeatureFlags             formatFeatures;
     VkComponentMapping               samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion    suggestedYcbcrModel;
@@ -87,7 +87,7 @@ typedef struct VkImportScreenBufferInfoQNX {
 typedef struct VkExternalFormatQNX {
     VkStructureType    sType;
     void*              pNext;
-    uint64_t           externalFormat;
+    unsigned long long           externalFormat;
 } VkExternalFormatQNX;
 
 typedef struct VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX {

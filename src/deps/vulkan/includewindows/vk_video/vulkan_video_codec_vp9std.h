@@ -98,49 +98,49 @@ typedef enum StdVideoVP9ColorSpace {
     STD_VIDEO_VP9_COLOR_SPACE_MAX_ENUM = 0x7FFFFFFF
 } StdVideoVP9ColorSpace;
 typedef struct StdVideoVP9ColorConfigFlags {
-    uint32_t    color_range : 1;
-    uint32_t    reserved : 31;
+    unsigned int    color_range : 1;
+    unsigned int    reserved : 31;
 } StdVideoVP9ColorConfigFlags;
 
 typedef struct StdVideoVP9ColorConfig {
     StdVideoVP9ColorConfigFlags    flags;
-    uint8_t                        BitDepth;
-    uint8_t                        subsampling_x;
-    uint8_t                        subsampling_y;
-    uint8_t                        reserved1;
+    unsigned char                        BitDepth;
+    unsigned char                        subsampling_x;
+    unsigned char                        subsampling_y;
+    unsigned char                        reserved1;
     StdVideoVP9ColorSpace          color_space;
 } StdVideoVP9ColorConfig;
 
 typedef struct StdVideoVP9LoopFilterFlags {
-    uint32_t    loop_filter_delta_enabled : 1;
-    uint32_t    loop_filter_delta_update : 1;
-    uint32_t    reserved : 30;
+    unsigned int    loop_filter_delta_enabled : 1;
+    unsigned int    loop_filter_delta_update : 1;
+    unsigned int    reserved : 30;
 } StdVideoVP9LoopFilterFlags;
 
 typedef struct StdVideoVP9LoopFilter {
     StdVideoVP9LoopFilterFlags    flags;
-    uint8_t                       loop_filter_level;
-    uint8_t                       loop_filter_sharpness;
-    uint8_t                       update_ref_delta;
-    int8_t                        loop_filter_ref_deltas[STD_VIDEO_VP9_MAX_REF_FRAMES];
-    uint8_t                       update_mode_delta;
-    int8_t                        loop_filter_mode_deltas[STD_VIDEO_VP9_LOOP_FILTER_ADJUSTMENTS];
+    unsigned char                       loop_filter_level;
+    unsigned char                       loop_filter_sharpness;
+    unsigned char                       update_ref_delta;
+    signed char                        loop_filter_ref_deltas[STD_VIDEO_VP9_MAX_REF_FRAMES];
+    unsigned char                       update_mode_delta;
+    signed char                        loop_filter_mode_deltas[STD_VIDEO_VP9_LOOP_FILTER_ADJUSTMENTS];
 } StdVideoVP9LoopFilter;
 
 typedef struct StdVideoVP9SegmentationFlags {
-    uint32_t    segmentation_update_map : 1;
-    uint32_t    segmentation_temporal_update : 1;
-    uint32_t    segmentation_update_data : 1;
-    uint32_t    segmentation_abs_or_delta_update : 1;
-    uint32_t    reserved : 28;
+    unsigned int    segmentation_update_map : 1;
+    unsigned int    segmentation_temporal_update : 1;
+    unsigned int    segmentation_update_data : 1;
+    unsigned int    segmentation_abs_or_delta_update : 1;
+    unsigned int    reserved : 28;
 } StdVideoVP9SegmentationFlags;
 
 typedef struct StdVideoVP9Segmentation {
     StdVideoVP9SegmentationFlags    flags;
-    uint8_t                         segmentation_tree_probs[STD_VIDEO_VP9_MAX_SEGMENTATION_TREE_PROBS];
-    uint8_t                         segmentation_pred_prob[STD_VIDEO_VP9_MAX_SEGMENTATION_PRED_PROB];
-    uint8_t                         FeatureEnabled[STD_VIDEO_VP9_MAX_SEGMENTS];
-    int16_t                         FeatureData[STD_VIDEO_VP9_MAX_SEGMENTS][STD_VIDEO_VP9_SEG_LVL_MAX];
+    unsigned char                         segmentation_tree_probs[STD_VIDEO_VP9_MAX_SEGMENTATION_TREE_PROBS];
+    unsigned char                         segmentation_pred_prob[STD_VIDEO_VP9_MAX_SEGMENTATION_PRED_PROB];
+    unsigned char                         FeatureEnabled[STD_VIDEO_VP9_MAX_SEGMENTS];
+    short                         FeatureData[STD_VIDEO_VP9_MAX_SEGMENTS][STD_VIDEO_VP9_SEG_LVL_MAX];
 } StdVideoVP9Segmentation;
 
 

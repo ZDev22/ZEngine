@@ -7829,7 +7829,7 @@ static inline std::string string_VkToolPurposeFlags(VkToolPurposeFlags input_val
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkPipelineStageFlagBits2(uint64_t input_value) {
+static inline const char* string_VkPipelineStageFlagBits2(unsigned long long input_value) {
     if (input_value == VK_PIPELINE_STAGE_2_NONE) return "VK_PIPELINE_STAGE_2_NONE";
     if (input_value == VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT) return "VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT";
     if (input_value == VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT) return "VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT";
@@ -7884,7 +7884,7 @@ static inline std::string string_VkPipelineStageFlags2(VkPipelineStageFlags2 inp
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkPipelineStageFlagBits2(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkPipelineStageFlagBits2(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -7893,7 +7893,7 @@ static inline std::string string_VkPipelineStageFlags2(VkPipelineStageFlags2 inp
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkAccessFlagBits2(uint64_t input_value) {
+static inline const char* string_VkAccessFlagBits2(unsigned long long input_value) {
     if (input_value == VK_ACCESS_2_NONE) return "VK_ACCESS_2_NONE";
     if (input_value == VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT) return "VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT";
     if (input_value == VK_ACCESS_2_INDEX_READ_BIT) return "VK_ACCESS_2_INDEX_READ_BIT";
@@ -7951,7 +7951,7 @@ static inline std::string string_VkAccessFlags2(VkAccessFlags2 input_value) {
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkAccessFlagBits2(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkAccessFlagBits2(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -8020,7 +8020,7 @@ static inline std::string string_VkRenderingFlags(VkRenderingFlags input_value) 
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkFormatFeatureFlagBits2(uint64_t input_value) {
+static inline const char* string_VkFormatFeatureFlagBits2(unsigned long long input_value) {
     if (input_value == VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT) return "VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT";
     if (input_value == VK_FORMAT_FEATURE_2_STORAGE_IMAGE_BIT) return "VK_FORMAT_FEATURE_2_STORAGE_IMAGE_BIT";
     if (input_value == VK_FORMAT_FEATURE_2_STORAGE_IMAGE_ATOMIC_BIT) return "VK_FORMAT_FEATURE_2_STORAGE_IMAGE_ATOMIC_BIT";
@@ -8080,7 +8080,7 @@ static inline std::string string_VkFormatFeatureFlags2(VkFormatFeatureFlags2 inp
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkFormatFeatureFlagBits2(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkFormatFeatureFlagBits2(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -8114,7 +8114,7 @@ static inline std::string string_VkMemoryUnmapFlags(VkMemoryUnmapFlags input_val
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkPipelineCreateFlagBits2(uint64_t input_value) {
+static inline const char* string_VkPipelineCreateFlagBits2(unsigned long long input_value) {
     if (input_value == VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION_BIT) return "VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION_BIT";
     if (input_value == VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT) return "VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT";
     if (input_value == VK_PIPELINE_CREATE_2_DERIVATIVE_BIT) return "VK_PIPELINE_CREATE_2_DERIVATIVE_BIT";
@@ -8165,7 +8165,7 @@ static inline std::string string_VkPipelineCreateFlags2(VkPipelineCreateFlags2 i
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkPipelineCreateFlagBits2(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkPipelineCreateFlagBits2(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -8174,7 +8174,7 @@ static inline std::string string_VkPipelineCreateFlags2(VkPipelineCreateFlags2 i
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkBufferUsageFlagBits2(uint64_t input_value) {
+static inline const char* string_VkBufferUsageFlagBits2(unsigned long long input_value) {
     if (input_value == VK_BUFFER_USAGE_2_TRANSFER_SRC_BIT) return "VK_BUFFER_USAGE_2_TRANSFER_SRC_BIT";
     if (input_value == VK_BUFFER_USAGE_2_TRANSFER_DST_BIT) return "VK_BUFFER_USAGE_2_TRANSFER_DST_BIT";
     if (input_value == VK_BUFFER_USAGE_2_UNIFORM_TEXEL_BUFFER_BIT) return "VK_BUFFER_USAGE_2_UNIFORM_TEXEL_BUFFER_BIT";
@@ -8216,7 +8216,7 @@ static inline std::string string_VkBufferUsageFlags2(VkBufferUsageFlags2 input_v
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkBufferUsageFlagBits2(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkBufferUsageFlagBits2(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -9497,7 +9497,7 @@ static inline std::string string_VkVideoEncodeIntraRefreshModeFlagsKHR(VkVideoEn
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkAccessFlagBits3KHR(uint64_t input_value) {
+static inline const char* string_VkAccessFlagBits3KHR(unsigned long long input_value) {
     if (input_value == VK_ACCESS_3_NONE_KHR) return "VK_ACCESS_3_NONE_KHR";
     return "Unhandled VkAccessFlagBits3KHR";
 }
@@ -9509,7 +9509,7 @@ static inline std::string string_VkAccessFlags3KHR(VkAccessFlags3KHR input_value
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkAccessFlagBits3KHR(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkAccessFlagBits3KHR(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -10255,7 +10255,7 @@ static inline std::string string_VkMicromapCreateFlagsEXT(VkMicromapCreateFlagsE
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkPhysicalDeviceSchedulingControlsFlagBitsARM(uint64_t input_value) {
+static inline const char* string_VkPhysicalDeviceSchedulingControlsFlagBitsARM(unsigned long long input_value) {
     if (input_value == VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM) return "VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM";
     return "Unhandled VkPhysicalDeviceSchedulingControlsFlagBitsARM";
 }
@@ -10267,7 +10267,7 @@ static inline std::string string_VkPhysicalDeviceSchedulingControlsFlagsARM(VkPh
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkPhysicalDeviceSchedulingControlsFlagBitsARM(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkPhysicalDeviceSchedulingControlsFlagBitsARM(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -10276,7 +10276,7 @@ static inline std::string string_VkPhysicalDeviceSchedulingControlsFlagsARM(VkPh
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkMemoryDecompressionMethodFlagBitsNV(uint64_t input_value) {
+static inline const char* string_VkMemoryDecompressionMethodFlagBitsNV(unsigned long long input_value) {
     if (input_value == VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV) return "VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV";
     return "Unhandled VkMemoryDecompressionMethodFlagBitsNV";
 }
@@ -10288,7 +10288,7 @@ static inline std::string string_VkMemoryDecompressionMethodFlagsNV(VkMemoryDeco
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkMemoryDecompressionMethodFlagBitsNV(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkMemoryDecompressionMethodFlagBitsNV(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -10297,7 +10297,7 @@ static inline std::string string_VkMemoryDecompressionMethodFlagsNV(VkMemoryDeco
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkTensorCreateFlagBitsARM(uint64_t input_value) {
+static inline const char* string_VkTensorCreateFlagBitsARM(unsigned long long input_value) {
     if (input_value == VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM) return "VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM";
     if (input_value == VK_TENSOR_CREATE_PROTECTED_BIT_ARM) return "VK_TENSOR_CREATE_PROTECTED_BIT_ARM";
     if (input_value == VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM) return "VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM";
@@ -10311,7 +10311,7 @@ static inline std::string string_VkTensorCreateFlagsARM(VkTensorCreateFlagsARM i
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkTensorCreateFlagBitsARM(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkTensorCreateFlagBitsARM(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -10320,7 +10320,7 @@ static inline std::string string_VkTensorCreateFlagsARM(VkTensorCreateFlagsARM i
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkTensorViewCreateFlagBitsARM(uint64_t input_value) {
+static inline const char* string_VkTensorViewCreateFlagBitsARM(unsigned long long input_value) {
     if (input_value == VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM) return "VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM";
     return "Unhandled VkTensorViewCreateFlagBitsARM";
 }
@@ -10332,7 +10332,7 @@ static inline std::string string_VkTensorViewCreateFlagsARM(VkTensorViewCreateFl
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkTensorViewCreateFlagBitsARM(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkTensorViewCreateFlagBitsARM(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -10341,7 +10341,7 @@ static inline std::string string_VkTensorViewCreateFlagsARM(VkTensorViewCreateFl
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkTensorUsageFlagBitsARM(uint64_t input_value) {
+static inline const char* string_VkTensorUsageFlagBitsARM(unsigned long long input_value) {
     if (input_value == VK_TENSOR_USAGE_SHADER_BIT_ARM) return "VK_TENSOR_USAGE_SHADER_BIT_ARM";
     if (input_value == VK_TENSOR_USAGE_TRANSFER_SRC_BIT_ARM) return "VK_TENSOR_USAGE_TRANSFER_SRC_BIT_ARM";
     if (input_value == VK_TENSOR_USAGE_TRANSFER_DST_BIT_ARM) return "VK_TENSOR_USAGE_TRANSFER_DST_BIT_ARM";
@@ -10357,7 +10357,7 @@ static inline std::string string_VkTensorUsageFlagsARM(VkTensorUsageFlagsARM inp
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkTensorUsageFlagBitsARM(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkTensorUsageFlagBitsARM(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;
@@ -10531,7 +10531,7 @@ static inline std::string string_VkShaderCreateFlagsEXT(VkShaderCreateFlagsEXT i
     return ret;
 }
 #endif // __cplusplus
-static inline const char* string_VkDataGraphPipelineSessionCreateFlagBitsARM(uint64_t input_value) {
+static inline const char* string_VkDataGraphPipelineSessionCreateFlagBitsARM(unsigned long long input_value) {
     if (input_value == VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM) return "VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM";
     return "Unhandled VkDataGraphPipelineSessionCreateFlagBitsARM";
 }
@@ -10543,7 +10543,7 @@ static inline std::string string_VkDataGraphPipelineSessionCreateFlagsARM(VkData
     while(input_value) {
         if (input_value & 1) {
             if( !ret.empty()) ret.append("|");
-            ret.append(string_VkDataGraphPipelineSessionCreateFlagBitsARM(static_cast<uint64_t>(1ULL << index)));
+            ret.append(string_VkDataGraphPipelineSessionCreateFlagBitsARM(static_cast<unsigned long long>(1ULL << index)));
         }
         ++index;
         input_value >>= 1;

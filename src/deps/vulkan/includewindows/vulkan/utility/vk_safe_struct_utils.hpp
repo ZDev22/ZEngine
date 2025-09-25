@@ -64,9 +64,9 @@ bool RemoveFromPnext(Base& base, VkStructureType t) {
 }
 
 template <typename CreateInfo>
-uint32_t FindExtension(CreateInfo& ci, const char* extension_name) {
+uint FindExtension(CreateInfo& ci, const char* extension_name) {
     assert(ci.ptr());  // All safe struct have a ptr() method. Prevent use with non-safe structs.
-    for (uint32_t i = 0; i < ci.enabledExtensionCount; i++) {
+    for (uint i = 0; i < ci.enabledExtensionCount; i++) {
         if (strcmp(ci.ppEnabledExtensionNames[i], extension_name) == 0) {
             return i;
         }
@@ -77,7 +77,7 @@ uint32_t FindExtension(CreateInfo& ci, const char* extension_name) {
 template <typename CreateInfo>
 bool AddExtension(CreateInfo& ci, const char* extension_name) {
     assert(ci.ptr());  // All safe struct have a ptr() method. Prevent use with non-safe structs.
-    uint32_t pos = FindExtension(ci, extension_name);
+    uint pos = FindExtension(ci, extension_name);
     if (pos < ci.enabledExtensionCount) {
         // already present
         return false;
@@ -96,7 +96,7 @@ bool AddExtension(CreateInfo& ci, const char* extension_name) {
 template <typename CreateInfo>
 bool RemoveExtension(CreateInfo& ci, const char* extension_name) {
     assert(ci.ptr());  // All safe struct have a ptr() method. Prevent use with non-safe structs.
-    uint32_t pos = FindExtension(ci, extension_name);
+    uint pos = FindExtension(ci, extension_name);
     if (pos >= ci.enabledExtensionCount) {
         // not present
         return false;
@@ -108,9 +108,9 @@ bool RemoveExtension(CreateInfo& ci, const char* extension_name) {
         ci.enabledExtensionCount = 0;
         return true;
     }
-    uint32_t out_pos = 0;
+    uint out_pos = 0;
     char** exts = new char*[ci.enabledExtensionCount - 1];
-    for (uint32_t i = 0; i < ci.enabledExtensionCount; i++) {
+    for (uint i = 0; i < ci.enabledExtensionCount; i++) {
         if (i == pos) {
             delete[] ci.ppEnabledExtensionNames[i];
         } else {

@@ -14,7 +14,7 @@ struct alignas(16) SpriteData {
     float rotationMatrix[4];
     float color[4];
 
-    uint32_t textureIndex;
+    unsigned int textureIndex;
     float rotation;
 
     constexpr void setRotationMatrix() {

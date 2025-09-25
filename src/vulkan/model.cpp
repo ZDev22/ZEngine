@@ -13,4 +13,4 @@ void Model::bind(VkCommandBuffer commandBuffer) {
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 }
 
-void Model::draw(VkCommandBuffer commandBuffer, uint32_t instanceCount, uint32_t firstInstance) { vkCmdDraw(commandBuffer, vertices.size(), instanceCount, 0, firstInstance); }
+void Model::draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, vertices.size(), instanceCount, 0, firstInstance); }

@@ -27,6 +27,6 @@ private:
     std::unique_ptr<SwapChain> swapChain;
     std::vector<VkCommandBuffer> commandBuffers;
 
-    uint32_t currentImageIndex;
+    unsigned int currentImageIndex;
     bool isFrameStarted;
 };
