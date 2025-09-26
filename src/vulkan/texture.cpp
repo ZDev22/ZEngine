@@ -25,7 +25,9 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
     vkCreateSampler(device.device(), &samplerInfo, nullptr, &sampler);
 }
 
-Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED),image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
+Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) 
+    : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), 
+      imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
     stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if (!pixels) { throw("failed to load texture") + filepath; }
 
@@ -78,7 +80,9 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     createTextureSampler(device, sampler);
 }
 
-Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) 
+    : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), 
+      imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
     VkDeviceSize imageSize = size * size * 4;
 
     std::vector<unsigned char> rgbaPixels(imageSize);

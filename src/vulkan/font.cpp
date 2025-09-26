@@ -4,7 +4,7 @@
 #include "font.hpp"
 #include "pipeline.hpp"
 
-unsigned char* loadTTF(const std::string& filepath, unsigned int& fileSize) {
+unsigned char* loadTTF(const std::string& filepath, unsigned int fileSize) {
     FILE* file = std::fopen(filepath.c_str(), "rb");
     if (!file) { throw("Failed to open font file: " + filepath); }
 
