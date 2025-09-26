@@ -1,11 +1,11 @@
 #pragma once
 
 #include "device.hpp"
-#include "sprite.hpp"
 #include "global.hpp"
 #include "../deps/stb_truetype.h"
 
 class Renderer;
+class Sprite;
 class Pipeline {
 public:
     Pipeline(Device& device, Renderer& renderer, const std::string& shader);
@@ -28,7 +28,6 @@ private:
     void createGraphicsPipeline(const std::string& shader);
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
-    void loadTextures();
     void loadFlappyBird();
     void loadSlimeAttack();
     void loadTerminalCalculator();

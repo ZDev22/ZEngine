@@ -1,8 +1,6 @@
 #pragma once
 
 #define PI 3.1415926535
-#define PIR 0.0174532925
-#define PID 57.2957795131
 #define E 2.7182818284
 #define GOLDENRATIO 1.6180339887
 #define SQRT2 1.4142135624
@@ -175,16 +173,14 @@ inline float averageMinMax(const vector<float>& floats) {
 
 // Values
 template<typename T>
-void setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+inline void setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 template<typename T>
-void setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
-inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
-inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
+inline void setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
+inline void setOne(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 1, count); }
 
 // Cmath debloated functions
 template<typename T>
 inline constexpr T absolute(const T i) { return i < 0 ? -i : i; }
-inline constexpr bool absolute(bool i) { return true; }
 
 // Exponents
 template<unsigned long long bitCount>
@@ -228,10 +224,10 @@ inline constexpr bigInt<bitCount> exponentFactorial(unsigned int exponent) {
 }
 
 // Conversions
-inline constexpr float radians(const float degrees) { return degrees * PIR; }
-inline constexpr float degrees(const float radians) { return radians * PID; }
-inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32.f) * .5555555555f; }
-inline constexpr float fahrenheit(const float celsius) { return (celsius * 2.f) + 12.f; }
+inline constexpr float radians(const float degrees) { return degrees * .01745329252f; }
+inline constexpr float degrees(const float radians) { return radians * 57.295779512896f; }
+inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32.f) / 1.8f; }
+inline constexpr float fahrenheit(const float celsius) { return (celsius * 1.8f) + 32.f; }
 
 // Bitset
 template<unsigned long long range>

@@ -20,7 +20,9 @@ int appfps = 0;
 bool shouldClose = false;
 
 App::App() : pipeline(device, renderer, "texture") {
-    pipeline.loadSprites();
+    pipeline.loadFlappyBird();
+    //pipeline.loadSlimeAttack();
+    //pipeline.loadTerminalCalculator();
     renderSystem = std::make_unique<RenderSystem>(device, window, renderer, vertex, pipeline.getDescriptorSetLayout());
 }
 

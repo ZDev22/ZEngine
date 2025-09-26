@@ -1,5 +1,6 @@
 ﻿#include "pipeline.hpp"
 #include "renderer.hpp"
+#include "sprite.hpp"
 #include "font.hpp"
 #include "../deps/ZDev/math.hpp"
 
@@ -222,7 +223,6 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, floa
     SpriteData spriteData;
 
     sprite.model = model;
-    if (textureIndex < 0 || textureIndex >= MAX_TEXTURES) { throw("Out of bounds texture!"); }
     sprite.texture = spriteTextures[textureIndex].get();
     sprite.visible = true;
 
@@ -236,35 +236,27 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, floa
     spriteData.color[2] = b;
     spriteData.color[3] = a;
     spriteData.textureIndex = textureIndex;
+    spriteData.ID = sprites.size();
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
 }
 
-void Pipeline::createText(const std::string& file, const std::string& text, float positionx, float positiony, float fontSize, float r, float g, float b, float a) {
-    if (spriteTextures.size() >= MAX_TEXTURES) {
-        throw("There are too many textures to store this font!");
-    }
-
+void Pipeline::createText(const std::string& file, const std::string& text, float fontSize) {
     float pixelHeight = 32.f;
     int atlasSize = 512;
-
-    unsigned int fileSize = 0;
-    unsigned char* ttfData = loadTTF(file, fileSize);
 
     std::vector<unsigned char> grayscale(atlasSize * atlasSize);
     std::vector<stbtt_bakedchar> charData(96);
 
-    int result = stbtt_BakeFontBitmap(ttfData, 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
+    stbtt_BakeFontBitmap(loadTTF(file), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
     delete[] ttfData;
 
-    if (result <= 0) throw("Failed to bake font bitmap.");
-
-    float min_y = 0.0f;
-    float max_y = 0.0f;
-    float current_x = 0.0f;
+    float min_y = 0.f;
+    float max_y = 0.f;
+    float current_x = 0.f;
     for (char c : text) {
-        if (c < 32 || c > 127) continue;
+        if (c < 32 || c > 127) { continue; }
         stbtt_bakedchar cd = charData[c - 32];
         min_y = std::min(min_y, cd.yoff);
         max_y = std::max(max_y, cd.yoff + (cd.y1 - cd.y0));
@@ -279,7 +271,7 @@ void Pipeline::createText(const std::string& file, const std::string& text, floa
 
     current_x = 0.0f;
     for (char c : text) {
-        if (c < 32 || c > 127) continue;
+        if (c < 32 || c > 127) { continue; }
         stbtt_bakedchar cd = charData[c - 32];
 
         int dst_x = static_cast<int>(std::round(current_x + cd.xoff));
@@ -302,15 +294,9 @@ void Pipeline::createText(const std::string& file, const std::string& text, floa
     }
 
     spriteTextures.push_back(std::make_unique<Texture>(device, text_grayscale.data(), size, descriptorSetLayout, descriptorPool, *this));
-
-    float scaleFactor = fontSize / pixelHeight;
-    float sprite_width = current_x * scaleFactor;
-    float sprite_height = (max_y - min_y) * scaleFactor;
-
-    createSprite(squareModel, spriteTextures.size() - 1, positionx, positiony, sprite_width, sprite_height, 0.f, r, g, b, a);
 }
 
-void Pipeline::loadSprites() {
+void Pipeline::loadSprites(std::vector<const char*> textures, std::vector<const char*> font) {
     sprites.clear();
     spriteCPU.clear();
 
@@ -321,32 +307,24 @@ void Pipeline::loadSprites() {
         .5f, .5f    // Top-Left
     });
 
-    loadFlappyBird();
-    //loadSlimeAttack();
-    //loadTerminalCalculator();
+    texturePaths = textures;
+    fonts = font;
 
-    for (int i = 0; i < fonts.size(); i++) { 
-        createText(fonts[i], "ZDEV", 0.f, 0.f, .1f, 1.f, 1.f, 1.f, 1.f); 
-    }
-}
-
-void Pipeline::loadTextures() {
-    while (texturePaths.size() < MAX_TEXTURES - fonts.size()) { 
-        texturePaths.push_back("e.jpg"); 
-    }
+    while (texturePaths.size() < MAX_TEXTURES - fonts.size()) { texturePaths.push_back("../assets/images/e.jpg"); }
 
     spriteTextures.clear();
     spriteTextures.reserve(MAX_TEXTURES);
 
-    for (const auto& path : texturePaths) { 
-        spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this)); 
+    for (unsigned int i = 0; i < texturePaths.size(); i++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this));  }
+
+    for (int i = 0; i < fonts.size(); i++) {
+        createText(fonts[i], "ZDEV", 0.f, 1.f);
+        createSprite(squareModel, spriteTextures.size() - 1, 0, 0, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
     }
 }
 
 void Pipeline::loadFlappyBird() {
-    texturePaths = { "flappyBird.png", "pipe.png" };
-    fonts = { "assets/fonts/Bullpen3D.ttf" };
-    loadTextures();
+    loadSprites({ "../assets/images/flappyBird.png", "../assets/images/pipe.png" }, { "assets/fonts/Bullpen3D.ttf" });\
 
     createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
@@ -358,18 +336,14 @@ void Pipeline::loadFlappyBird() {
 }
 
 void Pipeline::loadSlimeAttack() {
-    texturePaths = { "flappyBird.png", "pipe.png" };
-    fonts = {};
-    loadTextures();
+    loadSprites({ "../assets/images/flappyBird.png", "../assets/images/pipe.png" }, {});
 
     createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
     createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }
 
 void Pipeline::loadTerminalCalculator() {
-    texturePaths = { "terminalCalculator.png" };
-    fonts = {};
-    loadTextures();
+    loadSprites({ "../assets/images/terminalCalculator.png"}, {});
 
     createSprite(squareModel, 0, 0.f, 0.f, 2.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }
