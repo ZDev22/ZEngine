@@ -1,18 +1,14 @@
 #ifndef miniaudio_h
 #define miniaudio_h
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define MA_STRINGIFY(x)     #x
 #define MA_XSTRINGIFY(x)    MA_STRINGIFY(x)
-
 #define MA_VERSION_MAJOR    0
 #define MA_VERSION_MINOR    11
 #define MA_VERSION_REVISION 22
 #define MA_VERSION_STRING   MA_XSTRINGIFY(MA_VERSION_MAJOR) "." MA_XSTRINGIFY(MA_VERSION_MINOR) "." MA_XSTRINGIFY(MA_VERSION_REVISION)
-
 #if defined(_MSC_VER) && !defined(__clang__)
     #pragma warning(push)
     #pragma warning(disable:4201)
@@ -60,14 +56,12 @@ typedef unsigned int            ma_uint32;
 #else
     typedef ma_uint32           ma_uintptr;
 #endif
-
 typedef ma_uint8    ma_bool8;
 typedef ma_uint32   ma_bool32;
 #define MA_TRUE     1
 #define MA_FALSE    0
 typedef float       ma_float;
 typedef double      ma_double;
-
 typedef void* ma_handle;
 typedef void* ma_ptr;
 #if defined(__GNUC__)
@@ -75,14 +69,12 @@ typedef void (*ma_proc)(void);
 #else
 typedef void* ma_proc;
 #endif
-
 #if defined(_MSC_VER) && !defined(_WCHAR_T_DEFINED)
 typedef ma_uint16 wchar_t;
 #endif
 #ifndef NULL
 #define NULL 0
 #endif
-
 #if defined(SIZE_MAX)
     #define MA_SIZE_MAX    SIZE_MAX
 #else
@@ -145,7 +137,6 @@ typedef ma_uint16 wchar_t;
         #define MA_HAIKU
     #endif
 #endif
-
 #if defined(__has_c_attribute)
     #if __has_c_attribute(fallthrough)
         #define MA_FALLTHROUGH [[fallthrough]]
@@ -205,7 +196,6 @@ typedef ma_uint16 wchar_t;
         #endif
     #endif
 #endif
-
 #if !defined(MA_API)
     #if defined(MA_DLL)
         #if defined(MINIAUDIO_IMPLEMENTATION) || defined(MA_IMPLEMENTATION)
@@ -217,7 +207,6 @@ typedef ma_uint16 wchar_t;
         #define MA_API extern
     #endif
 #endif
-
 #if !defined(MA_STATIC)
     #if defined(MA_DLL)
         #define MA_PRIVATE MA_DLL_PRIVATE
@@ -250,161 +239,147 @@ typedef enum
         #define MA_ATOMIC(alignment, type)        type
     #endif
 #endif
-
 typedef struct ma_context ma_context;
 typedef struct ma_device ma_device;
-
 typedef ma_uint8 ma_channel;
-typedef enum
-{
-    MA_CHANNEL_NONE               = 0,
-    MA_CHANNEL_MONO               = 1,
-    MA_CHANNEL_FRONT_LEFT         = 2,
-    MA_CHANNEL_FRONT_RIGHT        = 3,
-    MA_CHANNEL_FRONT_CENTER       = 4,
-    MA_CHANNEL_LFE                = 5,
-    MA_CHANNEL_BACK_LEFT          = 6,
-    MA_CHANNEL_BACK_RIGHT         = 7,
-    MA_CHANNEL_FRONT_LEFT_CENTER  = 8,
+typedef enum {
+    MA_CHANNEL_NONE = 0,
+    MA_CHANNEL_MONO = 1,
+    MA_CHANNEL_FRONT_LEFT = 2,
+    MA_CHANNEL_FRONT_RIGHT = 3,
+    MA_CHANNEL_FRONT_CENTER = 4,
+    MA_CHANNEL_LFE = 5,
+    MA_CHANNEL_BACK_LEFT = 6,
+    MA_CHANNEL_BACK_RIGHT = 7,
+    MA_CHANNEL_FRONT_LEFT_CENTER = 8,
     MA_CHANNEL_FRONT_RIGHT_CENTER = 9,
-    MA_CHANNEL_BACK_CENTER        = 10,
-    MA_CHANNEL_SIDE_LEFT          = 11,
-    MA_CHANNEL_SIDE_RIGHT         = 12,
-    MA_CHANNEL_TOP_CENTER         = 13,
-    MA_CHANNEL_TOP_FRONT_LEFT     = 14,
-    MA_CHANNEL_TOP_FRONT_CENTER   = 15,
-    MA_CHANNEL_TOP_FRONT_RIGHT    = 16,
-    MA_CHANNEL_TOP_BACK_LEFT      = 17,
-    MA_CHANNEL_TOP_BACK_CENTER    = 18,
-    MA_CHANNEL_TOP_BACK_RIGHT     = 19,
-    MA_CHANNEL_AUX_0              = 20,
-    MA_CHANNEL_AUX_1              = 21,
-    MA_CHANNEL_AUX_2              = 22,
-    MA_CHANNEL_AUX_3              = 23,
-    MA_CHANNEL_AUX_4              = 24,
-    MA_CHANNEL_AUX_5              = 25,
-    MA_CHANNEL_AUX_6              = 26,
-    MA_CHANNEL_AUX_7              = 27,
-    MA_CHANNEL_AUX_8              = 28,
-    MA_CHANNEL_AUX_9              = 29,
-    MA_CHANNEL_AUX_10             = 30,
-    MA_CHANNEL_AUX_11             = 31,
-    MA_CHANNEL_AUX_12             = 32,
-    MA_CHANNEL_AUX_13             = 33,
-    MA_CHANNEL_AUX_14             = 34,
-    MA_CHANNEL_AUX_15             = 35,
-    MA_CHANNEL_AUX_16             = 36,
-    MA_CHANNEL_AUX_17             = 37,
-    MA_CHANNEL_AUX_18             = 38,
-    MA_CHANNEL_AUX_19             = 39,
-    MA_CHANNEL_AUX_20             = 40,
-    MA_CHANNEL_AUX_21             = 41,
-    MA_CHANNEL_AUX_22             = 42,
-    MA_CHANNEL_AUX_23             = 43,
-    MA_CHANNEL_AUX_24             = 44,
-    MA_CHANNEL_AUX_25             = 45,
-    MA_CHANNEL_AUX_26             = 46,
-    MA_CHANNEL_AUX_27             = 47,
-    MA_CHANNEL_AUX_28             = 48,
-    MA_CHANNEL_AUX_29             = 49,
-    MA_CHANNEL_AUX_30             = 50,
-    MA_CHANNEL_AUX_31             = 51,
-    MA_CHANNEL_LEFT               = MA_CHANNEL_FRONT_LEFT,
-    MA_CHANNEL_RIGHT              = MA_CHANNEL_FRONT_RIGHT,
-    MA_CHANNEL_POSITION_COUNT     = (MA_CHANNEL_AUX_31 + 1)
-} _ma_channel_position; 
+    MA_CHANNEL_BACK_CENTER = 10,
+    MA_CHANNEL_SIDE_LEFT = 11,
+    MA_CHANNEL_SIDE_RIGHT = 12,
+    MA_CHANNEL_TOP_CENTER = 13,
+    MA_CHANNEL_TOP_FRONT_LEFT = 14,
+    MA_CHANNEL_TOP_FRONT_CENTER = 15,
+    MA_CHANNEL_TOP_FRONT_RIGHT = 16,
+    MA_CHANNEL_TOP_BACK_LEFT = 17,
+    MA_CHANNEL_TOP_BACK_CENTER = 18,
+    MA_CHANNEL_TOP_BACK_RIGHT = 19,
+    MA_CHANNEL_AUX_0 = 20,
+    MA_CHANNEL_AUX_1 = 21,
+    MA_CHANNEL_AUX_2 = 22,
+    MA_CHANNEL_AUX_3 = 23,
+    MA_CHANNEL_AUX_4 = 24,
+    MA_CHANNEL_AUX_5 = 25,
+    MA_CHANNEL_AUX_6 = 26,
+    MA_CHANNEL_AUX_7 = 27,
+    MA_CHANNEL_AUX_8 = 28,
+    MA_CHANNEL_AUX_9 = 29,
+    MA_CHANNEL_AUX_10 = 30,
+    MA_CHANNEL_AUX_11 = 31,
+    MA_CHANNEL_AUX_12 = 32,
+    MA_CHANNEL_AUX_13 = 33,
+    MA_CHANNEL_AUX_14 = 34,
+    MA_CHANNEL_AUX_15 = 35,
+    MA_CHANNEL_AUX_16 = 36,
+    MA_CHANNEL_AUX_17 = 37,
+    MA_CHANNEL_AUX_18 = 38,
+    MA_CHANNEL_AUX_19 = 39,
+    MA_CHANNEL_AUX_20 = 40,
+    MA_CHANNEL_AUX_21 = 41,
+    MA_CHANNEL_AUX_22 = 42,
+    MA_CHANNEL_AUX_23 = 43,
+    MA_CHANNEL_AUX_24 = 44,
+    MA_CHANNEL_AUX_25 = 45,
+    MA_CHANNEL_AUX_26 = 46,
+    MA_CHANNEL_AUX_27 = 47,
+    MA_CHANNEL_AUX_28 = 48,
+    MA_CHANNEL_AUX_29 = 49,
+    MA_CHANNEL_AUX_30 = 50,
+    MA_CHANNEL_AUX_31 = 51,
+    MA_CHANNEL_LEFT = MA_CHANNEL_FRONT_LEFT,
+    MA_CHANNEL_RIGHT = MA_CHANNEL_FRONT_RIGHT,
+    MA_CHANNEL_POSITION_COUNT = (MA_CHANNEL_AUX_31 + 1)
+} _ma_channel_position;
 
-typedef enum
-{
-    MA_SUCCESS                        =  0,
-    MA_ERROR                          = -1,  
-    MA_INVALID_ARGS                   = -2,
-    MA_INVALID_OPERATION              = -3,
-    MA_OUT_OF_MEMORY                  = -4,
-    MA_OUT_OF_RANGE                   = -5,
-    MA_ACCESS_DENIED                  = -6,
-    MA_DOES_NOT_EXIST                 = -7,
-    MA_ALREADY_EXISTS                 = -8,
-    MA_TOO_MANY_OPEN_FILES            = -9,
-    MA_INVALID_FILE                   = -10,
-    MA_TOO_BIG                        = -11,
-    MA_PATH_TOO_LONG                  = -12,
-    MA_NAME_TOO_LONG                  = -13,
-    MA_NOT_DIRECTORY                  = -14,
-    MA_IS_DIRECTORY                   = -15,
-    MA_DIRECTORY_NOT_EMPTY            = -16,
-    MA_AT_END                         = -17,
-    MA_NO_SPACE                       = -18,
-    MA_BUSY                           = -19,
-    MA_IO_ERROR                       = -20,
-    MA_INTERRUPT                      = -21,
-    MA_UNAVAILABLE                    = -22,
-    MA_ALREADY_IN_USE                 = -23,
-    MA_BAD_ADDRESS                    = -24,
-    MA_BAD_SEEK                       = -25,
-    MA_BAD_PIPE                       = -26,
-    MA_DEADLOCK                       = -27,
-    MA_TOO_MANY_LINKS                 = -28,
-    MA_NOT_IMPLEMENTED                = -29,
-    MA_NO_MESSAGE                     = -30,
-    MA_BAD_MESSAGE                    = -31,
-    MA_NO_DATA_AVAILABLE              = -32,
-    MA_INVALID_DATA                   = -33,
-    MA_TIMEOUT                        = -34,
-    MA_NO_NETWORK                     = -35,
-    MA_NOT_UNIQUE                     = -36,
-    MA_NOT_SOCKET                     = -37,
-    MA_NO_ADDRESS                     = -38,
-    MA_BAD_PROTOCOL                   = -39,
-    MA_PROTOCOL_UNAVAILABLE           = -40,
-    MA_PROTOCOL_NOT_SUPPORTED         = -41,
-    MA_PROTOCOL_FAMILY_NOT_SUPPORTED  = -42,
-    MA_ADDRESS_FAMILY_NOT_SUPPORTED   = -43,
-    MA_SOCKET_NOT_SUPPORTED           = -44,
-    MA_CONNECTION_RESET               = -45,
-    MA_ALREADY_CONNECTED              = -46,
-    MA_NOT_CONNECTED                  = -47,
-    MA_CONNECTION_REFUSED             = -48,
-    MA_NO_HOST                        = -49,
-    MA_IN_PROGRESS                    = -50,
-    MA_CANCELLED                      = -51,
-    MA_MEMORY_ALREADY_MAPPED          = -52,
-
-    
-    MA_CRC_MISMATCH                   = -100,
-
-    
-    MA_FORMAT_NOT_SUPPORTED           = -200,
-    MA_DEVICE_TYPE_NOT_SUPPORTED      = -201,
-    MA_SHARE_MODE_NOT_SUPPORTED       = -202,
-    MA_NO_BACKEND                     = -203,
-    MA_NO_DEVICE                      = -204,
-    MA_API_NOT_FOUND                  = -205,
-    MA_INVALID_DEVICE_CONFIG          = -206,
-    MA_LOOP                           = -207,
-    MA_BACKEND_NOT_ENABLED            = -208,
-
-    
-    MA_DEVICE_NOT_INITIALIZED         = -300,
-    MA_DEVICE_ALREADY_INITIALIZED     = -301,
-    MA_DEVICE_NOT_STARTED             = -302,
-    MA_DEVICE_NOT_STOPPED             = -303,
-
-    
-    MA_FAILED_TO_INIT_BACKEND         = -400,
-    MA_FAILED_TO_OPEN_BACKEND_DEVICE  = -401,
+typedef enum {
+    MA_SUCCESS = 0,
+    MA_ERROR = -1,
+    MA_INVALID_ARGS = -2,
+    MA_INVALID_OPERATION = -3,
+    MA_OUT_OF_MEMORY = -4,
+    MA_OUT_OF_RANGE = -5,
+    MA_ACCESS_DENIED = -6,
+    MA_DOES_NOT_EXIST = -7,
+    MA_ALREADY_EXISTS = -8,
+    MA_TOO_MANY_OPEN_FILES = -9,
+    MA_INVALID_FILE = -10,
+    MA_TOO_BIG = -11,
+    MA_PATH_TOO_LONG = -12,
+    MA_NAME_TOO_LONG = -13,
+    MA_NOT_DIRECTORY = -14,
+    MA_IS_DIRECTORY = -15,
+    MA_DIRECTORY_NOT_EMPTY = -16,
+    MA_AT_END = -17,
+    MA_NO_SPACE = -18,
+    MA_BUSY = -19,
+    MA_IO_ERROR = -20,
+    MA_INTERRUPT = -21,
+    MA_UNAVAILABLE = -22,
+    MA_ALREADY_IN_USE = -23,
+    MA_BAD_ADDRESS = -24,
+    MA_BAD_SEEK = -25,
+    MA_BAD_PIPE = -26,
+    MA_DEADLOCK = -27,
+    MA_TOO_MANY_LINKS = -28,
+    MA_NOT_IMPLEMENTED = -29,
+    MA_NO_MESSAGE = -30,
+    MA_BAD_MESSAGE = -31,
+    MA_NO_DATA_AVAILABLE = -32,
+    MA_INVALID_DATA = -33,
+    MA_TIMEOUT = -34,
+    MA_NO_NETWORK = -35,
+    MA_NOT_UNIQUE = -36,
+    MA_NOT_SOCKET = -37,
+    MA_NO_ADDRESS = -38,
+    MA_BAD_PROTOCOL = -39,
+    MA_PROTOCOL_UNAVAILABLE = -40,
+    MA_PROTOCOL_NOT_SUPPORTED = -41,
+    MA_PROTOCOL_FAMILY_NOT_SUPPORTED = -42,
+    MA_ADDRESS_FAMILY_NOT_SUPPORTED = -43,
+    MA_SOCKET_NOT_SUPPORTED = -44,
+    MA_CONNECTION_RESET = -45,
+    MA_ALREADY_CONNECTED = -46,
+    MA_NOT_CONNECTED = -47,
+    MA_CONNECTION_REFUSED = -48,
+    MA_NO_HOST = -49,
+    MA_IN_PROGRESS = -50,
+    MA_CANCELLED = -51,
+    MA_MEMORY_ALREADY_MAPPED = -52,
+    MA_CRC_MISMATCH = -100,
+    MA_FORMAT_NOT_SUPPORTED = -200,
+    MA_DEVICE_TYPE_NOT_SUPPORTED = -201,
+    MA_SHARE_MODE_NOT_SUPPORTED = -202,
+    MA_NO_BACKEND = -203,
+    MA_NO_DEVICE = -204,
+    MA_API_NOT_FOUND = -205,
+    MA_INVALID_DEVICE_CONFIG = -206,
+    MA_LOOP = -207,
+    MA_BACKEND_NOT_ENABLED = -208,
+    MA_DEVICE_NOT_INITIALIZED = -300,
+    MA_DEVICE_ALREADY_INITIALIZED = -301,
+    MA_DEVICE_NOT_STARTED = -302,
+    MA_DEVICE_NOT_STOPPED = -303,
+    MA_FAILED_TO_INIT_BACKEND = -400,
+    MA_FAILED_TO_OPEN_BACKEND_DEVICE = -401,
     MA_FAILED_TO_START_BACKEND_DEVICE = -402,
-    MA_FAILED_TO_STOP_BACKEND_DEVICE  = -403
+    MA_FAILED_TO_STOP_BACKEND_DEVICE = -403
 } ma_result;
-#define MA_MIN_CHANNELS                 1
+#define MA_MIN_CHANNELS 1
 #ifndef MA_MAX_CHANNELS
-#define MA_MAX_CHANNELS                 254
+#define MA_MAX_CHANNELS 254
 #endif
-
 #ifndef MA_MAX_FILTER_ORDER
-#define MA_MAX_FILTER_ORDER             8
+#define MA_MAX_FILTER_ORDER 8
 #endif
-
 typedef enum
 {
     ma_stream_format_pcm = 0
@@ -1165,8 +1140,6 @@ MA_API void ma_spatializer_listener_set_direction(ma_spatializer_listener* pList
 MA_API ma_vec3f ma_spatializer_listener_get_direction(const ma_spatializer_listener* pListener);
 MA_API void ma_spatializer_listener_set_velocity(ma_spatializer_listener* pListener, float x, float y, float z);
 MA_API ma_vec3f ma_spatializer_listener_get_velocity(const ma_spatializer_listener* pListener);
-MA_API void ma_spatializer_listener_set_speed_of_sound(ma_spatializer_listener* pListener, float speedOfSound);
-MA_API float ma_spatializer_listener_get_speed_of_sound(const ma_spatializer_listener* pListener);
 MA_API void ma_spatializer_listener_set_world_up(ma_spatializer_listener* pListener, float x, float y, float z);
 MA_API ma_vec3f ma_spatializer_listener_get_world_up(const ma_spatializer_listener* pListener);
 MA_API void ma_spatializer_listener_set_enabled(ma_spatializer_listener* pListener, ma_bool32 isEnabled);
@@ -1262,9 +1235,6 @@ MA_API ma_vec3f ma_spatializer_get_direction(const ma_spatializer* pSpatializer)
 MA_API void ma_spatializer_set_velocity(ma_spatializer* pSpatializer, float x, float y, float z);
 MA_API ma_vec3f ma_spatializer_get_velocity(const ma_spatializer* pSpatializer);
 MA_API void ma_spatializer_get_relative_position_and_direction(const ma_spatializer* pSpatializer, const ma_spatializer_listener* pListener, ma_vec3f* pRelativePos, ma_vec3f* pRelativeDir);
-
-
-
 typedef struct
 {
     ma_format format;
@@ -1316,18 +1286,17 @@ MA_API ma_result ma_linear_resampler_reset(ma_linear_resampler* pResampler);
 typedef struct ma_resampler_config ma_resampler_config;
 
 typedef void ma_resampling_backend;
-typedef struct
-{
-    ma_result (* onGetHeapSize                )(void* pUserData, const ma_resampler_config* pConfig, size_t* pHeapSizeInBytes);
-    ma_result (* onInit                       )(void* pUserData, const ma_resampler_config* pConfig, void* pHeap, ma_resampling_backend** ppBackend);
-    void      (* onUninit                     )(void* pUserData, ma_resampling_backend* pBackend, const ma_allocation_callbacks* pAllocationCallbacks);
-    ma_result (* onProcess                    )(void* pUserData, ma_resampling_backend* pBackend, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut);
-    ma_result (* onSetRate                    )(void* pUserData, ma_resampling_backend* pBackend, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut);                 
-    ma_uint64 (* onGetInputLatency            )(void* pUserData, const ma_resampling_backend* pBackend);                                                            
-    ma_uint64 (* onGetOutputLatency           )(void* pUserData, const ma_resampling_backend* pBackend);                                                            
-    ma_result (* onGetRequiredInputFrameCount )(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount);   
-    ma_result (* onGetExpectedOutputFrameCount)(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount);   
-    ma_result (* onReset                      )(void* pUserData, ma_resampling_backend* pBackend);
+typedef struct {
+    ma_result (*onGetHeapSize)(void* pUserData, const ma_resampler_config* pConfig, size_t* pHeapSizeInBytes);
+    ma_result (*onInit)(void* pUserData, const ma_resampler_config* pConfig, void* pHeap, ma_resampling_backend** ppBackend);
+    void (*onUninit)(void* pUserData, ma_resampling_backend* pBackend, const ma_allocation_callbacks* pAllocationCallbacks);
+    ma_result (*onProcess)(void* pUserData, ma_resampling_backend* pBackend, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut);
+    ma_result (*onSetRate)(void* pUserData, ma_resampling_backend* pBackend, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut);
+    ma_uint64 (*onGetInputLatency)(void* pUserData, const ma_resampling_backend* pBackend);
+    ma_uint64 (*onGetOutputLatency)(void* pUserData, const ma_resampling_backend* pBackend);
+    ma_result (*onGetRequiredInputFrameCount)(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount);
+    ma_result (*onGetExpectedOutputFrameCount)(void* pUserData, const ma_resampling_backend* pBackend, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount);
+    ma_result (*onReset)(void* pUserData, ma_resampling_backend* pBackend);
 } ma_resampling_backend_vtable;
 
 typedef enum
@@ -1338,11 +1307,11 @@ typedef enum
 
 struct ma_resampler_config
 {
-    ma_format format;   
+    ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRateIn;
     ma_uint32 sampleRateOut;
-    ma_resample_algorithm algorithm;    
+    ma_resample_algorithm algorithm;
     ma_resampling_backend_vtable* pBackendVTable;
     void* pBackendUserData;
     struct
@@ -1374,36 +1343,16 @@ typedef struct
 
 MA_API ma_result ma_resampler_get_heap_size(const ma_resampler_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_resampler_init_preallocated(const ma_resampler_config* pConfig, void* pHeap, ma_resampler* pResampler);
-
-
 MA_API ma_result ma_resampler_init(const ma_resampler_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_resampler* pResampler);
-
-
 MA_API void ma_resampler_uninit(ma_resampler* pResampler, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API ma_result ma_resampler_process_pcm_frames(ma_resampler* pResampler, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut);
-
 MA_API ma_result ma_resampler_set_rate(ma_resampler* pResampler, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut);
-
-
 MA_API ma_result ma_resampler_set_rate_ratio(ma_resampler* pResampler, float ratio);
-
-
 MA_API ma_uint64 ma_resampler_get_input_latency(const ma_resampler* pResampler);
-
-
 MA_API ma_uint64 ma_resampler_get_output_latency(const ma_resampler* pResampler);
-
-
 MA_API ma_result ma_resampler_get_required_input_frame_count(const ma_resampler* pResampler, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount);
-
-
 MA_API ma_result ma_resampler_get_expected_output_frame_count(const ma_resampler* pResampler, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount);
-
-
 MA_API ma_result ma_resampler_reset(ma_resampler* pResampler);
-
 typedef enum
 {
     ma_channel_conversion_path_unknown,
@@ -1464,7 +1413,6 @@ MA_API void ma_channel_converter_uninit(ma_channel_converter* pConverter, const 
 MA_API ma_result ma_channel_converter_process_pcm_frames(ma_channel_converter* pConverter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_result ma_channel_converter_get_input_channel_map(const ma_channel_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap);
 MA_API ma_result ma_channel_converter_get_output_channel_map(const ma_channel_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap);
-
 typedef struct
 {
     ma_format formatIn;
@@ -1482,7 +1430,6 @@ typedef struct
     ma_bool32 allowDynamicSampleRate;
     ma_resampler_config resampling;
 } ma_data_converter_config;
-
 MA_API ma_data_converter_config ma_data_converter_config_init_default(void);
 MA_API ma_data_converter_config ma_data_converter_config_init(ma_format formatIn, ma_format formatOut, ma_uint32 channelsIn, ma_uint32 channelsOut, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut);
 typedef enum
@@ -1494,7 +1441,6 @@ typedef enum
     ma_data_converter_execution_path_resample_first,    
     ma_data_converter_execution_path_channels_first     
 } ma_data_converter_execution_path;
-
 typedef struct
 {
     ma_format formatIn;
@@ -1512,12 +1458,9 @@ typedef struct
     ma_bool8 hasChannelConverter;
     ma_bool8 hasResampler;
     ma_bool8 isPassthrough;
-
-    
     ma_bool8 _ownsHeap;
     void* _pHeap;
 } ma_data_converter;
-
 MA_API ma_result ma_data_converter_get_heap_size(const ma_data_converter_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_config* pConfig, void* pHeap, ma_data_converter* pConverter);
 MA_API ma_result ma_data_converter_init(const ma_data_converter_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_data_converter* pConverter);
@@ -1529,10 +1472,8 @@ MA_API ma_uint64 ma_data_converter_get_input_latency(const ma_data_converter* pC
 MA_API ma_uint64 ma_data_converter_get_output_latency(const ma_data_converter* pConverter);
 MA_API ma_result ma_data_converter_get_required_input_frame_count(const ma_data_converter* pConverter, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount);
 MA_API ma_result ma_data_converter_get_expected_output_frame_count(const ma_data_converter* pConverter, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount);
-MA_API ma_result ma_data_converter_get_input_channel_map(const ma_data_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap);
 MA_API ma_result ma_data_converter_get_output_channel_map(const ma_data_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap);
 MA_API ma_result ma_data_converter_reset(ma_data_converter* pConverter);
-
 MA_API void ma_pcm_u8_to_s16(void* pOut, const void* pIn, ma_uint64 count, ma_dither_mode ditherMode);
 MA_API void ma_pcm_u8_to_s24(void* pOut, const void* pIn, ma_uint64 count, ma_dither_mode ditherMode);
 MA_API void ma_pcm_u8_to_s32(void* pOut, const void* pIn, ma_uint64 count, ma_dither_mode ditherMode);
@@ -1555,99 +1496,55 @@ MA_API void ma_pcm_f32_to_s24(void* pOut, const void* pIn, ma_uint64 count, ma_d
 MA_API void ma_pcm_f32_to_s32(void* pOut, const void* pIn, ma_uint64 count, ma_dither_mode ditherMode);
 MA_API void ma_pcm_convert(void* pOut, ma_format formatOut, const void* pIn, ma_format formatIn, ma_uint64 sampleCount, ma_dither_mode ditherMode);
 MA_API void ma_convert_pcm_frames_format(void* pOut, ma_format formatOut, const void* pIn, ma_format formatIn, ma_uint64 frameCount, ma_uint32 channels, ma_dither_mode ditherMode);
-
-
 MA_API void ma_deinterleave_pcm_frames(ma_format format, ma_uint32 channels, ma_uint64 frameCount, const void* pInterleavedPCMFrames, void** ppDeinterleavedPCMFrames);
-
-
 MA_API void ma_interleave_pcm_frames(ma_format format, ma_uint32 channels, ma_uint64 frameCount, const void** ppDeinterleavedPCMFrames, void* pInterleavedPCMFrames);
-
-
-#define MA_CHANNEL_INDEX_NULL   255
-
-
+#define MA_CHANNEL_INDEX_NULL 255
 MA_API ma_channel ma_channel_map_get_channel(const ma_channel* pChannelMap, ma_uint32 channelCount, ma_uint32 channelIndex);
-
-
 MA_API void ma_channel_map_init_blank(ma_channel* pChannelMap, ma_uint32 channels);
-
-
 MA_API void ma_channel_map_init_standard(ma_standard_channel_map standardChannelMap, ma_channel* pChannelMap, size_t channelMapCap, ma_uint32 channels);
-
-
 MA_API void ma_channel_map_copy(ma_channel* pOut, const ma_channel* pIn, ma_uint32 channels);
-
-
 MA_API void ma_channel_map_copy_or_default(ma_channel* pOut, size_t channelMapCapOut, const ma_channel* pIn, ma_uint32 channels);
-
 MA_API ma_bool32 ma_channel_map_is_valid(const ma_channel* pChannelMap, ma_uint32 channels);
-
-
 MA_API ma_bool32 ma_channel_map_is_equal(const ma_channel* pChannelMapA, const ma_channel* pChannelMapB, ma_uint32 channels);
-
-
 MA_API ma_bool32 ma_channel_map_is_blank(const ma_channel* pChannelMap, ma_uint32 channels);
-
-
 MA_API ma_bool32 ma_channel_map_contains_channel_position(ma_uint32 channels, const ma_channel* pChannelMap, ma_channel channelPosition);
-
-
 MA_API ma_bool32 ma_channel_map_find_channel_position(ma_uint32 channels, const ma_channel* pChannelMap, ma_channel channelPosition, ma_uint32* pChannelIndex);
-
-
 MA_API size_t ma_channel_map_to_string(const ma_channel* pChannelMap, ma_uint32 channels, char* pBufferOut, size_t bufferCap);
-
-
 MA_API const char* ma_channel_position_to_string(ma_channel channel);
-
-
-
 MA_API ma_uint64 ma_convert_frames(void* pOut, ma_uint64 frameCountOut, ma_format formatOut, ma_uint32 channelsOut, ma_uint32 sampleRateOut, const void* pIn, ma_uint64 frameCountIn, ma_format formatIn, ma_uint32 channelsIn, ma_uint32 sampleRateIn);
 MA_API ma_uint64 ma_convert_frames_ex(void* pOut, ma_uint64 frameCountOut, const void* pIn, ma_uint64 frameCountIn, const ma_data_converter_config* pConfig);
-
 typedef void ma_data_source;
-
-#define MA_DATA_SOURCE_SELF_MANAGED_RANGE_AND_LOOP_POINT    0x00000001
-
-typedef struct
-{
-    ma_result (* onRead)(ma_data_source* pDataSource, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);
-    ma_result (* onSeek)(ma_data_source* pDataSource, ma_uint64 frameIndex);
-    ma_result (* onGetDataFormat)(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
-    ma_result (* onGetCursor)(ma_data_source* pDataSource, ma_uint64* pCursor);
-    ma_result (* onGetLength)(ma_data_source* pDataSource, ma_uint64* pLength);
-    ma_result (* onSetLooping)(ma_data_source* pDataSource, ma_bool32 isLooping);
+#define MA_DATA_SOURCE_SELF_MANAGED_RANGE_AND_LOOP_POINT 0x00000001
+typedef struct {
+    ma_result (*onRead)(ma_data_source* pDataSource, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);
+    ma_result (*onSeek)(ma_data_source* pDataSource, ma_uint64 frameIndex);
+    ma_result (*onGetDataFormat)(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
+    ma_result (*onGetCursor)(ma_data_source* pDataSource, ma_uint64* pCursor);
+    ma_result (*onGetLength)(ma_data_source* pDataSource, ma_uint64* pLength);
+    ma_result (*onSetLooping)(ma_data_source* pDataSource, ma_bool32 isLooping);
     ma_uint32 flags;
 } ma_data_source_vtable;
 
-typedef ma_data_source* (* ma_data_source_get_next_proc)(ma_data_source* pDataSource);
-
-typedef struct
-{
-    const ma_data_source_vtable* vtable;
-} ma_data_source_config;
-
+typedef ma_data_source* (*ma_data_source_get_next_proc)(ma_data_source* pDataSource);
+typedef struct { const ma_data_source_vtable* vtable; } ma_data_source_config;
 MA_API ma_data_source_config ma_data_source_config_init(void);
-typedef struct
-{
+typedef struct {
     const ma_data_source_vtable* vtable;
     ma_uint64 rangeBegInFrames;
-    ma_uint64 rangeEndInFrames;             
-    ma_uint64 loopBegInFrames;              
-    ma_uint64 loopEndInFrames;              
-    ma_data_source* pCurrent;               
-    ma_data_source* pNext;                  
-    ma_data_source_get_next_proc onGetNext; 
+    ma_uint64 rangeEndInFrames;
+    ma_uint64 loopBegInFrames;
+    ma_uint64 loopEndInFrames;
+    ma_data_source* pCurrent;
+    ma_data_source* pNext;
+    ma_data_source_get_next_proc onGetNext;
     MA_ATOMIC(4, ma_bool32) isLooping;
 } ma_data_source_base;
-
 MA_API ma_result ma_data_source_init(const ma_data_source_config* pConfig, ma_data_source* pDataSource);
 MA_API void ma_data_source_uninit(ma_data_source* pDataSource);
 MA_API ma_result ma_data_source_read_pcm_frames(ma_data_source* pDataSource, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);   
 MA_API ma_result ma_data_source_seek_pcm_frames(ma_data_source* pDataSource, ma_uint64 frameCount, ma_uint64* pFramesSeeked); 
 MA_API ma_result ma_data_source_seek_to_pcm_frame(ma_data_source* pDataSource, ma_uint64 frameIndex);
 MA_API ma_result ma_data_source_seek_seconds(ma_data_source* pDataSource, float secondCount, float* pSecondsSeeked); 
-MA_API ma_result ma_data_source_seek_to_second(ma_data_source* pDataSource, float seekPointInSeconds); 
 MA_API ma_result ma_data_source_get_data_format(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
 MA_API ma_result ma_data_source_get_cursor_in_pcm_frames(ma_data_source* pDataSource, ma_uint64* pCursor);
 MA_API ma_result ma_data_source_get_length_in_pcm_frames(ma_data_source* pDataSource, ma_uint64* pLength);    
@@ -1708,17 +1605,8 @@ typedef struct
 } ma_audio_buffer;
 
 MA_API ma_result ma_audio_buffer_init(const ma_audio_buffer_config* pConfig, ma_audio_buffer* pAudioBuffer);
-MA_API ma_result ma_audio_buffer_init_copy(const ma_audio_buffer_config* pConfig, ma_audio_buffer* pAudioBuffer);
-MA_API ma_result ma_audio_buffer_alloc_and_init(const ma_audio_buffer_config* pConfig, ma_audio_buffer** ppAudioBuffer);  
 MA_API void ma_audio_buffer_uninit(ma_audio_buffer* pAudioBuffer);
-MA_API void ma_audio_buffer_uninit_and_free(ma_audio_buffer* pAudioBuffer);
-MA_API ma_uint64 ma_audio_buffer_read_pcm_frames(ma_audio_buffer* pAudioBuffer, void* pFramesOut, ma_uint64 frameCount, ma_bool32 loop);
-MA_API ma_result ma_audio_buffer_seek_to_pcm_frame(ma_audio_buffer* pAudioBuffer, ma_uint64 frameIndex);
-MA_API ma_result ma_audio_buffer_map(ma_audio_buffer* pAudioBuffer, void** ppFramesOut, ma_uint64* pFrameCount);
-MA_API ma_result ma_audio_buffer_unmap(ma_audio_buffer* pAudioBuffer, ma_uint64 frameCount);    
-MA_API ma_bool32 ma_audio_buffer_at_end(const ma_audio_buffer* pAudioBuffer);
 MA_API ma_result ma_audio_buffer_get_cursor_in_pcm_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pCursor);
-MA_API ma_result ma_audio_buffer_get_length_in_pcm_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pLength);
 MA_API ma_result ma_audio_buffer_get_available_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pAvailableFrames);
 
 typedef struct ma_paged_audio_buffer_page ma_paged_audio_buffer_page;
@@ -1745,7 +1633,6 @@ MA_API ma_result ma_paged_audio_buffer_data_get_length_in_pcm_frames(ma_paged_au
 MA_API ma_result ma_paged_audio_buffer_data_allocate_page(ma_paged_audio_buffer_data* pData, ma_uint64 pageSizeInFrames, const void* pInitialData, const ma_allocation_callbacks* pAllocationCallbacks, ma_paged_audio_buffer_page** ppPage);
 MA_API ma_result ma_paged_audio_buffer_data_free_page(ma_paged_audio_buffer_data* pData, ma_paged_audio_buffer_page* pPage, const ma_allocation_callbacks* pAllocationCallbacks);
 MA_API ma_result ma_paged_audio_buffer_data_append_page(ma_paged_audio_buffer_data* pData, ma_paged_audio_buffer_page* pPage);
-MA_API ma_result ma_paged_audio_buffer_data_allocate_and_append_page(ma_paged_audio_buffer_data* pData, ma_uint32 pageSizeInFrames, const void* pInitialData, const ma_allocation_callbacks* pAllocationCallbacks);
 typedef struct
 {
     ma_paged_audio_buffer_data* pData;  
@@ -1782,7 +1669,7 @@ typedef struct
 } ma_rb;
 
 MA_API ma_result ma_rb_init_ex(size_t subbufferSizeInBytes, size_t subbufferCount, size_t subbufferStrideInBytes, void* pOptionalPreallocatedBuffer, const ma_allocation_callbacks* pAllocationCallbacks, ma_rb* pRB);
-MA_API ma_result ma_rb_init(size_t bufferSizeInBytes, void* pOptionalPreallocatedBuffer, const ma_allocation_callbacks* pAllocationCallbacks, ma_rb* pRB);
+MA_API ma_result ma_rb_finit(size_t bufferSizeInBytes, void* pOptionalPreallocatedBuffer, const ma_allocation_callbacks* pAllocationCallbacks, ma_rb* pRB);
 MA_API void ma_rb_uninit(ma_rb* pRB);
 MA_API void ma_rb_reset(ma_rb* pRB);
 MA_API ma_result ma_rb_acquire_read(ma_rb* pRB, size_t* pSizeInBytes, void** ppBufferOut);
@@ -1810,7 +1697,6 @@ typedef struct
 MA_API ma_result ma_pcm_rb_init_ex(ma_format format, ma_uint32 channels, ma_uint32 subbufferSizeInFrames, ma_uint32 subbufferCount, ma_uint32 subbufferStrideInFrames, void* pOptionalPreallocatedBuffer, const ma_allocation_callbacks* pAllocationCallbacks, ma_pcm_rb* pRB);
 MA_API ma_result ma_pcm_rb_init(ma_format format, ma_uint32 channels, ma_uint32 bufferSizeInFrames, void* pOptionalPreallocatedBuffer, const ma_allocation_callbacks* pAllocationCallbacks, ma_pcm_rb* pRB);
 MA_API void ma_pcm_rb_uninit(ma_pcm_rb* pRB);
-MA_API void ma_pcm_rb_reset(ma_pcm_rb* pRB);
 MA_API ma_result ma_pcm_rb_acquire_read(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames, void** ppBufferOut);
 MA_API ma_result ma_pcm_rb_commit_read(ma_pcm_rb* pRB, ma_uint32 sizeInFrames);
 MA_API ma_result ma_pcm_rb_acquire_write(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames, void** ppBufferOut);
@@ -1818,8 +1704,6 @@ MA_API ma_result ma_pcm_rb_commit_write(ma_pcm_rb* pRB, ma_uint32 sizeInFrames);
 MA_API ma_result ma_pcm_rb_seek_read(ma_pcm_rb* pRB, ma_uint32 offsetInFrames);
 MA_API ma_result ma_pcm_rb_seek_write(ma_pcm_rb* pRB, ma_uint32 offsetInFrames);
 MA_API ma_int32 ma_pcm_rb_pointer_distance(ma_pcm_rb* pRB); 
-MA_API ma_uint32 ma_pcm_rb_available_read(ma_pcm_rb* pRB);
-MA_API ma_uint32 ma_pcm_rb_available_write(ma_pcm_rb* pRB);
 MA_API ma_uint32 ma_pcm_rb_get_subbuffer_size(ma_pcm_rb* pRB);
 MA_API ma_uint32 ma_pcm_rb_get_subbuffer_stride(ma_pcm_rb* pRB);
 MA_API ma_uint32 ma_pcm_rb_get_subbuffer_offset(ma_pcm_rb* pRB, ma_uint32 subbufferIndex);
@@ -1836,72 +1720,29 @@ typedef struct
 
 MA_API ma_result ma_duplex_rb_init(ma_format captureFormat, ma_uint32 captureChannels, ma_uint32 sampleRate, ma_uint32 captureInternalSampleRate, ma_uint32 captureInternalPeriodSizeInFrames, const ma_allocation_callbacks* pAllocationCallbacks, ma_duplex_rb* pRB);
 MA_API ma_result ma_duplex_rb_uninit(ma_duplex_rb* pRB);
-
-
 MA_API const char* ma_result_description(ma_result result);
-
-
 MA_API void* ma_malloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void* ma_calloc(size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void* ma_realloc(void* p, size_t sz, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void ma_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void* ma_aligned_malloc(size_t sz, size_t alignment, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API void ma_aligned_free(void* p, const ma_allocation_callbacks* pAllocationCallbacks);
-
-
 MA_API const char* ma_get_format_name(ma_format format);
-
-
 MA_API void ma_blend_f32(float* pOut, float* pInA, float* pInB, float factor, ma_uint32 channels);
-
-
 MA_API ma_uint32 ma_get_bytes_per_sample(ma_format format);
 static MA_INLINE ma_uint32 ma_get_bytes_per_frame(ma_format format, ma_uint32 channels) { return ma_get_bytes_per_sample(format) * channels; }
-
-
 MA_API const char* ma_log_level_to_string(ma_uint32 logLevel);
-
-
 MA_API ma_result ma_spinlock_lock(volatile ma_spinlock* pSpinlock);
-
-
 MA_API ma_result ma_spinlock_lock_noyield(volatile ma_spinlock* pSpinlock);
-
-
-MA_API ma_result ma_spinlock_unlock(volatile ma_spinlock* pSpinlock);
+MA_API void ma_spinlock_unlock(volatile ma_spinlock* pSpinlock);
 #ifndef MA_NO_THREADING
-
-
 MA_API ma_result ma_mutex_init(ma_mutex* pMutex);
-
-
 MA_API void ma_mutex_uninit(ma_mutex* pMutex);
-
-
 MA_API void ma_mutex_lock(ma_mutex* pMutex);
-
-
 MA_API void ma_mutex_unlock(ma_mutex* pMutex);
-
 MA_API ma_result ma_event_init(ma_event* pEvent);
-
-
 MA_API void ma_event_uninit(ma_event* pEvent);
-
-
 MA_API ma_result ma_event_wait(ma_event* pEvent);
-
-
 MA_API ma_result ma_event_signal(ma_event* pEvent);
 MA_API ma_result ma_semaphore_init(int initialValue, ma_semaphore* pSemaphore);
 MA_API void ma_semaphore_uninit(ma_semaphore* pSemaphore);
@@ -4388,7 +4229,7 @@ MA_API ma_result ma_node_detach_output_bus(ma_node* pNode, ma_uint32 outputBusIn
 MA_API ma_result ma_node_detach_all_output_buses(ma_node* pNode);
 MA_API ma_result ma_node_set_output_bus_volume(ma_node* pNode, ma_uint32 outputBusIndex, float volume);
 MA_API float ma_node_get_output_bus_volume(const ma_node* pNode, ma_uint32 outputBusIndex);
-MA_API ma_result ma_node_set_state(ma_node* pNode, ma_node_state state);
+MA_API void ma_node_set_state(ma_node* pNode, ma_node_state state);
 MA_API ma_node_state ma_node_get_state(const ma_node* pNode);
 MA_API ma_result ma_node_set_state_time(ma_node* pNode, ma_node_state state, ma_uint64 globalTime);
 MA_API ma_uint64 ma_node_get_state_time(const ma_node* pNode, ma_node_state state);
@@ -4875,7 +4716,7 @@ MA_API void ma_engine_listener_set_enabled(ma_engine* pEngine, ma_uint32 listene
 MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint32 listenerIndex);
 
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath);
+MA_API void playSound(ma_engine* pEngine, const char* pFilePath);
 #endif
 
 #ifndef MA_NO_RESOURCE_MANAGER
@@ -4888,7 +4729,7 @@ MA_API ma_result ma_sound_init_ex(ma_engine* pEngine, const ma_sound_config* pCo
 MA_API void ma_sound_uninit(ma_sound* pSound);
 MA_API ma_engine* ma_sound_get_engine(const ma_sound* pSound);
 MA_API ma_data_source* ma_sound_get_data_source(const ma_sound* pSound);
-MA_API ma_result ma_sound_start(ma_sound* pSound);
+MA_API void ma_sound_start(ma_sound* pSound);
 MA_API ma_result ma_sound_stop(ma_sound* pSound);
 MA_API ma_result ma_sound_stop_with_fade_in_pcm_frames(ma_sound* pSound, ma_uint64 fadeLengthInFrames);     
 MA_API ma_result ma_sound_stop_with_fade_in_milliseconds(ma_sound* pSound, ma_uint64 fadeLengthInFrames);   
@@ -4936,7 +4777,6 @@ MA_API void ma_sound_set_fade_in_pcm_frames(ma_sound* pSound, float volumeBeg, f
 MA_API void ma_sound_set_fade_in_milliseconds(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds);
 MA_API void ma_sound_set_fade_start_in_pcm_frames(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames, ma_uint64 absoluteGlobalTimeInFrames);
 MA_API void ma_sound_set_fade_start_in_milliseconds(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds, ma_uint64 absoluteGlobalTimeInMilliseconds);
-MA_API float ma_sound_get_current_fade_volume(const ma_sound* pSound);
 MA_API void ma_sound_set_start_time_in_pcm_frames(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInFrames);
 MA_API void ma_sound_set_start_time_in_milliseconds(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInMilliseconds);
 MA_API void ma_sound_set_stop_time_in_pcm_frames(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInFrames);
@@ -4948,7 +4788,6 @@ MA_API ma_uint64 ma_sound_get_time_in_pcm_frames(const ma_sound* pSound);
 MA_API ma_uint64 ma_sound_get_time_in_milliseconds(const ma_sound* pSound);
 MA_API void ma_sound_set_looping(ma_sound* pSound, ma_bool32 isLooping);
 MA_API ma_bool32 ma_sound_is_looping(const ma_sound* pSound);
-MA_API ma_bool32 ma_sound_at_end(const ma_sound* pSound);
 MA_API ma_result ma_sound_seek_to_pcm_frame(ma_sound* pSound, ma_uint64 frameIndex); 
 MA_API ma_result ma_sound_seek_to_second(ma_sound* pSound, float seekPointInSeconds); 
 MA_API ma_result ma_sound_get_data_format(ma_sound* pSound, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
@@ -4960,67 +4799,17 @@ MA_API ma_result ma_sound_set_end_callback(ma_sound* pSound, ma_sound_end_proc c
 
 MA_API ma_result ma_sound_group_init(ma_engine* pEngine, ma_uint32 flags, ma_sound_group* pParentGroup, ma_sound_group* pGroup);
 MA_API ma_result ma_sound_group_init_ex(ma_engine* pEngine, const ma_sound_group_config* pConfig, ma_sound_group* pGroup);
-MA_API void ma_sound_group_uninit(ma_sound_group* pGroup);
-MA_API ma_engine* ma_sound_group_get_engine(const ma_sound_group* pGroup);
-MA_API ma_result ma_sound_group_start(ma_sound_group* pGroup);
-MA_API ma_result ma_sound_group_stop(ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_volume(ma_sound_group* pGroup, float volume);
-MA_API float ma_sound_group_get_volume(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pan(ma_sound_group* pGroup, float pan);
-MA_API float ma_sound_group_get_pan(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pan_mode(ma_sound_group* pGroup, ma_pan_mode panMode);
-MA_API ma_pan_mode ma_sound_group_get_pan_mode(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pitch(ma_sound_group* pGroup, float pitch);
-MA_API float ma_sound_group_get_pitch(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_spatialization_enabled(ma_sound_group* pGroup, ma_bool32 enabled);
-MA_API ma_bool32 ma_sound_group_is_spatialization_enabled(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_pinned_listener_index(ma_sound_group* pGroup, ma_uint32 listenerIndex);
-MA_API ma_uint32 ma_sound_group_get_pinned_listener_index(const ma_sound_group* pGroup);
-MA_API ma_uint32 ma_sound_group_get_listener_index(const ma_sound_group* pGroup);
-MA_API ma_vec3f ma_sound_group_get_direction_to_listener(const ma_sound_group* pGroup);
 MA_API void ma_sound_group_set_position(ma_sound_group* pGroup, float x, float y, float z);
 MA_API ma_vec3f ma_sound_group_get_position(const ma_sound_group* pGroup);
 MA_API void ma_sound_group_set_direction(ma_sound_group* pGroup, float x, float y, float z);
 MA_API ma_vec3f ma_sound_group_get_direction(const ma_sound_group* pGroup);
 MA_API void ma_sound_group_set_velocity(ma_sound_group* pGroup, float x, float y, float z);
-MA_API ma_vec3f ma_sound_group_get_velocity(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_attenuation_model(ma_sound_group* pGroup, ma_attenuation_model attenuationModel);
-MA_API ma_attenuation_model ma_sound_group_get_attenuation_model(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_positioning(ma_sound_group* pGroup, ma_positioning positioning);
-MA_API ma_positioning ma_sound_group_get_positioning(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_rolloff(ma_sound_group* pGroup, float rolloff);
-MA_API float ma_sound_group_get_rolloff(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_min_gain(ma_sound_group* pGroup, float minGain);
-MA_API float ma_sound_group_get_min_gain(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_max_gain(ma_sound_group* pGroup, float maxGain);
-MA_API float ma_sound_group_get_max_gain(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_min_distance(ma_sound_group* pGroup, float minDistance);
-MA_API float ma_sound_group_get_min_distance(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_max_distance(ma_sound_group* pGroup, float maxDistance);
-MA_API float ma_sound_group_get_max_distance(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_cone(ma_sound_group* pGroup, float innerAngleInRadians, float outerAngleInRadians, float outerGain);
-MA_API void ma_sound_group_get_cone(const ma_sound_group* pGroup, float* pInnerAngleInRadians, float* pOuterAngleInRadians, float* pOuterGain);
-MA_API void ma_sound_group_set_doppler_factor(ma_sound_group* pGroup, float dopplerFactor);
-MA_API float ma_sound_group_get_doppler_factor(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_directional_attenuation_factor(ma_sound_group* pGroup, float directionalAttenuationFactor);
-MA_API float ma_sound_group_get_directional_attenuation_factor(const ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_fade_in_pcm_frames(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames);
-MA_API void ma_sound_group_set_fade_in_milliseconds(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds);
-MA_API float ma_sound_group_get_current_fade_volume(ma_sound_group* pGroup);
-MA_API void ma_sound_group_set_start_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames);
-MA_API void ma_sound_group_set_start_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds);
-MA_API void ma_sound_group_set_stop_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames);
-MA_API void ma_sound_group_set_stop_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds);
-MA_API ma_bool32 ma_sound_group_is_playing(const ma_sound_group* pGroup);
-MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGroup);
 #endif  
-
 
 #ifdef __cplusplus
 }
 #endif
 #endif
-
 
 #if defined(MINIAUDIO_IMPLEMENTATION) || defined(MA_IMPLEMENTATION)
 #ifndef miniaudio_c
@@ -9468,15 +9257,7 @@ MA_API ma_result ma_spinlock_lock_noyield(volatile ma_spinlock* pSpinlock)
     return ma_spinlock_lock_ex(pSpinlock, MA_FALSE);
 }
 
-MA_API ma_result ma_spinlock_unlock(volatile ma_spinlock* pSpinlock)
-{
-    if (pSpinlock == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    ma_atomic_store_explicit_32(pSpinlock, 0, ma_atomic_memory_order_release);
-    return MA_SUCCESS;
-}
+MA_API void ma_spinlock_unlock(volatile ma_spinlock* pSpinlock) { ma_atomic_store_explicit_32(pSpinlock, 0, ma_atomic_memory_order_release); }
 #ifndef MA_NO_THREADING
 #if defined(MA_POSIX)
     #define MA_THREADCALL
@@ -10214,34 +9995,12 @@ MA_API void ma_fence_uninit(ma_fence* pFence)
     MA_ZERO_OBJECT(pFence);
 }
 
-MA_API ma_result ma_fence_acquire(ma_fence* pFence)
-{
-    if (pFence == NULL) {
-        return MA_INVALID_ARGS;
-    }
+MA_API ma_result ma_fence_acquire(ma_fence* pFence) {
+    ma_uint32 oldCounter = ma_atomic_load_32(&pFence->counter);
+    ma_uint32 newCounter = oldCounter + 1;
 
-    for (;;) {
-        ma_uint32 oldCounter = ma_atomic_load_32(&pFence->counter);
-        ma_uint32 newCounter = oldCounter + 1;
-
-        
-        if (newCounter > MA_FENCE_COUNTER_MAX) {
-            MA_ASSERT(MA_FALSE);
-            return MA_OUT_OF_RANGE;
-        }
-
-        if (ma_atomic_compare_exchange_weak_32(&pFence->counter, &oldCounter, newCounter)) {
-            return MA_SUCCESS;
-        } else {
-            if (oldCounter == MA_FENCE_COUNTER_MAX) {
-                MA_ASSERT(MA_FALSE);
-                return MA_OUT_OF_RANGE; 
-            }
-        }
-    }
-
-    
-    
+    ma_atomic_compare_exchange_weak_32(&pFence->counter, &oldCounter, newCounter);
+    return MA_SUCCESS;
 }
 
 MA_API ma_result ma_fence_release(ma_fence* pFence)
@@ -41650,24 +41409,6 @@ MA_API ma_vec3f ma_spatializer_listener_get_velocity(const ma_spatializer_listen
     return ma_atomic_vec3f_get((ma_atomic_vec3f*)&pListener->velocity); 
 }
 
-MA_API void ma_spatializer_listener_set_speed_of_sound(ma_spatializer_listener* pListener, float speedOfSound)
-{
-    if (pListener == NULL) {
-        return;
-    }
-
-    pListener->config.speedOfSound = speedOfSound;
-}
-
-MA_API float ma_spatializer_listener_get_speed_of_sound(const ma_spatializer_listener* pListener)
-{
-    if (pListener == NULL) {
-        return 0;
-    }
-
-    return pListener->config.speedOfSound;
-}
-
 MA_API void ma_spatializer_listener_set_world_up(ma_spatializer_listener* pListener, float x, float y, float z)
 {
     if (pListener == NULL) {
@@ -46370,21 +46111,6 @@ MA_API ma_result ma_data_converter_get_expected_output_frame_count(const ma_data
     }
 }
 
-MA_API ma_result ma_data_converter_get_input_channel_map(const ma_data_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap)
-{
-    if (pConverter == NULL || pChannelMap == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConverter->hasChannelConverter) {
-        ma_channel_converter_get_output_channel_map(&pConverter->channelConverter, pChannelMap, channelMapCap);
-    } else {
-        ma_channel_map_init_standard(ma_standard_channel_map_default, pChannelMap, channelMapCap, pConverter->channelsOut);
-    }
-
-    return MA_SUCCESS;
-}
-
 MA_API ma_result ma_data_converter_get_output_channel_map(const ma_data_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap)
 {
     if (pConverter == NULL || pChannelMap == NULL) {
@@ -48000,15 +47726,6 @@ MA_API void ma_pcm_rb_uninit(ma_pcm_rb* pRB)
     ma_rb_uninit(&pRB->rb);
 }
 
-MA_API void ma_pcm_rb_reset(ma_pcm_rb* pRB)
-{
-    if (pRB == NULL) {
-        return;
-    }
-
-    ma_rb_reset(&pRB->rb);
-}
-
 MA_API ma_result ma_pcm_rb_acquire_read(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames, void** ppBufferOut)
 {
     size_t sizeInBytes;
@@ -48092,24 +47809,6 @@ MA_API ma_int32 ma_pcm_rb_pointer_distance(ma_pcm_rb* pRB)
     }
 
     return ma_rb_pointer_distance(&pRB->rb) / ma_pcm_rb_get_bpf(pRB);
-}
-
-MA_API ma_uint32 ma_pcm_rb_available_read(ma_pcm_rb* pRB)
-{
-    if (pRB == NULL) {
-        return 0;
-    }
-
-    return ma_rb_available_read(&pRB->rb) / ma_pcm_rb_get_bpf(pRB);
-}
-
-MA_API ma_uint32 ma_pcm_rb_available_write(ma_pcm_rb* pRB)
-{
-    if (pRB == NULL) {
-        return 0;
-    }
-
-    return ma_rb_available_write(&pRB->rb) / ma_pcm_rb_get_bpf(pRB);
 }
 
 MA_API ma_uint32 ma_pcm_rb_get_subbuffer_size(ma_pcm_rb* pRB)
@@ -48725,24 +48424,8 @@ MA_API ma_result ma_data_source_seek_pcm_frames(ma_data_source* pDataSource, ma_
     return ma_data_source_read_pcm_frames(pDataSource, NULL, frameCount, pFramesSeeked);
 }
 
-MA_API ma_result ma_data_source_seek_to_pcm_frame(ma_data_source* pDataSource, ma_uint64 frameIndex)
-{
+MA_API ma_result ma_data_source_seek_to_pcm_frame(ma_data_source* pDataSource, ma_uint64 frameIndex) {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSourceBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pDataSourceBase->vtable->onSeek == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
-    if (frameIndex > pDataSourceBase->rangeEndInFrames) {
-        return MA_INVALID_OPERATION;    
-    }
-
-    MA_ASSERT(pDataSourceBase->vtable != NULL);
-
     return pDataSourceBase->vtable->onSeek(pDataSource, pDataSourceBase->rangeBegInFrames + frameIndex);
 }
 
@@ -48770,27 +48453,6 @@ MA_API ma_result ma_data_source_seek_seconds(ma_data_source* pDataSource, float 
     
     *pSecondsSeeked = (ma_int64)framesSeeked / (float)sampleRate;
     return result;
-}
-
-MA_API ma_result ma_data_source_seek_to_second(ma_data_source* pDataSource, float seekPointInSeconds)
-{
-    ma_uint64 frameIndex;
-    ma_uint32 sampleRate;
-    ma_result result;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    result = ma_data_source_get_data_format(pDataSource, NULL, NULL, &sampleRate, NULL, 0);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    
-    frameIndex = (ma_uint64)(seekPointInSeconds * sampleRate);
-
-    return ma_data_source_seek_to_pcm_frame(pDataSource, frameIndex);
 }
 
 MA_API ma_result ma_data_source_get_data_format(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap)
@@ -49571,121 +49233,9 @@ MA_API ma_result ma_audio_buffer_init(const ma_audio_buffer_config* pConfig, ma_
     return ma_audio_buffer_init_ex(pConfig, MA_FALSE, pAudioBuffer);
 }
 
-MA_API ma_result ma_audio_buffer_init_copy(const ma_audio_buffer_config* pConfig, ma_audio_buffer* pAudioBuffer)
-{
-    return ma_audio_buffer_init_ex(pConfig, MA_TRUE, pAudioBuffer);
-}
-
-MA_API ma_result ma_audio_buffer_alloc_and_init(const ma_audio_buffer_config* pConfig, ma_audio_buffer** ppAudioBuffer)
-{
-    ma_result result;
-    ma_audio_buffer* pAudioBuffer;
-    ma_audio_buffer_config innerConfig; 
-    ma_uint64 allocationSizeInBytes;
-
-    if (ppAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    *ppAudioBuffer = NULL;  
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    innerConfig = *pConfig;
-    ma_allocation_callbacks_init_copy(&innerConfig.allocationCallbacks, &pConfig->allocationCallbacks);
-
-    allocationSizeInBytes = sizeof(*pAudioBuffer) - sizeof(pAudioBuffer->_pExtraData) + (pConfig->sizeInFrames * ma_get_bytes_per_frame(pConfig->format, pConfig->channels));
-    if (allocationSizeInBytes > MA_SIZE_MAX) {
-        return MA_OUT_OF_MEMORY;    
-    }
-
-    pAudioBuffer = (ma_audio_buffer*)ma_malloc((size_t)allocationSizeInBytes, &innerConfig.allocationCallbacks);  
-    if (pAudioBuffer == NULL) {
-        return MA_OUT_OF_MEMORY;
-    }
-
-    if (pConfig->pData != NULL) {
-        ma_copy_pcm_frames(&pAudioBuffer->_pExtraData[0], pConfig->pData, pConfig->sizeInFrames, pConfig->format, pConfig->channels);
-    } else {
-        ma_silence_pcm_frames(&pAudioBuffer->_pExtraData[0], pConfig->sizeInFrames, pConfig->format, pConfig->channels);
-    }
-
-    innerConfig.pData = &pAudioBuffer->_pExtraData[0];
-
-    result = ma_audio_buffer_init_ex(&innerConfig, MA_FALSE, pAudioBuffer);
-    if (result != MA_SUCCESS) {
-        ma_free(pAudioBuffer, &innerConfig.allocationCallbacks);
-        return result;
-    }
-
-    *ppAudioBuffer = pAudioBuffer;
-
-    return MA_SUCCESS;
-}
-
 MA_API void ma_audio_buffer_uninit(ma_audio_buffer* pAudioBuffer)
 {
     ma_audio_buffer_uninit_ex(pAudioBuffer, MA_FALSE);
-}
-
-MA_API void ma_audio_buffer_uninit_and_free(ma_audio_buffer* pAudioBuffer)
-{
-    ma_audio_buffer_uninit_ex(pAudioBuffer, MA_TRUE);
-}
-
-MA_API ma_uint64 ma_audio_buffer_read_pcm_frames(ma_audio_buffer* pAudioBuffer, void* pFramesOut, ma_uint64 frameCount, ma_bool32 loop)
-{
-    if (pAudioBuffer == NULL) {
-        return 0;
-    }
-
-    return ma_audio_buffer_ref_read_pcm_frames(&pAudioBuffer->ref, pFramesOut, frameCount, loop);
-}
-
-MA_API ma_result ma_audio_buffer_seek_to_pcm_frame(ma_audio_buffer* pAudioBuffer, ma_uint64 frameIndex)
-{
-    if (pAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    return ma_audio_buffer_ref_seek_to_pcm_frame(&pAudioBuffer->ref, frameIndex);
-}
-
-MA_API ma_result ma_audio_buffer_map(ma_audio_buffer* pAudioBuffer, void** ppFramesOut, ma_uint64* pFrameCount)
-{
-    if (ppFramesOut != NULL) {
-        *ppFramesOut = NULL;    
-    }
-
-    if (pAudioBuffer == NULL) {
-        if (pFrameCount != NULL) {
-            *pFrameCount = 0;
-        }
-
-        return MA_INVALID_ARGS;
-    }
-
-    return ma_audio_buffer_ref_map(&pAudioBuffer->ref, ppFramesOut, pFrameCount);
-}
-
-MA_API ma_result ma_audio_buffer_unmap(ma_audio_buffer* pAudioBuffer, ma_uint64 frameCount)
-{
-    if (pAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    return ma_audio_buffer_ref_unmap(&pAudioBuffer->ref, frameCount);
-}
-
-MA_API ma_bool32 ma_audio_buffer_at_end(const ma_audio_buffer* pAudioBuffer)
-{
-    if (pAudioBuffer == NULL) {
-        return MA_FALSE;
-    }
-
-    return ma_audio_buffer_ref_at_end(&pAudioBuffer->ref);
 }
 
 MA_API ma_result ma_audio_buffer_get_cursor_in_pcm_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pCursor)
@@ -49695,15 +49245,6 @@ MA_API ma_result ma_audio_buffer_get_cursor_in_pcm_frames(const ma_audio_buffer*
     }
 
     return ma_audio_buffer_ref_get_cursor_in_pcm_frames(&pAudioBuffer->ref, pCursor);
-}
-
-MA_API ma_result ma_audio_buffer_get_length_in_pcm_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pLength)
-{
-    if (pAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    return ma_audio_buffer_ref_get_length_in_pcm_frames(&pAudioBuffer->ref, pLength);
 }
 
 MA_API ma_result ma_audio_buffer_get_available_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pAvailableFrames)
@@ -49865,18 +49406,6 @@ MA_API ma_result ma_paged_audio_buffer_data_append_page(ma_paged_audio_buffer_da
     return MA_SUCCESS;
 }
 
-MA_API ma_result ma_paged_audio_buffer_data_allocate_and_append_page(ma_paged_audio_buffer_data* pData, ma_uint32 pageSizeInFrames, const void* pInitialData, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    ma_result result;
-    ma_paged_audio_buffer_page* pPage;
-
-    result = ma_paged_audio_buffer_data_allocate_page(pData, pageSizeInFrames, pInitialData, pAllocationCallbacks, &pPage);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    return ma_paged_audio_buffer_data_append_page(pData, pPage);    
-}
 MA_API ma_paged_audio_buffer_config ma_paged_audio_buffer_config_init(ma_paged_audio_buffer_data* pData)
 {
     ma_paged_audio_buffer_config config;
@@ -63202,17 +62731,9 @@ MA_API float ma_node_get_output_bus_volume(const ma_node* pNode, ma_uint32 outpu
     return ma_node_output_bus_get_volume(&pNodeBase->pOutputBuses[outputBusIndex]);
 }
 
-MA_API ma_result ma_node_set_state(ma_node* pNode, ma_node_state state)
-{
+MA_API void ma_node_set_state(ma_node* pNode, ma_node_state state) {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
-
-    if (pNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_atomic_exchange_i32(&pNodeBase->state, state);
-
-    return MA_SUCCESS;
 }
 
 MA_API ma_node_state ma_node_get_state(const ma_node* pNode)
@@ -64948,7 +64469,7 @@ static void ma_engine_node_process_pcm_frames__sound(ma_node* pNode, const float
     (void)pFrameCountIn;
 
     
-    if (ma_sound_at_end(pSound)) {
+    if (ma_sound_get_at_end(pSound)) {
         ma_sound_stop(pSound);
         *pFrameCountOut = 0;
         return;
@@ -65020,7 +64541,7 @@ static void ma_engine_node_process_pcm_frames__sound(ma_node* pNode, const float
             MA_ASSERT(frameCountIn == framesJustRead);
             totalFramesRead += (ma_uint32)frameCountOut;   
 
-            if (result != MA_SUCCESS || ma_sound_at_end(pSound)) {
+            if (result != MA_SUCCESS || ma_sound_get_at_end(pSound)) {
                 break;  
             }
         }
@@ -66143,19 +65664,18 @@ MA_API ma_bool32 ma_engine_listener_is_enabled(const ma_engine* pEngine, ma_uint
     return ma_spatializer_listener_is_enabled(&pEngine->listeners[listenerIndex]);
 }
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath) {
-    ma_result result = MA_SUCCESS;
+MA_API void playSound(ma_engine* pEngine, const char* pFilePath) {
     ma_sound_inlined* pSound = NULL;
     ma_sound_inlined* pNextSound = NULL;
     ma_uint32 nodeInputBusIndex = 0;
     ma_node* pNode = nullptr;
-    pNode = ma_node_graph_get_endpoint(&pEngine->nodeGraph);
+    pNode = &pEngine->nodeGraph.endpoint;
 
     ma_spinlock_lock(&pEngine->inlinedSoundLock); {
         ma_uint32 soundFlags = 0;
 
         for (pNextSound = pEngine->pInlinedSoundHead; pNextSound != NULL; pNextSound = pNextSound->pNext) {
-            if (ma_sound_at_end(&pNextSound->sound)) {
+            if (ma_sound_get_at_end(&pNextSound->sound)) {
                 pSound = pNextSound;
                 ma_atomic_fetch_sub_32(&pEngine->inlinedSoundCount, 1);
                 break;
@@ -66169,12 +65689,9 @@ MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath) {
         soundFlags |= MA_SOUND_FLAG_NO_PITCH;              
         soundFlags |= MA_SOUND_FLAG_NO_SPATIALIZATION;     
 
-        result = ma_sound_init_from_file(pEngine, pFilePath, soundFlags, NULL, NULL, &pSound->sound);
-        if (result == MA_SUCCESS) {
+        if (ma_sound_init_from_file(pEngine, pFilePath, soundFlags, NULL, NULL, &pSound->sound) == MA_SUCCESS) {
             
-            result = ma_node_attach_output_bus(pSound, 0, pNode, nodeInputBusIndex);
-            if (result == MA_SUCCESS) {
-                
+            if ( ma_node_attach_output_bus(pSound, 0, pNode, nodeInputBusIndex) == MA_SUCCESS) {
                 pSound->pNext = pEngine->pInlinedSoundHead;
                 pSound->pPrev = NULL;
 
@@ -66185,15 +65702,9 @@ MA_API ma_result playSound(ma_engine* pEngine, const char* pFilePath) {
         }
         else { ma_free(pSound, &pEngine->allocationCallbacks); }
     }
-    ma_spinlock_unlock(&pEngine->inlinedSoundLock);
-
-    result = ma_sound_start(&pSound->sound);
-    if (result == MA_SUCCESS) {
-        ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
-        return result;
-    }
-    ma_atomic_exchange_32(&pSound->sound.atEnd, MA_TRUE);
-    return result;
+    ma_atomic_store_explicit_32(&pEngine->inlinedSoundLock, 0, ma_atomic_memory_order_release);
+    ma_sound_start(&pSound->sound); /* complete */
+    ma_atomic_fetch_add_32(&pEngine->inlinedSoundCount, 1);
 }
 #endif
 static ma_result ma_sound_preinit(ma_engine* pEngine, ma_sound* pSound)
@@ -66212,75 +65723,37 @@ static ma_result ma_sound_preinit(ma_engine* pEngine, ma_sound* pSound)
     return MA_SUCCESS;
 }
 
-static ma_result ma_sound_init_from_data_source_internal(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound)
-{
+static ma_result ma_sound_init_from_data_source_internal(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound) {
     ma_result result;
     ma_engine_node_config engineNodeConfig;
-    ma_engine_node_type type;   
-
-    
-    MA_ASSERT(pEngine != NULL);
-    MA_ASSERT(pSound  != NULL);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
+    ma_engine_node_type type;
 
     pSound->pDataSource = pConfig->pDataSource;
 
-    if (pConfig->pDataSource != NULL) {
-        type = ma_engine_node_type_sound;
-    } else {
-        type = ma_engine_node_type_group;
-    }
-
-    
+    if (pConfig->pDataSource == NULL) { type = ma_engine_node_type_group; }
+    else { type = ma_engine_node_type_sound; }
     engineNodeConfig = ma_engine_node_config_init(pEngine, type, pConfig->flags);
     engineNodeConfig.channelsIn                  = pConfig->channelsIn;
     engineNodeConfig.channelsOut                 = pConfig->channelsOut;
     engineNodeConfig.volumeSmoothTimeInPCMFrames = pConfig->volumeSmoothTimeInPCMFrames;
     engineNodeConfig.monoExpansionMode           = pConfig->monoExpansionMode;
 
-    if (engineNodeConfig.volumeSmoothTimeInPCMFrames == 0) {
-        engineNodeConfig.volumeSmoothTimeInPCMFrames = pEngine->defaultVolumeSmoothTimeInPCMFrames;
-    }
+    if (engineNodeConfig.volumeSmoothTimeInPCMFrames == 0) { engineNodeConfig.volumeSmoothTimeInPCMFrames = pEngine->defaultVolumeSmoothTimeInPCMFrames; }
 
     
     if (pConfig->pDataSource != NULL) {
         result = ma_data_source_get_data_format(pConfig->pDataSource, NULL, &engineNodeConfig.channelsIn, &engineNodeConfig.sampleRate, NULL, 0);
-        if (result != MA_SUCCESS) {
-            return result;  
-        }
-
-        if (engineNodeConfig.channelsIn == 0) {
-            return MA_INVALID_OPERATION;    
-        }
-
         if (engineNodeConfig.channelsOut == MA_SOUND_SOURCE_CHANNEL_COUNT) {
             engineNodeConfig.channelsOut = engineNodeConfig.channelsIn;
         }
     }
     
     result = ma_engine_node_init(&engineNodeConfig, &pEngine->allocationCallbacks, &pSound->engineNode);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
     
-    if (pConfig->pInitialAttachment == NULL) {
-        
-        if ((pConfig->flags & MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT) == 0) {
-            result = ma_node_attach_output_bus(pSound, 0, ma_node_graph_get_endpoint(&pEngine->nodeGraph), 0);
-        }
-    } else {
-        
-        result = ma_node_attach_output_bus(pSound, 0, pConfig->pInitialAttachment, pConfig->initialAttachmentInputBusIndex);
-    }
+    if (pConfig->pInitialAttachment == NULL) { if ((pConfig->flags & MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT) == 0) { result = ma_node_attach_output_bus(pSound, 0, ma_node_graph_get_endpoint(&pEngine->nodeGraph), 0); }}
+    else { result = ma_node_attach_output_bus(pSound, 0, pConfig->pInitialAttachment, pConfig->initialAttachmentInputBusIndex); }
 
-    if (result != MA_SUCCESS) {
-        ma_engine_node_uninit(&pSound->engineNode, &pEngine->allocationCallbacks);
-        return result;
-    }
+
     
     if (pConfig->rangeBegInPCMFrames != 0 || pConfig->rangeEndInPCMFrames != ~((ma_uint64)0)) {
         ma_data_source_set_range_in_pcm_frames(ma_sound_get_data_source(pSound), pConfig->rangeBegInPCMFrames, pConfig->rangeEndInPCMFrames);
@@ -66296,84 +65769,47 @@ static ma_result ma_sound_init_from_data_source_internal(ma_engine* pEngine, con
 }
 
 #ifndef MA_NO_RESOURCE_MANAGER
-MA_API ma_result ma_sound_init_from_file_internal(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound)
-{
+MA_API ma_result ma_sound_init_from_file_internal(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound) {
     ma_result result = MA_SUCCESS;
     ma_uint32 flags;
     ma_sound_config config;
     ma_resource_manager_pipeline_notifications notifications;
-
-    
     flags = pConfig->flags | MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_WAIT_INIT;
-    if (pConfig->isLooping) {
-        flags |= MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_LOOPING;
-    }
-
+    if (pConfig->isLooping) { flags |= MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_LOOPING; }
     pSound->pResourceManagerDataSource = (ma_resource_manager_data_source*)ma_malloc(sizeof(*pSound->pResourceManagerDataSource), &pEngine->allocationCallbacks);
-    if (pSound->pResourceManagerDataSource == NULL) {
-        return MA_OUT_OF_MEMORY;
-    }
-
-    
     notifications = pConfig->initNotifications;
-    if (pConfig->pDoneFence != NULL && notifications.done.pFence == NULL) {
-        notifications.done.pFence = pConfig->pDoneFence;
-    }
-
-    
-    if (notifications.done.pFence) { ma_fence_acquire(notifications.done.pFence); }
-    {
+    if (notifications.done.pFence) { ma_fence_acquire(notifications.done.pFence); } {
         ma_resource_manager_data_source_config resourceManagerDataSourceConfig = ma_resource_manager_data_source_config_init();
-        resourceManagerDataSourceConfig.pFilePath                   = pConfig->pFilePath;
-        resourceManagerDataSourceConfig.pFilePathW                  = pConfig->pFilePathW;
-        resourceManagerDataSourceConfig.flags                       = flags;
-        resourceManagerDataSourceConfig.pNotifications              = &notifications;
+        resourceManagerDataSourceConfig.pFilePath = pConfig->pFilePath;
+        resourceManagerDataSourceConfig.pFilePathW = pConfig->pFilePathW;
+        resourceManagerDataSourceConfig.flags = flags;
+        resourceManagerDataSourceConfig.pNotifications = &notifications;
         resourceManagerDataSourceConfig.initialSeekPointInPCMFrames = pConfig->initialSeekPointInPCMFrames;
-        resourceManagerDataSourceConfig.rangeBegInPCMFrames         = pConfig->rangeBegInPCMFrames;
-        resourceManagerDataSourceConfig.rangeEndInPCMFrames         = pConfig->rangeEndInPCMFrames;
-        resourceManagerDataSourceConfig.loopPointBegInPCMFrames     = pConfig->loopPointBegInPCMFrames;
-        resourceManagerDataSourceConfig.loopPointEndInPCMFrames     = pConfig->loopPointEndInPCMFrames;
-        resourceManagerDataSourceConfig.isLooping                   = (flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_LOOPING) != 0;
-
+        resourceManagerDataSourceConfig.rangeBegInPCMFrames = pConfig->rangeBegInPCMFrames;
+        resourceManagerDataSourceConfig.rangeEndInPCMFrames = pConfig->rangeEndInPCMFrames;
+        resourceManagerDataSourceConfig.loopPointBegInPCMFrames = pConfig->loopPointBegInPCMFrames;
+        resourceManagerDataSourceConfig.loopPointEndInPCMFrames = pConfig->loopPointEndInPCMFrames;
+        resourceManagerDataSourceConfig.isLooping = (flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_LOOPING) != 0;
         result = ma_resource_manager_data_source_init_ex(pEngine->pResourceManager, &resourceManagerDataSourceConfig, pSound->pResourceManagerDataSource);
-        if (result != MA_SUCCESS) {
-            goto done;
-        }
-
-        pSound->ownsDataSource = MA_TRUE;   
-
-        
+        pSound->ownsDataSource = MA_TRUE;
         config = *pConfig;
         config.pFilePath   = NULL;
         config.pFilePathW  = NULL;
         config.pDataSource = pSound->pResourceManagerDataSource;
 
         result = ma_sound_init_from_data_source_internal(pEngine, &config, pSound);
-        if (result != MA_SUCCESS) {
-            ma_resource_manager_data_source_uninit(pSound->pResourceManagerDataSource);
-            ma_free(pSound->pResourceManagerDataSource, &pEngine->allocationCallbacks);
-            MA_ZERO_OBJECT(pSound);
-            goto done;
-        }
     }
-done:
-    if (notifications.done.pFence) { ma_fence_release(notifications.done.pFence); }
     return result;
 }
 
-MA_API ma_result ma_sound_init_from_file(ma_engine* pEngine, const char* pFilePath, ma_uint32 flags, ma_sound_group* pGroup, ma_fence* pDoneFence, ma_sound* pSound)
-{
+MA_API ma_result ma_sound_init_from_file(ma_engine* pEngine, const char* pFilePath, ma_uint32 flags, ma_sound_group* pGroup, ma_fence* pDoneFence, ma_sound* pSound) {
     ma_sound_config config;
 
-    if (pFilePath == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     config = ma_sound_config_init_2(pEngine);
-    config.pFilePath          = pFilePath;
-    config.flags              = flags;
+    config.pFilePath = pFilePath;
+    config.flags = flags;
     config.pInitialAttachment = pGroup;
-    config.pDoneFence         = pDoneFence;
+    config.pDoneFence = pDoneFence;
 
     return ma_sound_init_ex(pEngine, &config, pSound);
 }
@@ -66457,20 +65893,11 @@ MA_API ma_result ma_sound_init_from_data_source(ma_engine* pEngine, ma_data_sour
     return ma_sound_init_ex(pEngine, &config, pSound);
 }
 
-MA_API ma_result ma_sound_init_ex(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound)
-{
+MA_API ma_result ma_sound_init_ex(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound) {
     ma_result result;
 
     result = ma_sound_preinit(pEngine, pSound);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    pSound->endCallback          = pConfig->endCallback;
+    pSound->endCallback = pConfig->endCallback;
     pSound->pEndCallbackUserData = pConfig->pEndCallbackUserData;
 
     
@@ -66524,32 +65951,12 @@ MA_API ma_data_source* ma_sound_get_data_source(const ma_sound* pSound)
     return pSound->pDataSource;
 }
 
-MA_API ma_result ma_sound_start(ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (ma_sound_is_playing(pSound)) {
-        return MA_SUCCESS;
-    }
-
-    
-    if (ma_sound_at_end(pSound)) {
+MA_API void ma_sound_start(ma_sound* pSound) {
+    if (ma_sound_get_at_end(pSound)) {
         ma_result result = ma_data_source_seek_to_pcm_frame(pSound->pDataSource, 0);
-        if (result != MA_SUCCESS && result != MA_NOT_IMPLEMENTED) {
-            return result;  
-        }
-
-        
         ma_atomic_exchange_32(&pSound->atEnd, MA_FALSE);
     }
-
-    
     ma_node_set_state(pSound, ma_node_state_started);
-
-    return MA_SUCCESS;
 }
 
 MA_API ma_result ma_sound_stop(ma_sound* pSound)
@@ -66741,339 +66148,40 @@ MA_API ma_vec3f ma_sound_get_direction_to_listener(const ma_sound* pSound)
     return ma_vec3f_normalize(ma_vec3f_neg(relativePos));
 }
 
-MA_API void ma_sound_set_position(ma_sound* pSound, float x, float y, float z)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_position(&pSound->engineNode.spatializer, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_get_position(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return ma_vec3f_init_3f(0, 0, 0);
-    }
-
-    return ma_spatializer_get_position(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_direction(ma_sound* pSound, float x, float y, float z)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_direction(&pSound->engineNode.spatializer, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_get_direction(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return ma_vec3f_init_3f(0, 0, 0);
-    }
-
-    return ma_spatializer_get_direction(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_velocity(ma_sound* pSound, float x, float y, float z)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_velocity(&pSound->engineNode.spatializer, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_get_velocity(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return ma_vec3f_init_3f(0, 0, 0);
-    }
-
-    return ma_spatializer_get_velocity(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_attenuation_model(ma_sound* pSound, ma_attenuation_model attenuationModel)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_attenuation_model(&pSound->engineNode.spatializer, attenuationModel);
-}
-
-MA_API ma_attenuation_model ma_sound_get_attenuation_model(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return ma_attenuation_model_none;
-    }
-
-    return ma_spatializer_get_attenuation_model(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_positioning(ma_sound* pSound, ma_positioning positioning)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_positioning(&pSound->engineNode.spatializer, positioning);
-}
-
-MA_API ma_positioning ma_sound_get_positioning(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return ma_positioning_absolute;
-    }
-
-    return ma_spatializer_get_positioning(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_rolloff(ma_sound* pSound, float rolloff)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_rolloff(&pSound->engineNode.spatializer, rolloff);
-}
-
-MA_API float ma_sound_get_rolloff(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 0;
-    }
-
-    return ma_spatializer_get_rolloff(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_min_gain(ma_sound* pSound, float minGain)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_min_gain(&pSound->engineNode.spatializer, minGain);
-}
-
-MA_API float ma_sound_get_min_gain(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 0;
-    }
-
-    return ma_spatializer_get_min_gain(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_max_gain(ma_sound* pSound, float maxGain)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_max_gain(&pSound->engineNode.spatializer, maxGain);
-}
-
-MA_API float ma_sound_get_max_gain(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 0;
-    }
-
-    return ma_spatializer_get_max_gain(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_min_distance(ma_sound* pSound, float minDistance)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_min_distance(&pSound->engineNode.spatializer, minDistance);
-}
-
-MA_API float ma_sound_get_min_distance(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 0;
-    }
-
-    return ma_spatializer_get_min_distance(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_max_distance(ma_sound* pSound, float maxDistance)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_max_distance(&pSound->engineNode.spatializer, maxDistance);
-}
-
-MA_API float ma_sound_get_max_distance(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 0;
-    }
-
-    return ma_spatializer_get_max_distance(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_cone(ma_sound* pSound, float innerAngleInRadians, float outerAngleInRadians, float outerGain)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_cone(&pSound->engineNode.spatializer, innerAngleInRadians, outerAngleInRadians, outerGain);
-}
-
-MA_API void ma_sound_get_cone(const ma_sound* pSound, float* pInnerAngleInRadians, float* pOuterAngleInRadians, float* pOuterGain)
-{
-    if (pInnerAngleInRadians != NULL) {
-        *pInnerAngleInRadians = 0;
-    }
-
-    if (pOuterAngleInRadians != NULL) {
-        *pOuterAngleInRadians = 0;
-    }
-
-    if (pOuterGain != NULL) {
-        *pOuterGain = 0;
-    }
-
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_get_cone(&pSound->engineNode.spatializer, pInnerAngleInRadians, pOuterAngleInRadians, pOuterGain);
-}
-
-MA_API void ma_sound_set_doppler_factor(ma_sound* pSound, float dopplerFactor)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_doppler_factor(&pSound->engineNode.spatializer, dopplerFactor);
-}
-
-MA_API float ma_sound_get_doppler_factor(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 0;
-    }
-
-    return ma_spatializer_get_doppler_factor(&pSound->engineNode.spatializer);
-}
-
-MA_API void ma_sound_set_directional_attenuation_factor(ma_sound* pSound, float directionalAttenuationFactor)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_spatializer_set_directional_attenuation_factor(&pSound->engineNode.spatializer, directionalAttenuationFactor);
-}
-
-MA_API float ma_sound_get_directional_attenuation_factor(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return 1;
-    }
-
-    return ma_spatializer_get_directional_attenuation_factor(&pSound->engineNode.spatializer);
-}
-MA_API void ma_sound_set_fade_in_pcm_frames(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_sound_set_fade_start_in_pcm_frames(pSound, volumeBeg, volumeEnd, fadeLengthInFrames, (~(ma_uint64)0));
-}
-
-MA_API void ma_sound_set_fade_in_milliseconds(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_sound_set_fade_in_pcm_frames(pSound, volumeBeg, volumeEnd, (fadeLengthInMilliseconds * pSound->engineNode.fader.config.sampleRate) / 1000);
-}
-
-MA_API void ma_sound_set_fade_start_in_pcm_frames(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    
-    ma_atomic_float_set(&pSound->engineNode.fadeSettings.volumeBeg, volumeBeg);
-    ma_atomic_float_set(&pSound->engineNode.fadeSettings.volumeEnd, volumeEnd);
-    ma_atomic_uint64_set(&pSound->engineNode.fadeSettings.fadeLengthInFrames, fadeLengthInFrames);
-    ma_atomic_uint64_set(&pSound->engineNode.fadeSettings.absoluteGlobalTimeInFrames, absoluteGlobalTimeInFrames);
-}
-
-MA_API void ma_sound_set_fade_start_in_milliseconds(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    ma_uint32 sampleRate;
-
-    if (pSound == NULL) {
-        return;
-    }
-
-    sampleRate = ma_engine_get_sample_rate(ma_sound_get_engine(pSound));
-
-    ma_sound_set_fade_start_in_pcm_frames(pSound, volumeBeg, volumeEnd, (fadeLengthInMilliseconds * sampleRate) / 1000, (absoluteGlobalTimeInMilliseconds * sampleRate) / 1000);
-}
-
-MA_API float ma_sound_get_current_fade_volume(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    return ma_fader_get_current_volume(&pSound->engineNode.fader);
-}
-
-MA_API void ma_sound_set_start_time_in_pcm_frames(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_node_set_state_time(pSound, ma_node_state_started, absoluteGlobalTimeInFrames);
-}
-
-MA_API void ma_sound_set_start_time_in_milliseconds(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_sound_set_start_time_in_pcm_frames(pSound, absoluteGlobalTimeInMilliseconds * ma_engine_get_sample_rate(ma_sound_get_engine(pSound)) / 1000);
-}
-
-MA_API void ma_sound_set_stop_time_in_pcm_frames(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_sound_set_stop_time_with_fade_in_pcm_frames(pSound, absoluteGlobalTimeInFrames, 0);
-}
-
-MA_API void ma_sound_set_stop_time_in_milliseconds(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    if (pSound == NULL) {
-        return;
-    }
-
-    ma_sound_set_stop_time_in_pcm_frames(pSound, absoluteGlobalTimeInMilliseconds * ma_engine_get_sample_rate(ma_sound_get_engine(pSound)) / 1000);
-}
+MA_API void ma_sound_set_position(ma_sound* pSound, float x, float y, float z) { if (pSound) ma_spatializer_set_position(&pSound->engineNode.spatializer, x, y, z); }
+MA_API ma_vec3f ma_sound_get_position(const ma_sound* pSound) { return pSound ? ma_spatializer_get_position(&pSound->engineNode.spatializer) : ma_vec3f_init_3f(0, 0, 0); }
+MA_API void ma_sound_set_direction(ma_sound* pSound, float x, float y, float z) { if (pSound) ma_spatializer_set_direction(&pSound->engineNode.spatializer, x, y, z); }
+MA_API ma_vec3f ma_sound_get_direction(const ma_sound* pSound) { return pSound ? ma_spatializer_get_direction(&pSound->engineNode.spatializer) : ma_vec3f_init_3f(0, 0, 0); }
+MA_API void ma_sound_set_velocity(ma_sound* pSound, float x, float y, float z) { if (pSound) ma_spatializer_set_velocity(&pSound->engineNode.spatializer, x, y, z); }
+MA_API ma_vec3f ma_sound_get_velocity(const ma_sound* pSound) { return pSound ? ma_spatializer_get_velocity(&pSound->engineNode.spatializer) : ma_vec3f_init_3f(0, 0, 0); }
+MA_API void ma_sound_set_attenuation_model(ma_sound* pSound, ma_attenuation_model model) { if (pSound) ma_spatializer_set_attenuation_model(&pSound->engineNode.spatializer, model); }
+MA_API ma_attenuation_model ma_sound_get_attenuation_model(const ma_sound* pSound) { return pSound ? ma_spatializer_get_attenuation_model(&pSound->engineNode.spatializer) : ma_attenuation_model_none; }
+MA_API void ma_sound_set_positioning(ma_sound* pSound, ma_positioning positioning) { if (pSound) ma_spatializer_set_positioning(&pSound->engineNode.spatializer, positioning); }
+MA_API ma_positioning ma_sound_get_positioning(const ma_sound* pSound) { return pSound ? ma_spatializer_get_positioning(&pSound->engineNode.spatializer) : ma_positioning_absolute; }
+MA_API void ma_sound_set_rolloff(ma_sound* pSound, float rolloff) { if (pSound) ma_spatializer_set_rolloff(&pSound->engineNode.spatializer, rolloff); }
+MA_API float ma_sound_get_rolloff(const ma_sound* pSound) { return pSound ? ma_spatializer_get_rolloff(&pSound->engineNode.spatializer) : 0; }
+MA_API void ma_sound_set_min_gain(ma_sound* pSound, float minGain) { if (pSound) ma_spatializer_set_min_gain(&pSound->engineNode.spatializer, minGain); }
+MA_API float ma_sound_get_min_gain(const ma_sound* pSound) { return pSound ? ma_spatializer_get_min_gain(&pSound->engineNode.spatializer) : 0; }
+MA_API void ma_sound_set_max_gain(ma_sound* pSound, float maxGain) { if (pSound) ma_spatializer_set_max_gain(&pSound->engineNode.spatializer, maxGain); }
+MA_API float ma_sound_get_max_gain(const ma_sound* pSound) { return pSound ? ma_spatializer_get_max_gain(&pSound->engineNode.spatializer) : 0; }
+MA_API void ma_sound_set_min_distance(ma_sound* pSound, float minDistance) { if (pSound) ma_spatializer_set_min_distance(&pSound->engineNode.spatializer, minDistance); }
+MA_API float ma_sound_get_min_distance(const ma_sound* pSound) { return pSound ? ma_spatializer_get_min_distance(&pSound->engineNode.spatializer) : 0; }
+MA_API void ma_sound_set_max_distance(ma_sound* pSound, float maxDistance) { if (pSound) ma_spatializer_set_max_distance(&pSound->engineNode.spatializer, maxDistance); }
+MA_API float ma_sound_get_max_distance(const ma_sound* pSound) { return pSound ? ma_spatializer_get_max_distance(&pSound->engineNode.spatializer) : 0; }
+MA_API void ma_sound_set_cone(ma_sound* pSound, float innerAngleInRadians, float outerAngleInRadians, float outerGain) { if (pSound) ma_spatializer_set_cone(&pSound->engineNode.spatializer, innerAngleInRadians, outerAngleInRadians, outerGain); }
+MA_API void ma_sound_get_cone(const ma_sound* pSound, float* pInnerAngleInRadians, float* pOuterAngleInRadians, float* pOuterGain) { if (pInnerAngleInRadians) *pInnerAngleInRadians = 0; if (pOuterAngleInRadians) *pOuterAngleInRadians = 0; if (pOuterGain) *pOuterGain = 0; if (pSound) ma_spatializer_get_cone(&pSound->engineNode.spatializer, pInnerAngleInRadians, pOuterAngleInRadians, pOuterGain); }
+MA_API void ma_sound_set_doppler_factor(ma_sound* pSound, float dopplerFactor) { if (pSound) ma_spatializer_set_doppler_factor(&pSound->engineNode.spatializer, dopplerFactor); }
+MA_API float ma_sound_get_doppler_factor(const ma_sound* pSound) { return pSound ? ma_spatializer_get_doppler_factor(&pSound->engineNode.spatializer) : 0; }
+MA_API void ma_sound_set_directional_attenuation_factor(ma_sound* pSound, float directionalAttenuationFactor) { if (pSound) ma_spatializer_set_directional_attenuation_factor(&pSound->engineNode.spatializer, directionalAttenuationFactor); }
+MA_API float ma_sound_get_directional_attenuation_factor(const ma_sound* pSound) { return pSound ? ma_spatializer_get_directional_attenuation_factor(&pSound->engineNode.spatializer) : 1; }
+MA_API void ma_sound_set_fade_in_pcm_frames(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames) { if (pSound) ma_sound_set_fade_start_in_pcm_frames(pSound, volumeBeg, volumeEnd, fadeLengthInFrames, (~(ma_uint64)0)); }
+MA_API void ma_sound_set_fade_in_milliseconds(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds) { if (pSound) ma_sound_set_fade_in_pcm_frames(pSound, volumeBeg, volumeEnd, (fadeLengthInMilliseconds * pSound->engineNode.fader.config.sampleRate) / 1000); }
+MA_API void ma_sound_set_fade_start_in_pcm_frames(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames, ma_uint64 absoluteGlobalTimeInFrames) { if (pSound) { ma_atomic_float_set(&pSound->engineNode.fadeSettings.volumeBeg, volumeBeg); ma_atomic_float_set(&pSound->engineNode.fadeSettings.volumeEnd, volumeEnd); ma_atomic_uint64_set(&pSound->engineNode.fadeSettings.fadeLengthInFrames, fadeLengthInFrames); ma_atomic_uint64_set(&pSound->engineNode.fadeSettings.absoluteGlobalTimeInFrames, absoluteGlobalTimeInFrames); } }
+MA_API void ma_sound_set_fade_start_in_milliseconds(ma_sound* pSound, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds, ma_uint64 absoluteGlobalTimeInMilliseconds) { if (pSound) ma_sound_set_fade_start_in_pcm_frames(pSound, volumeBeg, volumeEnd, (fadeLengthInMilliseconds * ma_engine_get_sample_rate(ma_sound_get_engine(pSound))) / 1000, (absoluteGlobalTimeInMilliseconds * ma_engine_get_sample_rate(ma_sound_get_engine(pSound))) / 1000); }
+MA_API void ma_sound_set_start_time_in_pcm_frames(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInFrames) { if (pSound) ma_node_set_state_time(pSound, ma_node_state_started, absoluteGlobalTimeInFrames); }
+MA_API void ma_sound_set_start_time_in_milliseconds(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInMilliseconds) { if (pSound) ma_sound_set_start_time_in_pcm_frames(pSound, absoluteGlobalTimeInMilliseconds * ma_engine_get_sample_rate(ma_sound_get_engine(pSound)) / 1000); }
+MA_API void ma_sound_set_stop_time_in_pcm_frames(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInFrames) { if (pSound) ma_sound_set_stop_time_with_fade_in_pcm_frames(pSound, absoluteGlobalTimeInFrames, 0); }
+MA_API void ma_sound_set_stop_time_in_milliseconds(ma_sound* pSound, ma_uint64 absoluteGlobalTimeInMilliseconds) { if (pSound) ma_sound_set_stop_time_in_pcm_frames(pSound, absoluteGlobalTimeInMilliseconds * ma_engine_get_sample_rate(ma_sound_get_engine(pSound)) / 1000); }
 
 MA_API void ma_sound_set_stop_time_with_fade_in_pcm_frames(ma_sound* pSound, ma_uint64 stopAbsoluteGlobalTimeInFrames, ma_uint64 fadeLengthInFrames)
 {
@@ -67155,20 +66263,6 @@ MA_API ma_bool32 ma_sound_is_looping(const ma_sound* pSound)
     }
 
     return ma_data_source_is_looping(pSound->pDataSource);
-}
-
-MA_API ma_bool32 ma_sound_at_end(const ma_sound* pSound)
-{
-    if (pSound == NULL) {
-        return MA_FALSE;
-    }
-
-    
-    if (pSound->pDataSource == NULL) {
-        return MA_FALSE;
-    }
-
-    return ma_sound_get_at_end(pSound);
 }
 
 MA_API ma_result ma_sound_seek_to_pcm_frame(ma_sound* pSound, ma_uint64 frameIndex)
@@ -67368,270 +66462,10 @@ MA_API ma_result ma_sound_group_init_ex(ma_engine* pEngine, const ma_sound_group
     return ma_sound_init_ex(pEngine, &soundConfig, pGroup);
 }
 
-MA_API void ma_sound_group_uninit(ma_sound_group* pGroup)
-{
-    ma_sound_uninit(pGroup);
-}
-
-MA_API ma_engine* ma_sound_group_get_engine(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_engine(pGroup);
-}
-
-MA_API ma_result ma_sound_group_start(ma_sound_group* pGroup)
-{
-    return ma_sound_start(pGroup);
-}
-
-MA_API ma_result ma_sound_group_stop(ma_sound_group* pGroup)
-{
-    return ma_sound_stop(pGroup);
-}
-
-MA_API void ma_sound_group_set_volume(ma_sound_group* pGroup, float volume)
-{
-    ma_sound_set_volume(pGroup, volume);
-}
-
-MA_API float ma_sound_group_get_volume(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_volume(pGroup);
-}
-
-MA_API void ma_sound_group_set_pan(ma_sound_group* pGroup, float pan)
-{
-    ma_sound_set_pan(pGroup, pan);
-}
-
-MA_API float ma_sound_group_get_pan(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pan(pGroup);
-}
-
-MA_API void ma_sound_group_set_pan_mode(ma_sound_group* pGroup, ma_pan_mode panMode)
-{
-    ma_sound_set_pan_mode(pGroup, panMode);
-}
-
-MA_API ma_pan_mode ma_sound_group_get_pan_mode(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pan_mode(pGroup);
-}
-
-MA_API void ma_sound_group_set_pitch(ma_sound_group* pGroup, float pitch)
-{
-    ma_sound_set_pitch(pGroup, pitch);
-}
-
-MA_API float ma_sound_group_get_pitch(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pitch(pGroup);
-}
-
-MA_API void ma_sound_group_set_spatialization_enabled(ma_sound_group* pGroup, ma_bool32 enabled)
-{
-    ma_sound_set_spatialization_enabled(pGroup, enabled);
-}
-
-MA_API ma_bool32 ma_sound_group_is_spatialization_enabled(const ma_sound_group* pGroup)
-{
-    return ma_sound_is_spatialization_enabled(pGroup);
-}
-
-MA_API void ma_sound_group_set_pinned_listener_index(ma_sound_group* pGroup, ma_uint32 listenerIndex)
-{
-    ma_sound_set_pinned_listener_index(pGroup, listenerIndex);
-}
-
-MA_API ma_uint32 ma_sound_group_get_pinned_listener_index(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_pinned_listener_index(pGroup);
-}
-
-MA_API ma_uint32 ma_sound_group_get_listener_index(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_listener_index(pGroup);
-}
-
-MA_API ma_vec3f ma_sound_group_get_direction_to_listener(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_direction_to_listener(pGroup);
-}
-
-MA_API void ma_sound_group_set_position(ma_sound_group* pGroup, float x, float y, float z)
-{
-    ma_sound_set_position(pGroup, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_group_get_position(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_position(pGroup);
-}
-
-MA_API void ma_sound_group_set_direction(ma_sound_group* pGroup, float x, float y, float z)
-{
-    ma_sound_set_direction(pGroup, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_group_get_direction(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_direction(pGroup);
-}
-
-MA_API void ma_sound_group_set_velocity(ma_sound_group* pGroup, float x, float y, float z)
-{
-    ma_sound_set_velocity(pGroup, x, y, z);
-}
-
-MA_API ma_vec3f ma_sound_group_get_velocity(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_velocity(pGroup);
-}
-
-MA_API void ma_sound_group_set_attenuation_model(ma_sound_group* pGroup, ma_attenuation_model attenuationModel)
-{
-    ma_sound_set_attenuation_model(pGroup, attenuationModel);
-}
-
-MA_API ma_attenuation_model ma_sound_group_get_attenuation_model(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_attenuation_model(pGroup);
-}
-
-MA_API void ma_sound_group_set_positioning(ma_sound_group* pGroup, ma_positioning positioning)
-{
-    ma_sound_set_positioning(pGroup, positioning);
-}
-
-MA_API ma_positioning ma_sound_group_get_positioning(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_positioning(pGroup);
-}
-
-MA_API void ma_sound_group_set_rolloff(ma_sound_group* pGroup, float rolloff)
-{
-    ma_sound_set_rolloff(pGroup, rolloff);
-}
-
-MA_API float ma_sound_group_get_rolloff(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_rolloff(pGroup);
-}
-
-MA_API void ma_sound_group_set_min_gain(ma_sound_group* pGroup, float minGain)
-{
-    ma_sound_set_min_gain(pGroup, minGain);
-}
-
-MA_API float ma_sound_group_get_min_gain(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_min_gain(pGroup);
-}
-
-MA_API void ma_sound_group_set_max_gain(ma_sound_group* pGroup, float maxGain)
-{
-    ma_sound_set_max_gain(pGroup, maxGain);
-}
-
-MA_API float ma_sound_group_get_max_gain(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_max_gain(pGroup);
-}
-
-MA_API void ma_sound_group_set_min_distance(ma_sound_group* pGroup, float minDistance)
-{
-    ma_sound_set_min_distance(pGroup, minDistance);
-}
-
-MA_API float ma_sound_group_get_min_distance(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_min_distance(pGroup);
-}
-
-MA_API void ma_sound_group_set_max_distance(ma_sound_group* pGroup, float maxDistance)
-{
-    ma_sound_set_max_distance(pGroup, maxDistance);
-}
-
-MA_API float ma_sound_group_get_max_distance(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_max_distance(pGroup);
-}
-
-MA_API void ma_sound_group_set_cone(ma_sound_group* pGroup, float innerAngleInRadians, float outerAngleInRadians, float outerGain)
-{
-    ma_sound_set_cone(pGroup, innerAngleInRadians, outerAngleInRadians, outerGain);
-}
-
-MA_API void ma_sound_group_get_cone(const ma_sound_group* pGroup, float* pInnerAngleInRadians, float* pOuterAngleInRadians, float* pOuterGain)
-{
-    ma_sound_get_cone(pGroup, pInnerAngleInRadians, pOuterAngleInRadians, pOuterGain);
-}
-
-MA_API void ma_sound_group_set_doppler_factor(ma_sound_group* pGroup, float dopplerFactor)
-{
-    ma_sound_set_doppler_factor(pGroup, dopplerFactor);
-}
-
-MA_API float ma_sound_group_get_doppler_factor(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_doppler_factor(pGroup);
-}
-
-MA_API void ma_sound_group_set_directional_attenuation_factor(ma_sound_group* pGroup, float directionalAttenuationFactor)
-{
-    ma_sound_set_directional_attenuation_factor(pGroup, directionalAttenuationFactor);
-}
-
-MA_API float ma_sound_group_get_directional_attenuation_factor(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_directional_attenuation_factor(pGroup);
-}
-
-MA_API void ma_sound_group_set_fade_in_pcm_frames(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInFrames)
-{
-    ma_sound_set_fade_in_pcm_frames(pGroup, volumeBeg, volumeEnd, fadeLengthInFrames);
-}
-
-MA_API void ma_sound_group_set_fade_in_milliseconds(ma_sound_group* pGroup, float volumeBeg, float volumeEnd, ma_uint64 fadeLengthInMilliseconds)
-{
-    ma_sound_set_fade_in_milliseconds(pGroup, volumeBeg, volumeEnd, fadeLengthInMilliseconds);
-}
-
-MA_API float ma_sound_group_get_current_fade_volume(ma_sound_group* pGroup)
-{
-    return ma_sound_get_current_fade_volume(pGroup);
-}
-
-MA_API void ma_sound_group_set_start_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    ma_sound_set_start_time_in_pcm_frames(pGroup, absoluteGlobalTimeInFrames);
-}
-
-MA_API void ma_sound_group_set_start_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    ma_sound_set_start_time_in_milliseconds(pGroup, absoluteGlobalTimeInMilliseconds);
-}
-
-MA_API void ma_sound_group_set_stop_time_in_pcm_frames(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInFrames)
-{
-    ma_sound_set_stop_time_in_pcm_frames(pGroup, absoluteGlobalTimeInFrames);
-}
-
-MA_API void ma_sound_group_set_stop_time_in_milliseconds(ma_sound_group* pGroup, ma_uint64 absoluteGlobalTimeInMilliseconds)
-{
-    ma_sound_set_stop_time_in_milliseconds(pGroup, absoluteGlobalTimeInMilliseconds);
-}
-
-MA_API ma_bool32 ma_sound_group_is_playing(const ma_sound_group* pGroup)
-{
-    return ma_sound_is_playing(pGroup);
-}
-
-MA_API ma_uint64 ma_sound_group_get_time_in_pcm_frames(const ma_sound_group* pGroup)
-{
-    return ma_sound_get_time_in_pcm_frames(pGroup);
-}
+MA_API void ma_sound_group_set_position(ma_sound_group* pGroup, float x, float y, float z) { ma_sound_set_position(pGroup, x, y, z); }
+MA_API ma_vec3f ma_sound_group_get_position(const ma_sound_group* pGroup) { return ma_sound_get_position(pGroup); }
+MA_API void ma_sound_group_set_direction(ma_sound_group* pGroup, float x, float y, float z) { ma_sound_set_direction(pGroup, x, y, z); }
+MA_API ma_vec3f ma_sound_group_get_direction(const ma_sound_group* pGroup) { return ma_sound_get_direction(pGroup); }
 #endif  
 
 
