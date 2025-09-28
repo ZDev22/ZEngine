@@ -9,9 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
-Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { 
-    createGraphicsPipeline(shader); 
-}
+Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
 
 Pipeline::~Pipeline() {
     if (graphicsPipeline != VK_NULL_HANDLE) { vkDestroyPipeline(device.device(), graphicsPipeline, nullptr); }
@@ -20,9 +18,7 @@ Pipeline::~Pipeline() {
     if (descriptorPool != VK_NULL_HANDLE) { vkDestroyDescriptorPool(device.device(), descriptorPool, nullptr); }
 }
 
-void Pipeline::bind(VkCommandBuffer commandBuffer) { 
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); 
-}
+void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 
 std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
@@ -129,9 +125,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     layoutInfo.bindingCount = 2;
     layoutInfo.pBindings = bindings;
 
-    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { 
-        throw("failed to create descriptor set layout!"); 
-    }
+    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw("failed to create descriptor set layout!"); }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -144,9 +138,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { 
-        throw("failed to create pipeline layout!"); 
-    }
+    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 
     VkDescriptorPoolSize poolSizes[2] = {};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -160,9 +152,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     poolInfo.pPoolSizes = poolSizes;
     poolInfo.maxSets = 1;
 
-    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { 
-        throw("failed to create descriptor pool!"); 
-    }
+    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -181,9 +171,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { 
-        throw("failed to create graphics pipeline!"); 
-    }
+    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw("failed to create graphics pipeline!"); }
 }
 
 VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
@@ -198,9 +186,7 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
 }
 
 std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) {
-    if (positions.size() % 2 != 0) {
-        throw std::runtime_error("Positions size must be a multiple of 2");
-    }
+    if (positions.size() % 2 != 0) { throw std::runtime_error("Positions size must be a multiple of 2"); }
 
     std::vector<Model::Vertex> vertices;
     vertices.reserve(positions.size() / 2);
@@ -209,8 +195,8 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) 
         Model::Vertex v{};
         v.position[0] = positions[i];
         v.position[1] = positions[i + 1];
-        v.texCoord[0] = positions[i] + 0.5f;
-        v.texCoord[1] = positions[i + 1] + 0.5f;
+        v.texCoord[0] = positions[i] + .5f;
+        v.texCoord[1] = positions[i + 1] + .5f;
         vertices.push_back(v);
     }
 
@@ -242,21 +228,22 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, floa
     spriteCPU.push_back(sprite);
 }
 
-void Pipeline::createText(const std::string& file, const std::string& text, float fontSize) {
+void Pipeline::createText(unsigned int font, const std::string& text, float fontSize) {
     float pixelHeight = 32.f;
     int atlasSize = 512;
+
+    unsigned int fileSize = 0;
 
     std::vector<unsigned char> grayscale(atlasSize * atlasSize);
     std::vector<stbtt_bakedchar> charData(96);
 
-    stbtt_BakeFontBitmap(loadTTF(file), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
-    delete[] ttfData;
+    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
 
-    float min_y = 0.f;
-    float max_y = 0.f;
-    float current_x = 0.f;
+    float min_y = 0.0f;
+    float max_y = 0.0f;
+    float current_x = 0.0f;
     for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
+        if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
         min_y = std::min(min_y, cd.yoff);
         max_y = std::max(max_y, cd.yoff + (cd.y1 - cd.y0));
@@ -271,7 +258,7 @@ void Pipeline::createText(const std::string& file, const std::string& text, floa
 
     current_x = 0.0f;
     for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
+        if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
 
         int dst_x = static_cast<int>(std::round(current_x + cd.xoff));
@@ -296,7 +283,7 @@ void Pipeline::createText(const std::string& file, const std::string& text, floa
     spriteTextures.push_back(std::make_unique<Texture>(device, text_grayscale.data(), size, descriptorSetLayout, descriptorPool, *this));
 }
 
-void Pipeline::loadSprites(std::vector<const char*> textures, std::vector<const char*> font) {
+void Pipeline::loadSprites() {
     sprites.clear();
     spriteCPU.clear();
 
@@ -307,24 +294,16 @@ void Pipeline::loadSprites(std::vector<const char*> textures, std::vector<const 
         .5f, .5f    // Top-Left
     });
 
-    texturePaths = textures;
-    fonts = font;
-
-    while (texturePaths.size() < MAX_TEXTURES - fonts.size()) { texturePaths.push_back("../assets/images/e.jpg"); }
-
+    while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
     spriteTextures.clear();
     spriteTextures.reserve(MAX_TEXTURES);
-
-    for (unsigned int i = 0; i < texturePaths.size(); i++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this));  }
-
-    for (int i = 0; i < fonts.size(); i++) {
-        createText(fonts[i], "ZDEV", 0.f, 1.f);
-        createSprite(squareModel, spriteTextures.size() - 1, 0, 0, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
-    }
+    for (const auto& path : texturePaths) { spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this)); }
 }
 
 void Pipeline::loadFlappyBird() {
-    loadSprites({ "../assets/images/flappyBird.png", "../assets/images/pipe.png" }, { "assets/fonts/Bullpen3D.ttf" });\
+    texturePaths = { "flappyBird.png", "pipe.png" };
+    fonts = { "assets/fonts/Bullpen3D.ttf" };
+    loadSprites();
 
     createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
@@ -336,14 +315,18 @@ void Pipeline::loadFlappyBird() {
 }
 
 void Pipeline::loadSlimeAttack() {
-    loadSprites({ "../assets/images/flappyBird.png", "../assets/images/pipe.png" }, {});
+    texturePaths = { "flappyBird.png", "pipe.png" };
+    fonts = {};
+    loadSprites();
 
     createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
     createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }
 
 void Pipeline::loadTerminalCalculator() {
-    loadSprites({ "../assets/images/terminalCalculator.png"}, {});
+    texturePaths = { "terminalCalculator.png" };
+    fonts = {};
+    loadSprites();
 
     createSprite(squareModel, 0, 0.f, 0.f, 2.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }

@@ -60,16 +60,7 @@ extern "C"
 
 #if !defined(VK_NO_STDDEF_H)
     #include <stddef.h>
-#endif // !defined(VK_NO_STDDEF_H)
-
-typedef signed char signed char;
-typedef unsigned char unsigned char;
-typedef short short;
-typedef unsigned short unsigned short;
-typedef int int;
-typedef unsigned int unsigned int;
-typedef long long long long;
-typedef unsigned long long unsigned long long;
+#endif
 
 #ifdef __cplusplus
 } // extern "C"

@@ -75,6 +75,33 @@ public:
         return keysIdle;
     }
 
+    // Activity
+    vector<unsigned short> activeKeys() {
+        vector<unsigned short> keysPressed;
+        for (unsigned char i = 0; i < 104; i++) if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { keysPressed.push_back(glfwKeys[i]); }
+        return keysPressed;
+    }
+    unsigned char countKeysPressed() {
+        unsigned char keysPressed;
+        for (unsigned char i = 0; i < 104; i++) if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { keysPressed++; }
+        return keysPressed;
+    }
+    unsigned char countKeysHit() {
+        unsigned char keysHit;
+        for (unsigned char i = 0; i < 104; i++) if (updateKeyState(glfwKeys[i]) == KEY_HIT) { keysHit++; }
+        return keysHit;
+    }
+    unsigned char countKeysReleased() {
+        unsigned char keysReleased;
+        for (unsigned char i = 0; i < 104; i++) if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) { keysReleased++; }
+        return keysReleased;
+    }
+    unsigned char countKeysIdle() {
+        unsigned char keysIdle;
+        for (unsigned char i = 0; i < 104; i++) if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { keysIdle++; }
+        return keysIdle;
+    }
+
     // Keybinds
     struct KeyBind {
         unsigned short key;
@@ -163,8 +190,8 @@ public:
 
     void updateMousePosition() { glfwGetCursorPos(window, &mousePosition[0], &mousePosition[1]); }
     void setMousePosition(double newPosition[2]) { glfwSetCursorPos(window, newPosition[0], newPosition[1]); }
-    float mouseX() { return mousePosition[0]; }
-    float mouseY() { return mousePosition[1]; }
+    float getMouseX() { return mousePosition[0]; }
+    float getMouseY() { return mousePosition[1]; }
     bool LMBPressed() { return mouseState[0]; }
     bool RMBPressed() { return mouseState[2]; }
     bool LMBHit() { return mouseState[1] == KEY_HIT; }

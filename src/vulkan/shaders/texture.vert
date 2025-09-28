@@ -14,7 +14,6 @@ struct SpriteData {
     vec4 color;
     uint textureIndex;
     float rotation;
-    uint ID;
 };
 
 layout(push_constant) uniform PushConstants { 

@@ -9,6 +9,8 @@
 #define MAX_SPRITES 100000
 #define MAX_TEXTURES 66
 
+inline void setTextSprite(const char* text, unsigned int font, float fontSize, unsigned int spriteID, Pipeline& pipeline);
+
 struct alignas(16) SpriteData {
     float position[2];
     float scale[2];
@@ -26,7 +28,7 @@ struct alignas(16) SpriteData {
         rotationMatrix[1] = -rotationMatrix[2];
         rotationMatrix[3] = rotationMatrix[0];
     }
-    void setText(const char* text, const char* font, float fontSize) { setTextSprite(text, font, fontSize, ID, textureIndex); }
+    inline void setText(const char* text, unsigned int font, float fontSize, Pipeline& pipeline) { setTextSprite(text, font, fontSize, ID, pipeline); }
 };
 
 struct Sprite {
@@ -40,9 +42,12 @@ extern std::vector<SpriteData> sprites;
 extern std::vector<Sprite> spriteCPU;
 extern std::vector<std::unique_ptr<Texture>> spriteTextures;
 
-inline void setTextSprite(const char* text, const char* filepath, float fontSize, unsigned int spriteID, unsigned int oldTextureIndex) {
-    for (unsigned int i = 0; i < sprites.size(); i++) { if (sprites[i].textureIndex >= sprites[spriteID].textureIndex) { sprite[i].textureIndex--; }}
-    spriteTextures.erase(spriteTextures.begin() + oldTextureIndex);
-    createText(text, filepath, fontSize);
+inline void setTextSprite(const char* text, unsigned int font, float fontSize, unsigned int spriteID, Pipeline& pipeline) {
+    unsigned int i = 0;
+    while (spriteTextures[i]->name != "e.jpg") { i++; }
+    spriteTextures.erase(spriteTextures.begin() + i);
+    for (unsigned int q = i; q < sprites.size(); q++) { if (sprites[q].textureIndex >= i) { sprites[q].textureIndex--; }}
+    pipeline.createText(font, text, fontSize);
     sprites[spriteID].textureIndex = spriteTextures.size() - 1;
+    textureUpdate = true;
 }

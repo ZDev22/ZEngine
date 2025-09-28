@@ -1,4 +1,5 @@
 #include "renderSystem.hpp"
+#include "sprite.hpp"
 
 RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(descriptorSetLayout) {
     createPipelineLayout();
@@ -9,7 +10,16 @@ RenderSystem::RenderSystem(Device& device, AppWindow& window, Renderer& renderer
 RenderSystem::~RenderSystem() {
     spriteDataBuffer->unmap();
     vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
-    if (spriteDataDescriptorSet != VK_NULL_HANDLE) { vkFreeDescriptorSets(device.device(), pipeline.getDescriptorPool(), 1, &spriteDataDescriptorSet); }
+    vkFreeDescriptorSets(device.device(), pipeline.getDescriptorPool(), 1, &spriteDataDescriptorSet);
+}
+
+void RenderSystem::recreate() {
+    vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+    vkFreeDescriptorSets(device.device(), pipeline.getDescriptorPool(), 1, &spriteDataDescriptorSet);
+    createPipelineLayout();
+    initializeSpriteData();
+    createTextureArrayDescriptorSet();
+    textureUpdate = false;
 }
 
 void RenderSystem::createPipelineLayout() {
@@ -69,7 +79,9 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor set!"); }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor set!");
+    }
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
@@ -100,6 +112,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
+    if (textureUpdate) { recreate(); }
     pipeline.bind(commandBuffer);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);

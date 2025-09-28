@@ -21,6 +21,8 @@ void FlappyBird::tick() {
                 sprites[0].textureIndex = 0;
 
                 playSound(&audio, "assets/sounds/chirp.mp3");
+                pipeline.createSprite(pipeline.getSquareModel(), spriteTextures.size() - 1, 0.f, 0.f, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
+                sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f, pipeline);
             }
 
             if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {

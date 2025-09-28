@@ -32,9 +32,9 @@ sudo apt install gdb
 - Duplicate program.cpp and .hpp from games/flappyBird into your new folder
 - Delete the tick() implementation and replace it with your own
 - Navigate to src/vulkan/app.hpp and update the include path to the path of your file
-- Update the loader, constructor and the tick() functions to your game's
+- Update the constructor and the tick() functions to your game's
 - Navigate to src/vulkan/pipeline.hpp and create a new function to load your game
-- Navigate to src/vulkan/pipeline.cpp and implement it at the bottom of the file
+- Navigate to src/vulkan/pipeline.cpp and use your new function at the bottom of the file
 
 ## Third party dependencies:
 [GLM (Math) {Modified}](https://github.com/icaven/glm)  

@@ -5,7 +5,7 @@ template<unsigned long long bitCount>
    requires (bitCount % 64 == 0)
 struct bigInt {
 public:
-   constexpr bigInt() {}
+   constexpr bigInt() = default;
    constexpr bigInt(unsigned long long v) { limbs[0] = v; }
    template<typename T>
    constexpr bigInt(const T v) { limbs[0] = v; }

@@ -22,20 +22,3 @@ unsigned char* loadTTF(const std::string& filepath) {
     std::fclose(file);
     return buffer;
 }
-
-std::unique_ptr<Texture> createFontTexture(Device& device, Pipeline& pipeline, const std::string& ttfPath, float pixelHeight, int atlasSize, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, std::vector<stbtt_bakedchar>& outCharData) {
-    unsigned int fileSize = 0;
-    unsigned char* ttfData = loadTTF("assets/fonts/" + ttfPath, fileSize);
-
-    std::vector<unsigned char> grayscale(atlasSize * atlasSize);
-    stbtt_bakedchar charData[96];
-
-    int result = stbtt_BakeFontBitmap(ttfData, 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData);
-    delete[] ttfData;
-
-    if (result <= 0) throw("Failed to bake font bitmap.");
-
-    outCharData.assign(charData, charData + 96);
-
-    return std::make_unique<Texture>(device, grayscale.data(), atlasSize, descriptorSetLayout, descriptorPool, pipeline);
-}

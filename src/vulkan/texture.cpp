@@ -6,6 +6,7 @@
 #include "../deps/stb_image.h"
 
 #include <cstring>
+#include <filesystem>
 
 static void createTextureSampler(const Device& device, VkSampler& sampler) {
     VkSamplerCreateInfo samplerInfo{};
@@ -24,8 +25,10 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
     vkCreateSampler(device.device(), &samplerInfo, nullptr, &sampler);
 }
 
-Texture::Texture(Device& device, const char* filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
-    stbi_uc* pixels = stbi_load(filepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
+    name = filepath;
+    stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    if (!pixels) { throw("failed to load texture") + filepath; }
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
@@ -76,7 +79,9 @@ Texture::Texture(Device& device, const char* filepath, VkDescriptorSetLayout des
     createTextureSampler(device, sampler);
 }
 
-Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) 
+    : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), 
+      imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
     VkDeviceSize imageSize = size * size * 4;
 
     std::vector<unsigned char> rgbaPixels(imageSize);
@@ -124,16 +129,20 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView);
-    createTextureSampler(device, sampler);
+    if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture view"); }
 
+    createTextureSampler(device, sampler);
+    createDescriptorSet(descriptorSetLayout, descriptorPool);
+}
+
+void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet);
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor sets"); }
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -176,7 +185,7 @@ void Texture::transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLa
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
+    } 
     else {
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;

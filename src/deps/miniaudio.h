@@ -1174,7 +1174,7 @@ typedef struct
     ma_channel* pChannelMapIn;
     ma_attenuation_model attenuationModel;
     ma_positioning positioning;
-    ma_handedness handedness;
+    ma_handedness handedness;           
     float minGain;
     float maxGain;
     float minDistance;
@@ -1183,16 +1183,16 @@ typedef struct
     float coneInnerAngleInRadians;
     float coneOuterAngleInRadians;
     float coneOuterGain;
-    float dopplerFactor;
-    float directionalAttenuationFactor;
-    ma_uint32 gainSmoothTimeInFrames;
+    float dopplerFactor;                
+    float directionalAttenuationFactor; 
+    ma_uint32 gainSmoothTimeInFrames;   
     ma_atomic_vec3f position;
     ma_atomic_vec3f direction;
-    ma_atomic_vec3f velocity;
-    float dopplerPitch;
+    ma_atomic_vec3f velocity;  
+    float dopplerPitch; 
     float minSpatializationChannelGain;
-    ma_gainer gainer;
-    float* pNewChannelGainsOut;
+    ma_gainer gainer;   
+    float* pNewChannelGainsOut; 
 
     
     void* _pHeap;
@@ -3287,76 +3287,148 @@ struct ma_device
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
     #pragma GCC diagnostic pop  
 #endif
+
+
 MA_API ma_context_config ma_context_config_init(void);
+
+
 MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendCount, const ma_context_config* pConfig, ma_context* pContext);
+
+
 MA_API ma_result ma_context_uninit(ma_context* pContext);
+
+
 MA_API size_t ma_context_sizeof(void);
+
+
 MA_API ma_log* ma_context_get_log(ma_context* pContext);
+
+
 MA_API ma_result ma_context_enumerate_devices(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData);
+
+
 MA_API ma_result ma_context_get_devices(ma_context* pContext, ma_device_info** ppPlaybackDeviceInfos, ma_uint32* pPlaybackDeviceCount, ma_device_info** ppCaptureDeviceInfos, ma_uint32* pCaptureDeviceCount);
+
+
 MA_API ma_result ma_context_get_device_info(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_device_info* pDeviceInfo);
+
+
 MA_API ma_bool32 ma_context_is_loopback_supported(ma_context* pContext);
+
 MA_API ma_device_config ma_device_config_init(ma_device_type deviceType);
+
 MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pConfig, ma_device* pDevice);
+
+
 MA_API ma_result ma_device_init_ex(const ma_backend backends[], ma_uint32 backendCount, const ma_context_config* pContextConfig, const ma_device_config* pConfig, ma_device* pDevice);
+
+
 MA_API void ma_device_uninit(ma_device* pDevice);
+
 MA_API ma_context* ma_device_get_context(ma_device* pDevice);
+
+
 MA_API ma_log* ma_device_get_log(ma_device* pDevice);
+
 MA_API ma_result ma_device_get_info(ma_device* pDevice, ma_device_type type, ma_device_info* pDeviceInfo);
+
 MA_API ma_result ma_device_get_name(ma_device* pDevice, ma_device_type type, char* pName, size_t nameCap, size_t* pLengthNotIncludingNullTerminator);
+
 MA_API ma_result ma_device_start(ma_device* pDevice);
+
+
 MA_API ma_result ma_device_stop(ma_device* pDevice);
+
+
 MA_API ma_bool32 ma_device_is_started(const ma_device* pDevice);
+
 MA_API ma_device_state ma_device_get_state(const ma_device* pDevice);
+
 MA_API ma_result ma_device_post_init(ma_device* pDevice, ma_device_type deviceType, const ma_device_descriptor* pPlaybackDescriptor, const ma_device_descriptor* pCaptureDescriptor);
+
 MA_API ma_result ma_device_set_master_volume(ma_device* pDevice, float volume);
+
+
 MA_API ma_result ma_device_get_master_volume(ma_device* pDevice, float* pVolume);
+
+
 MA_API ma_result ma_device_set_master_volume_db(ma_device* pDevice, float gainDB);
+
+
 MA_API ma_result ma_device_get_master_volume_db(ma_device* pDevice, float* pGainDB);
+
 MA_API ma_result ma_device_handle_backend_data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+
 MA_API ma_uint32 ma_calculate_buffer_size_in_frames_from_descriptor(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile);
+
 MA_API const char* ma_get_backend_name(ma_backend backend);
+
+
 MA_API ma_result ma_get_backend_from_name(const char* pBackendName, ma_backend* pBackend);
+
+
 MA_API ma_bool32 ma_is_backend_enabled(ma_backend backend);
+
+
 MA_API ma_result ma_get_enabled_backends(ma_backend* pBackends, size_t backendCap, size_t* pBackendCount);
+
+
 MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend);
+
 #endif  
+
+
+
 MA_API ma_uint32 ma_calculate_buffer_size_in_milliseconds_from_frames(ma_uint32 bufferSizeInFrames, ma_uint32 sampleRate);
+
+
 MA_API ma_uint32 ma_calculate_buffer_size_in_frames_from_milliseconds(ma_uint32 bufferSizeInMilliseconds, ma_uint32 sampleRate);
+
+
 MA_API void ma_copy_pcm_frames(void* dst, const void* src, ma_uint64 frameCount, ma_format format, ma_uint32 channels);
+
+
 MA_API void ma_silence_pcm_frames(void* p, ma_uint64 frameCount, ma_format format, ma_uint32 channels);
+
 MA_API void* ma_offset_pcm_frames_ptr(void* p, ma_uint64 offsetInFrames, ma_format format, ma_uint32 channels);
 MA_API const void* ma_offset_pcm_frames_const_ptr(const void* p, ma_uint64 offsetInFrames, ma_format format, ma_uint32 channels);
 static MA_INLINE float* ma_offset_pcm_frames_ptr_f32(float* p, ma_uint64 offsetInFrames, ma_uint32 channels) { return (float*)ma_offset_pcm_frames_ptr((void*)p, offsetInFrames, ma_format_f32, channels); }
 static MA_INLINE const float* ma_offset_pcm_frames_const_ptr_f32(const float* p, ma_uint64 offsetInFrames, ma_uint32 channels) { return (const float*)ma_offset_pcm_frames_const_ptr((const void*)p, offsetInFrames, ma_format_f32, channels); }
+
 MA_API void ma_clip_samples_u8(ma_uint8* pDst, const ma_int16* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_s16(ma_int16* pDst, const ma_int32* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_s24(ma_uint8* pDst, const ma_int64* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_s32(ma_int32* pDst, const ma_int64* pSrc, ma_uint64 count);
 MA_API void ma_clip_samples_f32(float* pDst, const float* pSrc, ma_uint64 count);
 MA_API void ma_clip_pcm_frames(void* pDst, const void* pSrc, ma_uint64 frameCount, ma_format format, ma_uint32 channels);
+
+
 MA_API void ma_copy_and_apply_volume_factor_u8(ma_uint8* pSamplesOut, const ma_uint8* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_s16(ma_int16* pSamplesOut, const ma_int16* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_s24(void* pSamplesOut, const void* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_s32(ma_int32* pSamplesOut, const ma_int32* pSamplesIn, ma_uint64 sampleCount, float factor);
 MA_API void ma_copy_and_apply_volume_factor_f32(float* pSamplesOut, const float* pSamplesIn, ma_uint64 sampleCount, float factor);
+
 MA_API void ma_apply_volume_factor_u8(ma_uint8* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_s16(ma_int16* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_s24(void* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_s32(ma_int32* pSamples, ma_uint64 sampleCount, float factor);
 MA_API void ma_apply_volume_factor_f32(float* pSamples, ma_uint64 sampleCount, float factor);
+
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_u8(ma_uint8* pFramesOut, const ma_uint8* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s16(ma_int16* pFramesOut, const ma_int16* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s24(void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_s32(ma_int32* pFramesOut, const ma_int32* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames_f32(float* pFramesOut, const float* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_copy_and_apply_volume_factor_pcm_frames(void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor);
+
 MA_API void ma_apply_volume_factor_pcm_frames_u8(ma_uint8* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_s16(ma_int16* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_s24(void* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_s32(ma_int32* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames_f32(float* pFrames, ma_uint64 frameCount, ma_uint32 channels, float factor);
 MA_API void ma_apply_volume_factor_pcm_frames(void* pFrames, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float factor);
+
 MA_API void ma_copy_and_apply_volume_factor_per_channel_f32(float* pFramesOut, const float* pFramesIn, ma_uint64 frameCount, ma_uint32 channels, float* pChannelGains);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_u8(ma_uint8* pDst, const ma_int16* pSrc, ma_uint64 count, float volume);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_s16(ma_int16* pDst, const ma_int32* pSrc, ma_uint64 count, float volume);
@@ -3364,9 +3436,14 @@ MA_API void ma_copy_and_apply_volume_and_clip_samples_s24(ma_uint8* pDst, const 
 MA_API void ma_copy_and_apply_volume_and_clip_samples_s32(ma_int32* pDst, const ma_int64* pSrc, ma_uint64 count, float volume);
 MA_API void ma_copy_and_apply_volume_and_clip_samples_f32(float* pDst, const float* pSrc, ma_uint64 count, float volume);
 MA_API void ma_copy_and_apply_volume_and_clip_pcm_frames(void* pDst, const void* pSrc, ma_uint64 frameCount, ma_format format, ma_uint32 channels, float volume);
+
 MA_API float ma_volume_linear_to_db(float factor);
+
+
 MA_API float ma_volume_db_to_linear(float gain);
+
 MA_API ma_result ma_mix_pcm_frames_f32(float* pDst, const float* pSrc, ma_uint64 frameCount, ma_uint32 channels, float volume);
+
 typedef void      ma_vfs;
 typedef ma_handle ma_vfs_file;
 
@@ -3505,25 +3582,45 @@ struct ma_decoder
         } memory;               
     } data;
 };
+
 MA_API ma_decoder_config ma_decoder_config_init(ma_format outputFormat, ma_uint32 outputChannels, ma_uint32 outputSampleRate);
 MA_API ma_decoder_config ma_decoder_config_init_default(void);
+
 MA_API ma_result ma_decoder_init(ma_decoder_read_proc onRead, ma_decoder_seek_proc onSeek, void* pUserData, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_memory(const void* pData, size_t dataSize, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_vfs(ma_vfs* pVFS, const char* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_vfs_w(ma_vfs* pVFS, const wchar_t* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_file(const char* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
 MA_API ma_result ma_decoder_init_file_w(const wchar_t* pFilePath, const ma_decoder_config* pConfig, ma_decoder* pDecoder);
+
+
 MA_API ma_result ma_decoder_uninit(ma_decoder* pDecoder);
+
+
 MA_API ma_result ma_decoder_read_pcm_frames(ma_decoder* pDecoder, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);
+
+
 MA_API ma_result ma_decoder_seek_to_pcm_frame(ma_decoder* pDecoder, ma_uint64 frameIndex);
+
+
 MA_API ma_result ma_decoder_get_data_format(ma_decoder* pDecoder, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap);
+
+
 MA_API ma_result ma_decoder_get_cursor_in_pcm_frames(ma_decoder* pDecoder, ma_uint64* pCursor);
+
+
 MA_API ma_result ma_decoder_get_length_in_pcm_frames(ma_decoder* pDecoder, ma_uint64* pLength);
-MA_API ma_result ma_decoder_get_available_frames(ma_decoder* pDecoder, ma_uint64* pAvailableFrames)
+
+
+MA_API ma_result ma_decoder_get_available_frames(ma_decoder* pDecoder, ma_uint64* pAvailableFrames);
+
+
 MA_API ma_result ma_decode_from_vfs(ma_vfs* pVFS, const char* pFilePath, ma_decoder_config* pConfig, ma_uint64* pFrameCountOut, void** ppPCMFramesOut);
 MA_API ma_result ma_decode_file(const char* pFilePath, ma_decoder_config* pConfig, ma_uint64* pFrameCountOut, void** ppPCMFramesOut);
 MA_API ma_result ma_decode_memory(const void* pData, size_t dataSize, ma_decoder_config* pConfig, ma_uint64* pFrameCountOut, void** ppPCMFramesOut);
+
 #endif  
+
 #ifndef MA_NO_ENCODING
 typedef struct ma_encoder ma_encoder;
 
@@ -3916,9 +4013,13 @@ struct ma_resource_manager
     ma_default_vfs defaultVFS;                                      
     ma_log log;                                                     
 };
+
+
 MA_API ma_result ma_resource_manager_init(const ma_resource_manager_config* pConfig, ma_resource_manager* pResourceManager);
 MA_API void ma_resource_manager_uninit(ma_resource_manager* pResourceManager);
 MA_API ma_log* ma_resource_manager_get_log(ma_resource_manager* pResourceManager);
+
+
 MA_API ma_result ma_resource_manager_register_file(ma_resource_manager* pResourceManager, const char* pFilePath, ma_uint32 flags);
 MA_API ma_result ma_resource_manager_register_file_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath, ma_uint32 flags);
 MA_API ma_result ma_resource_manager_register_decoded_data(ma_resource_manager* pResourceManager, const char* pName, const void* pData, ma_uint64 frameCount, ma_format format, ma_uint32 channels, ma_uint32 sampleRate);  
@@ -3929,6 +4030,8 @@ MA_API ma_result ma_resource_manager_unregister_file(ma_resource_manager* pResou
 MA_API ma_result ma_resource_manager_unregister_file_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath);
 MA_API ma_result ma_resource_manager_unregister_data(ma_resource_manager* pResourceManager, const char* pName);
 MA_API ma_result ma_resource_manager_unregister_data_w(ma_resource_manager* pResourceManager, const wchar_t* pName);
+
+
 MA_API ma_result ma_resource_manager_data_buffer_init_ex(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_buffer* pDataBuffer);
 MA_API ma_result ma_resource_manager_data_buffer_init(ma_resource_manager* pResourceManager, const char* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_buffer* pDataBuffer);
 MA_API ma_result ma_resource_manager_data_buffer_init_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_buffer* pDataBuffer);
@@ -3943,6 +4046,8 @@ MA_API ma_result ma_resource_manager_data_buffer_result(const ma_resource_manage
 MA_API ma_result ma_resource_manager_data_buffer_set_looping(ma_resource_manager_data_buffer* pDataBuffer, ma_bool32 isLooping);
 MA_API ma_bool32 ma_resource_manager_data_buffer_is_looping(const ma_resource_manager_data_buffer* pDataBuffer);
 MA_API ma_result ma_resource_manager_data_buffer_get_available_frames(ma_resource_manager_data_buffer* pDataBuffer, ma_uint64* pAvailableFrames);
+
+
 MA_API ma_result ma_resource_manager_data_stream_init_ex(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_stream* pDataStream);
 MA_API ma_result ma_resource_manager_data_stream_init(ma_resource_manager* pResourceManager, const char* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_stream* pDataStream);
 MA_API ma_result ma_resource_manager_data_stream_init_w(ma_resource_manager* pResourceManager, const wchar_t* pFilePath, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_stream* pDataStream);
@@ -3956,6 +4061,8 @@ MA_API ma_result ma_resource_manager_data_stream_result(const ma_resource_manage
 MA_API ma_result ma_resource_manager_data_stream_set_looping(ma_resource_manager_data_stream* pDataStream, ma_bool32 isLooping);
 MA_API ma_bool32 ma_resource_manager_data_stream_is_looping(const ma_resource_manager_data_stream* pDataStream);
 MA_API ma_result ma_resource_manager_data_stream_get_available_frames(ma_resource_manager_data_stream* pDataStream, ma_uint64* pAvailableFrames);
+
+
 MA_API ma_result ma_resource_manager_data_source_init_ex(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_source* pDataSource);
 MA_API ma_result ma_resource_manager_data_source_init(ma_resource_manager* pResourceManager, const char* pName, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_source* pDataSource);
 MA_API ma_result ma_resource_manager_data_source_init_w(ma_resource_manager* pResourceManager, const wchar_t* pName, ma_uint32 flags, const ma_resource_manager_pipeline_notifications* pNotifications, ma_resource_manager_data_source* pDataSource);
@@ -3970,20 +4077,29 @@ MA_API ma_result ma_resource_manager_data_source_result(const ma_resource_manage
 MA_API ma_result ma_resource_manager_data_source_set_looping(ma_resource_manager_data_source* pDataSource, ma_bool32 isLooping);
 MA_API ma_bool32 ma_resource_manager_data_source_is_looping(const ma_resource_manager_data_source* pDataSource);
 MA_API ma_result ma_resource_manager_data_source_get_available_frames(ma_resource_manager_data_source* pDataSource, ma_uint64* pAvailableFrames);
+
+
 MA_API ma_result ma_resource_manager_post_job(ma_resource_manager* pResourceManager, const ma_job* pJob);
 MA_API ma_result ma_resource_manager_post_job_quit(ma_resource_manager* pResourceManager);  
 MA_API ma_result ma_resource_manager_next_job(ma_resource_manager* pResourceManager, ma_job* pJob);
 MA_API ma_result ma_resource_manager_process_job(ma_resource_manager* pResourceManager, ma_job* pJob);  
 MA_API ma_result ma_resource_manager_process_next_job(ma_resource_manager* pResourceManager);   
 #endif  
-#ifndef MA_NO_NODE_GRAP
+
+#ifndef MA_NO_NODE_GRAPH
+
 #ifndef MA_MAX_NODE_BUS_COUNT
 #define MA_MAX_NODE_BUS_COUNT       254
 #endif
+
+
 #ifndef MA_MAX_NODE_LOCAL_BUS_COUNT
 #define MA_MAX_NODE_LOCAL_BUS_COUNT 2
 #endif
+
+
 #define MA_NODE_BUS_COUNT_UNKNOWN   255
+
 typedef struct
 {
     size_t offset;
@@ -4009,10 +4125,19 @@ typedef enum
 } ma_node_state;
 typedef struct
 {
+    
     void (* onProcess)(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut);
+
+    
     ma_result (* onGetRequiredInputFrameCount)(ma_node* pNode, ma_uint32 outputFrameCount, ma_uint32* pInputFrameCount);
+
+    
     ma_uint8 inputBusCount;
+
+    
     ma_uint8 outputBusCount;
+
+    
     ma_uint32 flags;
 } ma_node_vtable;
 
@@ -4031,9 +4156,12 @@ MA_API ma_node_config ma_node_config_init(void);
 typedef struct ma_node_output_bus ma_node_output_bus;
 struct ma_node_output_bus
 {
+    
     ma_node* pNode;                                         
     ma_uint8 outputBusIndex;                                
-    ma_uint8 channels;
+    ma_uint8 channels;                                      
+
+    
     ma_uint8 inputNodeInputBusIndex;                        
     MA_ATOMIC(4, ma_uint32) flags;                          
     MA_ATOMIC(4, ma_uint32) refCount;                       
@@ -4060,6 +4188,7 @@ struct ma_node_input_bus
 typedef struct ma_node_base ma_node_base;
 struct ma_node_base
 {
+    
     ma_node_graph* pNodeGraph;                  
     const ma_node_vtable* vtable;
     ma_uint32 inputBusCount;
@@ -4068,12 +4197,18 @@ struct ma_node_base
     ma_node_output_bus* pOutputBuses;
     float* pCachedData;                         
     ma_uint16 cachedDataCapInFramesPerBus;      
+
+    
     ma_uint16 cachedFrameCountOut;
     ma_uint16 cachedFrameCountIn;
     ma_uint16 consumedFrameCountIn;
+
+    
     MA_ATOMIC(4, ma_node_state) state;          
     MA_ATOMIC(8, ma_uint64) stateTimes[2];      
     MA_ATOMIC(8, ma_uint64) localTime;          
+
+    
     ma_node_input_bus _inputBuses[MA_MAX_NODE_LOCAL_BUS_COUNT];
     ma_node_output_bus _outputBuses[MA_MAX_NODE_LOCAL_BUS_COUNT];
     void* _pHeap;   
@@ -5405,26 +5540,57 @@ static MA_INLINE void ma_zero_memory_default(void* p, size_t sz)
     }
 }
 #ifndef MA_ZERO_MEMORY
-#define MA_ZERO_MEMORY(p, sz) ma_zero_memory_default((p), (sz))
+#define MA_ZERO_MEMORY(p, sz)           ma_zero_memory_default((p), (sz))
 #endif
 #ifndef MA_COPY_MEMORY
-#define MA_COPY_MEMORY(dst, src, sz) memcpy((dst), (src), (sz))
+#define MA_COPY_MEMORY(dst, src, sz)    memcpy((dst), (src), (sz))
 #endif
 #ifndef MA_MOVE_MEMORY
-#define MA_MOVE_MEMORY(dst, src, sz) memmove((dst), (src), (sz))
+#define MA_MOVE_MEMORY(dst, src, sz)    memmove((dst), (src), (sz))
 #endif
-#define MA_ZERO_OBJECT(p) MA_ZERO_MEMORY((p), sizeof(*(p)))
 
-#define ma_countof(x) (sizeof(x) / sizeof(x[0]))
-#define ma_max(x, y) (((x) > (y)) ? (x) : (y))
-#define ma_min(x, y) (((x) < (y)) ? (x) : (y))
-#define ma_abs(x) (((x) > 0) ? (x) : -(x))
-#define ma_clamp(x, lo, hi) (ma_max(lo, ma_min(x, hi)))
-#define ma_offset_ptr(p, offset) (((ma_uint8*)(p)) + (offset))
-#define ma_align(x, a) (((x) + ((a)-1)) & ~((a)-1))
-#define ma_align_64(x) ma_align(x, 8)
+#define MA_ZERO_OBJECT(p)               MA_ZERO_MEMORY((p), sizeof(*(p)))
+
+#define ma_countof(x)                   (sizeof(x) / sizeof(x[0]))
+#define ma_max(x, y)                    (((x) > (y)) ? (x) : (y))
+#define ma_min(x, y)                    (((x) < (y)) ? (x) : (y))
+#define ma_abs(x)                       (((x) > 0) ? (x) : -(x))
+#define ma_clamp(x, lo, hi)             (ma_max(lo, ma_min(x, hi)))
+#define ma_offset_ptr(p, offset)        (((ma_uint8*)(p)) + (offset))
+#define ma_align(x, a)                  (((x) + ((a)-1)) & ~((a)-1))
+#define ma_align_64(x)                  ma_align(x, 8)
 
 #define ma_buffer_frame_capacity(buffer, channels, format) (sizeof(buffer) / ma_get_bytes_per_sample(format) / (channels))
+
+static MA_INLINE double ma_sind(double x)
+{
+    
+    return sin(x);
+}
+
+static MA_INLINE double ma_expd(double x)
+{
+    
+    return exp(x);
+}
+
+static MA_INLINE double ma_logd(double x)
+{
+    
+    return log(x);
+}
+
+static MA_INLINE double ma_powd(double x, double y)
+{
+    
+    return pow(x, y);
+}
+
+static MA_INLINE double ma_sqrtd(double x)
+{
+    
+    return sqrt(x);
+}
 static MA_INLINE float ma_rsqrtf(float x)
 {
     #if defined(MA_SUPPORT_SSE2) && !defined(MA_NO_SSE2) && (defined(MA_X64) || (defined(_M_IX86_FP) && _M_IX86_FP == 2) || defined(__SSE2__))
@@ -5444,19 +5610,57 @@ static MA_INLINE float ma_rsqrtf(float x)
     }
     #else
     {
-        return 1 / (float)sqrt(x);
+        return 1 / (float)ma_sqrtd(x);
     }
     #endif
+}
+static MA_INLINE float ma_sinf(float x)
+{
+    return (float)ma_sind((float)x);
+}
+
+static MA_INLINE double ma_cosd(double x)
+{
+    return ma_sind((MA_PI_D*0.5) - x);
+}
+
+static MA_INLINE float ma_cosf(float x)
+{
+    return (float)ma_cosd((float)x);
+}
+
+static MA_INLINE double ma_log10d(double x)
+{
+    return ma_logd(x) * 0.43429448190325182765;
 }
 
 static MA_INLINE float ma_powf(float x, float y)
 {
-    return (float)pow((double)x, (double)y);
+    return (float)ma_powd((double)x, (double)y);
 }
 
 static MA_INLINE float ma_log10f(float x)
 {
-    return (float)log((double)x) * 0.43429448190325182765;
+    return (float)ma_log10d((double)x);
+}
+static MA_INLINE double ma_degrees_to_radians(double degrees)
+{
+    return degrees * 0.01745329252;
+}
+
+static MA_INLINE double ma_radians_to_degrees(double radians)
+{
+    return radians * 57.295779512896;
+}
+
+static MA_INLINE float ma_degrees_to_radians_f(float degrees)
+{
+    return degrees * 0.01745329252f;
+}
+
+static MA_INLINE float ma_radians_to_degrees_f(float radians)
+{
+    return radians * 57.295779512896f;
 }
 
 MA_API MA_NO_INLINE int ma_strcpy_s(char* dst, size_t dstSizeInBytes, const char* src)
@@ -6774,9 +6978,20 @@ MA_API ma_result ma_log_postf(ma_log* pLog, ma_uint32 level, const char* pFormat
 
     return result;
 }
-static MA_INLINE ma_uint8 ma_clip_u8(ma_int32 x) { return (ma_uint8)(ma_clamp(x, -128, 127) + 128); }
-static MA_INLINE ma_int16 ma_clip_s16(ma_int32 x) { return (ma_int16)ma_clamp(x, -32768, 32767); }
-static MA_INLINE ma_int64 ma_clip_s24(ma_int64 x) { return (ma_int64)ma_clamp(x, -8388608, 8388607); }
+static MA_INLINE ma_uint8 ma_clip_u8(ma_int32 x)
+{
+    return (ma_uint8)(ma_clamp(x, -128, 127) + 128);
+}
+
+static MA_INLINE ma_int16 ma_clip_s16(ma_int32 x)
+{
+    return (ma_int16)ma_clamp(x, -32768, 32767);
+}
+
+static MA_INLINE ma_int64 ma_clip_s24(ma_int64 x)
+{
+    return (ma_int64)ma_clamp(x, -8388608, 8388607);
+}
 
 static MA_INLINE ma_int32 ma_clip_s32(ma_int64 x)
 {
@@ -6807,68 +7022,186 @@ static MA_INLINE float ma_mix_f32_fast(float x, float y, float a)
     
 }
 
-static MA_INLINE float ma_scale_to_range_f32(float x, float lo, float hi) { return lo + x*(hi-lo); }
+#if defined(MA_SUPPORT_SSE2)
+static MA_INLINE __m128 ma_mix_f32_fast__sse2(__m128 x, __m128 y, __m128 a)
+{
+    return _mm_add_ps(x, _mm_mul_ps(_mm_sub_ps(y, x), a));
+}
+#endif
+#if defined(MA_SUPPORT_AVX2)
+static MA_INLINE __m256 ma_mix_f32_fast__avx2(__m256 x, __m256 y, __m256 a)
+{
+    return _mm256_add_ps(x, _mm256_mul_ps(_mm256_sub_ps(y, x), a));
+}
+#endif
+#if defined(MA_SUPPORT_NEON)
+static MA_INLINE float32x4_t ma_mix_f32_fast__neon(float32x4_t x, float32x4_t y, float32x4_t a)
+{
+    return vaddq_f32(x, vmulq_f32(vsubq_f32(y, x), a));
+}
+#endif
+static MA_INLINE double ma_mix_f64(double x, double y, double a)
+{
+    return x*(1-a) + y*a;
+}
+static MA_INLINE double ma_mix_f64_fast(double x, double y, double a)
+{
+    return x + (y - x)*a;
+}
 
-static MA_INLINE ma_uint32 ma_gcf_u32(ma_uint32 a, ma_uint32 b) {
+static MA_INLINE float ma_scale_to_range_f32(float x, float lo, float hi)
+{
+    return lo + x*(hi-lo);
+}
+
+static MA_INLINE ma_uint32 ma_gcf_u32(ma_uint32 a, ma_uint32 b)
+{
     for (;;) {
-        if (b == 0) { break; } 
-        ma_uint32 t = a;
-        a = b;
-        b = t % a;
+        if (b == 0) {
+            break;
+        } else {
+            ma_uint32 t = a;
+            a = b;
+            b = t % a;
+        }
     }
 
     return a;
 }
-static ma_uint32 ma_ffs_32(ma_uint32 x) {
+static ma_uint32 ma_ffs_32(ma_uint32 x)
+{
     ma_uint32 i;
-    for (i = 0; i < 32; i += 1) { if ((x & (1U << i)) != 0) { return i; }}
-    return 32;
+
+    
+    for (i = 0; i < 32; i += 1) {
+        if ((x & (1U << i)) != 0) {
+            return i;
+        }
+    }
+
+    return i;
 }
 
-static MA_INLINE ma_int16 ma_float_to_fixed_16(float x) { return (ma_int16)(x * (1 << 8)); }
+static MA_INLINE ma_int16 ma_float_to_fixed_16(float x)
+{
+    return (ma_int16)(x * (1 << 8));
+}
 
 #ifndef MA_DEFAULT_LCG_SEED
 #define MA_DEFAULT_LCG_SEED 4321
 #endif
-#define MA_LCG_M 2147483647
-#define MA_LCG_A 48271
-#define MA_LCG_C 0
+
+#define MA_LCG_M   2147483647
+#define MA_LCG_A   48271
+#define MA_LCG_C   0
 
 static ma_lcg g_maLCG = {MA_DEFAULT_LCG_SEED}; 
 
-static MA_INLINE void ma_lcg_seed(ma_lcg* pLCG, ma_int32 seed) {
+static MA_INLINE void ma_lcg_seed(ma_lcg* pLCG, ma_int32 seed)
+{
     MA_ASSERT(pLCG != NULL);
     pLCG->state = seed;
 }
 
-static MA_INLINE ma_int32 ma_lcg_rand_s32(ma_lcg* pLCG) {
+static MA_INLINE ma_int32 ma_lcg_rand_s32(ma_lcg* pLCG)
+{
     pLCG->state = (MA_LCG_A * pLCG->state + MA_LCG_C) % MA_LCG_M;
     return pLCG->state;
 }
 
-static MA_INLINE ma_uint32 ma_lcg_rand_u32(ma_lcg* pLCG) { return (ma_uint32)ma_lcg_rand_s32(pLCG); }
-static MA_INLINE double ma_lcg_rand_f64(ma_lcg* pLCG) { return ma_lcg_rand_s32(pLCG) / (double)0x7FFFFFFF; }
-static MA_INLINE float ma_lcg_rand_f32(ma_lcg* pLCG) { return (float)ma_lcg_rand_f64(pLCG); }
-static MA_INLINE float ma_lcg_rand_range_f32(ma_lcg* pLCG, float lo, float hi) { return ma_scale_to_range_f32(ma_lcg_rand_f32(pLCG), lo, hi); }
-static MA_INLINE ma_int32 ma_lcg_rand_range_s32(ma_lcg* pLCG, ma_int32 lo, ma_int32 hi) {
-    if (lo == hi) { return lo; }
+static MA_INLINE ma_uint32 ma_lcg_rand_u32(ma_lcg* pLCG)
+{
+    return (ma_uint32)ma_lcg_rand_s32(pLCG);
+}
+
+static MA_INLINE ma_int16 ma_lcg_rand_s16(ma_lcg* pLCG)
+{
+    return (ma_int16)(ma_lcg_rand_s32(pLCG) & 0xFFFF);
+}
+
+static MA_INLINE double ma_lcg_rand_f64(ma_lcg* pLCG)
+{
+    return ma_lcg_rand_s32(pLCG) / (double)0x7FFFFFFF;
+}
+
+static MA_INLINE float ma_lcg_rand_f32(ma_lcg* pLCG)
+{
+    return (float)ma_lcg_rand_f64(pLCG);
+}
+
+static MA_INLINE float ma_lcg_rand_range_f32(ma_lcg* pLCG, float lo, float hi)
+{
+    return ma_scale_to_range_f32(ma_lcg_rand_f32(pLCG), lo, hi);
+}
+
+static MA_INLINE ma_int32 ma_lcg_rand_range_s32(ma_lcg* pLCG, ma_int32 lo, ma_int32 hi)
+{
+    if (lo == hi) {
+        return lo;
+    }
+
     return lo + ma_lcg_rand_u32(pLCG) / (0xFFFFFFFF / (hi - lo + 1) + 1);
 }
-static MA_INLINE float ma_rand_range_f32(float lo, float hi) { return ma_lcg_rand_range_f32(&g_maLCG, lo, hi); }
-static MA_INLINE ma_int32 ma_rand_range_s32(ma_int32 lo, ma_int32 hi) { return ma_lcg_rand_range_s32(&g_maLCG, lo, hi); }
-static MA_INLINE float ma_dither_f32_rectangle(float ditherMin, float ditherMax) { return ma_rand_range_f32(ditherMin, ditherMax); }
-static MA_INLINE float ma_dither_f32_triangle(float ditherMin, float ditherMax) {
+static MA_INLINE void ma_seed(ma_int32 seed)
+{
+    ma_lcg_seed(&g_maLCG, seed);
+}
+
+static MA_INLINE ma_int32 ma_rand_s32(void)
+{
+    return ma_lcg_rand_s32(&g_maLCG);
+}
+
+static MA_INLINE ma_uint32 ma_rand_u32(void)
+{
+    return ma_lcg_rand_u32(&g_maLCG);
+}
+
+static MA_INLINE double ma_rand_f64(void)
+{
+    return ma_lcg_rand_f64(&g_maLCG);
+}
+
+static MA_INLINE float ma_rand_f32(void)
+{
+    return ma_lcg_rand_f32(&g_maLCG);
+}
+
+static MA_INLINE float ma_rand_range_f32(float lo, float hi)
+{
+    return ma_lcg_rand_range_f32(&g_maLCG, lo, hi);
+}
+
+static MA_INLINE ma_int32 ma_rand_range_s32(ma_int32 lo, ma_int32 hi)
+{
+    return ma_lcg_rand_range_s32(&g_maLCG, lo, hi);
+}
+static MA_INLINE float ma_dither_f32_rectangle(float ditherMin, float ditherMax)
+{
+    return ma_rand_range_f32(ditherMin, ditherMax);
+}
+
+static MA_INLINE float ma_dither_f32_triangle(float ditherMin, float ditherMax)
+{
     float a = ma_rand_range_f32(ditherMin, 0);
     float b = ma_rand_range_f32(0, ditherMax);
     return a + b;
 }
-static MA_INLINE float ma_dither_f32(ma_dither_mode ditherMode, float ditherMin, float ditherMax) {
-    if (ditherMode == ma_dither_mode_rectangle) { return ma_dither_f32_rectangle(ditherMin, ditherMax); }
-    if (ditherMode == ma_dither_mode_triangle) { return ma_dither_f32_triangle(ditherMin, ditherMax); }
+
+static MA_INLINE float ma_dither_f32(ma_dither_mode ditherMode, float ditherMin, float ditherMax)
+{
+    if (ditherMode == ma_dither_mode_rectangle) {
+        return ma_dither_f32_rectangle(ditherMin, ditherMax);
+    }
+    if (ditherMode == ma_dither_mode_triangle) {
+        return ma_dither_f32_triangle(ditherMin, ditherMax);
+    }
+
     return 0;
 }
 
-static MA_INLINE ma_int32 ma_dither_s32(ma_dither_mode ditherMode, ma_int32 ditherMin, ma_int32 ditherMax) {
+static MA_INLINE ma_int32 ma_dither_s32(ma_dither_mode ditherMode, ma_int32 ditherMin, ma_int32 ditherMax)
+{
     if (ditherMode == ma_dither_mode_rectangle) {
         ma_int32 a = ma_rand_range_s32(ditherMin, ditherMax);
         return a;
@@ -6878,6 +7211,7 @@ static MA_INLINE ma_int32 ma_dither_s32(ma_dither_mode ditherMode, ma_int32 dith
         ma_int32 b = ma_rand_range_s32(0, ditherMax);
         return a + b;
     }
+
     return 0;
 }
 
@@ -8331,133 +8665,221 @@ typedef int ma_atomic_memory_order;
     }
 #endif
 #if defined(MA_64BIT)
-    static MA_INLINE void* ma_atomic_load_explicit_ptr(volatile void** ptr, ma_atomic_memory_order order) {return (void*)ma_atomic_load_explicit_64((volatile ma_uint64*)ptr, order);}
-    static MA_INLINE void ma_atomic_store_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order) { ma_atomic_store_explicit_64((volatile ma_uint64*)dst, (ma_uint64)src, order);}
-    static MA_INLINE void* ma_atomic_exchange_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order){return (void*)ma_atomic_exchange_explicit_64((volatile ma_uint64*)dst, (ma_uint64)src, order);}
-    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_strong_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder){return ma_atomic_compare_exchange_strong_explicit_64((volatile ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder);}
-    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_weak_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder){return ma_atomic_compare_exchange_weak_explicit_64((volatile ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder);}
-    static MA_INLINE void* ma_atomic_compare_and_swap_ptr(volatile void** dst, void* expected, void* desired){return (void*)ma_atomic_compare_and_swap_64((volatile ma_uint64*)dst, (ma_uint64)expected, (ma_uint64)desired);}
+    static MA_INLINE ma_bool32 ma_atomic_is_lock_free_ptr(volatile void** ptr)
+    {
+        return ma_atomic_is_lock_free_64((volatile ma_uint64*)ptr);
+    }
+    static MA_INLINE void* ma_atomic_load_explicit_ptr(volatile void** ptr, ma_atomic_memory_order order)
+    {
+        return (void*)ma_atomic_load_explicit_64((volatile ma_uint64*)ptr, order);
+    }
+    static MA_INLINE void ma_atomic_store_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order)
+    {
+        ma_atomic_store_explicit_64((volatile ma_uint64*)dst, (ma_uint64)src, order);
+    }
+    static MA_INLINE void* ma_atomic_exchange_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order)
+    {
+        return (void*)ma_atomic_exchange_explicit_64((volatile ma_uint64*)dst, (ma_uint64)src, order);
+    }
+    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_strong_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder)
+    {
+        return ma_atomic_compare_exchange_strong_explicit_64((volatile ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder);
+    }
+    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_weak_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder)
+    {
+        return ma_atomic_compare_exchange_weak_explicit_64((volatile ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder);
+    }
+    static MA_INLINE void* ma_atomic_compare_and_swap_ptr(volatile void** dst, void* expected, void* desired)
+    {
+        return (void*)ma_atomic_compare_and_swap_64((volatile ma_uint64*)dst, (ma_uint64)expected, (ma_uint64)desired);
+    }
 #elif defined(MA_32BIT)
-    static MA_INLINE void* ma_atomic_load_explicit_ptr(volatile void** ptr, ma_atomic_memory_order order){return (void*)ma_atomic_load_explicit_32((volatile ma_uint32*)ptr, order);}
-    static MA_INLINE void ma_atomic_store_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order){ma_atomic_store_explicit_32((volatile ma_uint32*)dst, (ma_uint32)src, order);}
-    static MA_INLINE void* ma_atomic_exchange_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order){return (void*)ma_atomic_exchange_explicit_32((volatile ma_uint32*)dst, (ma_uint32)src, order);}
-    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_strong_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder){return ma_atomic_compare_exchange_strong_explicit_32((volatile ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder);}
-    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_weak_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder){return ma_atomic_compare_exchange_weak_explicit_32((volatile ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder);}
-    static MA_INLINE void* ma_atomic_compare_and_swap_ptr(volatile void** dst, void* expected, void* desired){return (void*)ma_atomic_compare_and_swap_32((volatile ma_uint32*)dst, (ma_uint32)expected, (ma_uint32)desired);}
+    static MA_INLINE ma_bool32 ma_atomic_is_lock_free_ptr(volatile void** ptr)
+    {
+        return ma_atomic_is_lock_free_32((volatile ma_uint32*)ptr);
+    }
+    static MA_INLINE void* ma_atomic_load_explicit_ptr(volatile void** ptr, ma_atomic_memory_order order)
+    {
+        return (void*)ma_atomic_load_explicit_32((volatile ma_uint32*)ptr, order);
+    }
+    static MA_INLINE void ma_atomic_store_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order)
+    {
+        ma_atomic_store_explicit_32((volatile ma_uint32*)dst, (ma_uint32)src, order);
+    }
+    static MA_INLINE void* ma_atomic_exchange_explicit_ptr(volatile void** dst, void* src, ma_atomic_memory_order order)
+    {
+        return (void*)ma_atomic_exchange_explicit_32((volatile ma_uint32*)dst, (ma_uint32)src, order);
+    }
+    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_strong_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder)
+    {
+        return ma_atomic_compare_exchange_strong_explicit_32((volatile ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder);
+    }
+    static MA_INLINE ma_bool32 ma_atomic_compare_exchange_weak_explicit_ptr(volatile void** dst, void** expected, void* desired, ma_atomic_memory_order successOrder, ma_atomic_memory_order failureOrder)
+    {
+        return ma_atomic_compare_exchange_weak_explicit_32((volatile ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder);
+    }
+    static MA_INLINE void* ma_atomic_compare_and_swap_ptr(volatile void** dst, void* expected, void* desired)
+    {
+        return (void*)ma_atomic_compare_and_swap_32((volatile ma_uint32*)dst, (ma_uint32)expected, (ma_uint32)desired);
+    }
 #else
     #error Unsupported architecture.
 #endif
-#define ma_atomic_flag_test_and_set(ptr) ma_atomic_flag_test_and_set_explicit(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_flag_clear(ptr) ma_atomic_flag_clear_explicit(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_store_ptr(dst, src) ma_atomic_store_explicit_ptr((volatile void**)dst, (void*)src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_ptr(ptr) ma_atomic_load_explicit_ptr((volatile void**)ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_ptr(dst, src) ma_atomic_exchange_explicit_ptr((volatile void**)dst, (void*)src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_32(ptr) ma_atomic_load_explicit_32(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_64(ptr) ma_atomic_load_explicit_64(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_32(dst, src) ma_atomic_exchange_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_64(dst, src) ma_atomic_exchange_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_or_32(dst, src) ma_atomic_fetch_or_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_and_32(dst, src) ma_atomic_fetch_and_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_test_and_set_explicit_i8(ptr, order) (ma_int8)ma_atomic_test_and_set_explicit_8((ma_uint8*)ptr, order)
-#define ma_atomic_test_and_set_explicit_i16(ptr, order) (ma_int16)ma_atomic_test_and_set_explicit_16((ma_uint16*)ptr, order)
-#define ma_atomic_test_and_set_explicit_i32(ptr, order) (ma_int32)ma_atomic_test_and_set_explicit_32((ma_uint32*)ptr, order)
-#define ma_atomic_test_and_set_explicit_i64(ptr, order) (ma_int64)ma_atomic_test_and_set_explicit_64((ma_uint64*)ptr, order)
-#define ma_atomic_clear_explicit_i8(ptr, order) ma_atomic_clear_explicit_8((ma_uint8*)ptr, order)
-#define ma_atomic_clear_explicit_i16(ptr, order) ma_atomic_clear_explicit_16((ma_uint16*)ptr, order)
-#define ma_atomic_clear_explicit_i32(ptr, order) ma_atomic_clear_explicit_32((ma_uint32*)ptr, order)
-#define ma_atomic_clear_explicit_i64(ptr, order) ma_atomic_clear_explicit_64((ma_uint64*)ptr, order)
-#define ma_atomic_store_explicit_i8(dst, src, order) ma_atomic_store_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_store_explicit_i16(dst, src, order) ma_atomic_store_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_store_explicit_i32(dst, src, order) ma_atomic_store_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_store_explicit_i64(dst, src, order) ma_atomic_store_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_load_explicit_i8(ptr, order) (ma_int8)ma_atomic_load_explicit_8((ma_uint8*)ptr, order)
-#define ma_atomic_load_explicit_i16(ptr, order) (ma_int16)ma_atomic_load_explicit_16((ma_uint16*)ptr, order)
-#define ma_atomic_load_explicit_i32(ptr, order) (ma_int32)ma_atomic_load_explicit_32((ma_uint32*)ptr, order)
-#define ma_atomic_load_explicit_i64(ptr, order) (ma_int64)ma_atomic_load_explicit_64((ma_uint64*)ptr, order)
-#define ma_atomic_exchange_explicit_i8(dst, src, order) (ma_int8)ma_atomic_exchange_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_exchange_explicit_i16(dst, src, order) (ma_int16)ma_atomic_exchange_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_exchange_explicit_i32(dst, src, order) (ma_int32)ma_atomic_exchange_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_exchange_explicit_i64(dst, src, order) (ma_int64)ma_atomic_exchange_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_compare_exchange_strong_explicit_i8(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_strong_explicit_8((ma_uint8*)dst, (ma_uint8*)expected, (ma_uint8)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_strong_explicit_i16(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_strong_explicit_16((ma_uint16*)dst, (ma_uint16*)expected, (ma_uint16)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_strong_explicit_i32(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_strong_explicit_32((ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_strong_explicit_i64(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_strong_explicit_64((ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_weak_explicit_i8(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_weak_explicit_8((ma_uint8*)dst, (ma_uint8*)expected, (ma_uint8)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_weak_explicit_i16(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_weak_explicit_16((ma_uint16*)dst, (ma_uint16*)expected, (ma_uint16)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_weak_explicit_i32(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_weak_explicit_32((ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder)
-#define ma_atomic_compare_exchange_weak_explicit_i64(dst, expected, desired, successOrder, failureOrder) ma_atomic_compare_exchange_weak_explicit_64((ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder)
-#define ma_atomic_fetch_add_explicit_i8(dst, src, order) (ma_int8)ma_atomic_fetch_add_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_fetch_add_explicit_i16(dst, src, order) (ma_int16)ma_atomic_fetch_add_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_fetch_add_explicit_i32(dst, src, order) (ma_int32)ma_atomic_fetch_add_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_fetch_add_explicit_i64(dst, src, order) (ma_int64)ma_atomic_fetch_add_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_fetch_sub_explicit_i8(dst, src, order) (ma_int8)ma_atomic_fetch_sub_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_fetch_sub_explicit_i16(dst, src, order) (ma_int16)ma_atomic_fetch_sub_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_fetch_sub_explicit_i32(dst, src, order) (ma_int32)ma_atomic_fetch_sub_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_fetch_sub_explicit_i64(dst, src, order) (ma_int64)ma_atomic_fetch_sub_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_fetch_or_explicit_i8(dst, src, order) (ma_int8)ma_atomic_fetch_or_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_fetch_or_explicit_i16(dst, src, order) (ma_int16)ma_atomic_fetch_or_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_fetch_or_explicit_i32(dst, src, order) (ma_int32)ma_atomic_fetch_or_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_fetch_or_explicit_i64(dst, src, order) (ma_int64)ma_atomic_fetch_or_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_fetch_xor_explicit_i8(dst, src, order) (ma_int8)ma_atomic_fetch_xor_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_fetch_xor_explicit_i16(dst, src, order) (ma_int16)ma_atomic_fetch_xor_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_fetch_xor_explicit_i32(dst, src, order) (ma_int32)ma_atomic_fetch_xor_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_fetch_xor_explicit_i64(dst, src, order) (ma_int64)ma_atomic_fetch_xor_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_fetch_and_explicit_i8(dst, src, order) (ma_int8)ma_atomic_fetch_and_explicit_8((ma_uint8*)dst, (ma_uint8)src, order)
-#define ma_atomic_fetch_and_explicit_i16(dst, src, order) (ma_int16)ma_atomic_fetch_and_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
-#define ma_atomic_fetch_and_explicit_i32(dst, src, order) (ma_int32)ma_atomic_fetch_and_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
-#define ma_atomic_fetch_and_explicit_i64(dst, src, order) (ma_int64)ma_atomic_fetch_and_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
-#define ma_atomic_test_and_set_i8(ptr) ma_atomic_test_and_set_explicit_i8(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_test_and_set_i16(ptr) ma_atomic_test_and_set_explicit_i16(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_test_and_set_i32(ptr) ma_atomic_test_and_set_explicit_i32(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_test_and_set_i64(ptr) ma_atomic_test_and_set_explicit_i64(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_clear_i8(ptr) ma_atomic_clear_explicit_i8(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_clear_i16(ptr) ma_atomic_clear_explicit_i16(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_clear_i32(ptr) ma_atomic_clear_explicit_i32(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_clear_i64(ptr) ma_atomic_clear_explicit_i64(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_store_i8(dst, src) ma_atomic_store_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_store_i16(dst, src) ma_atomic_store_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_store_i32(dst, src) ma_atomic_store_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_store_i64(dst, src) ma_atomic_store_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_i8(ptr) ma_atomic_load_explicit_i8(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_i16(ptr) ma_atomic_load_explicit_i16(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_i32(ptr) ma_atomic_load_explicit_i32(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_load_i64(ptr) ma_atomic_load_explicit_i64(ptr, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_i8(dst, src) ma_atomic_exchange_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_i16(dst, src) ma_atomic_exchange_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_i32(dst, src) ma_atomic_exchange_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_exchange_i64(dst, src) ma_atomic_exchange_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_strong_i8(dst, expected, desired) ma_atomic_compare_exchange_strong_explicit_i8(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_strong_i16(dst, expected, desired) ma_atomic_compare_exchange_strong_explicit_i16(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_strong_i32(dst, expected, desired) ma_atomic_compare_exchange_strong_explicit_i32(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_strong_i64(dst, expected, desired) ma_atomic_compare_exchange_strong_explicit_i64(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_weak_i8(dst, expected, desired) ma_atomic_compare_exchange_weak_explicit_i8(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_weak_i16(dst, expected, desired) ma_atomic_compare_exchange_weak_explicit_i16(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_weak_i32(dst, expected, desired) ma_atomic_compare_exchange_weak_explicit_i32(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_exchange_weak_i64(dst, expected, desired) ma_atomic_compare_exchange_weak_explicit_i64(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_add_i8(dst, src) ma_atomic_fetch_add_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_add_i16(dst, src) ma_atomic_fetch_add_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_add_i32(dst, src) ma_atomic_fetch_add_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_add_i64(dst, src) ma_atomic_fetch_add_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_sub_i8(dst, src) ma_atomic_fetch_sub_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_sub_i16(dst, src) ma_atomic_fetch_sub_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_sub_i32(dst, src) ma_atomic_fetch_sub_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_sub_i64(dst, src) ma_atomic_fetch_sub_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_or_i8(dst, src) ma_atomic_fetch_or_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_or_i16(dst, src) ma_atomic_fetch_or_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_or_i32(dst, src) ma_atomic_fetch_or_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_or_i64(dst, src) ma_atomic_fetch_or_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_xor_i8(dst, src) ma_atomic_fetch_xor_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_xor_i16(dst, src) ma_atomic_fetch_xor_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_xor_i32(dst, src) ma_atomic_fetch_xor_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_xor_i64(dst, src) ma_atomic_fetch_xor_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_and_i8(dst, src) ma_atomic_fetch_and_explicit_i8(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_and_i16(dst, src) ma_atomic_fetch_and_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_and_i32(dst, src) ma_atomic_fetch_and_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_fetch_and_i64(dst, src) ma_atomic_fetch_and_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
-#define ma_atomic_compare_and_swap_i8(dst, expected, dedsired) (ma_int8)ma_atomic_compare_and_swap_8((ma_uint8*)dst, (ma_uint8)expected, (ma_uint8)dedsired)
-#define ma_atomic_compare_and_swap_i16(dst, expected, dedsired) (ma_int16)ma_atomic_compare_and_swap_16((ma_uint16*)dst, (ma_uint16)expected, (ma_uint16)dedsired)
-#define ma_atomic_compare_and_swap_i32(dst, expected, dedsired) (ma_int32)ma_atomic_compare_and_swap_32((ma_uint32*)dst, (ma_uint32)expected, (ma_uint32)dedsired)
-#define ma_atomic_compare_and_swap_i64(dst, expected, dedsired) (ma_int64)ma_atomic_compare_and_swap_64((ma_uint64*)dst, (ma_uint64)expected, (ma_uint64)dedsired)
+#define ma_atomic_flag_test_and_set(ptr)                                ma_atomic_flag_test_and_set_explicit(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_flag_clear(ptr)                                       ma_atomic_flag_clear_explicit(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_ptr(dst, src)                                   ma_atomic_store_explicit_ptr((volatile void**)dst, (void*)src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_ptr(ptr)                                         ma_atomic_load_explicit_ptr((volatile void**)ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_ptr(dst, src)                                ma_atomic_exchange_explicit_ptr((volatile void**)dst, (void*)src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_ptr(dst, expected, desired)   ma_atomic_compare_exchange_strong_explicit_ptr((volatile void**)dst, (void**)expected, (void*)desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_ptr(dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_ptr((volatile void**)dst, (void**)expected, (void*)desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_8( ptr)                                  ma_atomic_test_and_set_explicit_8( ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_16(ptr)                                  ma_atomic_test_and_set_explicit_16(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_32(ptr)                                  ma_atomic_test_and_set_explicit_32(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_64(ptr)                                  ma_atomic_test_and_set_explicit_64(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_8( ptr)                                         ma_atomic_clear_explicit_8( ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_16(ptr)                                         ma_atomic_clear_explicit_16(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_32(ptr)                                         ma_atomic_clear_explicit_32(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_64(ptr)                                         ma_atomic_clear_explicit_64(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_8( dst, src)                                    ma_atomic_store_explicit_8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_16(dst, src)                                    ma_atomic_store_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_32(dst, src)                                    ma_atomic_store_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_64(dst, src)                                    ma_atomic_store_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_8( ptr)                                          ma_atomic_load_explicit_8( ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_16(ptr)                                          ma_atomic_load_explicit_16(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_32(ptr)                                          ma_atomic_load_explicit_32(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_64(ptr)                                          ma_atomic_load_explicit_64(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_8( dst, src)                                 ma_atomic_exchange_explicit_8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_16(dst, src)                                 ma_atomic_exchange_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_32(dst, src)                                 ma_atomic_exchange_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_64(dst, src)                                 ma_atomic_exchange_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_8( dst, expected, desired)    ma_atomic_compare_exchange_strong_explicit_8( dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_16(dst, expected, desired)    ma_atomic_compare_exchange_strong_explicit_16(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_32(dst, expected, desired)    ma_atomic_compare_exchange_strong_explicit_32(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_64(dst, expected, desired)    ma_atomic_compare_exchange_strong_explicit_64(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_8(  dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_8( dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_16( dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_16(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_32( dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_32(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_64( dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_64(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_8( dst, src)                                ma_atomic_fetch_add_explicit_8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_16(dst, src)                                ma_atomic_fetch_add_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_32(dst, src)                                ma_atomic_fetch_add_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_64(dst, src)                                ma_atomic_fetch_add_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_8( dst, src)                                ma_atomic_fetch_sub_explicit_8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_16(dst, src)                                ma_atomic_fetch_sub_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_32(dst, src)                                ma_atomic_fetch_sub_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_64(dst, src)                                ma_atomic_fetch_sub_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_8( dst, src)                                 ma_atomic_fetch_or_explicit_8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_16(dst, src)                                 ma_atomic_fetch_or_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_32(dst, src)                                 ma_atomic_fetch_or_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_64(dst, src)                                 ma_atomic_fetch_or_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_8( dst, src)                                ma_atomic_fetch_xor_explicit_8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_16(dst, src)                                ma_atomic_fetch_xor_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_32(dst, src)                                ma_atomic_fetch_xor_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_64(dst, src)                                ma_atomic_fetch_xor_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_8( dst, src)                                ma_atomic_fetch_and_explicit_8 (dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_16(dst, src)                                ma_atomic_fetch_and_explicit_16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_32(dst, src)                                ma_atomic_fetch_and_explicit_32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_64(dst, src)                                ma_atomic_fetch_and_explicit_64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_explicit_i8( ptr, order)                 (ma_int8 )ma_atomic_test_and_set_explicit_8( (ma_uint8* )ptr, order)
+#define ma_atomic_test_and_set_explicit_i16(ptr, order)                 (ma_int16)ma_atomic_test_and_set_explicit_16((ma_uint16*)ptr, order)
+#define ma_atomic_test_and_set_explicit_i32(ptr, order)                 (ma_int32)ma_atomic_test_and_set_explicit_32((ma_uint32*)ptr, order)
+#define ma_atomic_test_and_set_explicit_i64(ptr, order)                 (ma_int64)ma_atomic_test_and_set_explicit_64((ma_uint64*)ptr, order)
+#define ma_atomic_clear_explicit_i8( ptr, order)                        ma_atomic_clear_explicit_8( (ma_uint8* )ptr, order)
+#define ma_atomic_clear_explicit_i16(ptr, order)                        ma_atomic_clear_explicit_16((ma_uint16*)ptr, order)
+#define ma_atomic_clear_explicit_i32(ptr, order)                        ma_atomic_clear_explicit_32((ma_uint32*)ptr, order)
+#define ma_atomic_clear_explicit_i64(ptr, order)                        ma_atomic_clear_explicit_64((ma_uint64*)ptr, order)
+#define ma_atomic_store_explicit_i8( dst, src, order)                   ma_atomic_store_explicit_8( (ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_store_explicit_i16(dst, src, order)                   ma_atomic_store_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_store_explicit_i32(dst, src, order)                   ma_atomic_store_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_store_explicit_i64(dst, src, order)                   ma_atomic_store_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_load_explicit_i8( ptr, order)                         (ma_int8 )ma_atomic_load_explicit_8( (ma_uint8* )ptr, order)
+#define ma_atomic_load_explicit_i16(ptr, order)                         (ma_int16)ma_atomic_load_explicit_16((ma_uint16*)ptr, order)
+#define ma_atomic_load_explicit_i32(ptr, order)                         (ma_int32)ma_atomic_load_explicit_32((ma_uint32*)ptr, order)
+#define ma_atomic_load_explicit_i64(ptr, order)                         (ma_int64)ma_atomic_load_explicit_64((ma_uint64*)ptr, order)
+#define ma_atomic_exchange_explicit_i8( dst, src, order)                (ma_int8 )ma_atomic_exchange_explicit_8 ((ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_exchange_explicit_i16(dst, src, order)                (ma_int16)ma_atomic_exchange_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_exchange_explicit_i32(dst, src, order)                (ma_int32)ma_atomic_exchange_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_exchange_explicit_i64(dst, src, order)                (ma_int64)ma_atomic_exchange_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_compare_exchange_strong_explicit_i8( dst, expected, desired, successOrder, failureOrder)  ma_atomic_compare_exchange_strong_explicit_8( (ma_uint8* )dst, (ma_uint8* )expected, (ma_uint8 )desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_strong_explicit_i16(dst, expected, desired, successOrder, failureOrder)  ma_atomic_compare_exchange_strong_explicit_16((ma_uint16*)dst, (ma_uint16*)expected, (ma_uint16)desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_strong_explicit_i32(dst, expected, desired, successOrder, failureOrder)  ma_atomic_compare_exchange_strong_explicit_32((ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_strong_explicit_i64(dst, expected, desired, successOrder, failureOrder)  ma_atomic_compare_exchange_strong_explicit_64((ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_weak_explicit_i8( dst, expected, desired, successOrder, failureOrder)    ma_atomic_compare_exchange_weak_explicit_8( (ma_uint8* )dst, (ma_uint8* )expected, (ma_uint8 )desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_weak_explicit_i16(dst, expected, desired, successOrder, failureOrder)    ma_atomic_compare_exchange_weak_explicit_16((ma_uint16*)dst, (ma_uint16*)expected, (ma_uint16)desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_weak_explicit_i32(dst, expected, desired, successOrder, failureOrder)    ma_atomic_compare_exchange_weak_explicit_32((ma_uint32*)dst, (ma_uint32*)expected, (ma_uint32)desired, successOrder, failureOrder)
+#define ma_atomic_compare_exchange_weak_explicit_i64(dst, expected, desired, successOrder, failureOrder)    ma_atomic_compare_exchange_weak_explicit_64((ma_uint64*)dst, (ma_uint64*)expected, (ma_uint64)desired, successOrder, failureOrder)
+#define ma_atomic_fetch_add_explicit_i8( dst, src, order)               (ma_int8 )ma_atomic_fetch_add_explicit_8( (ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_fetch_add_explicit_i16(dst, src, order)               (ma_int16)ma_atomic_fetch_add_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_fetch_add_explicit_i32(dst, src, order)               (ma_int32)ma_atomic_fetch_add_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_fetch_add_explicit_i64(dst, src, order)               (ma_int64)ma_atomic_fetch_add_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_fetch_sub_explicit_i8( dst, src, order)               (ma_int8 )ma_atomic_fetch_sub_explicit_8( (ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_fetch_sub_explicit_i16(dst, src, order)               (ma_int16)ma_atomic_fetch_sub_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_fetch_sub_explicit_i32(dst, src, order)               (ma_int32)ma_atomic_fetch_sub_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_fetch_sub_explicit_i64(dst, src, order)               (ma_int64)ma_atomic_fetch_sub_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_fetch_or_explicit_i8( dst, src, order)                (ma_int8 )ma_atomic_fetch_or_explicit_8( (ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_fetch_or_explicit_i16(dst, src, order)                (ma_int16)ma_atomic_fetch_or_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_fetch_or_explicit_i32(dst, src, order)                (ma_int32)ma_atomic_fetch_or_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_fetch_or_explicit_i64(dst, src, order)                (ma_int64)ma_atomic_fetch_or_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_fetch_xor_explicit_i8( dst, src, order)               (ma_int8 )ma_atomic_fetch_xor_explicit_8( (ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_fetch_xor_explicit_i16(dst, src, order)               (ma_int16)ma_atomic_fetch_xor_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_fetch_xor_explicit_i32(dst, src, order)               (ma_int32)ma_atomic_fetch_xor_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_fetch_xor_explicit_i64(dst, src, order)               (ma_int64)ma_atomic_fetch_xor_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_fetch_and_explicit_i8( dst, src, order)               (ma_int8 )ma_atomic_fetch_and_explicit_8( (ma_uint8* )dst, (ma_uint8 )src, order)
+#define ma_atomic_fetch_and_explicit_i16(dst, src, order)               (ma_int16)ma_atomic_fetch_and_explicit_16((ma_uint16*)dst, (ma_uint16)src, order)
+#define ma_atomic_fetch_and_explicit_i32(dst, src, order)               (ma_int32)ma_atomic_fetch_and_explicit_32((ma_uint32*)dst, (ma_uint32)src, order)
+#define ma_atomic_fetch_and_explicit_i64(dst, src, order)               (ma_int64)ma_atomic_fetch_and_explicit_64((ma_uint64*)dst, (ma_uint64)src, order)
+#define ma_atomic_test_and_set_i8( ptr)                                 ma_atomic_test_and_set_explicit_i8( ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_i16(ptr)                                 ma_atomic_test_and_set_explicit_i16(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_i32(ptr)                                 ma_atomic_test_and_set_explicit_i32(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_test_and_set_i64(ptr)                                 ma_atomic_test_and_set_explicit_i64(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_i8( ptr)                                        ma_atomic_clear_explicit_i8( ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_i16(ptr)                                        ma_atomic_clear_explicit_i16(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_i32(ptr)                                        ma_atomic_clear_explicit_i32(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_clear_i64(ptr)                                        ma_atomic_clear_explicit_i64(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_i8( dst, src)                                   ma_atomic_store_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_i16(dst, src)                                   ma_atomic_store_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_i32(dst, src)                                   ma_atomic_store_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_i64(dst, src)                                   ma_atomic_store_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_i8( ptr)                                         ma_atomic_load_explicit_i8( ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_i16(ptr)                                         ma_atomic_load_explicit_i16(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_i32(ptr)                                         ma_atomic_load_explicit_i32(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_load_i64(ptr)                                         ma_atomic_load_explicit_i64(ptr, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_i8( dst, src)                                ma_atomic_exchange_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_i16(dst, src)                                ma_atomic_exchange_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_i32(dst, src)                                ma_atomic_exchange_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_exchange_i64(dst, src)                                ma_atomic_exchange_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_i8( dst, expected, desired)   ma_atomic_compare_exchange_strong_explicit_i8( dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_i16(dst, expected, desired)   ma_atomic_compare_exchange_strong_explicit_i16(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_i32(dst, expected, desired)   ma_atomic_compare_exchange_strong_explicit_i32(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_strong_i64(dst, expected, desired)   ma_atomic_compare_exchange_strong_explicit_i64(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_i8( dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_i8( dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_i16(dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_i16(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_i32(dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_i32(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_exchange_weak_i64(dst, expected, desired)     ma_atomic_compare_exchange_weak_explicit_i64(dst, expected, desired, ma_atomic_memory_order_seq_cst, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_i8( dst, src)                               ma_atomic_fetch_add_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_i16(dst, src)                               ma_atomic_fetch_add_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_i32(dst, src)                               ma_atomic_fetch_add_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_add_i64(dst, src)                               ma_atomic_fetch_add_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_i8( dst, src)                               ma_atomic_fetch_sub_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_i16(dst, src)                               ma_atomic_fetch_sub_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_i32(dst, src)                               ma_atomic_fetch_sub_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_sub_i64(dst, src)                               ma_atomic_fetch_sub_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_i8( dst, src)                                ma_atomic_fetch_or_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_i16(dst, src)                                ma_atomic_fetch_or_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_i32(dst, src)                                ma_atomic_fetch_or_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_or_i64(dst, src)                                ma_atomic_fetch_or_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_i8( dst, src)                               ma_atomic_fetch_xor_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_i16(dst, src)                               ma_atomic_fetch_xor_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_i32(dst, src)                               ma_atomic_fetch_xor_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_xor_i64(dst, src)                               ma_atomic_fetch_xor_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_i8( dst, src)                               ma_atomic_fetch_and_explicit_i8( dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_i16(dst, src)                               ma_atomic_fetch_and_explicit_i16(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_i32(dst, src)                               ma_atomic_fetch_and_explicit_i32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_fetch_and_i64(dst, src)                               ma_atomic_fetch_and_explicit_i64(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_compare_and_swap_i8( dst, expected, dedsired)         (ma_int8 )ma_atomic_compare_and_swap_8( (ma_uint8* )dst, (ma_uint8 )expected, (ma_uint8 )dedsired)
+#define ma_atomic_compare_and_swap_i16(dst, expected, dedsired)         (ma_int16)ma_atomic_compare_and_swap_16((ma_uint16*)dst, (ma_uint16)expected, (ma_uint16)dedsired)
+#define ma_atomic_compare_and_swap_i32(dst, expected, dedsired)         (ma_int32)ma_atomic_compare_and_swap_32((ma_uint32*)dst, (ma_uint32)expected, (ma_uint32)dedsired)
+#define ma_atomic_compare_and_swap_i64(dst, expected, dedsired)         (ma_int64)ma_atomic_compare_and_swap_64((ma_uint64*)dst, (ma_uint64)expected, (ma_uint64)dedsired)
 typedef union
 {
     ma_uint32 i;
@@ -8475,6 +8897,12 @@ static MA_INLINE void ma_atomic_store_explicit_f32(volatile float* dst, float sr
     ma_atomic_if32 x;
     x.f = src;
     ma_atomic_store_explicit_32((volatile ma_uint32*)dst, x.i, order);
+}
+static MA_INLINE void ma_atomic_store_explicit_f64(volatile double* dst, double src, ma_atomic_memory_order order)
+{
+    ma_atomic_if64 x;
+    x.f = src;
+    ma_atomic_store_explicit_64((volatile ma_uint64*)dst, x.i, order);
 }
 static MA_INLINE float ma_atomic_load_explicit_f32(volatile const float* ptr, ma_atomic_memory_order order)
 {
@@ -8611,6 +9039,7 @@ static MA_INLINE double ma_atomic_fetch_and_explicit_f64(volatile double* dst, d
 #define ma_atomic_clear_f32(ptr)                                        (float )ma_atomic_clear_explicit_f32(ptr, ma_atomic_memory_order_seq_cst)
 #define ma_atomic_clear_f64(ptr)                                        (double)ma_atomic_clear_explicit_f64(ptr, ma_atomic_memory_order_seq_cst)
 #define ma_atomic_store_f32(dst, src)                                   ma_atomic_store_explicit_f32(dst, src, ma_atomic_memory_order_seq_cst)
+#define ma_atomic_store_f64(dst, src)                                   ma_atomic_store_explicit_f64(dst, src, ma_atomic_memory_order_seq_cst)
 #define ma_atomic_load_f32(ptr)                                         (float )ma_atomic_load_explicit_f32(ptr, ma_atomic_memory_order_seq_cst)
 #define ma_atomic_load_f64(ptr)                                         (double)ma_atomic_load_explicit_f64(ptr, ma_atomic_memory_order_seq_cst)
 #define ma_atomic_exchange_f32(dst, src)                                (float )ma_atomic_exchange_explicit_f32(dst, src, ma_atomic_memory_order_seq_cst)
@@ -10825,70 +11254,188 @@ MA_API ma_result ma_get_enabled_backends(ma_backend* pBackends, size_t backendCa
     return result;
 }
 
-MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend) {
-    if (backen == ma_backend_wasapi) { return MA_TRUE; }
-    return MA_FALSE;
-}#if defined(MA_WIN32)
-#define MA_AUDCLNT_E_NOT_INITIALIZED ((HRESULT)0x88890001)
-#define MA_AUDCLNT_E_ALREADY_INITIALIZED ((HRESULT)0x88890002)
-#define MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE ((HRESULT)0x88890003)
-#define MA_AUDCLNT_E_DEVICE_INVALIDATED ((HRESULT)0x88890004)
-#define MA_AUDCLNT_E_NOT_STOPPED ((HRESULT)0x88890005)
-#define MA_AUDCLNT_E_BUFFER_TOO_LARGE ((HRESULT)0x88890006)
-#define MA_AUDCLNT_E_OUT_OF_ORDER ((HRESULT)0x88890007)
-#define MA_AUDCLNT_E_UNSUPPORTED_FORMAT ((HRESULT)0x88890008)
-#define MA_AUDCLNT_E_INVALID_SIZE ((HRESULT)0x88890009)
-#define MA_AUDCLNT_E_DEVICE_IN_USE ((HRESULT)0x8889000A)
-#define MA_AUDCLNT_E_BUFFER_OPERATION_PENDING ((HRESULT)0x8889000B)
-#define MA_AUDCLNT_E_THREAD_NOT_REGISTERED ((HRESULT)0x8889000C)
-#define MA_AUDCLNT_E_NO_SINGLE_PROCESS ((HRESULT)0x8889000D)
-#define MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED ((HRESULT)0x8889000E)
-#define MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED ((HRESULT)0x8889000F)
-#define MA_AUDCLNT_E_SERVICE_NOT_RUNNING ((HRESULT)0x88890010)
-#define MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED ((HRESULT)0x88890011)
-#define MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY ((HRESULT)0x88890012)
+MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend)
+{
+    switch (backend)
+    {
+        case ma_backend_wasapi:     return MA_TRUE;
+        case ma_backend_dsound:     return MA_FALSE;
+        case ma_backend_winmm:      return MA_FALSE;
+        case ma_backend_coreaudio:  return MA_FALSE;
+        case ma_backend_sndio:      return MA_FALSE;
+        case ma_backend_audio4:     return MA_FALSE;
+        case ma_backend_oss:        return MA_FALSE;
+        case ma_backend_pulseaudio: return MA_FALSE;
+        case ma_backend_alsa:       return MA_FALSE;
+        case ma_backend_jack:       return MA_FALSE;
+        case ma_backend_aaudio:     return MA_FALSE;
+        case ma_backend_opensl:     return MA_FALSE;
+        case ma_backend_webaudio:   return MA_FALSE;
+        case ma_backend_custom:     return MA_FALSE;    
+        case ma_backend_null:       return MA_FALSE;
+        default:                    return MA_FALSE;
+    }
+}
+#if defined(MA_WIN32)
+
+#define MA_AUDCLNT_E_NOT_INITIALIZED              ((HRESULT)0x88890001)
+#define MA_AUDCLNT_E_ALREADY_INITIALIZED          ((HRESULT)0x88890002)
+#define MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE          ((HRESULT)0x88890003)
+#define MA_AUDCLNT_E_DEVICE_INVALIDATED           ((HRESULT)0x88890004)
+#define MA_AUDCLNT_E_NOT_STOPPED                  ((HRESULT)0x88890005)
+#define MA_AUDCLNT_E_BUFFER_TOO_LARGE             ((HRESULT)0x88890006)
+#define MA_AUDCLNT_E_OUT_OF_ORDER                 ((HRESULT)0x88890007)
+#define MA_AUDCLNT_E_UNSUPPORTED_FORMAT           ((HRESULT)0x88890008)
+#define MA_AUDCLNT_E_INVALID_SIZE                 ((HRESULT)0x88890009)
+#define MA_AUDCLNT_E_DEVICE_IN_USE                ((HRESULT)0x8889000A)
+#define MA_AUDCLNT_E_BUFFER_OPERATION_PENDING     ((HRESULT)0x8889000B)
+#define MA_AUDCLNT_E_THREAD_NOT_REGISTERED        ((HRESULT)0x8889000C)
+#define MA_AUDCLNT_E_NO_SINGLE_PROCESS            ((HRESULT)0x8889000D)
+#define MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED   ((HRESULT)0x8889000E)
+#define MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED       ((HRESULT)0x8889000F)
+#define MA_AUDCLNT_E_SERVICE_NOT_RUNNING          ((HRESULT)0x88890010)
+#define MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED     ((HRESULT)0x88890011)
+#define MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY          ((HRESULT)0x88890012)
 #define MA_AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL ((HRESULT)0x88890013)
-#define MA_AUDCLNT_E_EVENTHANDLE_NOT_SET ((HRESULT)0x88890014)
-#define MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE ((HRESULT)0x88890015)
-#define MA_AUDCLNT_E_BUFFER_SIZE_ERROR ((HRESULT)0x88890016)
-#define MA_AUDCLNT_E_CPUUSAGE_EXCEEDED ((HRESULT)0x88890017)
-#define MA_AUDCLNT_E_BUFFER_ERROR ((HRESULT)0x88890018)
-#define MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED ((HRESULT)0x88890019)
-#define MA_AUDCLNT_E_INVALID_DEVICE_PERIOD ((HRESULT)0x88890020)
-#define MA_AUDCLNT_E_INVALID_STREAM_FLAG ((HRESULT)0x88890021)
+#define MA_AUDCLNT_E_EVENTHANDLE_NOT_SET          ((HRESULT)0x88890014)
+#define MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE        ((HRESULT)0x88890015)
+#define MA_AUDCLNT_E_BUFFER_SIZE_ERROR            ((HRESULT)0x88890016)
+#define MA_AUDCLNT_E_CPUUSAGE_EXCEEDED            ((HRESULT)0x88890017)
+#define MA_AUDCLNT_E_BUFFER_ERROR                 ((HRESULT)0x88890018)
+#define MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED      ((HRESULT)0x88890019)
+#define MA_AUDCLNT_E_INVALID_DEVICE_PERIOD        ((HRESULT)0x88890020)
+#define MA_AUDCLNT_E_INVALID_STREAM_FLAG          ((HRESULT)0x88890021)
 #define MA_AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE ((HRESULT)0x88890022)
-#define MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES ((HRESULT)0x88890023)
-#define MA_AUDCLNT_E_OFFLOAD_MODE_ONLY ((HRESULT)0x88890024)
-#define MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY ((HRESULT)0x88890025)
-#define MA_AUDCLNT_E_RESOURCES_INVALIDATED ((HRESULT)0x88890026)
-#define MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED ((HRESULT)0x88890027)
-#define MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED ((HRESULT)0x88890028)
-#define MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED ((HRESULT)0x88890029)
-#define MA_AUDCLNT_E_HEADTRACKING_ENABLED ((HRESULT)0x88890030)
-#define MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED ((HRESULT)0x88890040)
-#define MA_AUDCLNT_S_BUFFER_EMPTY ((HRESULT)0x08890001)
-#define MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED ((HRESULT)0x08890002)
-#define MA_AUDCLNT_S_POSITION_STALLED ((HRESULT)0x08890003)
-#define MA_DS_NO_VIRTUALIZATION ((HRESULT)0x0878000A)
-#define MA_DSERR_ALLOCATED ((HRESULT)0x8878000A)
-#define MA_DSERR_CONTROLUNAVAIL ((HRESULT)0x8878001E)
-#define MA_DSERR_INVALIDCALL ((HRESULT)0x88780032)
-#define MA_DSERR_PRIOLEVELNEEDED ((HRESULT)0x88780046)
-#define MA_DSERR_BADFORMAT ((HRESULT)0x88780064)
-#define MA_DSERR_NODRIVER ((HRESULT)0x88780078)
-#define MA_DSERR_ALREADYINITIALIZED ((HRESULT)0x88780082)
-#define MA_DSERR_NOAGGREGATION ((HRESULT)0x80040110)
-#define MA_DSERR_BUFFERLOST ((HRESULT)0x88780096)
-#define MA_DSERR_OTHERAPPHASPRIO ((HRESULT)0x887800A0)
-#define MA_DSERR_UNINITIALIZED ((HRESULT)0x887800AA)
-#define MA_DSERR_BUFFERTOOSMALL ((HRESULT)0x887800B4)
-#define MA_DSERR_DS8_REQUIRED ((HRESULT)0x887800BE)
-#define MA_DSERR_SENDLOOP ((HRESULT)0x887800C8)
-#define MA_DSERR_BADSENDBUFFERGUID ((HRESULT)0x887800D2)
-#define MA_DSERR_OBJECTNOTFOUND ((HRESULT)0x88781161)
-#define MA_DSERR_FXUNAVAILABLE ((HRESULT)0x887800DC)
-static ma_result ma_result_from_HRESULT(HRESULT hr){switch(hr){case NOERROR:return MA_SUCCESS;case E_POINTER:case E_INVALIDARG:case E_HANDLE:return MA_INVALID_ARGS;case E_UNEXPECTED:case E_ABORT:case E_FAIL:case MA_DSERR_NOAGGREGATION:return MA_ERROR;case E_NOTIMPL:return MA_NOT_IMPLEMENTED;case E_OUTOFMEMORY:return MA_OUT_OF_MEMORY;case E_NOINTERFACE:return MA_API_NOT_FOUND;case E_ACCESSDENIED:case MA_DSERR_OTHERAPPHASPRIO:return MA_ACCESS_DENIED;case MA_AUDCLNT_E_NOT_INITIALIZED:case MA_DSERR_UNINITIALIZED:return MA_DEVICE_NOT_INITIALIZED;case MA_AUDCLNT_E_ALREADY_INITIALIZED:case MA_DSERR_ALREADYINITIALIZED:return MA_DEVICE_ALREADY_INITIALIZED;case MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE:case MA_AUDCLNT_E_INVALID_SIZE:case MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:case MA_AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL:case MA_AUDCLNT_E_EVENTHANDLE_NOT_SET:case MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE:case MA_AUDCLNT_E_BUFFER_SIZE_ERROR:case MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED:case MA_AUDCLNT_E_INVALID_DEVICE_PERIOD:case MA_AUDCLNT_E_INVALID_STREAM_FLAG:case MA_AUDCLNT_E_BADSENDBUFFERGUID:return MA_INVALID_ARGS;case MA_AUDCLNT_E_DEVICE_INVALIDATED:case MA_DSERR_BUFFERLOST:case MA_DSERR_FXUNAVAILABLE:return MA_UNAVAILABLE;case MA_AUDCLNT_E_NOT_STOPPED:return MA_DEVICE_NOT_STOPPED;case MA_AUDCLNT_E_BUFFER_TOO_LARGE:return MA_TOO_BIG;case MA_AUDCLNT_E_OUT_OF_ORDER:case MA_AUDCLNT_E_BUFFER_OPERATION_PENDING:case MA_AUDCLNT_E_NO_SINGLE_PROCESS:case MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:case MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY:case MA_AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE:case MA_AUDCLNT_E_OFFLOAD_MODE_ONLY:case MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY:case MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED:case MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED:case MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED:case MA_AUDCLNT_E_HEADTRACKING_ENABLED:case MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED:case MA_DS_NO_VIRTUALIZATION:case MA_DSERR_CONTROLUNAVAIL:case MA_DSERR_INVALIDCALL:case MA_DSERR_PRIOLEVELNEEDED:case MA_DSERR_DS8_REQUIRED:return MA_INVALID_OPERATION;case MA_AUDCLNT_E_UNSUPPORTED_FORMAT:case MA_DSERR_BADFORMAT:return MA_FORMAT_NOT_SUPPORTED;case MA_AUDCLNT_E_DEVICE_IN_USE:case MA_DSERR_ALLOCATED:return MA_ALREADY_IN_USE;case MA_AUDCLNT_E_THREAD_NOT_REGISTERED:return MA_DOES_NOT_EXIST;case MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED:return MA_FAILED_TO_OPEN_BACKEND_DEVICE;case MA_AUDCLNT_E_SERVICE_NOT_RUNNING:return MA_NOT_CONNECTED;case MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES:return MA_OUT_OF_MEMORY;case MA_AUDCLNT_E_RESOURCES_INVALIDATED:return MA_INVALID_DATA;case MA_AUDCLNT_S_BUFFER_EMPTY:case MA_DSERR_BUFFERTOOSMALL:return MA_NO_SPACE;case MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED:return MA_ALREADY_EXISTS;case MA_AUDCLNT_S_POSITION_STALLED:case MA_AUDCLNT_E_CPUUSAGE_EXCEEDED:case MA_AUDCLNT_E_BUFFER_ERROR:return MA_ERROR;case MA_DSERR_NODRIVER:return MA_FAILED_TO_INIT_BACKEND;case MA_DSERR_SENDLOOP:return MA_DEADLOCK;case MA_DSERR_OBJECTNOTFOUND:return MA_NO_DEVICE;default:return MA_ERROR;}}
-#endif
+#define MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES     ((HRESULT)0x88890023)
+#define MA_AUDCLNT_E_OFFLOAD_MODE_ONLY            ((HRESULT)0x88890024)
+#define MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY         ((HRESULT)0x88890025)
+#define MA_AUDCLNT_E_RESOURCES_INVALIDATED        ((HRESULT)0x88890026)
+#define MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED         ((HRESULT)0x88890027)
+#define MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED    ((HRESULT)0x88890028)
+#define MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED         ((HRESULT)0x88890029)
+#define MA_AUDCLNT_E_HEADTRACKING_ENABLED         ((HRESULT)0x88890030)
+#define MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED     ((HRESULT)0x88890040)
+#define MA_AUDCLNT_S_BUFFER_EMPTY                 ((HRESULT)0x08890001)
+#define MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED    ((HRESULT)0x08890002)
+#define MA_AUDCLNT_S_POSITION_STALLED             ((HRESULT)0x08890003)
+
+#define MA_DS_OK                                  ((HRESULT)0)
+#define MA_DS_NO_VIRTUALIZATION                   ((HRESULT)0x0878000A)
+#define MA_DSERR_ALLOCATED                        ((HRESULT)0x8878000A)
+#define MA_DSERR_CONTROLUNAVAIL                   ((HRESULT)0x8878001E)
+#define MA_DSERR_INVALIDPARAM                     ((HRESULT)0x80070057) 
+#define MA_DSERR_INVALIDCALL                      ((HRESULT)0x88780032)
+#define MA_DSERR_GENERIC                          ((HRESULT)0x80004005) 
+#define MA_DSERR_PRIOLEVELNEEDED                  ((HRESULT)0x88780046)
+#define MA_DSERR_OUTOFMEMORY                      ((HRESULT)0x8007000E) 
+#define MA_DSERR_BADFORMAT                        ((HRESULT)0x88780064)
+#define MA_DSERR_UNSUPPORTED                      ((HRESULT)0x80004001) 
+#define MA_DSERR_NODRIVER                         ((HRESULT)0x88780078)
+#define MA_DSERR_ALREADYINITIALIZED               ((HRESULT)0x88780082)
+#define MA_DSERR_NOAGGREGATION                    ((HRESULT)0x80040110) 
+#define MA_DSERR_BUFFERLOST                       ((HRESULT)0x88780096)
+#define MA_DSERR_OTHERAPPHASPRIO                  ((HRESULT)0x887800A0)
+#define MA_DSERR_UNINITIALIZED                    ((HRESULT)0x887800AA)
+#define MA_DSERR_NOINTERFACE                      ((HRESULT)0x80004002) 
+#define MA_DSERR_ACCESSDENIED                     ((HRESULT)0x80070005) 
+#define MA_DSERR_BUFFERTOOSMALL                   ((HRESULT)0x887800B4)
+#define MA_DSERR_DS8_REQUIRED                     ((HRESULT)0x887800BE)
+#define MA_DSERR_SENDLOOP                         ((HRESULT)0x887800C8)
+#define MA_DSERR_BADSENDBUFFERGUID                ((HRESULT)0x887800D2)
+#define MA_DSERR_OBJECTNOTFOUND                   ((HRESULT)0x88781161)
+#define MA_DSERR_FXUNAVAILABLE                    ((HRESULT)0x887800DC)
+
+static ma_result ma_result_from_HRESULT(HRESULT hr)
+{
+    switch (hr)
+    {
+        case NOERROR:                                   return MA_SUCCESS;
+        
+
+        case E_POINTER:                                 return MA_INVALID_ARGS;
+        case E_UNEXPECTED:                              return MA_ERROR;
+        case E_NOTIMPL:                                 return MA_NOT_IMPLEMENTED;
+        case E_OUTOFMEMORY:                             return MA_OUT_OF_MEMORY;
+        case E_INVALIDARG:                              return MA_INVALID_ARGS;
+        case E_NOINTERFACE:                             return MA_API_NOT_FOUND;
+        case E_HANDLE:                                  return MA_INVALID_ARGS;
+        case E_ABORT:                                   return MA_ERROR;
+        case E_FAIL:                                    return MA_ERROR;
+        case E_ACCESSDENIED:                            return MA_ACCESS_DENIED;
+
+        
+        case MA_AUDCLNT_E_NOT_INITIALIZED:              return MA_DEVICE_NOT_INITIALIZED;
+        case MA_AUDCLNT_E_ALREADY_INITIALIZED:          return MA_DEVICE_ALREADY_INITIALIZED;
+        case MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE:          return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_DEVICE_INVALIDATED:           return MA_UNAVAILABLE;
+        case MA_AUDCLNT_E_NOT_STOPPED:                  return MA_DEVICE_NOT_STOPPED;
+        case MA_AUDCLNT_E_BUFFER_TOO_LARGE:             return MA_TOO_BIG;
+        case MA_AUDCLNT_E_OUT_OF_ORDER:                 return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_UNSUPPORTED_FORMAT:           return MA_FORMAT_NOT_SUPPORTED;
+        case MA_AUDCLNT_E_INVALID_SIZE:                 return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_DEVICE_IN_USE:                return MA_BUSY;
+        case MA_AUDCLNT_E_BUFFER_OPERATION_PENDING:     return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_THREAD_NOT_REGISTERED:        return MA_DOES_NOT_EXIST;
+        case MA_AUDCLNT_E_NO_SINGLE_PROCESS:            return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:   return MA_SHARE_MODE_NOT_SUPPORTED;
+        case MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED:       return MA_FAILED_TO_OPEN_BACKEND_DEVICE;
+        case MA_AUDCLNT_E_SERVICE_NOT_RUNNING:          return MA_NOT_CONNECTED;
+        case MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:     return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY:          return MA_SHARE_MODE_NOT_SUPPORTED;
+        case MA_AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_EVENTHANDLE_NOT_SET:          return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE:        return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_BUFFER_SIZE_ERROR:            return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_CPUUSAGE_EXCEEDED:            return MA_ERROR;
+        case MA_AUDCLNT_E_BUFFER_ERROR:                 return MA_ERROR;
+        case MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED:      return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_INVALID_DEVICE_PERIOD:        return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_INVALID_STREAM_FLAG:          return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES:     return MA_OUT_OF_MEMORY;
+        case MA_AUDCLNT_E_OFFLOAD_MODE_ONLY:            return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY:         return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_RESOURCES_INVALIDATED:        return MA_INVALID_DATA;
+        case MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED:         return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED:    return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED:         return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_HEADTRACKING_ENABLED:         return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED:     return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_S_BUFFER_EMPTY:                 return MA_NO_SPACE;
+        case MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED:    return MA_ALREADY_EXISTS;
+        case MA_AUDCLNT_S_POSITION_STALLED:             return MA_ERROR;
+
+        
+                  
+        case MA_DS_NO_VIRTUALIZATION:                   return MA_SUCCESS;
+        case MA_DSERR_ALLOCATED:                        return MA_ALREADY_IN_USE;
+        case MA_DSERR_CONTROLUNAVAIL:                   return MA_INVALID_OPERATION;
+              
+        case MA_DSERR_INVALIDCALL:                      return MA_INVALID_OPERATION;
+                    
+        case MA_DSERR_PRIOLEVELNEEDED:                  return MA_INVALID_OPERATION;
+            
+        case MA_DSERR_BADFORMAT:                        return MA_FORMAT_NOT_SUPPORTED;
+          
+        case MA_DSERR_NODRIVER:                         return MA_FAILED_TO_INIT_BACKEND;
+        case MA_DSERR_ALREADYINITIALIZED:               return MA_DEVICE_ALREADY_INITIALIZED;
+        case MA_DSERR_NOAGGREGATION:                    return MA_ERROR;
+        case MA_DSERR_BUFFERLOST:                       return MA_UNAVAILABLE;
+        case MA_DSERR_OTHERAPPHASPRIO:                  return MA_ACCESS_DENIED;
+        case MA_DSERR_UNINITIALIZED:                    return MA_DEVICE_NOT_INITIALIZED;
+            
+            
+        case MA_DSERR_BUFFERTOOSMALL:                   return MA_NO_SPACE;
+        case MA_DSERR_DS8_REQUIRED:                     return MA_INVALID_OPERATION;
+        case MA_DSERR_SENDLOOP:                         return MA_DEADLOCK;
+        case MA_DSERR_BADSENDBUFFERGUID:                return MA_INVALID_ARGS;
+        case MA_DSERR_OBJECTNOTFOUND:                   return MA_NO_DEVICE;
+        case MA_DSERR_FXUNAVAILABLE:                    return MA_UNAVAILABLE;
+
+        default:                                        return MA_ERROR;
+    }
+}
+
 
 #define MA_VT_LPWSTR    31
 #define MA_VT_BLOB      65
@@ -18544,234 +19091,271 @@ static ma_result ma_context_init__winmm(ma_context* pContext, const ma_context_c
     #undef inline
     #undef MA_INLINE_DEFINED
 #endif
-#if defined(MA_WIN32)
-typedef snd_pcm_uframes_t ma_snd_pcm_uframes_t;
-typedef snd_pcm_sframes_t ma_snd_pcm_sframes_t;
-typedef snd_pcm_stream_t ma_snd_pcm_stream_t;
-typedef snd_pcm_format_t ma_snd_pcm_format_t;
-typedef snd_pcm_access_t ma_snd_pcm_access_t;
-typedef snd_pcm_t ma_snd_pcm_t;
-typedef snd_pcm_hw_params_t ma_snd_pcm_hw_params_t;
-typedef snd_pcm_sw_params_t ma_snd_pcm_sw_params_t;
-typedef snd_pcm_format_mask_t ma_snd_pcm_format_mask_t;
-typedef snd_pcm_info_t ma_snd_pcm_info_t;
-typedef snd_pcm_channel_area_t ma_snd_pcm_channel_area_t;
-typedef snd_pcm_chmap_t ma_snd_pcm_chmap_t;
-typedef snd_pcm_state_t ma_snd_pcm_state_t;
-#define MA_SND_PCM_STREAM_PLAYBACK SND_PCM_STREAM_PLAYBACK
-#define MA_SND_PCM_STREAM_CAPTURE SND_PCM_STREAM_CAPTURE
-#define MA_SND_PCM_FORMAT_UNKNOWN SND_PCM_FORMAT_UNKNOWN
-#define MA_SND_PCM_FORMAT_U8 SND_PCM_FORMAT_U8
-#define MA_SND_PCM_FORMAT_S16_LE SND_PCM_FORMAT_S16_LE
-#define MA_SND_PCM_FORMAT_S16_BE SND_PCM_FORMAT_S16_BE
-#define MA_SND_PCM_FORMAT_S24_LE SND_PCM_FORMAT_S24_LE
-#define MA_SND_PCM_FORMAT_S24_BE SND_PCM_FORMAT_S24_BE
-#define MA_SND_PCM_FORMAT_S32_LE SND_PCM_FORMAT_S32_LE
-#define MA_SND_PCM_FORMAT_S32_BE SND_PCM_FORMAT_S32_BE
-#define MA_SND_PCM_FORMAT_FLOAT_LE SND_PCM_FORMAT_FLOAT_LE
-#define MA_SND_PCM_FORMAT_FLOAT_BE SND_PCM_FORMAT_FLOAT_BE
-#define MA_SND_PCM_FORMAT_FLOAT64_LE SND_PCM_FORMAT_FLOAT64_LE
-#define MA_SND_PCM_FORMAT_FLOAT64_BE SND_PCM_FORMAT_FLOAT64_BE
-#define MA_SND_PCM_FORMAT_MU_LAW SND_PCM_FORMAT_MU_LAW
-#define MA_SND_PCM_FORMAT_A_LAW SND_PCM_FORMAT_A_LAW
-#define MA_SND_PCM_FORMAT_S24_3LE SND_PCM_FORMAT_S24_3LE
-#define MA_SND_PCM_FORMAT_S24_3BE SND_PCM_FORMAT_S24_3BE
-#define MA_SND_PCM_ACCESS_MMAP_INTERLEAVED SND_PCM_ACCESS_MMAP_INTERLEAVED
-#define MA_SND_PCM_ACCESS_MMAP_NONINTERLEAVED SND_PCM_ACCESS_MMAP_NONINTERLEAVED
-#define MA_SND_PCM_ACCESS_MMAP_COMPLEX SND_PCM_ACCESS_MMAP_COMPLEX
-#define MA_SND_PCM_ACCESS_RW_INTERLEAVED SND_PCM_ACCESS_RW_INTERLEAVED
-#define MA_SND_PCM_ACCESS_RW_NONINTERLEAVED SND_PCM_ACCESS_RW_NONINTERLEAVED
-#define MA_SND_CHMAP_UNKNOWN SND_CHMAP_UNKNOWN
-#define MA_SND_CHMAP_NA SND_CHMAP_NA
-#define MA_SND_CHMAP_MONO SND_CHMAP_MONO
-#define MA_SND_CHMAP_FL SND_CHMAP_FL
-#define MA_SND_CHMAP_FR SND_CHMAP_FR
-#define MA_SND_CHMAP_RL SND_CHMAP_RL
-#define MA_SND_CHMAP_RR SND_CHMAP_RR
-#define MA_SND_CHMAP_FC SND_CHMAP_FC
-#define MA_SND_CHMAP_LFE SND_CHMAP_LFE
-#define MA_SND_CHMAP_SL SND_CHMAP_SL
-#define MA_SND_CHMAP_SR SND_CHMAP_SR
-#define MA_SND_CHMAP_RC SND_CHMAP_RC
-#define MA_SND_CHMAP_FLC SND_CHMAP_FLC
-#define MA_SND_CHMAP_FRC SND_CHMAP_FRC
-#define MA_SND_CHMAP_RLC SND_CHMAP_RLC
-#define MA_SND_CHMAP_RRC SND_CHMAP_RRC
-#define MA_SND_CHMAP_FLW SND_CHMAP_FLW
-#define MA_SND_CHMAP_FRW SND_CHMAP_FRW
-#define MA_SND_CHMAP_FLH SND_CHMAP_FLH
-#define MA_SND_CHMAP_FCH SND_CHMAP_FCH
-#define MA_SND_CHMAP_FRH SND_CHMAP_FRH
-#define MA_SND_CHMAP_TC SND_CHMAP_TC
-#define MA_SND_CHMAP_TFL SND_CHMAP_TFL
-#define MA_SND_CHMAP_TFR SND_CHMAP_TFR
-#define MA_SND_CHMAP_TFC SND_CHMAP_TFC
-#define MA_SND_CHMAP_TRL SND_CHMAP_TRL
-#define MA_SND_CHMAP_TRR SND_CHMAP_TRR
-#define MA_SND_CHMAP_TRC SND_CHMAP_TRC
-#define MA_SND_CHMAP_TFLC SND_CHMAP_TFLC
-#define MA_SND_CHMAP_TFRC SND_CHMAP_TFRC
-#define MA_SND_CHMAP_TSL SND_CHMAP_TSL
-#define MA_SND_CHMAP_TSR SND_CHMAP_TSR
-#define MA_SND_CHMAP_LLFE SND_CHMAP_LLFE
-#define MA_SND_CHMAP_RLFE SND_CHMAP_RLFE
-#define MA_SND_CHMAP_BC SND_CHMAP_BC
-#define MA_SND_CHMAP_BLC SND_CHMAP_BLC
-#define MA_SND_CHMAP_BRC SND_CHMAP_BRC
-#define MA_SND_PCM_NO_AUTO_RESAMPLE SND_PCM_NO_AUTO_RESAMPLE
-#define MA_SND_PCM_NO_AUTO_CHANNELS SND_PCM_NO_AUTO_CHANNELS
-#define MA_SND_PCM_NO_AUTO_FORMAT SND_PCM_NO_AUTO_FORMAT
+
+typedef snd_pcm_uframes_t                       ma_snd_pcm_uframes_t;
+typedef snd_pcm_sframes_t                       ma_snd_pcm_sframes_t;
+typedef snd_pcm_stream_t                        ma_snd_pcm_stream_t;
+typedef snd_pcm_format_t                        ma_snd_pcm_format_t;
+typedef snd_pcm_access_t                        ma_snd_pcm_access_t;
+typedef snd_pcm_t                               ma_snd_pcm_t;
+typedef snd_pcm_hw_params_t                     ma_snd_pcm_hw_params_t;
+typedef snd_pcm_sw_params_t                     ma_snd_pcm_sw_params_t;
+typedef snd_pcm_format_mask_t                   ma_snd_pcm_format_mask_t;
+typedef snd_pcm_info_t                          ma_snd_pcm_info_t;
+typedef snd_pcm_channel_area_t                  ma_snd_pcm_channel_area_t;
+typedef snd_pcm_chmap_t                         ma_snd_pcm_chmap_t;
+typedef snd_pcm_state_t                         ma_snd_pcm_state_t;
+
+
+#define MA_SND_PCM_STREAM_PLAYBACK              SND_PCM_STREAM_PLAYBACK
+#define MA_SND_PCM_STREAM_CAPTURE               SND_PCM_STREAM_CAPTURE
+
+
+#define MA_SND_PCM_FORMAT_UNKNOWN               SND_PCM_FORMAT_UNKNOWN
+#define MA_SND_PCM_FORMAT_U8                    SND_PCM_FORMAT_U8
+#define MA_SND_PCM_FORMAT_S16_LE                SND_PCM_FORMAT_S16_LE
+#define MA_SND_PCM_FORMAT_S16_BE                SND_PCM_FORMAT_S16_BE
+#define MA_SND_PCM_FORMAT_S24_LE                SND_PCM_FORMAT_S24_LE
+#define MA_SND_PCM_FORMAT_S24_BE                SND_PCM_FORMAT_S24_BE
+#define MA_SND_PCM_FORMAT_S32_LE                SND_PCM_FORMAT_S32_LE
+#define MA_SND_PCM_FORMAT_S32_BE                SND_PCM_FORMAT_S32_BE
+#define MA_SND_PCM_FORMAT_FLOAT_LE              SND_PCM_FORMAT_FLOAT_LE
+#define MA_SND_PCM_FORMAT_FLOAT_BE              SND_PCM_FORMAT_FLOAT_BE
+#define MA_SND_PCM_FORMAT_FLOAT64_LE            SND_PCM_FORMAT_FLOAT64_LE
+#define MA_SND_PCM_FORMAT_FLOAT64_BE            SND_PCM_FORMAT_FLOAT64_BE
+#define MA_SND_PCM_FORMAT_MU_LAW                SND_PCM_FORMAT_MU_LAW
+#define MA_SND_PCM_FORMAT_A_LAW                 SND_PCM_FORMAT_A_LAW
+#define MA_SND_PCM_FORMAT_S24_3LE               SND_PCM_FORMAT_S24_3LE
+#define MA_SND_PCM_FORMAT_S24_3BE               SND_PCM_FORMAT_S24_3BE
+
+
+#define MA_SND_PCM_ACCESS_MMAP_INTERLEAVED      SND_PCM_ACCESS_MMAP_INTERLEAVED
+#define MA_SND_PCM_ACCESS_MMAP_NONINTERLEAVED   SND_PCM_ACCESS_MMAP_NONINTERLEAVED
+#define MA_SND_PCM_ACCESS_MMAP_COMPLEX          SND_PCM_ACCESS_MMAP_COMPLEX
+#define MA_SND_PCM_ACCESS_RW_INTERLEAVED        SND_PCM_ACCESS_RW_INTERLEAVED
+#define MA_SND_PCM_ACCESS_RW_NONINTERLEAVED     SND_PCM_ACCESS_RW_NONINTERLEAVED
+
+
+#define MA_SND_CHMAP_UNKNOWN                    SND_CHMAP_UNKNOWN
+#define MA_SND_CHMAP_NA                         SND_CHMAP_NA
+#define MA_SND_CHMAP_MONO                       SND_CHMAP_MONO
+#define MA_SND_CHMAP_FL                         SND_CHMAP_FL
+#define MA_SND_CHMAP_FR                         SND_CHMAP_FR
+#define MA_SND_CHMAP_RL                         SND_CHMAP_RL
+#define MA_SND_CHMAP_RR                         SND_CHMAP_RR
+#define MA_SND_CHMAP_FC                         SND_CHMAP_FC
+#define MA_SND_CHMAP_LFE                        SND_CHMAP_LFE
+#define MA_SND_CHMAP_SL                         SND_CHMAP_SL
+#define MA_SND_CHMAP_SR                         SND_CHMAP_SR
+#define MA_SND_CHMAP_RC                         SND_CHMAP_RC
+#define MA_SND_CHMAP_FLC                        SND_CHMAP_FLC
+#define MA_SND_CHMAP_FRC                        SND_CHMAP_FRC
+#define MA_SND_CHMAP_RLC                        SND_CHMAP_RLC
+#define MA_SND_CHMAP_RRC                        SND_CHMAP_RRC
+#define MA_SND_CHMAP_FLW                        SND_CHMAP_FLW
+#define MA_SND_CHMAP_FRW                        SND_CHMAP_FRW
+#define MA_SND_CHMAP_FLH                        SND_CHMAP_FLH
+#define MA_SND_CHMAP_FCH                        SND_CHMAP_FCH
+#define MA_SND_CHMAP_FRH                        SND_CHMAP_FRH
+#define MA_SND_CHMAP_TC                         SND_CHMAP_TC
+#define MA_SND_CHMAP_TFL                        SND_CHMAP_TFL
+#define MA_SND_CHMAP_TFR                        SND_CHMAP_TFR
+#define MA_SND_CHMAP_TFC                        SND_CHMAP_TFC
+#define MA_SND_CHMAP_TRL                        SND_CHMAP_TRL
+#define MA_SND_CHMAP_TRR                        SND_CHMAP_TRR
+#define MA_SND_CHMAP_TRC                        SND_CHMAP_TRC
+#define MA_SND_CHMAP_TFLC                       SND_CHMAP_TFLC
+#define MA_SND_CHMAP_TFRC                       SND_CHMAP_TFRC
+#define MA_SND_CHMAP_TSL                        SND_CHMAP_TSL
+#define MA_SND_CHMAP_TSR                        SND_CHMAP_TSR
+#define MA_SND_CHMAP_LLFE                       SND_CHMAP_LLFE
+#define MA_SND_CHMAP_RLFE                       SND_CHMAP_RLFE
+#define MA_SND_CHMAP_BC                         SND_CHMAP_BC
+#define MA_SND_CHMAP_BLC                        SND_CHMAP_BLC
+#define MA_SND_CHMAP_BRC                        SND_CHMAP_BRC
+
+
+#define MA_SND_PCM_NO_AUTO_RESAMPLE             SND_PCM_NO_AUTO_RESAMPLE
+#define MA_SND_PCM_NO_AUTO_CHANNELS             SND_PCM_NO_AUTO_CHANNELS
+#define MA_SND_PCM_NO_AUTO_FORMAT               SND_PCM_NO_AUTO_FORMAT
 #else
-#include <errno.h>
-typedef unsigned long ma_snd_pcm_uframes_t;
-typedef long ma_snd_pcm_sframes_t;
-typedef int ma_snd_pcm_stream_t, ma_snd_pcm_format_t, ma_snd_pcm_access_t, ma_snd_pcm_state_t;
-typedef struct ma_snd_pcm_t ma_snd_pcm_t;
-typedef struct ma_snd_pcm_hw_params_t ma_snd_pcm_hw_params_t;
-typedef struct ma_snd_pcm_sw_params_t ma_snd_pcm_sw_params_t;
-typedef struct ma_snd_pcm_format_mask_t ma_snd_pcm_format_mask_t;
-typedef struct ma_snd_pcm_info_t ma_snd_pcm_info_t;
-typedef struct{void*addr;unsigned int first,step;}ma_snd_pcm_channel_area_t;
-typedef struct{unsigned int channels,pos[1];}ma_snd_pcm_chmap_t;
-#define MA_SND_PCM_STATE_OPEN 0
-#define MA_SND_PCM_STATE_SETUP 1
-#define MA_SND_PCM_STATE_PREPARED 2
-#define MA_SND_PCM_STATE_RUNNING 3
-#define MA_SND_PCM_STATE_XRUN 4
-#define MA_SND_PCM_STATE_DRAINING 5
-#define MA_SND_PCM_STATE_PAUSED 6
-#define MA_SND_PCM_STATE_SUSPENDED 7
-#define MA_SND_PCM_STATE_DISCONNECTED 8
-#define MA_SND_PCM_STREAM_PLAYBACK 0
-#define MA_SND_PCM_STREAM_CAPTURE 1
-#define MA_SND_PCM_FORMAT_UNKNOWN -1
-#define MA_SND_PCM_FORMAT_U8 1
-#define MA_SND_PCM_FORMAT_S16_LE 2
-#define MA_SND_PCM_FORMAT_S16_BE 3
-#define MA_SND_PCM_FORMAT_S24_LE 6
-#define MA_SND_PCM_FORMAT_S24_BE 7
-#define MA_SND_PCM_FORMAT_S32_LE 10
-#define MA_SND_PCM_FORMAT_S32_BE 11
-#define MA_SND_PCM_FORMAT_FLOAT_LE 14
-#define MA_SND_PCM_FORMAT_FLOAT_BE 15
-#define MA_SND_PCM_FORMAT_FLOAT64_LE 16
-#define MA_SND_PCM_FORMAT_FLOAT64_BE 17
-#define MA_SND_PCM_FORMAT_MU_LAW 20
-#define MA_SND_PCM_FORMAT_A_LAW 21
-#define MA_SND_PCM_FORMAT_S24_3LE 32
-#define MA_SND_PCM_FORMAT_S24_3BE 33
-#define MA_SND_PCM_ACCESS_MMAP_INTERLEAVED 0
-#define MA_SND_PCM_ACCESS_MMAP_NONINTERLEAVED 1
-#define MA_SND_PCM_ACCESS_MMAP_COMPLEX 2
-#define MA_SND_PCM_ACCESS_RW_INTERLEAVED 3
-#define MA_SND_PCM_ACCESS_RW_NONINTERLEAVED 4
-#define MA_SND_CHMAP_UNKNOWN 0
-#define MA_SND_CHMAP_NA 1
-#define MA_SND_CHMAP_MONO 2
-#define MA_SND_CHMAP_FL 3
-#define MA_SND_CHMAP_FR 4
-#define MA_SND_CHMAP_RL 5
-#define MA_SND_CHMAP_RR 6
-#define MA_SND_CHMAP_FC 7
-#define MA_SND_CHMAP_LFE 8
-#define MA_SND_CHMAP_SL 9
-#define MA_SND_CHMAP_SR 10
-#define MA_SND_CHMAP_RC 11
-#define MA_SND_CHMAP_FLC 12
-#define MA_SND_CHMAP_FRC 13
-#define MA_SND_CHMAP_RLC 14
-#define MA_SND_CHMAP_RRC 15
-#define MA_SND_CHMAP_FLW 16
-#define MA_SND_CHMAP_FRW 17
-#define MA_SND_CHMAP_FLH 18
-#define MA_SND_CHMAP_FCH 19
-#define MA_SND_CHMAP_FRH 20
-#define MA_SND_CHMAP_TC 21
-#define MA_SND_CHMAP_TFL 22
-#define MA_SND_CHMAP_TFR 23
-#define MA_SND_CHMAP_TFC 24
-#define MA_SND_CHMAP_TRL 25
-#define MA_SND_CHMAP_TRR 26
-#define MA_SND_CHMAP_TRC 27
-#define MA_SND_CHMAP_TFLC 28
-#define MA_SND_CHMAP_TFRC 29
-#define MA_SND_CHMAP_TSL 30
-#define MA_SND_CHMAP_TSR 31
-#define MA_SND_CHMAP_LLFE 32
-#define MA_SND_CHMAP_RLFE 33
-#define MA_SND_CHMAP_BC 34
-#define MA_SND_CHMAP_BLC 35
-#define MA_SND_CHMAP_BRC 36
-#define MA_SND_PCM_NO_AUTO_RESAMPLE 0x00010000
-#define MA_SND_PCM_NO_AUTO_CHANNELS 0x00020000
-#define MA_SND_PCM_NO_AUTO_FORMAT 0x00040000
+#include <errno.h>  
+typedef unsigned long                           ma_snd_pcm_uframes_t;
+typedef long                                    ma_snd_pcm_sframes_t;
+typedef int                                     ma_snd_pcm_stream_t;
+typedef int                                     ma_snd_pcm_format_t;
+typedef int                                     ma_snd_pcm_access_t;
+typedef int                                     ma_snd_pcm_state_t;
+typedef struct ma_snd_pcm_t                     ma_snd_pcm_t;
+typedef struct ma_snd_pcm_hw_params_t           ma_snd_pcm_hw_params_t;
+typedef struct ma_snd_pcm_sw_params_t           ma_snd_pcm_sw_params_t;
+typedef struct ma_snd_pcm_format_mask_t         ma_snd_pcm_format_mask_t;
+typedef struct ma_snd_pcm_info_t                ma_snd_pcm_info_t;
+typedef struct
+{
+    void* addr;
+    unsigned int first;
+    unsigned int step;
+} ma_snd_pcm_channel_area_t;
+typedef struct
+{
+    unsigned int channels;
+    unsigned int pos[1];
+} ma_snd_pcm_chmap_t;
+
+
+#define MA_SND_PCM_STATE_OPEN                  0
+#define MA_SND_PCM_STATE_SETUP                 1
+#define MA_SND_PCM_STATE_PREPARED              2
+#define MA_SND_PCM_STATE_RUNNING               3
+#define MA_SND_PCM_STATE_XRUN                  4
+#define MA_SND_PCM_STATE_DRAINING              5
+#define MA_SND_PCM_STATE_PAUSED                6
+#define MA_SND_PCM_STATE_SUSPENDED             7
+#define MA_SND_PCM_STATE_DISCONNECTED          8
+
+
+#define MA_SND_PCM_STREAM_PLAYBACK             0
+#define MA_SND_PCM_STREAM_CAPTURE              1
+
+
+#define MA_SND_PCM_FORMAT_UNKNOWN              -1
+#define MA_SND_PCM_FORMAT_U8                   1
+#define MA_SND_PCM_FORMAT_S16_LE               2
+#define MA_SND_PCM_FORMAT_S16_BE               3
+#define MA_SND_PCM_FORMAT_S24_LE               6
+#define MA_SND_PCM_FORMAT_S24_BE               7
+#define MA_SND_PCM_FORMAT_S32_LE               10
+#define MA_SND_PCM_FORMAT_S32_BE               11
+#define MA_SND_PCM_FORMAT_FLOAT_LE             14
+#define MA_SND_PCM_FORMAT_FLOAT_BE             15
+#define MA_SND_PCM_FORMAT_FLOAT64_LE           16
+#define MA_SND_PCM_FORMAT_FLOAT64_BE           17
+#define MA_SND_PCM_FORMAT_MU_LAW               20
+#define MA_SND_PCM_FORMAT_A_LAW                21
+#define MA_SND_PCM_FORMAT_S24_3LE              32
+#define MA_SND_PCM_FORMAT_S24_3BE              33
+
+
+#define MA_SND_PCM_ACCESS_MMAP_INTERLEAVED     0
+#define MA_SND_PCM_ACCESS_MMAP_NONINTERLEAVED  1
+#define MA_SND_PCM_ACCESS_MMAP_COMPLEX         2
+#define MA_SND_PCM_ACCESS_RW_INTERLEAVED       3
+#define MA_SND_PCM_ACCESS_RW_NONINTERLEAVED    4
+
+
+#define MA_SND_CHMAP_UNKNOWN                   0
+#define MA_SND_CHMAP_NA                        1
+#define MA_SND_CHMAP_MONO                      2
+#define MA_SND_CHMAP_FL                        3
+#define MA_SND_CHMAP_FR                        4
+#define MA_SND_CHMAP_RL                        5
+#define MA_SND_CHMAP_RR                        6
+#define MA_SND_CHMAP_FC                        7
+#define MA_SND_CHMAP_LFE                       8
+#define MA_SND_CHMAP_SL                        9
+#define MA_SND_CHMAP_SR                        10
+#define MA_SND_CHMAP_RC                        11
+#define MA_SND_CHMAP_FLC                       12
+#define MA_SND_CHMAP_FRC                       13
+#define MA_SND_CHMAP_RLC                       14
+#define MA_SND_CHMAP_RRC                       15
+#define MA_SND_CHMAP_FLW                       16
+#define MA_SND_CHMAP_FRW                       17
+#define MA_SND_CHMAP_FLH                       18
+#define MA_SND_CHMAP_FCH                       19
+#define MA_SND_CHMAP_FRH                       20
+#define MA_SND_CHMAP_TC                        21
+#define MA_SND_CHMAP_TFL                       22
+#define MA_SND_CHMAP_TFR                       23
+#define MA_SND_CHMAP_TFC                       24
+#define MA_SND_CHMAP_TRL                       25
+#define MA_SND_CHMAP_TRR                       26
+#define MA_SND_CHMAP_TRC                       27
+#define MA_SND_CHMAP_TFLC                      28
+#define MA_SND_CHMAP_TFRC                      29
+#define MA_SND_CHMAP_TSL                       30
+#define MA_SND_CHMAP_TSR                       31
+#define MA_SND_CHMAP_LLFE                      32
+#define MA_SND_CHMAP_RLFE                      33
+#define MA_SND_CHMAP_BC                        34
+#define MA_SND_CHMAP_BLC                       35
+#define MA_SND_CHMAP_BRC                       36
+
+
+#define MA_SND_PCM_NO_AUTO_RESAMPLE            0x00010000
+#define MA_SND_PCM_NO_AUTO_CHANNELS            0x00020000
+#define MA_SND_PCM_NO_AUTO_FORMAT              0x00040000
 #endif
-typedef int(*ma_snd_pcm_open_proc)(ma_snd_pcm_t**,const char*,ma_snd_pcm_stream_t,int);
-typedef int(*ma_snd_pcm_close_proc)(ma_snd_pcm_t*);
-typedef size_t(*ma_snd_pcm_hw_params_sizeof_proc)(void);
-typedef int(*ma_snd_pcm_hw_params_any_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*);
-typedef int(*ma_snd_pcm_hw_params_set_format_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,ma_snd_pcm_format_t);
-typedef int(*ma_snd_pcm_hw_params_set_format_first_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,ma_snd_pcm_format_t*);
-typedef void(*ma_snd_pcm_hw_params_get_format_mask_proc)(ma_snd_pcm_hw_params_t*,ma_snd_pcm_format_mask_t*);
-typedef int(*ma_snd_pcm_hw_params_set_channels_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int);
-typedef int(*ma_snd_pcm_hw_params_set_channels_near_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int*);
-typedef int(*ma_snd_pcm_hw_params_set_channels_minmax_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int*,unsigned int*);
-typedef int(*ma_snd_pcm_hw_params_set_rate_resample_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int);
-typedef int(*ma_snd_pcm_hw_params_set_rate_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int,int);
-typedef int(*ma_snd_pcm_hw_params_set_rate_near_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int*,int*);
-typedef int(*ma_snd_pcm_hw_params_set_buffer_size_near_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,ma_snd_pcm_uframes_t*);
-typedef int(*ma_snd_pcm_hw_params_set_periods_near_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int*,int*);
-typedef int(*ma_snd_pcm_hw_params_set_access_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,ma_snd_pcm_access_t);
-typedef int(*ma_snd_pcm_hw_params_get_format_proc)(const ma_snd_pcm_hw_params_t*,ma_snd_pcm_format_t*);
-typedef int(*ma_snd_pcm_hw_params_get_channels_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*);
-typedef int(*ma_snd_pcm_hw_params_get_channels_min_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*);
-typedef int(*ma_snd_pcm_hw_params_get_channels_max_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*);
-typedef int(*ma_snd_pcm_hw_params_get_rate_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*,int*);
-typedef int(*ma_snd_pcm_hw_params_get_rate_min_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*,int*);
-typedef int(*ma_snd_pcm_hw_params_get_rate_max_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*,int*);
-typedef int(*ma_snd_pcm_hw_params_get_buffer_size_proc)(const ma_snd_pcm_hw_params_t*,ma_snd_pcm_uframes_t*);
-typedef int(*ma_snd_pcm_hw_params_get_periods_proc)(const ma_snd_pcm_hw_params_t*,unsigned int*,int*);
-typedef int(*ma_snd_pcm_hw_params_get_access_proc)(const ma_snd_pcm_hw_params_t*,ma_snd_pcm_access_t*);
-typedef int(*ma_snd_pcm_hw_params_test_format_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,ma_snd_pcm_format_t);
-typedef int(*ma_snd_pcm_hw_params_test_channels_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int);
-typedef int(*ma_snd_pcm_hw_params_test_rate_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*,unsigned int,int);
-typedef int(*ma_snd_pcm_hw_params_proc)(ma_snd_pcm_t*,ma_snd_pcm_hw_params_t*);
-typedef size_t(*ma_snd_pcm_sw_params_sizeof_proc)(void);
-typedef int(*ma_snd_pcm_sw_params_current_proc)(ma_snd_pcm_t*,ma_snd_pcm_sw_params_t*);
-typedef int(*ma_snd_pcm_sw_params_get_boundary_proc)(const ma_snd_pcm_sw_params_t*,ma_snd_pcm_uframes_t*);
-typedef int(*ma_snd_pcm_sw_params_set_avail_min_proc)(ma_snd_pcm_t*,ma_snd_pcm_sw_params_t*,ma_snd_pcm_uframes_t);
-typedef int(*ma_snd_pcm_sw_params_set_start_threshold_proc)(ma_snd_pcm_t*,ma_snd_pcm_sw_params_t*,ma_snd_pcm_uframes_t);
-typedef int(*ma_snd_pcm_sw_params_set_stop_threshold_proc)(ma_snd_pcm_t*,ma_snd_pcm_sw_params_t*,ma_snd_pcm_uframes_t);
-typedef int(*ma_snd_pcm_sw_params_proc)(ma_snd_pcm_t*,ma_snd_pcm_sw_params_t*);
-typedef size_t(*ma_snd_pcm_format_mask_sizeof_proc)(void);
-typedef int(*ma_snd_pcm_format_mask_test_proc)(const ma_snd_pcm_format_mask_t*,ma_snd_pcm_format_t);
-typedef ma_snd_pcm_chmap_t*(*ma_snd_pcm_get_chmap_proc)(ma_snd_pcm_t*);
-typedef ma_snd_pcm_state_t(*ma_snd_pcm_state_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_prepare_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_start_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_drop_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_drain_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_reset_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_device_name_hint_proc)(int,const char*,void***);
-typedef char*(*ma_snd_device_name_get_hint_proc)(const void*,const char*);
-typedef int(*ma_snd_card_get_index_proc)(const char*);
-typedef int(*ma_snd_device_name_free_hint_proc)(void**);
-typedef int(*ma_snd_pcm_mmap_begin_proc)(ma_snd_pcm_t*,const ma_snd_pcm_channel_area_t**,ma_snd_pcm_uframes_t*,ma_snd_pcm_uframes_t*);
-typedef ma_snd_pcm_sframes_t(*ma_snd_pcm_mmap_commit_proc)(ma_snd_pcm_t*,ma_snd_pcm_uframes_t,ma_snd_pcm_uframes_t);
-typedef int(*ma_snd_pcm_recover_proc)(ma_snd_pcm_t*,int,int);
-typedef ma_snd_pcm_sframes_t(*ma_snd_pcm_readi_proc)(ma_snd_pcm_t*,void*,ma_snd_pcm_uframes_t);
-typedef ma_snd_pcm_sframes_t(*ma_snd_pcm_writei_proc)(ma_snd_pcm_t*,const void*,ma_snd_pcm_uframes_t);
-typedef ma_snd_pcm_sframes_t(*ma_snd_pcm_avail_proc)(ma_snd_pcm_t*);
-typedef ma_snd_pcm_sframes_t(*ma_snd_pcm_avail_update_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_wait_proc)(ma_snd_pcm_t*,int);
-typedef int(*ma_snd_pcm_nonblock_proc)(ma_snd_pcm_t*,int);
-typedef int(*ma_snd_pcm_info_proc)(ma_snd_pcm_t*,ma_snd_pcm_info_t*);
-typedef size_t(*ma_snd_pcm_info_sizeof_proc)(void);
-typedef const char*(*ma_snd_pcm_info_get_name_proc)(const ma_snd_pcm_info_t*);
-typedef int(*ma_snd_pcm_poll_descriptors_proc)(ma_snd_pcm_t*,struct pollfd*,unsigned int);
-typedef int(*ma_snd_pcm_poll_descriptors_count_proc)(ma_snd_pcm_t*);
-typedef int(*ma_snd_pcm_poll_descriptors_revents_proc)(ma_snd_pcm_t*,struct pollfd*,unsigned int,unsigned short*);
-typedef int(*ma_snd_config_update_free_global_proc)(void);
+
+typedef int                  (* ma_snd_pcm_open_proc)                          (ma_snd_pcm_t **pcm, const char *name, ma_snd_pcm_stream_t stream, int mode);
+typedef int                  (* ma_snd_pcm_close_proc)                         (ma_snd_pcm_t *pcm);
+typedef size_t               (* ma_snd_pcm_hw_params_sizeof_proc)              (void);
+typedef int                  (* ma_snd_pcm_hw_params_any_proc)                 (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params);
+typedef int                  (* ma_snd_pcm_hw_params_set_format_proc)          (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, ma_snd_pcm_format_t val);
+typedef int                  (* ma_snd_pcm_hw_params_set_format_first_proc)    (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, ma_snd_pcm_format_t *format);
+typedef void                 (* ma_snd_pcm_hw_params_get_format_mask_proc)     (ma_snd_pcm_hw_params_t *params, ma_snd_pcm_format_mask_t *mask);
+typedef int                  (* ma_snd_pcm_hw_params_set_channels_proc)        (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int val);
+typedef int                  (* ma_snd_pcm_hw_params_set_channels_near_proc)   (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int *val);
+typedef int                  (* ma_snd_pcm_hw_params_set_channels_minmax_proc) (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int *minimum, unsigned int *maximum);
+typedef int                  (* ma_snd_pcm_hw_params_set_rate_resample_proc)   (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int val);
+typedef int                  (* ma_snd_pcm_hw_params_set_rate_proc)            (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int val, int dir);
+typedef int                  (* ma_snd_pcm_hw_params_set_rate_near_proc)       (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int *val, int *dir);
+typedef int                  (* ma_snd_pcm_hw_params_set_buffer_size_near_proc)(ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, ma_snd_pcm_uframes_t *val);
+typedef int                  (* ma_snd_pcm_hw_params_set_periods_near_proc)    (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int *val, int *dir);
+typedef int                  (* ma_snd_pcm_hw_params_set_access_proc)          (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, ma_snd_pcm_access_t _access);
+typedef int                  (* ma_snd_pcm_hw_params_get_format_proc)          (const ma_snd_pcm_hw_params_t *params, ma_snd_pcm_format_t *format);
+typedef int                  (* ma_snd_pcm_hw_params_get_channels_proc)        (const ma_snd_pcm_hw_params_t *params, unsigned int *val);
+typedef int                  (* ma_snd_pcm_hw_params_get_channels_min_proc)    (const ma_snd_pcm_hw_params_t *params, unsigned int *val);
+typedef int                  (* ma_snd_pcm_hw_params_get_channels_max_proc)    (const ma_snd_pcm_hw_params_t *params, unsigned int *val);
+typedef int                  (* ma_snd_pcm_hw_params_get_rate_proc)            (const ma_snd_pcm_hw_params_t *params, unsigned int *rate, int *dir);
+typedef int                  (* ma_snd_pcm_hw_params_get_rate_min_proc)        (const ma_snd_pcm_hw_params_t *params, unsigned int *rate, int *dir);
+typedef int                  (* ma_snd_pcm_hw_params_get_rate_max_proc)        (const ma_snd_pcm_hw_params_t *params, unsigned int *rate, int *dir);
+typedef int                  (* ma_snd_pcm_hw_params_get_buffer_size_proc)     (const ma_snd_pcm_hw_params_t *params, ma_snd_pcm_uframes_t *val);
+typedef int                  (* ma_snd_pcm_hw_params_get_periods_proc)         (const ma_snd_pcm_hw_params_t *params, unsigned int *val, int *dir);
+typedef int                  (* ma_snd_pcm_hw_params_get_access_proc)          (const ma_snd_pcm_hw_params_t *params, ma_snd_pcm_access_t *_access);
+typedef int                  (* ma_snd_pcm_hw_params_test_format_proc)         (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, ma_snd_pcm_format_t val);
+typedef int                  (* ma_snd_pcm_hw_params_test_channels_proc)       (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int val);
+typedef int                  (* ma_snd_pcm_hw_params_test_rate_proc)           (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params, unsigned int val, int dir);
+typedef int                  (* ma_snd_pcm_hw_params_proc)                     (ma_snd_pcm_t *pcm, ma_snd_pcm_hw_params_t *params);
+typedef size_t               (* ma_snd_pcm_sw_params_sizeof_proc)              (void);
+typedef int                  (* ma_snd_pcm_sw_params_current_proc)             (ma_snd_pcm_t *pcm, ma_snd_pcm_sw_params_t *params);
+typedef int                  (* ma_snd_pcm_sw_params_get_boundary_proc)        (const ma_snd_pcm_sw_params_t *params, ma_snd_pcm_uframes_t* val);
+typedef int                  (* ma_snd_pcm_sw_params_set_avail_min_proc)       (ma_snd_pcm_t *pcm, ma_snd_pcm_sw_params_t *params, ma_snd_pcm_uframes_t val);
+typedef int                  (* ma_snd_pcm_sw_params_set_start_threshold_proc) (ma_snd_pcm_t *pcm, ma_snd_pcm_sw_params_t *params, ma_snd_pcm_uframes_t val);
+typedef int                  (* ma_snd_pcm_sw_params_set_stop_threshold_proc)  (ma_snd_pcm_t *pcm, ma_snd_pcm_sw_params_t *params, ma_snd_pcm_uframes_t val);
+typedef int                  (* ma_snd_pcm_sw_params_proc)                     (ma_snd_pcm_t *pcm, ma_snd_pcm_sw_params_t *params);
+typedef size_t               (* ma_snd_pcm_format_mask_sizeof_proc)            (void);
+typedef int                  (* ma_snd_pcm_format_mask_test_proc)              (const ma_snd_pcm_format_mask_t *mask, ma_snd_pcm_format_t val);
+typedef ma_snd_pcm_chmap_t * (* ma_snd_pcm_get_chmap_proc)                     (ma_snd_pcm_t *pcm);
+typedef ma_snd_pcm_state_t   (* ma_snd_pcm_state_proc)                         (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_prepare_proc)                       (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_start_proc)                         (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_drop_proc)                          (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_drain_proc)                         (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_reset_proc)                         (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_device_name_hint_proc)                  (int card, const char *iface, void ***hints);
+typedef char *               (* ma_snd_device_name_get_hint_proc)              (const void *hint, const char *id);
+typedef int                  (* ma_snd_card_get_index_proc)                    (const char *name);
+typedef int                  (* ma_snd_device_name_free_hint_proc)             (void **hints);
+typedef int                  (* ma_snd_pcm_mmap_begin_proc)                    (ma_snd_pcm_t *pcm, const ma_snd_pcm_channel_area_t **areas, ma_snd_pcm_uframes_t *offset, ma_snd_pcm_uframes_t *frames);
+typedef ma_snd_pcm_sframes_t (* ma_snd_pcm_mmap_commit_proc)                   (ma_snd_pcm_t *pcm, ma_snd_pcm_uframes_t offset, ma_snd_pcm_uframes_t frames);
+typedef int                  (* ma_snd_pcm_recover_proc)                       (ma_snd_pcm_t *pcm, int err, int silent);
+typedef ma_snd_pcm_sframes_t (* ma_snd_pcm_readi_proc)                         (ma_snd_pcm_t *pcm, void *buffer, ma_snd_pcm_uframes_t size);
+typedef ma_snd_pcm_sframes_t (* ma_snd_pcm_writei_proc)                        (ma_snd_pcm_t *pcm, const void *buffer, ma_snd_pcm_uframes_t size);
+typedef ma_snd_pcm_sframes_t (* ma_snd_pcm_avail_proc)                         (ma_snd_pcm_t *pcm);
+typedef ma_snd_pcm_sframes_t (* ma_snd_pcm_avail_update_proc)                  (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_wait_proc)                          (ma_snd_pcm_t *pcm, int timeout);
+typedef int                  (* ma_snd_pcm_nonblock_proc)                      (ma_snd_pcm_t *pcm, int nonblock);
+typedef int                  (* ma_snd_pcm_info_proc)                          (ma_snd_pcm_t *pcm, ma_snd_pcm_info_t* info);
+typedef size_t               (* ma_snd_pcm_info_sizeof_proc)                   (void);
+typedef const char*          (* ma_snd_pcm_info_get_name_proc)                 (const ma_snd_pcm_info_t* info);
+typedef int                  (* ma_snd_pcm_poll_descriptors_proc)              (ma_snd_pcm_t *pcm, struct pollfd *pfds, unsigned int space);
+typedef int                  (* ma_snd_pcm_poll_descriptors_count_proc)        (ma_snd_pcm_t *pcm);
+typedef int                  (* ma_snd_pcm_poll_descriptors_revents_proc)      (ma_snd_pcm_t *pcm, struct pollfd *pfds, unsigned int nfds, unsigned short *revents);
+typedef int                  (* ma_snd_config_update_free_global_proc)         (void);
+
+
 static const char* g_maCommonDeviceNamesALSA[] = {
     "default",
     "null",
@@ -36673,7 +37257,7 @@ MA_API ma_result ma_lpf1_reinit(const ma_lpf1_config* pConfig, ma_lpf1* pLPF)
     pLPF->format   = pConfig->format;
     pLPF->channels = pConfig->channels;
 
-    a = exp(-2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate);
+    a = ma_expd(-2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate);
     if (pConfig->format == ma_format_f32) {
         pLPF->a.f32 = (float)a;
     } else {
@@ -36795,8 +37379,8 @@ static MA_INLINE ma_biquad_config ma_lpf2__get_biquad_config(const ma_lpf2_confi
 
     q = pConfig->q;
     w = 2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
+    s = ma_sind(w);
+    c = ma_cosd(w);
     a = s / (2*q);
 
     bqConfig.b0 = (1 - c) / 2;
@@ -37122,7 +37706,7 @@ static ma_result ma_lpf_reinit__internal(const ma_lpf_config* pConfig, void* pHe
         } else {
             a = (1 + ilpf2*2) * (MA_PI_D/(pConfig->order*2));   
         }
-        q = 1 / (2*sin((MA_PI_D*0.5) - a));
+        q = 1 / (2*ma_cosd(a));
 
         lpf2Config = ma_lpf2_config_init(pConfig->format, pConfig->channels, pConfig->sampleRate, pConfig->cutoffFrequency, q);
 
@@ -37547,7 +38131,7 @@ MA_API ma_result ma_hpf1_reinit(const ma_hpf1_config* pConfig, ma_hpf1* pHPF)
     pHPF->format   = pConfig->format;
     pHPF->channels = pConfig->channels;
 
-    a = exp(-2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate);
+    a = ma_expd(-2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate);
     if (pConfig->format == ma_format_f32) {
         pHPF->a.f32 = (float)a;
     } else {
@@ -37654,8 +38238,8 @@ static MA_INLINE ma_biquad_config ma_hpf2__get_biquad_config(const ma_hpf2_confi
 
     q = pConfig->q;
     w = 2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
+    s = ma_sind(w);
+    c = ma_cosd(w);
     a = s / (2*q);
 
     bqConfig.b0 =  (1 + c) / 2;
@@ -37970,7 +38554,7 @@ static ma_result ma_hpf_reinit__internal(const ma_hpf_config* pConfig, void* pHe
         } else {
             a = (1 + ihpf2*2) * (MA_PI_D/(pConfig->order*2));   
         }
-        q = 1 / (2*sin((MA_PI_D*0.5) - a));
+        q = 1 / (2*ma_cosd(a));
 
         hpf2Config = ma_hpf2_config_init(pConfig->format, pConfig->channels, pConfig->sampleRate, pConfig->cutoffFrequency, q);
 
@@ -38215,8 +38799,8 @@ static MA_INLINE ma_biquad_config ma_bpf2__get_biquad_config(const ma_bpf2_confi
 
     q = pConfig->q;
     w = 2 * MA_PI_D * pConfig->cutoffFrequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
+    s = ma_sind(w);
+    c = ma_cosd(w);
     a = s / (2*q);
 
     bqConfig.b0 =  q * a;
@@ -38686,8 +39270,8 @@ static MA_INLINE ma_biquad_config ma_notch2__get_biquad_config(const ma_notch2_c
 
     q = pConfig->q;
     w = 2 * MA_PI_D * pConfig->frequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
+    s = ma_sind(w);
+    c = ma_cosd(w);
     a = s / (2*q);
 
     bqConfig.b0 =  1;
@@ -38852,10 +39436,10 @@ static MA_INLINE ma_biquad_config ma_peak2__get_biquad_config(const ma_peak2_con
 
     q = pConfig->q;
     w = 2 * MA_PI_D * pConfig->frequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
+    s = ma_sind(w);
+    c = ma_cosd(w);
     a = s / (2*q);
-    A = pow(10, (pConfig->gainDB / 40));
+    A = ma_powd(10, (pConfig->gainDB / 40));
 
     bqConfig.b0 =  1 + (a * A);
     bqConfig.b1 = -2 * c;
@@ -39015,12 +39599,12 @@ static MA_INLINE ma_biquad_config ma_loshelf2__get_biquad_config(const ma_loshel
     MA_ASSERT(pConfig != NULL);
 
     w = 2 * MA_PI_D * pConfig->frequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
-    A = pow(10, (pConfig->gainDB / 40));
+    s = ma_sind(w);
+    c = ma_cosd(w);
+    A = ma_powd(10, (pConfig->gainDB / 40));
     S = pConfig->shelfSlope;
-    a = s/2 * sqrt((A + 1/A) * (1/S - 1) + 2);
-    sqrtA = 2*sqrt(A)*a;
+    a = s/2 * ma_sqrtd((A + 1/A) * (1/S - 1) + 2);
+    sqrtA = 2*ma_sqrtd(A)*a;
 
     bqConfig.b0 =  A * ((A + 1) - (A - 1)*c + sqrtA);
     bqConfig.b1 =  2 * A * ((A - 1) - (A + 1)*c);
@@ -39180,12 +39764,12 @@ static MA_INLINE ma_biquad_config ma_hishelf2__get_biquad_config(const ma_hishel
     MA_ASSERT(pConfig != NULL);
 
     w = 2 * MA_PI_D * pConfig->frequency / pConfig->sampleRate;
-    s = sin(w);
-    c = sin((MA_PI_D*0.5) - w);
-    A = pow(10, (pConfig->gainDB / 40));
+    s = ma_sind(w);
+    c = ma_cosd(w);
+    A = ma_powd(10, (pConfig->gainDB / 40));
     S = pConfig->shelfSlope;
-    a = s/2 * sqrt((A + 1/A) * (1/S - 1) + 2);
-    sqrtA = 2*sqrt(A)*a;
+    a = s/2 * ma_sqrtd((A + 1/A) * (1/S - 1) + 2);
+    sqrtA = 2*ma_sqrtd(A)*a;
 
     bqConfig.b0 =  A * ((A + 1) + (A - 1)*c + sqrtA);
     bqConfig.b1 = -2 * A * ((A - 1) + (A + 1)*c);
@@ -40397,7 +40981,7 @@ MA_API float ma_vec3f_len2(ma_vec3f v)
 
 MA_API float ma_vec3f_len(ma_vec3f v)
 {
-    return (float)sqrt(ma_vec3f_len2(v));
+    return (float)ma_sqrtd(ma_vec3f_len2(v));
 }
 MA_API float ma_vec3f_dist(ma_vec3f a, ma_vec3f b)
 {
@@ -40549,7 +41133,7 @@ static float ma_attenuation_exponential(float distance, float minDistance, float
         return 1;   
     }
 
-    return (float)pow(ma_clamp(distance, minDistance, maxDistance) / minDistance, -rolloff);
+    return (float)ma_powd(ma_clamp(distance, minDistance, maxDistance) / minDistance, -rolloff);
 }
 
 static float ma_doppler_pitch(ma_vec3f relativePosition, ma_vec3f sourceVelocity, ma_vec3f listenVelocity, float speedOfSound, float dopplerFactor)
@@ -41101,8 +41685,8 @@ static float ma_calculate_angular_gain(ma_vec3f dirA, ma_vec3f dirB, float coneI
     
     if (coneInnerAngleInRadians < 6.283185f) {
         float angularGain = 1;
-        float cutoffInner = (float)sin((MA_PI_D*0.5) - coneInnerAngleInRadians*0.5f);
-        float cutoffOuter = (float)sin((MA_PI_D*0.5) - coneOuterAngleInRadians*0.5f);
+        float cutoffInner = (float)ma_cosd(coneInnerAngleInRadians*0.5f);
+        float cutoffOuter = (float)ma_cosd(coneOuterAngleInRadians*0.5f);
         float d;
 
         d = ma_vec3f_dot(dirA, dirB);
@@ -56033,7 +56617,7 @@ MA_API ma_result ma_waveform_set_sample_rate(ma_waveform* pWaveform, ma_uint32 s
 
 static float ma_waveform_sine_f32(double time, double amplitude)
 {
-    return (float)(sin(MA_TAU_D * time) * amplitude);
+    return (float)(ma_sind(MA_TAU_D * time) * amplitude);
 }
 
 static ma_int16 ma_waveform_sine_s16(double time, double amplitude)

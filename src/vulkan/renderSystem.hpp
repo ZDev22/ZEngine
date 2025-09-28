@@ -19,6 +19,7 @@ private:
     void createPipelineLayout();
     void initializeSpriteData();
     void createTextureArrayDescriptorSet();
+    void recreate();
 
     Device& device;
     AppWindow& window;

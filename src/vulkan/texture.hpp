@@ -3,16 +3,25 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
+#include <string>
 
 class Device;
 class Pipeline;
-class Texture {
+struct Texture {
 public:
-    Texture(Device& device, const char*, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
+    Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
     Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
 
     VkImageView getImageView() { return imageView; }
     VkSampler getSampler() { return sampler; }
+    VkImageLayout getImageLayout() { return imageLayout; }
+    unsigned int getArrayLayers() const { return arrayLayers; }
+    void createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
+
+    int getTexWidth() const { return texWidth; }
+    int getTexHeight() const { return texHeight; }
+
+    std::string name;
 
 private:
     void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
