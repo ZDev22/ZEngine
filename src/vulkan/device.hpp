@@ -48,7 +48,6 @@ public:
 
 private:
     void createInstance();
-    void setupDebugMessenger();
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createCommandPool();
@@ -58,13 +57,11 @@ private:
 
     bool isDeviceSuitable(VkPhysicalDevice device);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
     void hasGflwRequiredInstanceExtensions();
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
     VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     AppWindow& window;
     VkCommandPool commandPool;

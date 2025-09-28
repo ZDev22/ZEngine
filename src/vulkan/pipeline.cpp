@@ -229,15 +229,11 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, unsigned int textureIn
 }
 
 void Pipeline::createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex) {
-    float pixelHeight = 32.f;
-    int atlasSize = 512;
+    unsigned int atlasSize = fontSize * 16.f;
+    vector<unsigned char> grayscale(atlasSize * atlasSize);
+    vector<stbtt_bakedchar> charData(96);
 
-    unsigned int fileSize = 0;
-
-    std::vector<unsigned char> grayscale(atlasSize * atlasSize);
-    std::vector<stbtt_bakedchar> charData(96);
-
-    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, pixelHeight, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
+    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
 
     float min_y = 0.0f;
     float max_y = 0.0f;
@@ -250,11 +246,11 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         current_x += cd.xadvance;
     }
 
-    int bitmap_height = static_cast<int>(std::ceil(max_y - min_y));
-    int bitmap_width = static_cast<int>(std::ceil(current_x));
-    int size = std::max(bitmap_width, bitmap_height);
-
-    std::vector<unsigned char> text_grayscale(size * size, 0);
+    int texsize = std::max(
+        static_cast<int>(std::ceil(current_x)),
+        static_cast<int>(std::ceil(max_y - min_y))
+    );
+    std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
 
     current_x = 0.0f;
     for (char c : text) {
@@ -270,8 +266,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
                 int src_y = cd.y0 + py;
                 int src_idx = src_y * atlasSize + src_x;
 
-                int dst_idx = (dst_y + py) * size + (dst_x + px);
-                if (dst_idx >= 0 && dst_idx < size * size) {
+                int dst_idx = (dst_y + py) * texsize + (dst_x + px);
+                if (dst_idx >= 0 && dst_idx < texsize * texsize) {
                     text_grayscale[dst_idx] = grayscale[src_idx];
                 }
             }
@@ -280,7 +276,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         current_x += cd.xadvance;
     }
 
-    spriteTextures[textureIndex] = std::make_unique<Texture>(device, text_grayscale.data(), size, descriptorSetLayout, descriptorPool, *this);
+    spriteTextures[textureIndex] = std::make_unique<Texture>(device, text_grayscale.data(), texsize, descriptorSetLayout, descriptorPool, *this);
+
     if (updateTextureIndex != -1) { updateTextures = true; }
     else { updateTextureIndex = textureIndex; }
 }

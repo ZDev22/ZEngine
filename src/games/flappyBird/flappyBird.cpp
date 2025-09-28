@@ -28,6 +28,7 @@ void FlappyBird::tick() {
             if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
                 flappyBirdDead = true;
                 playSound(&audio, "assets/sounds/hit.mp3");
+                sprites[sprites.size() - 1].setText("Something", 0, 32.f, pipeline);
             }
         }
         else if (sprites[0].position[1] > 2.5f) {

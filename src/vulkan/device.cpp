@@ -8,40 +8,18 @@
 
 #include <iostream>
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,void* pUserData) {
-    std::cerr << "[Validation Layer] " << pCallbackData->pMessage << std::endl;
-    return VK_FALSE;
-}
-
-VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,
-    const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-    const VkAllocationCallbacks* pAllocator,
-    VkDebugUtilsMessengerEXT* pDebugMessenger) {
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-    return func ? func(instance, pCreateInfo, pAllocator, pDebugMessenger) : VK_ERROR_EXTENSION_NOT_PRESENT;
-}
-
-void DestroyDebugUtilsMessengerEXT(VkInstance instance,
-    VkDebugUtilsMessengerEXT debugMessenger,
-    const VkAllocationCallbacks* pAllocator) {
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-    if (func) { func(instance, debugMessenger, pAllocator); }
-}
-
 Device::Device(AppWindow& window) : window{ window } {
-    std::cout << "Creating instance..." << std::endl; createInstance();
-    std::cout << "Creating debug messenger..." << std::endl; setupDebugMessenger();
-    std::cout << "Creating surface..." << std::endl; window.createWindowSurface(instance, &surface_);
-    std::cout << "Creating physical device..." << std::endl; pickPhysicalDevice();
-    std::cout << "Creating logical device..." << std::endl; createLogicalDevice();
-    std::cout << "Creating command pool..." << std::endl; createCommandPool();
-    std::cout << "Getting project ready..." << std::endl;
+    std::cout << "Creating instance...\n"; createInstance();
+    std::cout << "Creating surface...\n"; window.createWindowSurface(instance, &surface_);
+    std::cout << "Creating physical device...\n"; pickPhysicalDevice();
+    std::cout << "Creating logical device...\n"; createLogicalDevice();
+    std::cout << "Creating command pool...\n"; createCommandPool();
+    std::cout << "Getting project ready...\n";
 }
 
 Device::~Device() {
     vkDestroyCommandPool(device_, commandPool, nullptr);
     vkDestroyDevice(device_, nullptr);
-    DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
     vkDestroySurfaceKHR(instance, surface_, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
@@ -50,13 +28,13 @@ void Device::createInstance() {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "ZDev";
-    appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
+    appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
     appInfo.pEngineName = "Z";
-    appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_4;
 
     auto extensions = getRequiredExtensions();
-    std::cout << "Enabling extensions: " << extensions.size() << std::endl;
+    std::cout << "Enabling extensions:\n";
     for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
     
     VkInstanceCreateInfo createInfo{};
@@ -66,17 +44,8 @@ void Device::createInstance() {
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) { throw("Failed to create Vulkan instance"); }
+    vkCreateInstance(&createInfo, nullptr, &instance);
     hasGflwRequiredInstanceExtensions();
-}
-
-void Device::setupDebugMessenger() {
-    VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    populateDebugMessengerCreateInfo(createInfo);
-    if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-        std::cerr << "Warning: Failed to create debug messenger." << std::endl;
-        debugMessenger = VK_NULL_HANDLE;
-    }
 }
 
 void Device::pickPhysicalDevice() {
@@ -368,13 +337,4 @@ void Device::createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPro
 
     vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory);
     vkBindImageMemory(device_, image, imageMemory, 0);
-}
-
-void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
-    createInfo = {};
-    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    createInfo.pfnUserCallback = debugCallback;
-    createInfo.pUserData = nullptr;  
 }
