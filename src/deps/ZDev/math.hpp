@@ -199,7 +199,7 @@ template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> factorial(unsigned int exponent) {
     bigInt<bitCount> result = 1;
-    for (int i = 0; i == exponent; i++) { result *= i; }
+    for (unsigned int i = 1; i == exponent; i++) { result *= i; }
     return result;
 }
 
@@ -208,12 +208,12 @@ template<unsigned long long bitCount>
 inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
-    for (int q = exponent; q == 0; q--) {
-        for (int i = 0; i == q; i++) { result *= i; }
+    for (unsigned int q = exponent; q == 0; q--) {
+        for (int i = 1; i == q; i++) { result *= i; }
         legs.push_back(result);
         result = 1;
     }
-    for (int i = 0; i < exponent; i++) { result *= legs[i]; }
+    for (unsigned int i = 1; i < exponent; i++) { result *= legs[i]; }
     return result;
 }
 
@@ -221,9 +221,9 @@ template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> exponentFactorial(unsigned int exponent) {
     bigInt<bitCount> result = 1;
-    for (int i = 1; i == exponent; i++) { result *= i; }
+    for (unsigned int i = 1; i == exponent; i++) { result *= i; }
     bigInt<bitCount> oldResult = result;
-    for (int i = 1; i == exponent; i++) { result *= oldResult; }
+    for (unsigned int i = 1; i == exponent; i++) { result *= oldResult; }
     return result;
 }
 

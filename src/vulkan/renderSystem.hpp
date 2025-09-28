@@ -19,7 +19,8 @@ private:
     void createPipelineLayout();
     void initializeSpriteData();
     void createTextureArrayDescriptorSet();
-    void recreate();
+    void updateAllTextures();
+    void updateTexture(unsigned char index);
 
     Device& device;
     AppWindow& window;

@@ -13,15 +13,6 @@ RenderSystem::~RenderSystem() {
     vkFreeDescriptorSets(device.device(), pipeline.getDescriptorPool(), 1, &spriteDataDescriptorSet);
 }
 
-void RenderSystem::recreate() {
-    vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
-    vkFreeDescriptorSets(device.device(), pipeline.getDescriptorPool(), 1, &spriteDataDescriptorSet);
-    createPipelineLayout();
-    initializeSpriteData();
-    createTextureArrayDescriptorSet();
-    textureUpdate = false;
-}
-
 void RenderSystem::createPipelineLayout() {
     VkPushConstantRange pushConstantRange{};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -48,29 +39,14 @@ void RenderSystem::initializeSpriteData() {
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    std::vector<VkDescriptorImageInfo> imageInfos;
-    imageInfos.reserve(MAX_TEXTURES);
+    std::vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
 
     for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
         Texture* texture = spriteTextures[i].get();
-        if (!texture) continue;
-
-        bool alreadyAdded = false;
-        for (const auto& info : imageInfos) {
-            if (info.imageView == texture->getImageView()) {
-                alreadyAdded = true;
-                break;
-            }
-        }
-
-        if (!alreadyAdded) {
-            VkDescriptorImageInfo imageInfo{};
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = texture->getImageView();
-            imageInfo.sampler = texture->getSampler();
-
-            imageInfos.push_back(imageInfo);
-        }
+        VkDescriptorImageInfo& imageInfo = imageInfos[i];
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = texture->getImageView();
+        imageInfo.sampler = texture->getSampler();
     }
 
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -103,16 +79,63 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     imageWrite.dstBinding = 1;
     imageWrite.dstArrayElement = 0;
     imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = static_cast<unsigned int>(imageInfos.size());
+    imageWrite.descriptorCount = MAX_TEXTURES;
     imageWrite.pImageInfo = imageInfos.data();
 
     VkWriteDescriptorSet descriptorWrites[2] = { bufferWrite, imageWrite };
     vkUpdateDescriptorSets(device.device(), 2, descriptorWrites, 0, nullptr);
-    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
+}
+
+void RenderSystem::updateAllTextures() {
+    std::vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
+
+    for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
+        Texture* texture = spriteTextures[i].get();
+        VkDescriptorImageInfo& imageInfo = imageInfos[i];
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = texture->getImageView();
+        imageInfo.sampler = texture->getSampler();
+    }
+
+    VkWriteDescriptorSet imageWrite{};
+    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    imageWrite.dstSet = spriteDataDescriptorSet;
+    imageWrite.dstBinding = 1;
+    imageWrite.dstArrayElement = 0;
+    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    imageWrite.descriptorCount = MAX_TEXTURES;
+    imageWrite.pImageInfo = imageInfos.data();
+
+    updateTextures = false;
+
+    vkUpdateDescriptorSets(device.device(), 1, &imageWrite, 0, nullptr);
+}
+
+void RenderSystem::updateTexture(unsigned char index) {
+    Texture* texture = spriteTextures[index].get();
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = texture->getImageView();
+    imageInfo.sampler = texture->getSampler();
+
+    VkWriteDescriptorSet imageWrite{};
+    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    imageWrite.dstSet = spriteDataDescriptorSet;
+    imageWrite.dstBinding = 1;
+    imageWrite.dstArrayElement = index;
+    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    imageWrite.descriptorCount = 1;
+    imageWrite.pImageInfo = &imageInfo;
+
+    updateTextureIndex = -1;
+
+    vkUpdateDescriptorSets(device.device(), 1, &imageWrite, 0, nullptr);
 }
 
 void RenderSystem::renderSprites(VkCommandBuffer commandBuffer) {
-    if (textureUpdate) { recreate(); }
+    if (updateTextures) { updateAllTextures(); }
+    else if (updateTextureIndex != -1) { updateTexture(updateTextureIndex); }
+
     pipeline.bind(commandBuffer);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &spriteDataDescriptorSet, 0, nullptr);

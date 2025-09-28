@@ -203,7 +203,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) 
     return std::make_shared<Model>(device, vertices);
 }
 
-void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a) {
+void Pipeline::createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a) {
     if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
     Sprite sprite;
     SpriteData spriteData;
@@ -228,7 +228,7 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, int textureIndex, floa
     spriteCPU.push_back(sprite);
 }
 
-void Pipeline::createText(unsigned int font, const std::string& text, float fontSize) {
+void Pipeline::createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex) {
     float pixelHeight = 32.f;
     int atlasSize = 512;
 
@@ -280,7 +280,9 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         current_x += cd.xadvance;
     }
 
-    spriteTextures.push_back(std::make_unique<Texture>(device, text_grayscale.data(), size, descriptorSetLayout, descriptorPool, *this));
+    spriteTextures[textureIndex] = std::make_unique<Texture>(device, text_grayscale.data(), size, descriptorSetLayout, descriptorPool, *this);
+    if (updateTextureIndex != -1) { updateTextures = true; }
+    else { updateTextureIndex = textureIndex; }
 }
 
 void Pipeline::loadSprites() {

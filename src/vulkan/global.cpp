@@ -6,5 +6,5 @@ std::vector<Sprite> spriteCPU;
 std::vector<std::unique_ptr<Texture>> spriteTextures;
 
 float deltaTime = .0f;
-bool textureUpdate = false;
-unsigned short imageCount;
+signed char updateTextureIndex = -1;
+bool updateTextures = false;

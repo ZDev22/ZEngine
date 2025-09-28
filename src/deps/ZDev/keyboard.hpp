@@ -75,33 +75,6 @@ public:
         return keysIdle;
     }
 
-    // Activity
-    vector<unsigned short> activeKeys() {
-        vector<unsigned short> keysPressed;
-        for (unsigned char i = 0; i < 104; i++) if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { keysPressed.push_back(glfwKeys[i]); }
-        return keysPressed;
-    }
-    unsigned char countKeysPressed() {
-        unsigned char keysPressed;
-        for (unsigned char i = 0; i < 104; i++) if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { keysPressed++; }
-        return keysPressed;
-    }
-    unsigned char countKeysHit() {
-        unsigned char keysHit;
-        for (unsigned char i = 0; i < 104; i++) if (updateKeyState(glfwKeys[i]) == KEY_HIT) { keysHit++; }
-        return keysHit;
-    }
-    unsigned char countKeysReleased() {
-        unsigned char keysReleased;
-        for (unsigned char i = 0; i < 104; i++) if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) { keysReleased++; }
-        return keysReleased;
-    }
-    unsigned char countKeysIdle() {
-        unsigned char keysIdle;
-        for (unsigned char i = 0; i < 104; i++) if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) { keysIdle++; }
-        return keysIdle;
-    }
-
     // Keybinds
     struct KeyBind {
         unsigned short key;
