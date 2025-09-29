@@ -4,8 +4,13 @@
 #include "font.hpp"
 #include "../deps/ZDev/math.hpp"
 
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "../deps/stb_truetype.h"
+
 #include <filesystem>
 #include <fstream>
+
+vector<stbtt_bakedchar> fontCharData;
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
 
@@ -337,13 +342,13 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
 }
 
 void Pipeline::loadSprites() {
-    sprites.clear();
-    spriteCPU.clear();
+    spriteTextures.reserve(MAX_TEXTURES);
+#ifdef _WIN32
     lastTexts.resize(MAX_TEXTURES, "");
     fontAtlases.resize(fonts.size());
     fontCharDatas.resize(fonts.size());
     fontSizes.resize(fonts.size(), 0.0f);
-
+#endif
     squareModel = makeModel({
         -.5f, -.5f, // Bottom-Left
         .5f, -.5f,  // Bottom-Right
@@ -352,9 +357,7 @@ void Pipeline::loadSprites() {
     });
 
     while (texturePaths.size() < MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
-    spriteTextures.clear();
-    spriteTextures.reserve(MAX_TEXTURES);
-    for (const auto& path : texturePaths) { spriteTextures.push_back(std::make_unique<Texture>(device, path, descriptorSetLayout, descriptorPool, *this)); }
+    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.push_back(std::make_unique<Texture>(device, texturePaths[i], descriptorSetLayout, descriptorPool, *this)); }
 }
 
 void Pipeline::loadFlappyBird() {

@@ -3,7 +3,6 @@
 #include "device.hpp"
 #include "global.hpp"
 #include "model.hpp"
-#include "../deps/stb_truetype.h"
 #include "../deps/ZDev/vector.hpp"
 
 class Renderer;
@@ -21,7 +20,7 @@ public:
     int switchTexture(Sprite& sprite, int textureID);
     std::shared_ptr<Model> makeModel(const std::vector<float>& positions);
     void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a);
-    void createText(unsigned int file, const std::string& text, float fontSize, unsigned int textureIndex);
+    void createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex);
     std::shared_ptr<Model> getSquareModel() { return squareModel; }
 
     void loadFlappyBird();
@@ -47,7 +46,6 @@ private:
     std::shared_ptr<Model> squareModel;
     std::vector<std::string> texturePaths;
     vector<std::string> fonts;
-    vector<stbtt_bakedchar> fontCharData;
 
 #ifdef _WIN32
     vector<vector<unsigned char>> fontAtlases;

@@ -28,7 +28,7 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
 Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
     name = filepath;
     stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-    if (!pixels) { throw("failed to load texture") + filepath; }
+    if (!pixels) { throw("failed to load texture"); }
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
@@ -39,7 +39,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     memcpy(data, pixels, static_cast<unsigned int>(imageSize));
     vkUnmapMemory(device.device(), stagingBufferMemory);
 
-    stbi_image_free(pixels);
+    STBI_FREE(pixels);
 
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;

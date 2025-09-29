@@ -1,7 +1,8 @@
 #pragma once
 
-#define STB_TRUETYPE_IMPLEMENTATION
-#include "../deps/stb_truetype.h"
+#include <string>  // Add this if not already included elsewhere for std::string
+#include <cstdio>  // For FILE, std::fopen, etc.
+#include <cstdlib> // For std::fseek, etc.
 
 inline unsigned char* loadTTF(const std::string& filepath) {
     FILE* file = std::fopen(filepath.c_str(), "rb");
