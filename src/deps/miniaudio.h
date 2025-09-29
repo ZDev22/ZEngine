@@ -3781,11 +3781,7 @@ typedef struct
 MA_API ma_result ma_noise_get_heap_size(const ma_noise_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_noise_init_preallocated(const ma_noise_config* pConfig, void* pHeap, ma_noise* pNoise);
 MA_API ma_result ma_noise_init(const ma_noise_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_noise* pNoise);
-MA_API void ma_noise_uninit(ma_noise* pNoise, const ma_allocation_callbacks* pAllocationCallbacks);
 MA_API ma_result ma_noise_read_pcm_frames(ma_noise* pNoise, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead);
-MA_API ma_result ma_noise_set_amplitude(ma_noise* pNoise, double amplitude);
-MA_API ma_result ma_noise_set_seed(ma_noise* pNoise, ma_int32 seed);
-MA_API ma_result ma_noise_set_type(ma_noise* pNoise, ma_noise_type type);
 
 #endif  
 
@@ -11362,8 +11358,6 @@ static ma_result ma_result_from_HRESULT(HRESULT hr)
         case E_ABORT:                                   return MA_ERROR;
         case E_FAIL:                                    return MA_ERROR;
         case E_ACCESSDENIED:                            return MA_ACCESS_DENIED;
-
-        
         case MA_AUDCLNT_E_NOT_INITIALIZED:              return MA_DEVICE_NOT_INITIALIZED;
         case MA_AUDCLNT_E_ALREADY_INITIALIZED:          return MA_DEVICE_ALREADY_INITIALIZED;
         case MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE:          return MA_INVALID_ARGS;
@@ -11403,43 +11397,30 @@ static ma_result ma_result_from_HRESULT(HRESULT hr)
         case MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED:     return MA_INVALID_OPERATION;
         case MA_AUDCLNT_S_BUFFER_EMPTY:                 return MA_NO_SPACE;
         case MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED:    return MA_ALREADY_EXISTS;
-        case MA_AUDCLNT_S_POSITION_STALLED:             return MA_ERROR;
-
-        
-                  
+        case MA_AUDCLNT_S_POSITION_STALLED:             return MA_ERROR;   
         case MA_DS_NO_VIRTUALIZATION:                   return MA_SUCCESS;
         case MA_DSERR_ALLOCATED:                        return MA_ALREADY_IN_USE;
-        case MA_DSERR_CONTROLUNAVAIL:                   return MA_INVALID_OPERATION;
-              
-        case MA_DSERR_INVALIDCALL:                      return MA_INVALID_OPERATION;
-                    
+        case MA_DSERR_CONTROLUNAVAIL:                   return MA_INVALID_OPERATION;  
+        case MA_DSERR_INVALIDCALL:                      return MA_INVALID_OPERATION;    
         case MA_DSERR_PRIOLEVELNEEDED:                  return MA_INVALID_OPERATION;
-            
         case MA_DSERR_BADFORMAT:                        return MA_FORMAT_NOT_SUPPORTED;
-          
         case MA_DSERR_NODRIVER:                         return MA_FAILED_TO_INIT_BACKEND;
         case MA_DSERR_ALREADYINITIALIZED:               return MA_DEVICE_ALREADY_INITIALIZED;
         case MA_DSERR_NOAGGREGATION:                    return MA_ERROR;
         case MA_DSERR_BUFFERLOST:                       return MA_UNAVAILABLE;
         case MA_DSERR_OTHERAPPHASPRIO:                  return MA_ACCESS_DENIED;
         case MA_DSERR_UNINITIALIZED:                    return MA_DEVICE_NOT_INITIALIZED;
-            
-            
         case MA_DSERR_BUFFERTOOSMALL:                   return MA_NO_SPACE;
         case MA_DSERR_DS8_REQUIRED:                     return MA_INVALID_OPERATION;
         case MA_DSERR_SENDLOOP:                         return MA_DEADLOCK;
         case MA_DSERR_BADSENDBUFFERGUID:                return MA_INVALID_ARGS;
         case MA_DSERR_OBJECTNOTFOUND:                   return MA_NO_DEVICE;
         case MA_DSERR_FXUNAVAILABLE:                    return MA_UNAVAILABLE;
-
         default:                                        return MA_ERROR;
     }
 }
-
-
-#define MA_VT_LPWSTR    31
-#define MA_VT_BLOB      65
-
+#define MA_VT_LPWSTR 31
+#define MA_VT_BLOB 65
 #if defined(_MSC_VER) && !defined(__clang__)
     #pragma warning(push)
     #pragma warning(disable:4201)   
@@ -11450,16 +11431,13 @@ static ma_result ma_result_from_HRESULT(HRESULT hr)
         #pragma GCC diagnostic ignored "-Wc11-extensions"   
     #endif
 #endif
-typedef struct
-{
+typedef struct {
     WORD vt;
     WORD wReserved1;
     WORD wReserved2;
     WORD wReserved3;
-    union
-    {
-        struct
-        {
+    union {
+        struct {
             ULONG cbSize;
             BYTE* pBlobData;
         } blob;
@@ -11472,127 +11450,85 @@ typedef struct
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
     #pragma GCC diagnostic pop
 #endif
-
 typedef HRESULT (WINAPI * MA_PFN_CoInitialize)(void* pvReserved);
 typedef HRESULT (WINAPI * MA_PFN_CoInitializeEx)(void* pvReserved, DWORD  dwCoInit);
-typedef void    (WINAPI * MA_PFN_CoUninitialize)(void);
+typedef void (WINAPI * MA_PFN_CoUninitialize)(void);
 typedef HRESULT (WINAPI * MA_PFN_CoCreateInstance)(const IID* rclsid, void* pUnkOuter, DWORD dwClsContext, const IID* riid, void* ppv);
-typedef void    (WINAPI * MA_PFN_CoTaskMemFree)(void* pv);
+typedef void (WINAPI * MA_PFN_CoTaskMemFree)(void* pv);
 typedef HRESULT (WINAPI * MA_PFN_PropVariantClear)(MA_PROPVARIANT *pvar);
-typedef int     (WINAPI * MA_PFN_StringFromGUID2)(const GUID* const rguid, WCHAR* lpsz, int cchMax);
-
-typedef HWND    (WINAPI * MA_PFN_GetForegroundWindow)(void);
-typedef HWND    (WINAPI * MA_PFN_GetDesktopWindow)(void);
-
+typedef int (WINAPI * MA_PFN_StringFromGUID2)(const GUID* const rguid, WCHAR* lpsz, int cchMax);
+typedef HWND (WINAPI * MA_PFN_GetForegroundWindow)(void);
+typedef HWND (WINAPI * MA_PFN_GetDesktopWindow)(void)
 #if defined(MA_WIN32_DESKTOP)
-
-typedef LONG    (WINAPI * MA_PFN_RegOpenKeyExA)(HKEY hKey, const char* lpSubKey, DWORD ulOptions, DWORD samDesired, HKEY* phkResult);
-typedef LONG    (WINAPI * MA_PFN_RegCloseKey)(HKEY hKey);
-typedef LONG    (WINAPI * MA_PFN_RegQueryValueExA)(HKEY hKey, const char* lpValueName, DWORD* lpReserved, DWORD* lpType, BYTE* lpData, DWORD* lpcbData);
+typedef LONG (WINAPI * MA_PFN_RegOpenKeyExA)(HKEY hKey, const char* lpSubKey, DWORD ulOptions, DWORD samDesired, HKEY* phkResult);
+typedef LONG (WINAPI * MA_PFN_RegCloseKey)(HKEY hKey);
+typedef LONG (WINAPI * MA_PFN_RegQueryValueExA)(HKEY hKey, const char* lpValueName, DWORD* lpReserved, DWORD* lpType, BYTE* lpData, DWORD* lpcbData);
 #endif  
-
-MA_API size_t ma_strlen_WCHAR(const WCHAR* str)
-{
+MA_API size_t ma_strlen_WCHAR(const WCHAR* str) {
     size_t len = 0;
-    while (str[len] != '\0') {
-        len += 1;
-    }
-
+    while (str[len] != '\0') { len += 1; }
     return len;
 }
 
-MA_API int ma_strcmp_WCHAR(const WCHAR *s1, const WCHAR *s2)
-{
+MA_API int ma_strcmp_WCHAR(const WCHAR *s1, const WCHAR *s2) {
     while (*s1 != '\0' && *s1 == *s2) {
         s1 += 1;
         s2 += 1;
     }
-
     return *s1 - *s2;
 }
 
-MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src)
-{
+MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src) {
     size_t i;
-
-    if (dst == 0) {
-        return 22;
-    }
-    if (dstCap == 0) {
-        return 34;
-    }
+    if (dst == 0) { return 22; }
+    if (dstCap == 0) { return 34; }
     if (src == 0) {
         dst[0] = '\0';
         return 22;
     }
-
-    for (i = 0; i < dstCap && src[i] != '\0'; ++i) {
-        dst[i] = src[i];
-    }
-
+    for (i = 0; i < dstCap && src[i] != '\0'; ++i) { dst[i] = src[i]; }
     if (i < dstCap) {
         dst[i] = '\0';
         return 0;
     }
-
     dst[0] = '\0';
     return 34;
 }
 #endif  
-#define MA_DEFAULT_PLAYBACK_DEVICE_NAME    "Default Playback Device"
-#define MA_DEFAULT_CAPTURE_DEVICE_NAME     "Default Capture Device"
+#define MA_DEFAULT_PLAYBACK_DEVICE_NAME "Default Playback Device"
+#define MA_DEFAULT_CAPTURE_DEVICE_NAME "Default Capture Device"
 
 #if defined(MA_WIN32) && !defined(MA_POSIX)
-    static LARGE_INTEGER g_ma_TimerFrequency;   
-    static void ma_timer_init(ma_timer* pTimer)
-    {
+    static LARGE_INTEGER g_ma_TimerFrequency;
+    static void ma_timer_init(ma_timer* pTimer) {
         LARGE_INTEGER counter;
-
-        if (g_ma_TimerFrequency.QuadPart == 0) {
-            QueryPerformanceFrequency(&g_ma_TimerFrequency);
-        }
-
+        if (g_ma_TimerFrequency.QuadPart == 0) { QueryPerformanceFrequency(&g_ma_TimerFrequency); }
         QueryPerformanceCounter(&counter);
         pTimer->counter = counter.QuadPart;
     }
 
-    static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-    {
+    static double ma_timer_get_time_in_seconds(ma_timer* pTimer) {
         LARGE_INTEGER counter;
-        if (!QueryPerformanceCounter(&counter)) {
-            return 0;
-        }
-
+        if (!QueryPerformanceCounter(&counter)) { return 0; }
         return (double)(counter.QuadPart - pTimer->counter) / g_ma_TimerFrequency.QuadPart;
     }
 #elif defined(MA_APPLE) && (MAC_OS_X_VERSION_MIN_REQUIRED < 101200)
     static ma_uint64 g_ma_TimerFrequency = 0;
-    static void ma_timer_init(ma_timer* pTimer)
-    {
+    static void ma_timer_init(ma_timer* pTimer) {
         mach_timebase_info_data_t baseTime;
         mach_timebase_info(&baseTime);
         g_ma_TimerFrequency = (baseTime.denom * 1e9) / baseTime.numer;
-
         pTimer->counter = mach_absolute_time();
     }
 
-    static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-    {
+    static double ma_timer_get_time_in_seconds(ma_timer* pTimer) {
         ma_uint64 newTimeCounter = mach_absolute_time();
         ma_uint64 oldTimeCounter = pTimer->counter;
-
         return (newTimeCounter - oldTimeCounter) / g_ma_TimerFrequency;
     }
 #elif defined(MA_EMSCRIPTEN)
-    static MA_INLINE void ma_timer_init(ma_timer* pTimer)
-    {
-        pTimer->counterD = emscripten_get_now();
-    }
-
-    static MA_INLINE double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-    {
-        return (emscripten_get_now() - pTimer->counterD) / 1000;    
-    }
+    static MA_INLINE void ma_timer_init(ma_timer* pTimer) { pTimer->counterD = emscripten_get_now(); }
+    static MA_INLINE double ma_timer_get_time_in_seconds(ma_timer* pTimer) { return (emscripten_get_now() - pTimer->counterD) / 1000; }
 #else
     #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L
         #if defined(CLOCK_MONOTONIC)
@@ -11601,16 +11537,14 @@ MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src)
             #define MA_CLOCK_ID CLOCK_REALTIME
         #endif
 
-        static void ma_timer_init(ma_timer* pTimer)
-        {
+        static void ma_timer_init(ma_timer* pTimer) {
             struct timespec newTime;
             clock_gettime(MA_CLOCK_ID, &newTime);
 
             pTimer->counter = (newTime.tv_sec * 1000000000) + newTime.tv_nsec;
         }
 
-        static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-        {
+        static double ma_timer_get_time_in_seconds(ma_timer* pTimer) {
             ma_uint64 newTimeCounter;
             ma_uint64 oldTimeCounter;
 
@@ -57108,69 +57042,40 @@ typedef struct
     } brownian;
 } ma_noise_heap_layout;
 
-static ma_result ma_noise_get_heap_layout(const ma_noise_config* pConfig, ma_noise_heap_layout* pHeapLayout)
-{
+static ma_result ma_noise_get_heap_layout(const ma_noise_config* pConfig, ma_noise_heap_layout* pHeapLayout) {
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pConfig == NULL) { return MA_INVALID_ARGS; }
+    if (pConfig->channels == 0) { return MA_INVALID_ARGS; }
     pHeapLayout->sizeInBytes = 0;
 
-    
     if (pConfig->type == ma_noise_type_pink) {
         
         pHeapLayout->pink.binOffset = pHeapLayout->sizeInBytes;
         pHeapLayout->sizeInBytes += sizeof(double*) * pConfig->channels;
         pHeapLayout->sizeInBytes += sizeof(double ) * pConfig->channels * MA_PINK_NOISE_BIN_SIZE;
-
-        
         pHeapLayout->pink.accumulationOffset = pHeapLayout->sizeInBytes;
         pHeapLayout->sizeInBytes += sizeof(double) * pConfig->channels;
-
-        
         pHeapLayout->pink.counterOffset = pHeapLayout->sizeInBytes;
         pHeapLayout->sizeInBytes += sizeof(ma_uint32) * pConfig->channels;
     }
-
-    
     if (pConfig->type == ma_noise_type_brownian) {
-        
         pHeapLayout->brownian.accumulationOffset = pHeapLayout->sizeInBytes;
         pHeapLayout->sizeInBytes += sizeof(double) * pConfig->channels;
     }
-
-    
     pHeapLayout->sizeInBytes = ma_align_64(pHeapLayout->sizeInBytes);
-
     return MA_SUCCESS;
 }
 
-MA_API ma_result ma_noise_get_heap_size(const ma_noise_config* pConfig, size_t* pHeapSizeInBytes)
-{
+MA_API ma_result ma_noise_get_heap_size(const ma_noise_config* pConfig, size_t* pHeapSizeInBytes) {
     ma_result result;
     ma_noise_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
+    if (pHeapSizeInBytes == NULL) { return MA_INVALID_ARGS; }
     *pHeapSizeInBytes = 0;
 
     result = ma_noise_get_heap_layout(pConfig, &heapLayout);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
-
+    if (result != MA_SUCCESS) { return result; }
     *pHeapSizeInBytes = heapLayout.sizeInBytes;
-
     return MA_SUCCESS;
 }
 
@@ -57257,51 +57162,6 @@ MA_API ma_result ma_noise_init(const ma_noise_config* pConfig, const ma_allocati
 
     pNoise->_ownsHeap = MA_TRUE;
     return MA_SUCCESS;
-}
-
-MA_API void ma_noise_uninit(ma_noise* pNoise, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (pNoise == NULL) {
-        return;
-    }
-
-    ma_data_source_uninit(&pNoise->ds);
-
-    if (pNoise->_ownsHeap) {
-        ma_free(pNoise->_pHeap, pAllocationCallbacks);
-    }
-}
-
-MA_API ma_result ma_noise_set_amplitude(ma_noise* pNoise, double amplitude)
-{
-    if (pNoise == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    pNoise->config.amplitude = amplitude;
-    return MA_SUCCESS;
-}
-
-MA_API ma_result ma_noise_set_seed(ma_noise* pNoise, ma_int32 seed)
-{
-    if (pNoise == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    pNoise->lcg.state = seed;
-    return MA_SUCCESS;
-}
-MA_API ma_result ma_noise_set_type(ma_noise* pNoise, ma_noise_type type)
-{
-    if (pNoise == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    MA_ASSERT(MA_FALSE);
-    (void)type;
-
-    return MA_INVALID_OPERATION;
 }
 
 static MA_INLINE float ma_noise_f32_white(ma_noise* pNoise)

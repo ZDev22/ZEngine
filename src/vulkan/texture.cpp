@@ -136,10 +136,10 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
 
 Texture::~Texture() {
     vkDeviceWaitIdle(device.device());
-    if (sampler != VK_NULL_HANDLE) { vkDestroySampler(device.device(), sampler, nullptr); }
-    if (imageView != VK_NULL_HANDLE) { vkDestroyImageView(device.device(), imageView, nullptr); }
-    if (image != VK_NULL_HANDLE) { vkDestroyImage(device.device(), image, nullptr); }
-    if (imageMemory != VK_NULL_HANDLE) { vkFreeMemory(device.device(), imageMemory, nullptr); }
+    vkDestroySampler(device.device(), sampler, nullptr);
+    vkDestroyImageView(device.device(), imageView, nullptr);
+    vkDestroyImage(device.device(), image, nullptr);
+    vkFreeMemory(device.device(), imageMemory, nullptr);
 }
 
 void Texture::transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout) {

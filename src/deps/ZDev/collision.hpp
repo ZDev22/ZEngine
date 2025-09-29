@@ -6,8 +6,7 @@
 class Collision {
 public:
     struct AABBS {
-        float min[2] = {3.402823466e+38f, 3.402823466e+38f};
-        float max[2] = {-3.402823466e+38f, -3.402823466e+38f};
+        float pos[4] = {3.402823466e+38f, 3.402823466e+38f, -3.402823466e+38f, -3.402823466e+38f};
         unsigned int ID;
     };
 
@@ -26,7 +25,7 @@ public:
             else if (AABB[i].ID == spriteBID) { usingBAABB = i; }
         }
 
-        if (usingAAABB != -1 && usingBAABB != -1) { return (AABB[usingAAABB].min[0] <= AABB[usingBAABB].max[0] && AABB[usingAAABB].max[0] >= AABB[usingBAABB].min[0]) && (AABB[usingAAABB].min[1] <= AABB[usingBAABB].max[1] && AABB[usingAAABB].max[1] >= AABB[usingBAABB].min[1]); }
+        if (usingAAABB != -1 && usingBAABB != -1) { return (AABB[usingAAABB].pos[0] <= AABB[usingBAABB].pos[2] && AABB[usingAAABB].pos[2] >= AABB[usingBAABB].pos[0]) && (AABB[usingAAABB].pos[1] <= AABB[usingBAABB].pos[3] && AABB[usingAAABB].pos[3] >= AABB[usingBAABB].pos[1]); }
         else if (usingAAABB != -1 && usingBAABB == -1) {
             AABBS b;
             b.ID = spriteBID;
@@ -38,14 +37,14 @@ public:
                 float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
                 transformedB[0] += dataB.position[0];
                 transformedB[1] += dataB.position[1];
-                if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
-                if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
-                if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
-                if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
+                if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
             }
 
             AABB.push_back(b);
-            return (AABB[usingAAABB].min[0] <= b.max[0] && AABB[usingAAABB].max[0] >= b.min[0]) && (AABB[usingAAABB].min[1] <= b.max[1] && AABB[usingAAABB].max[1] >= b.min[1]);
+            return (AABB[usingAAABB].pos[0] <= b.pos[2] && AABB[usingAAABB].pos[2] >= b.pos[0]) && (AABB[usingAAABB].pos[1] <= b.pos[3] && AABB[usingAAABB].pos[3] >= b.pos[1]);
         }
         else if (usingAAABB == -1 && usingBAABB != -1) {
             AABBS a;
@@ -58,14 +57,14 @@ public:
                 float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                 transformedA[0] += dataA.position[0];
                 transformedA[1] += dataA.position[1];
-                if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
-                if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
-                if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
-                if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
+                if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
             }
 
             AABB.push_back(a);
-            return (a.min[0] <= AABB[usingBAABB].max[0] && a.max[0] >= AABB[usingBAABB].min[0]) && (a.min[1] <= AABB[usingBAABB].max[1] && a.max[1] >= AABB[usingBAABB].min[1]);
+            return (a.pos[0] <= AABB[usingBAABB].pos[2] && a.pos[2] >= AABB[usingBAABB].pos[0]) && (a.pos[1] <= AABB[usingBAABB].pos[3] && a.pos[3] >= AABB[usingBAABB].pos[1]);
         }
         else if (usingAAABB == -1 && usingBAABB == -1) {
             dataA.setRotationMatrix();
@@ -86,10 +85,10 @@ public:
                     float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                     transformedA[0] += dataA.position[0];
                     transformedA[1] += dataA.position[1];
-                    if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
-                    if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
-                    if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
-                    if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
+                    if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                    if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                    if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                    if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
                     if (i < verticesB.size()) {
                         float pxB = verticesB[i].position[0] * dataB.scale[0];
@@ -97,10 +96,10 @@ public:
                         float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
                         transformedB[0] += dataB.position[0];
                         transformedB[1] += dataB.position[1];
-                        if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
-                        if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
-                        if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
-                        if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
+                        if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                        if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                        if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                        if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
                     }
                 }
             }
@@ -115,10 +114,10 @@ public:
                     transformedB[0] += dataB.position[0];
                     transformedB[1] += dataB.position[1];
 
-                    if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
-                    if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
-                    if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
-                    if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
+                    if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                    if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                    if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                    if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
 
                     if (i < verticesA.size()) {
                         float pxA = verticesA[i].position[0] * dataA.scale[0];
@@ -126,10 +125,10 @@ public:
                         float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                         transformedA[0] += dataA.position[0];
                         transformedA[1] += dataA.position[1];
-                        if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
-                        if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
-                        if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
-                        if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
+                        if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                        if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                        if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                        if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
                     }
                 }
             }
@@ -141,10 +140,10 @@ public:
                     transformedA[0] += dataA.position[0];
                     transformedA[1] += dataA.position[1];
 
-                    if (transformedA[0] < a.min[0]) a.min[0] = transformedA[0];
-                    if (transformedA[1] < a.min[1]) a.min[1] = transformedA[1];
-                    if (transformedA[0] > a.max[0]) a.max[0] = transformedA[0];
-                    if (transformedA[1] > a.max[1]) a.max[1] = transformedA[1];
+                    if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                    if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                    if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                    if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
                     float pxB = verticesB[i].position[0] * dataB.scale[0];
                     float pyB = verticesB[i].position[1] * dataB.scale[1];
@@ -152,15 +151,15 @@ public:
                     transformedB[0] += dataB.position[0];
                     transformedB[1] += dataB.position[1];
 
-                    if (transformedB[0] < b.min[0]) b.min[0] = transformedB[0];
-                    if (transformedB[1] < b.min[1]) b.min[1] = transformedB[1];
-                    if (transformedB[0] > b.max[0]) b.max[0] = transformedB[0];
-                    if (transformedB[1] > b.max[1]) b.max[1] = transformedB[1];
+                    if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                    if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                    if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                    if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
                 }
             }
             AABB.push_back(a);
             AABB.push_back(b);
-            return (a.min[0] <= b.max[0] && a.max[0] >= b.min[0]) && (a.min[1] <= b.max[1] && a.max[1] >= b.min[1]);
+            return (a.pos[0] <= b.pos[2] && a.pos[2] >= b.pos[0]) && (a.pos[1] <= b.pos[3] && a.pos[3] >= b.pos[1]);
         }
     }
 

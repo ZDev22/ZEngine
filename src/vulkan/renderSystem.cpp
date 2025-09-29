@@ -105,6 +105,7 @@ void RenderSystem::updateAllTextures() {
     imageWrite.pImageInfo = imageInfos.data();
 
     updateTextures = false;
+    updateTextureIndex = -1;
 
     vkUpdateDescriptorSets(device.device(), 1, &imageWrite, 0, nullptr);
 }

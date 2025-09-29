@@ -43,13 +43,16 @@ private:
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
-    std::shared_ptr<Model> squareModel;
 
-    std::vector<const char*> texturePaths;
-    vector<const char*> fonts;
+    std::shared_ptr<Model> squareModel;
+    std::vector<std::string> texturePaths;
+    vector<std::string> fonts;
     vector<stbtt_bakedchar> fontCharData;
+
+#ifdef _WIN32
     vector<vector<unsigned char>> fontAtlases;
     vector<vector<stbtt_bakedchar>> fontCharDatas;
     vector<float> fontSizes;
     std::vector<const char*> lastTexts;
+#endif
 };

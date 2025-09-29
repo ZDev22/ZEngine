@@ -51,11 +51,8 @@ void Device::createInstance() {
 void Device::pickPhysicalDevice() {
     unsigned int deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-    if (deviceCount == 0) { std::cout << "Found no GPUS!" << std::endl; }
-    else if (deviceCount == 1) { std::cout << "Found 1 GPU" << std::endl; }
-    else { std::cout << "Found " << deviceCount << " GPUs" << std::endl; }
-
-    if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
+    if (deviceCount == 0) {throw("No Vulkan-compatible GPUs found"); }
+    else { std::cout << "Found " << deviceCount << deviceCount == 1 ? " GPU" : " GPUs" << std::endl; }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());

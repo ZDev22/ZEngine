@@ -491,9 +491,6 @@ GLFWAPI int glfwInit(void);
 GLFWAPI void glfwTerminate(void);
 GLFWAPI void glfwInitHint(int hint, int value);
 GLFWAPI void glfwInitAllocator(const GLFWallocator* allocator);
-#if defined(VK_VERSION_1_0)
-GLFWAPI void glfwInitVulkanLoader(PFN_vkGetInstanceProcAddr loader);
-#endif
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 GLFWAPI const char* glfwGetVersionString(void);
 GLFWAPI int glfwGetError(const char** description);

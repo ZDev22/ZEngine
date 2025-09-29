@@ -6,16 +6,14 @@
 
 #include <filesystem>
 #include <fstream>
-#include <algorithm>
-#include <cmath>
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
 
 Pipeline::~Pipeline() {
-    if (graphicsPipeline != VK_NULL_HANDLE) { vkDestroyPipeline(device.device(), graphicsPipeline, nullptr); }
-    if (pipelineLayout != VK_NULL_HANDLE) { vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr); }
-    if (descriptorSetLayout != VK_NULL_HANDLE) { vkDestroyDescriptorSetLayout(device.device(), descriptorSetLayout, nullptr); }
-    if (descriptorPool != VK_NULL_HANDLE) { vkDestroyDescriptorPool(device.device(), descriptorPool, nullptr); }
+    vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+    vkDestroyDescriptorSetLayout(device.device(), descriptorSetLayout, nullptr);
+    vkDestroyDescriptorPool(device.device(), descriptorPool, nullptr);
 }
 
 void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
@@ -121,9 +119,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     layoutInfo.bindingCount = 2;
     layoutInfo.pBindings = layoutBindings;
 
-    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor set layout!");
-    }
+    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw std::runtime_error("failed to create descriptor set layout!"); }
 
     VkDescriptorPoolSize poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
@@ -136,9 +132,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     poolInfo.pPoolSizes = poolSizes;
     poolInfo.maxSets = MAX_TEXTURES + 1;
 
-    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor pool!");
-    }
+    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw std::runtime_error("failed to create descriptor pool!"); }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -147,9 +141,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
-    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create pipeline layout!");
-    }
+    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {  throw std::runtime_error("failed to create pipeline layout!"); }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -168,9 +160,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create graphics pipeline!");
-    }
+    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw std::runtime_error("failed to create graphics pipeline!"); }
 
     vkDestroyShaderModule(device.device(), shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device.device(), shaderStages[1].module, nullptr);
@@ -183,9 +173,7 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
     VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create shader module!");
-    }
+    if (vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw std::runtime_error("failed to create shader module!"); }
     return shaderModule;
 }
 
@@ -233,6 +221,7 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, unsigned int textureIn
 }
 
 void Pipeline::createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex) {
+#ifdef _WIN32
     if (textureIndex < lastTexts.size() && lastTexts[textureIndex] == text) { return; }
     lastTexts[textureIndex] = text.c_str();
 
@@ -261,15 +250,12 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
     for (char c : text) {
         if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
-        min_y = std::min(min_y, cd.yoff);
-        max_y = std::max(max_y, cd.yoff + (cd.y1 - cd.y0));
+        min_y = min_y < cd.yoff ? min_y : cd.yoff;
+        max_y = max_y > cd.yoff + (cd.y1 - cd.y0) ? max_y : cd.yoff + (cd.y1 - cd.y0);
         current_x += cd.xadvance;
     }
 
-    int texsize = std::max(
-        static_cast<int>(std::ceil(current_x)),
-        static_cast<int>(std::ceil(max_y - min_y))
-    );
+    int texsize = (static_cast<int>(current_x) + 1 > static_cast<int>(max_y - min_y) + 1 ? static_cast<int>(current_x) : static_cast<int>(max_y - min_y)) + 1;
     std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
 
     current_x = 0.0f;
@@ -298,6 +284,56 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
 
     if (updateTextureIndex != -1) { updateTextures = true; }
     else { updateTextureIndex = textureIndex; }
+#else
+    unsigned int atlasSize = fontSize * 16.f;
+    vector<unsigned char> grayscale(atlasSize * atlasSize);
+    vector<stbtt_bakedchar> charData(96);
+
+    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
+
+    float min_y = 0.0f;
+    float max_y = 0.0f;
+    float current_x = 0.0f;
+    for (char c : text) {
+        if (c < 32 || c > 127) continue;
+        stbtt_bakedchar cd = charData[c - 32];
+        min_y = min_y < cd.yoff ? min_y : cd.yoff;
+        max_y = max_y > cd.yoff + (cd.y1 - cd.y0) ? max_y : cd.yoff + (cd.y1 - cd.y0);
+        current_x += cd.xadvance;
+    }
+
+    int texsize = (static_cast<int>(current_x) + 1 > static_cast<int>(max_y - min_y) + 1 ? static_cast<int>(current_x) : static_cast<int>(max_y - min_y)) + 1;
+    std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
+
+    current_x = 0.0f;
+    for (char c : text) {
+        if (c < 32 || c > 127) continue;
+        stbtt_bakedchar cd = charData[c - 32];
+
+        int dst_x = static_cast<int>(std::round(current_x + cd.xoff));
+        int dst_y = static_cast<int>(std::round(cd.yoff - min_y));
+
+        for (int py = 0; py < cd.y1 - cd.y0; ++py) {
+            for (int px = 0; px < cd.x1 - cd.x0; ++px) {
+                int src_x = cd.x0 + px;
+                int src_y = cd.y0 + py;
+                int src_idx = src_y * atlasSize + src_x;
+
+                int dst_idx = (dst_y + py) * texsize + (dst_x + px);
+                if (dst_idx >= 0 && dst_idx < texsize * texsize) {
+                    text_grayscale[dst_idx] = grayscale[src_idx];
+                }
+            }
+        }
+
+        current_x += cd.xadvance;
+    }
+
+    spriteTextures[textureIndex] = std::make_unique<Texture>(device, text_grayscale.data(), texsize, descriptorSetLayout, descriptorPool, *this);
+
+    if (updateTextureIndex != -1) { updateTextures = true; }
+    else { updateTextureIndex = textureIndex; }
+#endif
 }
 
 void Pipeline::loadSprites() {
