@@ -11,12 +11,12 @@ struct Texture {
 public:
     Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
     Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
+    ~Texture();
 
     VkImageView getImageView() { return imageView; }
     VkSampler getSampler() { return sampler; }
     VkImageLayout getImageLayout() { return imageLayout; }
     unsigned int getArrayLayers() const { return arrayLayers; }
-    void createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
 
     int getTexWidth() const { return texWidth; }
     int getTexHeight() const { return texHeight; }
@@ -35,7 +35,6 @@ private:
     VkSampler sampler;
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    VkDescriptorSet descriptorSet{};
     unsigned int arrayLayers {1};
     int texWidth, texHeight, texChannels;
     std::vector<void*> pixelsArray;

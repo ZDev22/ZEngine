@@ -25,7 +25,7 @@ static void createTextureSampler(const Device& device, VkSampler& sampler) {
     vkCreateSampler(device.device(), &samplerInfo, nullptr, &sampler);
 }
 
-Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1) {
+Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
     name = filepath;
     stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if (!pixels) { throw("failed to load texture") + filepath; }
@@ -79,9 +79,9 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     createTextureSampler(device, sampler);
 }
 
-Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) 
-    : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), 
-      imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), descriptorSet(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+    texWidth = size;
+    texHeight = size;
     VkDeviceSize imageSize = size * size * 4;
 
     std::vector<unsigned char> rgbaPixels(imageSize);
@@ -132,33 +132,14 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
     if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture view"); }
 
     createTextureSampler(device, sampler);
-    createDescriptorSet(descriptorSetLayout, descriptorPool);
 }
 
-void Texture::createDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
-    VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = descriptorPool;
-    allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &descriptorSetLayout;
-
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor sets"); }
-
-    VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = imageView;
-    imageInfo.sampler = sampler;
-
-    VkWriteDescriptorSet descriptorWrite{};
-    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = descriptorSet;
-    descriptorWrite.dstBinding = 0;
-    descriptorWrite.dstArrayElement = 0;
-    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    descriptorWrite.descriptorCount = 1;
-    descriptorWrite.pImageInfo = &imageInfo;
-    
-    vkUpdateDescriptorSets(device.device(), 1, &descriptorWrite, 0, nullptr);
+Texture::~Texture() {
+    vkDeviceWaitIdle(device.device());
+    if (sampler != VK_NULL_HANDLE) { vkDestroySampler(device.device(), sampler, nullptr); }
+    if (imageView != VK_NULL_HANDLE) { vkDestroyImageView(device.device(), imageView, nullptr); }
+    if (image != VK_NULL_HANDLE) { vkDestroyImage(device.device(), image, nullptr); }
+    if (imageMemory != VK_NULL_HANDLE) { vkFreeMemory(device.device(), imageMemory, nullptr); }
 }
 
 void Texture::transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout) {

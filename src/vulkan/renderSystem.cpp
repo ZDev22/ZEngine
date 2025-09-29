@@ -39,7 +39,7 @@ void RenderSystem::initializeSpriteData() {
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    std::vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
+    vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
 
     for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
         Texture* texture = spriteTextures[i].get();
@@ -55,9 +55,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate descriptor set!");
-    }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor set!"); }
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
@@ -87,7 +85,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::updateAllTextures() {
-    std::vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
+    vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
 
     for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
         Texture* texture = spriteTextures[i].get();

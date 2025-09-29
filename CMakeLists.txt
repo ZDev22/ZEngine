@@ -60,9 +60,15 @@ target_include_directories(main PRIVATE
 target_link_libraries(main PRIVATE
    "${GLFW_LIBRARY}"
    VulkanLocal
-   dl
-   pthread
 )
+
+if(UNIX AND NOT APPLE)
+   target_link_libraries(main PRIVATE
+       dl
+       pthread
+   )
+endif()
+
 
 if(UNIX AND NOT APPLE)
    add_custom_command(TARGET main POST_BUILD

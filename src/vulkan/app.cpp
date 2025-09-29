@@ -70,7 +70,7 @@ void App::run() {
     }
 
     ma_engine_uninit(&audio);
-    vkDeviceWaitIdle(device.device());
+    spriteTextures.clear();
 }
 
 void App::render() {

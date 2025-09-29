@@ -100,59 +100,56 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.stencilTestEnable = VK_FALSE;
 
-    std::vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+    VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
     VkPipelineDynamicStateCreateInfo dynamicState{};
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    dynamicState.dynamicStateCount = static_cast<unsigned int>(dynamicStates.size());
-    dynamicState.pDynamicStates = dynamicStates.data();
+    dynamicState.dynamicStateCount = 2;
+    dynamicState.pDynamicStates = dynamicStates;
 
-    VkDescriptorSetLayoutBinding bufferBinding{};
-    bufferBinding.binding = 0;
-    bufferBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    bufferBinding.descriptorCount = 1;
-    bufferBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    VkDescriptorSetLayoutBinding imageBinding{};
-    imageBinding.binding = 1;
-    imageBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageBinding.descriptorCount = MAX_TEXTURES;
-    imageBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding bindings[2] = { bufferBinding, imageBinding };
+    VkDescriptorSetLayoutBinding layoutBindings[2] = {};
+    layoutBindings[0].binding = 0;
+    layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    layoutBindings[0].descriptorCount = 1;
+    layoutBindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    layoutBindings[1].binding = 1;
+    layoutBindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    layoutBindings[1].descriptorCount = MAX_TEXTURES;
+    layoutBindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = 2;
-    layoutInfo.pBindings = bindings;
+    layoutInfo.pBindings = layoutBindings;
 
-    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw("failed to create descriptor set layout!"); }
+    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
 
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-    VkPushConstantRange pushConstantRange{};
-    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(Push);
-    pipelineLayoutInfo.pushConstantRangeCount = 1;
-    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-
-    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
-
-    VkDescriptorPoolSize poolSizes[2] = {};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    poolSizes[0].descriptorCount = 1;
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = MAX_TEXTURES;
+    VkDescriptorPoolSize poolSizes[] = {
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
+        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_TEXTURES * (MAX_TEXTURES + 1) }
+    };
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 1;
+    poolInfo.maxSets = MAX_TEXTURES + 1;
 
-    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
+    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor pool!");
+    }
+
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+    pipelineLayoutInfo.pushConstantRangeCount = 0;
+    pipelineLayoutInfo.pPushConstantRanges = nullptr;
+
+    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create pipeline layout!");
+    }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -163,25 +160,32 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayout;
     pipelineInfo.renderPass = renderer.getSwapChainRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw("failed to create graphics pipeline!"); }
+    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipeline!");
+    }
+
+    vkDestroyShaderModule(device.device(), shaderStages[0].module, nullptr);
+    vkDestroyShaderModule(device.device(), shaderStages[1].module, nullptr);
 }
 
 VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
-    createInfo.pCode = reinterpret_cast<const unsigned int*>(code.data());
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
     VkShaderModule shaderModule;
-    vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule);
+    if (vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create shader module!");
+    }
     return shaderModule;
 }
 
@@ -229,11 +233,27 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, unsigned int textureIn
 }
 
 void Pipeline::createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex) {
-    unsigned int atlasSize = fontSize * 16.f;
-    vector<unsigned char> grayscale(atlasSize * atlasSize);
-    vector<stbtt_bakedchar> charData(96);
+    if (textureIndex < lastTexts.size() && lastTexts[textureIndex] == text) { return; }
+    lastTexts[textureIndex] = text.c_str();
 
-    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
+    if (font >= fontAtlases.size() || fontSizes[font] != fontSize) {
+        fontAtlases.resize(font + 1);
+        fontCharDatas.resize(font + 1);
+        fontSizes.resize(font + 1);
+
+        unsigned int atlasSize = static_cast<unsigned int>(fontSize * 8.0f);
+        fontAtlases[font].resize(atlasSize * atlasSize);
+        fontCharDatas[font].resize(96);
+
+        const unsigned char* fontData = loadTTF(fonts[font]);
+        int result = stbtt_BakeFontBitmap(fontData, 0, fontSize, fontAtlases[font].data(), atlasSize, atlasSize, 32, 96, fontCharDatas[font].data());
+        if (result <= 0) { throw("Failed to bake font"); }
+        fontSizes[font] = fontSize;
+    }
+
+    auto& grayscale = fontAtlases[font];
+    auto& charData = fontCharDatas[font];
+    unsigned int atlasSize = static_cast<unsigned int>(std::sqrt(grayscale.size()));
 
     float min_y = 0.0f;
     float max_y = 0.0f;
@@ -260,19 +280,17 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         int dst_x = static_cast<int>(std::round(current_x + cd.xoff));
         int dst_y = static_cast<int>(std::round(cd.yoff - min_y));
 
-        for (int py = 0; py < cd.y1 - cd.y0; ++py) {
-            for (int px = 0; px < cd.x1 - cd.x0; ++px) {
-                int src_x = cd.x0 + px;
-                int src_y = cd.y0 + py;
-                int src_idx = src_y * atlasSize + src_x;
-
+        int width = cd.x1 - cd.x0;
+        int height = cd.y1 - cd.y0;
+        for (int py = 0; py < height; ++py) {
+            for (int px = 0; px < width; ++px) {
+                int src_idx = (cd.y0 + py) * atlasSize + (cd.x0 + px);
                 int dst_idx = (dst_y + py) * texsize + (dst_x + px);
                 if (dst_idx >= 0 && dst_idx < texsize * texsize) {
                     text_grayscale[dst_idx] = grayscale[src_idx];
                 }
             }
         }
-
         current_x += cd.xadvance;
     }
 
@@ -285,6 +303,10 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
 void Pipeline::loadSprites() {
     sprites.clear();
     spriteCPU.clear();
+    lastTexts.resize(MAX_TEXTURES, "");
+    fontAtlases.resize(fonts.size());
+    fontCharDatas.resize(fonts.size());
+    fontSizes.resize(fonts.size(), 0.0f);
 
     squareModel = makeModel({
         -.5f, -.5f, // Bottom-Left

@@ -4,6 +4,7 @@
 #include "global.hpp"
 #include "model.hpp"
 #include "../deps/stb_truetype.h"
+#include "../deps/ZDev/vector.hpp"
 
 class Renderer;
 class Sprite;
@@ -42,9 +43,13 @@ private:
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
-
-    std::vector<std::string> texturePaths;
-    std::vector<std::string> fonts;
     std::shared_ptr<Model> squareModel;
-    std::vector<stbtt_bakedchar> fontCharData;
+
+    std::vector<const char*> texturePaths;
+    vector<const char*> fonts;
+    vector<stbtt_bakedchar> fontCharData;
+    vector<vector<unsigned char>> fontAtlases;
+    vector<vector<stbtt_bakedchar>> fontCharDatas;
+    vector<float> fontSizes;
+    std::vector<const char*> lastTexts;
 };
