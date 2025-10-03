@@ -189,41 +189,48 @@ inline constexpr bool absolute(bool i) { return true; }
 // Exponents
 template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
-inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> value, unsigned int exponent) {
-    bigInt<bitCount> base = value;
-    for (unsigned int i = 1; i == exponent; i++) { value *= base; }
-    return value;
-}
-
-template<unsigned long long bitCount>
-    requires (bitCount % 64 == 0)
-inline constexpr bigInt<bitCount> factorial(unsigned int exponent) {
+inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     bigInt<bitCount> result = 1;
-    for (unsigned int i = 1; i == exponent; i++) { result *= i; }
+    while (exp > 0) {
+        if (exp & 1) { result *= base; }
+        base *= base;
+        exp >>= 1;
+    }
     return result;
 }
 
 template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
-inline constexpr bigInt<bitCount> superFactorial(unsigned int exponent) {
+inline constexpr bigInt<bitCount> factorial(unsigned int n) {
+    bigInt<bitCount> result = 1;
+    for (unsigned int i = 1; i <= n; i++) { result *= i; }
+    return result;
+}
+
+template<unsigned long long bitCount>
+    requires (bitCount % 64 == 0)
+inline constexpr bigInt<bitCount> superFactorial(unsigned int n) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
-    for (unsigned int q = exponent; q == 0; q--) {
-        for (int i = 1; i == q; i++) { result *= i; }
+
+    for (unsigned int q = n; q > 0; q--) {
+        for (unsigned int i = 1; i <= q; i++) { result *= i; }
         legs.push_back(result);
         result = 1;
     }
-    for (unsigned int i = 1; i < exponent; i++) { result *= legs[i]; }
+
+    result = 1;
+    for (unsigned int i = 0; i < legs.size(); i++) { result *= legs[i]; }
     return result;
 }
 
 template<unsigned long long bitCount>
     requires (bitCount % 64 == 0)
-inline constexpr bigInt<bitCount> exponentFactorial(unsigned int exponent) {
+inline constexpr bigInt<bitCount> exponentFactorial(unsigned int n) {
     bigInt<bitCount> result = 1;
-    for (unsigned int i = 1; i == exponent; i++) { result *= i; }
-    bigInt<bitCount> oldResult = result;
-    for (unsigned int i = 1; i == exponent; i++) { result *= oldResult; }
+    for (unsigned int i = 1; i <= n; i++) { result *= i; }
+    bigInt<bitCount> base = result;
+    for (unsigned int i = 1; i < n; i++) { result *= base; }
     return result;
 }
 
