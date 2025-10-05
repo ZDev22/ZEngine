@@ -49,7 +49,6 @@ private:
 
 #ifdef _WIN32
     vector<vector<unsigned char>> fontAtlases;
-    vector<vector<stbtt_bakedchar>> fontCharDatas;
     vector<float> fontSizes;
     std::vector<const char*> lastTexts;
 #endif

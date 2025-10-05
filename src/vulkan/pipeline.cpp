@@ -10,7 +10,9 @@
 #include <filesystem>
 #include <fstream>
 
-vector<stbtt_bakedchar> fontCharData;
+#ifdef _WIN32
+vector<vector<stbtt_bakedchar>> fontCharDatas;
+#endif
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
 

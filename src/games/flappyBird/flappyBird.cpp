@@ -25,6 +25,7 @@ void FlappyBird::tick() {
                 sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f, pipeline);
             }
 
+
             if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
                 flappyBirdDead = true;
                 playSound(&audio, "assets/sounds/hit.mp3");
