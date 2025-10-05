@@ -36,6 +36,8 @@ void RenderSystem::initializeSpriteData() {
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
     vertex.camera[0] = 0.f;
     vertex.camera[1] = 0.f;
+    vertex.cameraZoom[0] = 1.f;
+    vertex.cameraZoom[1] = 1.f;
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {

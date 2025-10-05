@@ -9,7 +9,7 @@
 class AudioPlayer;
 class FlappyBird {
 public:
-    FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision);
+    FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision, Push& vertex);
 
     void tick();
 private:
@@ -17,4 +17,5 @@ private:
     Collision& collision;
     Pipeline& pipeline;
     ma_engine& audio;
+    Push& vertex;
 };

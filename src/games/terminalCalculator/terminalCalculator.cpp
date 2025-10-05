@@ -25,6 +25,7 @@ void TerminalCalculator::terminalCalculatorRun() {
     std::cout.flush();
 
     while (true) {
+        
         std::cout << "Select operation type: (type help for all commands): ";
         std::cin >> operationType;
 

@@ -2,7 +2,7 @@
 #include "../../deps/ZDev/math.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
-FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision) {}
+FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision, Push& vertex) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), vertex(vertex) {}
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -23,6 +23,8 @@ void FlappyBird::tick() {
                 playSound(&audio, "assets/sounds/chirp.mp3");
                 pipeline.createSprite(pipeline.getSquareModel(), 3, 0.f, 0.f, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
                 sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f, pipeline);
+                vertex.cameraZoom[0] -= .025f;
+                vertex.cameraZoom[1] -= .025f;
             }
 
 
