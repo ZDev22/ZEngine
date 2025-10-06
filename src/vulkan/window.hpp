@@ -5,19 +5,17 @@
 #define GLFW_INCLUDE_VULKAN
 #include "../deps/glfw/glfw3.h"
 
-#include <string>
-
 class AppWindow {
 public:
     AppWindow(int w, int h);
     ~AppWindow();
 
     bool shouldClose() { return glfwWindowShouldClose(window); }
-    VkExtent2D getExtent() { return { static_cast<unsigned int>(width), static_cast<unsigned int>(height) }; }
+    VkExtent2D getExtent() { return { (unsigned int)width, (unsigned int)height }; }
     bool wasWindowResized() { return framebufferResized; }
     void resetWindowResizedFlag() { framebufferResized = false; }
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-    void setWindowName(std::string name) { glfwSetWindowTitle(window, name.c_str()); }
+    void setWindowName(const char* name) { glfwSetWindowTitle(window, name); }
     GLFWwindow* getWindow() { return window; }
 
 private:

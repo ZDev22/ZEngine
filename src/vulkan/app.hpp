@@ -5,14 +5,14 @@
 #include "renderer.hpp"
 #include "renderSystem.hpp"
 
-class App {
+struct App {
 public:
     App();
     void run();
 
 private:
     void render();
-    
+
     AppWindow window{720, 480};
     Push vertex{};
     Device device{window};
@@ -21,3 +21,5 @@ private:
     Pipeline pipeline;
     std::unique_ptr<RenderSystem> renderSystem;
 };
+
+void Terminal();

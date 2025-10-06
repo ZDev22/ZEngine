@@ -26,7 +26,7 @@ Buffer::Buffer(Device& device, VkDeviceSize instanceSize, unsigned int instanceC
 void Buffer::map() {
     void* temp = nullptr;
     vkMapMemory(device.device(), memory, 0, bufferSize, 0, &temp);
-    mapped = static_cast<char*>(temp);
+    mapped = (char*)temp;
 }
 
 void Buffer::writeToBuffer(const void* data, unsigned int size) { std::memcpy(mapped, data, size); }

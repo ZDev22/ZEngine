@@ -5,6 +5,7 @@
 class Buffer {
 public:
     Buffer(Device& device, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
+    ~Buffer() = default;
 
     VkBuffer getBuffer() const { return buffer; }
     void map();

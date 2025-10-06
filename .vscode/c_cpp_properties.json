@@ -6,8 +6,8 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "cStandard": "c23",
-            "cppStandard": "gnu++23",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-g++-x64"
         },
         {
@@ -16,8 +16,8 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "cStandard": "c23",
-            "cppStandard": "gnu++23",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
             "intelliSenseMode": "windows-g++-x64"
         }
     ],

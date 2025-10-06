@@ -27,7 +27,6 @@ void FlappyBird::tick() {
                 vertex.cameraZoom[1] -= .025f;
             }
 
-
             if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
                 flappyBirdDead = true;
                 playSound(&audio, "assets/sounds/hit.mp3");
@@ -44,12 +43,12 @@ void FlappyBird::tick() {
     }
     else { if (keyboard.keyPressed(GLFW_KEY_SPACE)) { flappyBirdStarted = true; }}
 
-    for (unsigned int i = 1; i < (sprites.size()) / 2; i++) {
+    for (unsigned int i = 1; i < sprites.size() / 2; i++) {
         unsigned int index = ((i - 1) * 2) + 1;
         sprites[index].position[0] -= .5f * deltaTime;
         if (sprites[index].position[0] < -1.5f) {
             sprites[index].position[0] = 1.5f;
-            sprites[index].position[1] = Random(.4f, 1.4f);
+            sprites[index].position[1] = Random(4, 14) / 10.f;
         }
         sprites[index + 1].position[0] = sprites[index].position[0];
         sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;

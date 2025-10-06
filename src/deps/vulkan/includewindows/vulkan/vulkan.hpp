@@ -19285,7 +19285,7 @@ namespace VULKAN_HPP_NAMESPACE
         if ( !m_library )
         {
           // NOTE there should be an InitializationFailedError, but msvc insists on the symbol does not exist within the scope of this function.
-          throw std::runtime_error( "Failed to load vulkan library!" );
+          throw( "Failed to load vulkan library!" );
         }
 #  endif
       }

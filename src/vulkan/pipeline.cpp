@@ -126,7 +126,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     layoutInfo.bindingCount = 2;
     layoutInfo.pBindings = layoutBindings;
 
-    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw std::runtime_error("failed to create descriptor set layout!"); }
+    if (vkCreateDescriptorSetLayout(device.device(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw("failed to create descriptor set layout!"); }
 
     VkDescriptorPoolSize poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
@@ -139,7 +139,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     poolInfo.pPoolSizes = poolSizes;
     poolInfo.maxSets = MAX_TEXTURES + 1;
 
-    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw std::runtime_error("failed to create descriptor pool!"); }
+    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -148,7 +148,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
-    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {  throw std::runtime_error("failed to create pipeline layout!"); }
+    if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {  throw("failed to create pipeline layout!"); }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -167,7 +167,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw std::runtime_error("failed to create graphics pipeline!"); }
+    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw("failed to create graphics pipeline!"); }
 
     vkDestroyShaderModule(device.device(), shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device.device(), shaderStages[1].module, nullptr);
@@ -180,14 +180,12 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
     VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw std::runtime_error("failed to create shader module!"); }
+    if (vkCreateShaderModule(device.device(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw("failed to create shader module!"); }
     return shaderModule;
 }
 
-std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) {
-    if (positions.size() % 2 != 0) { throw std::runtime_error("Positions size must be a multiple of 2"); }
-
-    std::vector<Model::Vertex> vertices;
+std::shared_ptr<Model> Pipeline::makeModel(const vector<float>& positions) {
+    vector<Model::Vertex> vertices;
     vertices.reserve(positions.size() / 2);
 
     for (unsigned int i = 0; i < positions.size(); i += 2) {
@@ -203,7 +201,7 @@ std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) 
 }
 
 void Pipeline::createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a) {
-    if (sprites.size() >= MAX_SPRITES) { throw("Maximum number of sprites exceeded!"); }
+    if (sprites.size() >= MAX_SPRITES) { return; }
     Sprite sprite;
     SpriteData spriteData;
 
@@ -221,7 +219,6 @@ void Pipeline::createSprite(std::shared_ptr<Model> model, unsigned int textureIn
     spriteData.color[2] = b;
     spriteData.color[3] = a;
     spriteData.textureIndex = textureIndex;
-    spriteData.ID = sprites.size();
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
@@ -371,8 +368,8 @@ void Pipeline::loadFlappyBird() {
 
     for (float i = 1.f; i < 5.f; i += 1.f) {
         float y = Random(.4f, 1.4f);
-        createSprite(squareModel, 1, i, y, .15f, 1.5f, 0.f, 1.f, 1.f, 1.f, 1.f);
-        createSprite(squareModel, 1, i, y - 2.f, .15f, 1.5f, 180.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
     }
 }
 
@@ -383,12 +380,4 @@ void Pipeline::loadSlimeAttack() {
 
     createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
     createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
-}
-
-void Pipeline::loadTerminalCalculator() {
-    texturePaths = { "terminalCalculator.png" };
-    fonts = {};
-    loadSprites();
-
-    createSprite(squareModel, 0, 0.f, 0.f, 2.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 }

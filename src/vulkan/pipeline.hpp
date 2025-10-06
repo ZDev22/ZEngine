@@ -18,14 +18,13 @@ public:
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);
-    std::shared_ptr<Model> makeModel(const std::vector<float>& positions);
+    std::shared_ptr<Model> makeModel(const vector<float>& positions);
     void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a);
     void createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex);
     std::shared_ptr<Model> getSquareModel() { return squareModel; }
 
     void loadFlappyBird();
     void loadSlimeAttack();
-    void loadTerminalCalculator();
 
 private:
     static std::vector<char> readFile(const std::string& filepath);

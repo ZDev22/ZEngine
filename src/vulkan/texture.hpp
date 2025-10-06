@@ -10,7 +10,7 @@ class Pipeline;
 struct Texture {
 public:
     Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
-    Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
+    Texture(Device& device, const unsigned char* pixelData, unsigned int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);
     ~Texture();
 
     VkImageView getImageView() { return imageView; }

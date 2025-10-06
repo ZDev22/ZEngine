@@ -57,7 +57,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw std::runtime_error("failed to allocate descriptor set!"); }
+    if (vkAllocateDescriptorSets(device.device(), &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor set!"); }
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();

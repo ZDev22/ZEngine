@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(VulkanProject)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
@@ -69,12 +69,4 @@ if(UNIX AND NOT APPLE)
    )
 endif()
 
-
-if(UNIX AND NOT APPLE)
-   add_custom_command(TARGET main POST_BUILD
-       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-       "${VULKAN_LIBRARY_PATH}"
-       $<TARGET_FILE_DIR:main>/libvulkan.so.1.4.321
-   )
-endif()
 set_target_properties(main PROPERTIES WIN32_EXECUTABLE FALSE)

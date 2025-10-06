@@ -1,8 +1,7 @@
 #pragma once
 
-// Use uint64 for precise, large numbers
+// Use unsigned long long for precise, large numbers
 template<unsigned long long bitCount>
-requires (bitCount % 64 == 0)
 struct bigInt {
     static constexpr unsigned int bytes = bitCount / 64;
     unsigned long long limbs[bytes] = {0};
@@ -253,7 +252,6 @@ struct bigInt {
 };
 
 template<unsigned long long bitCount>
-requires (bitCount % 64 == 0)
 inline const char* toString(const bigInt<bitCount>& v) {
     static char buf[(bitCount * 2) + 2];
     bigInt<bitCount> temp = v;
@@ -395,7 +393,7 @@ struct bitset {
     constexpr void flip(unsigned long long pos) { data[pos / 64] ^= (1ULL << (pos % 64)); }
     constexpr bool check(unsigned long long pos) const { return data[pos / 64] & (1ULL << (pos % 64)); }
 
-    constexpr const char* toString() const {
+    const char* toString() const {
         static char buffer[N + 1];
         for (unsigned long long i = 0; i < N; i++) { buffer[i] = check(N - 1 - i) ? '1' : '0'; }
         buffer[N] = '\0';

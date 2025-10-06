@@ -236,14 +236,14 @@ void SwapChain::createFramebuffers() {
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = 2;  // fixed size
+        framebufferInfo.attachmentCount = 2;
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;
         framebufferInfo.height = swapChainExtent.height;
         framebufferInfo.layers = 1;
 
         if (vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create framebuffer!");
+            throw("failed to create framebuffer!");
         }
     }
 }

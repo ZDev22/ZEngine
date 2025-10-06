@@ -36,7 +36,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
     void* data;
     vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, pixels, static_cast<unsigned int>(imageSize));
+    memcpy(data, pixels, imageSize);
     vkUnmapMemory(device.device(), stagingBufferMemory);
 
     STBI_FREE(pixels);
@@ -44,8 +44,8 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<unsigned int>(texWidth);
-    imageInfo.extent.height = static_cast<unsigned int>(texHeight);
+    imageInfo.extent.width = texWidth;
+    imageInfo.extent.height = texHeight;
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
@@ -58,7 +58,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
 
     device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    device.copyBufferToImage(stagingBuffer, image, static_cast<unsigned int>(texWidth), static_cast<unsigned int>(texHeight), 1);
+    device.copyBufferToImage(stagingBuffer, image, texWidth, texHeight, 1);
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
@@ -79,7 +79,7 @@ Texture::Texture(Device& device, const std::string& filepath, VkDescriptorSetLay
     createTextureSampler(device, sampler);
 }
 
-Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+Texture::Texture(Device& device, const unsigned char* pixelData, unsigned int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline) : device(device), pipeline(pipeline), imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
     texWidth = size;
     texHeight = size;
     VkDeviceSize imageSize = size * size * 4;
@@ -92,14 +92,14 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
 
     void* data;
     vkMapMemory(device.device(), stagingBufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, rgbaPixels.data(), static_cast<unsigned int>(imageSize));
+    memcpy(data, rgbaPixels.data(), imageSize);
     vkUnmapMemory(device.device(), stagingBufferMemory);
 
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<unsigned int>(size);
-    imageInfo.extent.height = static_cast<unsigned int>(size);
+    imageInfo.extent.width = size;
+    imageInfo.extent.height = size;
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
@@ -112,7 +112,7 @@ Texture::Texture(Device& device, const unsigned char* pixelData, int size, VkDes
 
     device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
     transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    device.copyBufferToImage(stagingBuffer, image, static_cast<unsigned int>(size), static_cast<unsigned int>(size), 1);
+    device.copyBufferToImage(stagingBuffer, image, size, size, 1);
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
@@ -140,6 +140,7 @@ Texture::~Texture() {
     vkDestroyImageView(device.device(), imageView, nullptr);
     vkDestroyImage(device.device(), image, nullptr);
     vkFreeMemory(device.device(), imageMemory, nullptr);
+    pixelsArray.clear();
 }
 
 void Texture::transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout) {

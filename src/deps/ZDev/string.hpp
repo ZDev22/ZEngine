@@ -14,10 +14,7 @@ inline unsigned int charLength(const char* str) {
 }
 
 inline int charCompare(const char* a, const char* b) {
-    while (*a && (*a == *b)) {
-        a++;
-        b++;
-    }
+    while (*a && (*a == *b)) { a++; b++; }
     return *(unsigned char*)a - *(unsigned char*)b;
 }
 
@@ -26,10 +23,7 @@ inline const char* stringContainsItem(const char* str, const char* sub) {
     for (; *str; str++) {
         const char* s = str;
         const char* p = sub;
-        while (*s && *p && *s == *p) {
-            s++;
-            p++;
-        }
+        while (*s && *p && *s == *p) { s++; p++; }
         if (!*p) return str;
     }
     return nullptr;
@@ -39,10 +33,7 @@ inline int vectorContainsString(const char* target, const char** list, int listS
 
 inline bool stringStartsWithItem(const char* str, const char* item) {
     unsigned int i = 0;
-    while (item[i] != '\0') {
-        if (str[i] != item[i]) { return false; }
-        i++;
-    }
+    while (item[i] != '\0') { if (str[i] != item[i]) { return false; } i++; }
     return true;
 }
 
@@ -52,9 +43,7 @@ inline bool stringEndsWithItem(const char* str, const char* item) {
     if (itemLen > strLen) return false;
 
     unsigned int start = strLen - itemLen;
-    for (unsigned int i = 0; i < itemLen; i++) {
-        if (str[start + i] != item[i]) return false;
-    }
+    for (unsigned int i = 0; i < itemLen; i++) { if (str[start + i] != item[i]) return false; }
     return true;
 }
 
@@ -67,10 +56,7 @@ inline int itemIndexInString(const char* str, const char* item) {
     for (unsigned int i = 0; i <= strLen - itemLen; i++) {
         bool match = true;
         for (unsigned int j = 0; j < itemLen; j++) {
-            if (str[i + j] != item[j]) {
-                match = false;
-                break;
-            }
+            if (str[i + j] != item[j]) { match = false; break; }
         }
         if (match) return (int)i;
     }

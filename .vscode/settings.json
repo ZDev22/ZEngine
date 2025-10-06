@@ -56,5 +56,12 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "editor.autoIndentOnPaste": true
+"editor.autoIndentOnPaste": true,
+"output.smartScroll.enabled": false,
+"comments.collapseOnResolve": false,
+"comments.maxHeight": false,
+"comments.openView": "never",
+"comments.thread.confirmOnCollapse": "never",
+"comments.useRelativeTime": false,
+"comments.visible": false
 }

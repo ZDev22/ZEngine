@@ -37,9 +37,8 @@ sudo apt install gdb
 - Navigate to src/vulkan/pipeline.cpp and use your new function at the bottom of the file
 
 ## Third party dependencies:
-[GLM (Math) {Modified}](https://github.com/icaven/glm)  
-[GLFW (Window) {Modified}](https://www.glfw.org/download)  
 [VULKAN (Graphics) {Modified}](https://vulkan.lunarg.com/sdk/home)  
+[GLFW (Window) {Modified}](https://www.glfw.org/download)  
 [MINIAUDIO (Audio) {Modified}](https://miniaud.io/)  
 [STB-LIBRARIES (Image loader, font text rasterizer) {Modified}](https://github.com/nothings/stb)  
 ## Build commands:

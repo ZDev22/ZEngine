@@ -1,7 +1,6 @@
 #include "terminalCalculator.hpp"
 #include "../../deps/ZDev/math.hpp"
 
-#include <thread>
 #include <string>
 #include <iostream>
 
@@ -14,12 +13,7 @@ std::string num2 = "0";
 std::string num3 = "0";
 std::string answer = "0";
 
-TerminalCalculator::TerminalCalculator() {
-    std::thread run(&TerminalCalculator::terminalCalculatorRun, this);
-    run.detach();
-}
-
-void TerminalCalculator::terminalCalculatorRun() {
+void TerminalCalculator() {
     std::cout << "\x1b[2J\x1b[H";
     std::cout << "\033[2J\033[H";
     std::cout.flush();
@@ -36,6 +30,7 @@ void TerminalCalculator::terminalCalculatorRun() {
         else if (operationType == "basic") { selectedOperation = 1; }
         else if (operationType == "advanced") { selectedOperation = 2; }
         else if (operationType == "binary") { selectedOperation = 3; }
+        else if (operationType == "clear") { break; }
 
         switch (selectedOperation) {
         case 1:
@@ -109,6 +104,7 @@ void TerminalCalculator::terminalCalculatorRun() {
             }
             else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().toString(); }
             else if (operationStr == "fahrenheit") { answer = std::to_string(fahrenheit(std::stoi(num1))); }
+            else if (operationStr == "celsius") { answer = std::to_string(celsius(std::stoi(num1))); }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:

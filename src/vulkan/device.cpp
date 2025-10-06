@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #elif defined(__linux__)
-#define VK_USE_PLATFORM_XLIB_KHR
+#define VK_USE_PLATFORM_WAYLAND_KHR
 #endif
 
 #include "device.hpp"
@@ -30,7 +30,7 @@ void Device::createInstance() {
     appInfo.pApplicationName = "ZDev";
     appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
     appInfo.pEngineName = "Z";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 1, 0);
     appInfo.apiVersion = VK_API_VERSION_1_4;
 
     auto extensions = getRequiredExtensions();
@@ -101,9 +101,9 @@ void Device::createLogicalDevice() {
     createInfo.queueCreateInfoCount = static_cast<unsigned int>(queueCreateInfos.size());
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    std::vector<const char*> updatedDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-    createInfo.enabledExtensionCount = static_cast<unsigned int>(updatedDeviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = updatedDeviceExtensions.data();
+    createInfo.enabledExtensionCount = 1;
+    std::vector<const char*> extensionNames = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+    createInfo.ppEnabledExtensionNames = extensionNames.data();
     createInfo.enabledLayerCount = 0;
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }

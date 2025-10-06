@@ -18,8 +18,6 @@ struct alignas(16) SpriteData {
     unsigned int textureIndex;
     float rotation;
 
-    unsigned int ID;
-
     constexpr void setRotationMatrix() {
         rotationMatrix[0] = cos(radians(rotation));
         rotationMatrix[2] = sin(radians(rotation));

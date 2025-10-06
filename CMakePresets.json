@@ -18,8 +18,8 @@
       "binaryDir": "${sourceDir}/build/linux/gcc-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
       }
     },
     {
@@ -38,8 +38,8 @@
       "binaryDir": "${sourceDir}/build/windows/mingw-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
       }
     }
   ],

@@ -19,7 +19,7 @@ inline bool compileShader(const std::string& inputFile, const std::string& outpu
     if (result == 0) {
         std::cout << "Compiled " << inputFile << " successfully." << std::endl;
         return true;
-    } 
+    }
     else {
         std::cerr << "Failed to compile " << inputFile << " (error code " << result << ")" << std::endl;
         return false;

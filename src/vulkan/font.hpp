@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>  // Add this if not already included elsewhere for std::string
-#include <cstdio>  // For FILE, std::fopen, etc.
-#include <cstdlib> // For std::fseek, etc.
+#include <string> 
+#include <cstdio>
+#include <cstdlib>
 
 inline unsigned char* loadTTF(const std::string& filepath) {
     FILE* file = std::fopen(filepath.c_str(), "rb");

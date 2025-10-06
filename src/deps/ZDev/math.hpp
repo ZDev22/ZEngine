@@ -188,7 +188,6 @@ inline constexpr bool absolute(bool i) { return true; }
 
 // Exponents
 template<unsigned long long bitCount>
-    requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     bigInt<bitCount> result = 1;
     while (exp > 0) {
@@ -200,7 +199,6 @@ inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int e
 }
 
 template<unsigned long long bitCount>
-    requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> factorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
@@ -208,7 +206,6 @@ inline constexpr bigInt<bitCount> factorial(unsigned int n) {
 }
 
 template<unsigned long long bitCount>
-    requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> superFactorial(unsigned int n) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
@@ -225,7 +222,6 @@ inline constexpr bigInt<bitCount> superFactorial(unsigned int n) {
 }
 
 template<unsigned long long bitCount>
-    requires (bitCount % 64 == 0)
 inline constexpr bigInt<bitCount> exponentFactorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
@@ -238,7 +234,7 @@ inline constexpr bigInt<bitCount> exponentFactorial(unsigned int n) {
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
 inline constexpr float degrees(const float radians) { return radians * PID; }
 inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32.f) * .5555555555f; }
-inline constexpr float fahrenheit(const float celsius) { return (celsius * 2.f) + 12.f; }
+inline constexpr float fahrenheit(const float celsius) { return (celsius / .5555555555f) + 32.f; }
 
 // Bitset
 template<unsigned long long range>

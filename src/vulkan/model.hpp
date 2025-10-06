@@ -1,6 +1,7 @@
 #pragma once
 
 #include "buffer.hpp"
+#include "../deps/ZDev/vector.hpp"
 
 #include <memory>
 
@@ -32,15 +33,16 @@ public:
         }
     };
 
-    Model(Device& device, const std::vector<Vertex>& vertices);
+    Model(Device& device, const vector<Vertex>& vertices);
+    ~Model();
 
     void bind(VkCommandBuffer commandBuffer);
     void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance = 0);
 
-    const std::vector<Vertex>& getVertices() const { return vertices; }
+    const vector<Vertex>& getVertices() const { return vertices; }
 
 private:
     Device& device;
     std::unique_ptr<Buffer> vertexBuffer;
-    std::vector<Vertex> vertices;
+    vector<Vertex> vertices;
 };
