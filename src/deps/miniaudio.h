@@ -3,12 +3,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define MA_STRINGIFY(x)     #x
-#define MA_XSTRINGIFY(x)    MA_STRINGIFY(x)
-#define MA_VERSION_MAJOR    0
-#define MA_VERSION_MINOR    11
+#define MA_STRINGIFY(x) #x
+#define MA_XSTRINGIFY(x) MA_STRINGIFY(x)
+#define MA_VERSION_MAJOR 0
+#define MA_VERSION_MINOR 11
 #define MA_VERSION_REVISION 22
-#define MA_VERSION_STRING   MA_XSTRINGIFY(MA_VERSION_MAJOR) "." MA_XSTRINGIFY(MA_VERSION_MINOR) "." MA_XSTRINGIFY(MA_VERSION_REVISION)
+#define MA_VERSION_STRING MA_XSTRINGIFY(MA_VERSION_MAJOR) "." MA_XSTRINGIFY(MA_VERSION_MINOR) "." MA_XSTRINGIFY(MA_VERSION_REVISION)
 #if defined(_MSC_VER) && !defined(__clang__)
     #pragma warning(push)
     #pragma warning(disable:4201)
@@ -27,15 +27,15 @@ extern "C" {
     #define MA_SIZEOF_PTR   4
 #endif
 #include <stddef.h>
-typedef   signed char           ma_int8;
-typedef unsigned char           ma_uint8;
-typedef   signed short          ma_int16;
-typedef unsigned short          ma_uint16;
-typedef   signed int            ma_int32;
-typedef unsigned int            ma_uint32;
+typedef signed char ma_int8;
+typedef unsigned char ma_uint8;
+typedef signed short ma_int16;
+typedef unsigned short ma_uint16;
+typedef signed int ma_int32;
+typedef unsigned int ma_uint32;
 #if defined(_MSC_VER) && !defined(__clang__)
-    typedef   signed __int64    ma_int64;
-    typedef unsigned __int64    ma_uint64;
+typedef signed __int64 ma_int64;
+typedef unsigned __int64 ma_uint64;
 #else
     #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
         #pragma GCC diagnostic push
@@ -52,16 +52,16 @@ typedef unsigned int            ma_uint32;
 #endif
 
 #if MA_SIZEOF_PTR == 8
-    typedef ma_uint64           ma_uintptr;
+    typedef ma_uint64 ma_uintptr;
 #else
-    typedef ma_uint32           ma_uintptr;
+    typedef ma_uint32 ma_uintptr;
 #endif
-typedef ma_uint8    ma_bool8;
-typedef ma_uint32   ma_bool32;
-#define MA_TRUE     1
-#define MA_FALSE    0
-typedef float       ma_float;
-typedef double      ma_double;
+typedef ma_uint8 ma_bool8;
+typedef ma_uint32 ma_bool32;
+#define MA_TRUE 1
+#define MA_FALSE 0
+typedef float ma_float;
+typedef double ma_double;
 typedef void* ma_handle;
 typedef void* ma_ptr;
 #if defined(__GNUC__)
@@ -94,13 +94,13 @@ typedef ma_uint16 wchar_t;
     #define MA_POSIX
     #ifndef MA_NO_PTHREAD_IN_HEADER
         #include <pthread.h>
-        typedef pthread_t       ma_pthread_t;
+        typedef pthread_t ma_pthread_t;
         typedef pthread_mutex_t ma_pthread_mutex_t;
-        typedef pthread_cond_t  ma_pthread_cond_t;
+        typedef pthread_cond_t ma_pthread_cond_t;
     #else
-        typedef ma_uintptr      ma_pthread_t;
-        typedef union           ma_pthread_mutex_t { char __data[40]; ma_uint64 __alignment; } ma_pthread_mutex_t;
-        typedef union           ma_pthread_cond_t  { char __data[48]; ma_uint64 __alignment; } ma_pthread_cond_t;
+        typedef ma_uintptr ma_pthread_t;
+        typedef union ma_pthread_mutex_t { char __data[40]; ma_uint64 __alignment; } ma_pthread_mutex_t;
+        typedef union ma_pthread_cond_t { char __data[48]; ma_uint64 __alignment; } ma_pthread_cond_t;
     #endif
 
     #if defined(__unix__)
@@ -216,27 +216,26 @@ typedef ma_uint16 wchar_t;
 #endif
 #define MA_SIMD_ALIGNMENT  32
 #if !defined(MA_POSIX) && defined(MA_WIN32)
-typedef wchar_t     ma_wchar_win32;
+typedef wchar_t ma_wchar_win32;
 #else
-typedef ma_uint16   ma_wchar_win32;
+typedef ma_uint16 ma_wchar_win32;
 #endif
-typedef enum
-{
-    MA_LOG_LEVEL_DEBUG   = 4,
-    MA_LOG_LEVEL_INFO    = 3,
+typedef enum {
+    MA_LOG_LEVEL_DEBUG = 4,
+    MA_LOG_LEVEL_INFO = 3,
     MA_LOG_LEVEL_WARNING = 2,
-    MA_LOG_LEVEL_ERROR   = 1
+    MA_LOG_LEVEL_ERROR = 1
 } ma_log_level;
 #if !defined(_MSC_VER) && defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
     #include <stdalign.h>
-    #define MA_ATOMIC(alignment, type)            _Alignas(alignment) type
+    #define MA_ATOMIC(alignment, type) _Alignas(alignment) type
 #else
     #if defined(__GNUC__)
-        #define MA_ATOMIC(alignment, type)        type __attribute__((aligned(alignment)))
+        #define MA_ATOMIC(alignment, type) type __attribute__((aligned(alignment)))
     #elif defined(_MSC_VER) && _MSC_VER > 1200
-        #define MA_ATOMIC(alignment, type)        __declspec(align(alignment)) type
+        #define MA_ATOMIC(alignment, type) __declspec(align(alignment)) type
     #else
-        #define MA_ATOMIC(alignment, type)        type
+        #define MA_ATOMIC(alignment, type) type
     #endif
 #endif
 typedef struct ma_context ma_context;
@@ -299,7 +298,6 @@ typedef enum {
     MA_CHANNEL_RIGHT = MA_CHANNEL_FRONT_RIGHT,
     MA_CHANNEL_POSITION_COUNT = (MA_CHANNEL_AUX_31 + 1)
 } _ma_channel_position;
-
 typedef enum {
     MA_SUCCESS = 0,
     MA_ERROR = -1,
@@ -380,72 +378,58 @@ typedef enum {
 #ifndef MA_MAX_FILTER_ORDER
 #define MA_MAX_FILTER_ORDER 8
 #endif
-typedef enum
-{
+typedef enum {
     ma_stream_format_pcm = 0
 } ma_stream_format;
-
-typedef enum
-{
+typedef enum {
     ma_stream_layout_interleaved = 0,
     ma_stream_layout_deinterleaved
 } ma_stream_layout;
-
-typedef enum
-{
+typedef enum {
     ma_dither_mode_none = 0,
     ma_dither_mode_rectangle,
     ma_dither_mode_triangle
 } ma_dither_mode;
-
-typedef enum
-{
-    
+typedef enum {
     ma_format_unknown = 0,     
-    ma_format_u8      = 1,
-    ma_format_s16     = 2,     
-    ma_format_s24     = 3,     
-    ma_format_s32     = 4,
-    ma_format_f32     = 5,
+    ma_format_u8 = 1,
+    ma_format_s16 = 2,     
+    ma_format_s24 = 3,     
+    ma_format_s32 = 4,
+    ma_format_f32 = 5,
     ma_format_count
 } ma_format;
+typedef enum {
+    ma_standard_sample_rate_48000 = 48000,     
+    ma_standard_sample_rate_44100 = 44100,
 
-typedef enum
-{
-    
-    ma_standard_sample_rate_48000  = 48000,     
-    ma_standard_sample_rate_44100  = 44100,
+    ma_standard_sample_rate_32000 = 32000,     
+    ma_standard_sample_rate_24000 = 24000,
+    ma_standard_sample_rate_22050 = 22050,
 
-    ma_standard_sample_rate_32000  = 32000,     
-    ma_standard_sample_rate_24000  = 24000,
-    ma_standard_sample_rate_22050  = 22050,
-
-    ma_standard_sample_rate_88200  = 88200,     
-    ma_standard_sample_rate_96000  = 96000,
+    ma_standard_sample_rate_88200 = 88200,     
+    ma_standard_sample_rate_96000 = 96000,
     ma_standard_sample_rate_176400 = 176400,
     ma_standard_sample_rate_192000 = 192000,
 
-    ma_standard_sample_rate_16000  = 16000,     
-    ma_standard_sample_rate_11025  = 11025,
-    ma_standard_sample_rate_8000   = 8000,
+    ma_standard_sample_rate_16000 = 16000,     
+    ma_standard_sample_rate_11025 = 11025,
+    ma_standard_sample_rate_8000  = 8000,
 
     ma_standard_sample_rate_352800 = 352800,    
     ma_standard_sample_rate_384000 = 384000,
 
-    ma_standard_sample_rate_min    = ma_standard_sample_rate_8000,
-    ma_standard_sample_rate_max    = ma_standard_sample_rate_384000,
-    ma_standard_sample_rate_count  = 14         
+    ma_standard_sample_rate_min = ma_standard_sample_rate_8000,
+    ma_standard_sample_rate_max = ma_standard_sample_rate_384000,
+    ma_standard_sample_rate_count = 14         
 } ma_standard_sample_rate;
-typedef enum
-{
-    ma_channel_mix_mode_rectangular = 0,   
-    ma_channel_mix_mode_simple,            
-    ma_channel_mix_mode_custom_weights,    
+typedef enum {
+    ma_channel_mix_mode_rectangular = 0,
+    ma_channel_mix_mode_simple,
+    ma_channel_mix_mode_custom_weights,
     ma_channel_mix_mode_default = ma_channel_mix_mode_rectangular
 } ma_channel_mix_mode;
-
-typedef enum
-{
+typedef enum {
     ma_standard_channel_map_microsoft,
     ma_standard_channel_map_alsa,
     ma_standard_channel_map_rfc3551,   
@@ -456,22 +440,17 @@ typedef enum
     ma_standard_channel_map_webaudio = ma_standard_channel_map_flac, 
     ma_standard_channel_map_default = ma_standard_channel_map_microsoft
 } ma_standard_channel_map;
-
-typedef enum
-{
+typedef enum {
     ma_performance_profile_low_latency = 0,
     ma_performance_profile_conservative
 } ma_performance_profile;
-typedef struct
-{
+typedef struct {
     void* pUserData;
     void* (* onMalloc)(size_t sz, void* pUserData);
     void* (* onRealloc)(void* p, size_t sz, void* pUserData);
-    void  (* onFree)(void* p, void* pUserData);
+    void (* onFree)(void* p, void* pUserData);
 } ma_allocation_callbacks;
-
-typedef struct
-{
+typedef struct {
     ma_int32 state;
 } ma_lcg;
 
@@ -496,9 +475,8 @@ MA_ATOMIC_SAFE_TYPE_DECL(32,  4, bool32)
 typedef ma_uint32 ma_spinlock;
 
 #ifndef MA_NO_THREADING
-    
-    typedef enum
-    {
+
+    typedef enum {
         ma_thread_priority_idle     = -5,
         ma_thread_priority_lowest   = -4,
         ma_thread_priority_low      = -3,
@@ -5958,441 +5936,28 @@ MA_API MA_NO_INLINE char* ma_copy_string(const char* src, const ma_allocation_ca
     return dst;
 }
 
-MA_API MA_NO_INLINE wchar_t* ma_copy_string_w(const wchar_t* src, const ma_allocation_callbacks* pAllocationCallbacks)
-{
+MA_API MA_NO_INLINE wchar_t* ma_copy_string_w(const wchar_t* src, const ma_allocation_callbacks* pAllocationCallbacks) {
     size_t sz = wcslen(src)+1;
     wchar_t* dst = (wchar_t*)ma_malloc(sz * sizeof(*dst), pAllocationCallbacks);
-    if (dst == NULL) {
-        return NULL;
-    }
-
+    if (dst == NULL) { return NULL; }
     ma_wcscpy_s(dst, sz, src);
-
     return dst;
 }
-#include <errno.h>
-static ma_result ma_result_from_errno(int e)
-{
-    if (e == 0) {
-        return MA_SUCCESS;
-    }
-#ifdef EPERM
-    else if (e == EPERM) { return MA_INVALID_OPERATION; }
-#endif
-#ifdef ENOENT
-    else if (e == ENOENT) { return MA_DOES_NOT_EXIST; }
-#endif
-#ifdef ESRCH
-    else if (e == ESRCH) { return MA_DOES_NOT_EXIST; }
-#endif
-#ifdef EINTR
-    else if (e == EINTR) { return MA_INTERRUPT; }
-#endif
-#ifdef EIO
-    else if (e == EIO) { return MA_IO_ERROR; }
-#endif
-#ifdef ENXIO
-    else if (e == ENXIO) { return MA_DOES_NOT_EXIST; }
-#endif
-#ifdef E2BIG
-    else if (e == E2BIG) { return MA_INVALID_ARGS; }
-#endif
-#ifdef ENOEXEC
-    else if (e == ENOEXEC) { return MA_INVALID_FILE; }
-#endif
-#ifdef EBADF
-    else if (e == EBADF) { return MA_INVALID_FILE; }
-#endif
-#ifdef ECHILD
-    else if (e == ECHILD) { return MA_ERROR; }
-#endif
-#ifdef EAGAIN
-    else if (e == EAGAIN) { return MA_UNAVAILABLE; }
-#endif
-#ifdef ENOMEM
-    else if (e == ENOMEM) { return MA_OUT_OF_MEMORY; }
-#endif
-#ifdef EACCES
-    else if (e == EACCES) { return MA_ACCESS_DENIED; }
-#endif
-#ifdef EFAULT
-    else if (e == EFAULT) { return MA_BAD_ADDRESS; }
-#endif
-#ifdef ENOTBLK
-    else if (e == ENOTBLK) { return MA_ERROR; }
-#endif
-#ifdef EBUSY
-    else if (e == EBUSY) { return MA_BUSY; }
-#endif
-#ifdef EEXIST
-    else if (e == EEXIST) { return MA_ALREADY_EXISTS; }
-#endif
-#ifdef EXDEV
-    else if (e == EXDEV) { return MA_ERROR; }
-#endif
-#ifdef ENODEV
-    else if (e == ENODEV) { return MA_DOES_NOT_EXIST; }
-#endif
-#ifdef ENOTDIR
-    else if (e == ENOTDIR) { return MA_NOT_DIRECTORY; }
-#endif
-#ifdef EISDIR
-    else if (e == EISDIR) { return MA_IS_DIRECTORY; }
-#endif
-#ifdef EINVAL
-    else if (e == EINVAL) { return MA_INVALID_ARGS; }
-#endif
-#ifdef ENFILE
-    else if (e == ENFILE) { return MA_TOO_MANY_OPEN_FILES; }
-#endif
-#ifdef EMFILE
-    else if (e == EMFILE) { return MA_TOO_MANY_OPEN_FILES; }
-#endif
-#ifdef ENOTTY
-    else if (e == ENOTTY) { return MA_INVALID_OPERATION; }
-#endif
-#ifdef ETXTBSY
-    else if (e == ETXTBSY) { return MA_BUSY; }
-#endif
-#ifdef EFBIG
-    else if (e == EFBIG) { return MA_TOO_BIG; }
-#endif
-#ifdef ENOSPC
-    else if (e == ENOSPC) { return MA_NO_SPACE; }
-#endif
-#ifdef ESPIPE
-    else if (e == ESPIPE) { return MA_BAD_SEEK; }
-#endif
-#ifdef EROFS
-    else if (e == EROFS) { return MA_ACCESS_DENIED; }
-#endif
-#ifdef EMLINK
-    else if (e == EMLINK) { return MA_TOO_MANY_LINKS; }
-#endif
-#ifdef EPIPE
-    else if (e == EPIPE) { return MA_BAD_PIPE; }
-#endif
-#ifdef EDOM
-    else if (e == EDOM) { return MA_OUT_OF_RANGE; }
-#endif
-#ifdef ERANGE
-    else if (e == ERANGE) { return MA_OUT_OF_RANGE; }
-#endif
-#ifdef EDEADLK
-    else if (e == EDEADLK) { return MA_DEADLOCK; }
-#endif
-#ifdef ENAMETOOLONG
-    else if (e == ENAMETOOLONG) { return MA_PATH_TOO_LONG; }
-#endif
-#ifdef ENOLCK
-    else if (e == ENOLCK) { return MA_ERROR; }
-#endif
-#ifdef ENOSYS
-    else if (e == ENOSYS) { return MA_NOT_IMPLEMENTED; }
-#endif
-#ifdef ENOTEMPTY
-    else if (e == ENOTEMPTY) { return MA_DIRECTORY_NOT_EMPTY; }
-#endif
-#ifdef ELOOP
-    else if (e == ELOOP) { return MA_TOO_MANY_LINKS; }
-#endif
-#ifdef ENOMSG
-    else if (e == ENOMSG) { return MA_NO_MESSAGE; }
-#endif
-#ifdef EIDRM
-    else if (e == EIDRM) { return MA_ERROR; }
-#endif
-#ifdef ECHRNG
-    else if (e == ECHRNG) { return MA_ERROR; }
-#endif
-#ifdef EL2NSYNC
-    else if (e == EL2NSYNC) { return MA_ERROR; }
-#endif
-#ifdef EL3HLT
-    else if (e == EL3HLT) { return MA_ERROR; }
-#endif
-#ifdef EL3RST
-    else if (e == EL3RST) { return MA_ERROR; }
-#endif
-#ifdef ELNRNG
-    else if (e == ELNRNG) { return MA_OUT_OF_RANGE; }
-#endif
-#ifdef EUNATCH
-    else if (e == EUNATCH) { return MA_ERROR; }
-#endif
-#ifdef ENOCSI
-    else if (e == ENOCSI) { return MA_ERROR; }
-#endif
-#ifdef EL2HLT
-    else if (e == EL2HLT) { return MA_ERROR; }
-#endif
-#ifdef EBADE
-    else if (e == EBADE) { return MA_ERROR; }
-#endif
-#ifdef EBADR
-    else if (e == EBADR) { return MA_ERROR; }
-#endif
-#ifdef EXFULL
-    else if (e == EXFULL) { return MA_ERROR; }
-#endif
-#ifdef ENOANO
-    else if (e == ENOANO) { return MA_ERROR; }
-#endif
-#ifdef EBADRQC
-    else if (e == EBADRQC) { return MA_ERROR; }
-#endif
-#ifdef EBADSLT
-    else if (e == EBADSLT) { return MA_ERROR; }
-#endif
-#ifdef EBFONT
-    else if (e == EBFONT) { return MA_INVALID_FILE; }
-#endif
-#ifdef ENOSTR
-    else if (e == ENOSTR) { return MA_ERROR; }
-#endif
-#ifdef ENODATA
-    else if (e == ENODATA) { return MA_NO_DATA_AVAILABLE; }
-#endif
-#ifdef ETIME
-    else if (e == ETIME) { return MA_TIMEOUT; }
-#endif
-#ifdef ENOSR
-    else if (e == ENOSR) { return MA_NO_DATA_AVAILABLE; }
-#endif
-#ifdef ENONET
-    else if (e == ENONET) { return MA_NO_NETWORK; }
-#endif
-#ifdef ENOPKG
-    else if (e == ENOPKG) { return MA_ERROR; }
-#endif
-#ifdef EREMOTE
-    else if (e == EREMOTE) { return MA_ERROR; }
-#endif
-#ifdef ENOLINK
-    else if (e == ENOLINK) { return MA_ERROR; }
-#endif
-#ifdef EADV
-    else if (e == EADV) { return MA_ERROR; }
-#endif
-#ifdef ESRMNT
-    else if (e == ESRMNT) { return MA_ERROR; }
-#endif
-#ifdef ECOMM
-    else if (e == ECOMM) { return MA_ERROR; }
-#endif
-#ifdef EPROTO
-    else if (e == EPROTO) { return MA_ERROR; }
-#endif
-#ifdef EMULTIHOP
-    else if (e == EMULTIHOP) { return MA_ERROR; }
-#endif
-#ifdef EDOTDOT
-    else if (e == EDOTDOT) { return MA_ERROR; }
-#endif
-#ifdef EBADMSG
-    else if (e == EBADMSG) { return MA_BAD_MESSAGE; }
-#endif
-#ifdef EOVERFLOW
-    else if (e == EOVERFLOW) { return MA_TOO_BIG; }
-#endif
-#ifdef ENOTUNIQ
-    else if (e == ENOTUNIQ) { return MA_NOT_UNIQUE; }
-#endif
-#ifdef EBADFD
-    else if (e == EBADFD) { return MA_ERROR; }
-#endif
-#ifdef EREMCHG
-    else if (e == EREMCHG) { return MA_ERROR; }
-#endif
-#ifdef ELIBACC
-    else if (e == ELIBACC) { return MA_ACCESS_DENIED; }
-#endif
-#ifdef ELIBBAD
-    else if (e == ELIBBAD) { return MA_INVALID_FILE; }
-#endif
-#ifdef ELIBSCN
-    else if (e == ELIBSCN) { return MA_INVALID_FILE; }
-#endif
-#ifdef ELIBMAX
-    else if (e == ELIBMAX) { return MA_ERROR; }
-#endif
-#ifdef ELIBEXEC
-    else if (e == ELIBEXEC) { return MA_ERROR; }
-#endif
-#ifdef EILSEQ
-    else if (e == EILSEQ) { return MA_INVALID_DATA; }
-#endif
-#ifdef ERESTART
-    else if (e == ERESTART) { return MA_ERROR; }
-#endif
-#ifdef ESTRPIPE
-    else if (e == ESTRPIPE) { return MA_ERROR; }
-#endif
-#ifdef EUSERS
-    else if (e == EUSERS) { return MA_ERROR; }
-#endif
-#ifdef ENOTSOCK
-    else if (e == ENOTSOCK) { return MA_NOT_SOCKET; }
-#endif
-#ifdef EDESTADDRREQ
-    else if (e == EDESTADDRREQ) { return MA_NO_ADDRESS; }
-#endif
-#ifdef EMSGSIZE
-    else if (e == EMSGSIZE) { return MA_TOO_BIG; }
-#endif
-#ifdef EPROTOTYPE
-    else if (e == EPROTOTYPE) { return MA_BAD_PROTOCOL; }
-#endif
-#ifdef ENOPROTOOPT
-    else if (e == ENOPROTOOPT) { return MA_PROTOCOL_UNAVAILABLE; }
-#endif
-#ifdef EPROTONOSUPPORT
-    else if (e == EPROTONOSUPPORT) { return MA_PROTOCOL_NOT_SUPPORTED; }
-#endif
-#ifdef ESOCKTNOSUPPORT
-    else if (e == ESOCKTNOSUPPORT) { return MA_SOCKET_NOT_SUPPORTED; }
-#endif
-#ifdef EOPNOTSUPP
-    else if (e == EOPNOTSUPP) { return MA_INVALID_OPERATION; }
-#endif
-#ifdef EPFNOSUPPORT
-    else if (e == EPFNOSUPPORT) { return MA_PROTOCOL_FAMILY_NOT_SUPPORTED; }
-#endif
-#ifdef EAFNOSUPPORT
-    else if (e == EAFNOSUPPORT) { return MA_ADDRESS_FAMILY_NOT_SUPPORTED; }
-#endif
-#ifdef EADDRINUSE
-    else if (e == EADDRINUSE) { return MA_ALREADY_IN_USE; }
-#endif
-#ifdef EADDRNOTAVAIL
-    else if (e == EADDRNOTAVAIL) { return MA_ERROR; }
-#endif
-#ifdef ENETDOWN
-    else if (e == ENETDOWN) { return MA_NO_NETWORK; }
-#endif
-#ifdef ENETUNREACH
-    else if (e == ENETUNREACH) { return MA_NO_NETWORK; }
-#endif
-#ifdef ENETRESET
-    else if (e == ENETRESET) { return MA_NO_NETWORK; }
-#endif
-#ifdef ECONNABORTED
-    else if (e == ECONNABORTED) { return MA_NO_NETWORK; }
-#endif
-#ifdef ECONNRESET
-    else if (e == ECONNRESET) { return MA_CONNECTION_RESET; }
-#endif
-#ifdef ENOBUFS
-    else if (e == ENOBUFS) { return MA_NO_SPACE; }
-#endif
-#ifdef EISCONN
-    else if (e == EISCONN) { return MA_ALREADY_CONNECTED; }
-#endif
-#ifdef ENOTCONN
-    else if (e == ENOTCONN) { return MA_NOT_CONNECTED; }
-#endif
-#ifdef ESHUTDOWN
-    else if (e == ESHUTDOWN) { return MA_ERROR; }
-#endif
-#ifdef ETOOMANYREFS
-    else if (e == ETOOMANYREFS) { return MA_ERROR; }
-#endif
-#ifdef ETIMEDOUT
-    else if (e == ETIMEDOUT) { return MA_TIMEOUT; }
-#endif
-#ifdef ECONNREFUSED
-    else if (e == ECONNREFUSED) { return MA_CONNECTION_REFUSED; }
-#endif
-#ifdef EHOSTDOWN
-    else if (e == EHOSTDOWN) { return MA_NO_HOST; }
-#endif
-#ifdef EHOSTUNREACH
-    else if (e == EHOSTUNREACH) { return MA_NO_HOST; }
-#endif
-#ifdef EALREADY
-    else if (e == EALREADY) { return MA_IN_PROGRESS; }
-#endif
-#ifdef EINPROGRESS
-    else if (e == EINPROGRESS) { return MA_IN_PROGRESS; }
-#endif
-#ifdef ESTALE
-    else if (e == ESTALE) { return MA_INVALID_FILE; }
-#endif
-#ifdef EUCLEAN
-    else if (e == EUCLEAN) { return MA_ERROR; }
-#endif
-#ifdef ENOTNAM
-    else if (e == ENOTNAM) { return MA_ERROR; }
-#endif
-#ifdef ENAVAIL
-    else if (e == ENAVAIL) { return MA_ERROR; }
-#endif
-#ifdef EISNAM
-    else if (e == EISNAM) { return MA_ERROR; }
-#endif
-#ifdef EREMOTEIO
-    else if (e == EREMOTEIO) { return MA_IO_ERROR; }
-#endif
-#ifdef EDQUOT
-    else if (e == EDQUOT) { return MA_NO_SPACE; }
-#endif
-#ifdef ENOMEDIUM
-    else if (e == ENOMEDIUM) { return MA_DOES_NOT_EXIST; }
-#endif
-#ifdef EMEDIUMTYPE
-    else if (e == EMEDIUMTYPE) { return MA_ERROR; }
-#endif
-#ifdef ECANCELED
-    else if (e == ECANCELED) { return MA_CANCELLED; }
-#endif
-#ifdef ENOKEY
-    else if (e == ENOKEY) { return MA_ERROR; }
-#endif
-#ifdef EKEYEXPIRED
-    else if (e == EKEYEXPIRED) { return MA_ERROR; }
-#endif
-#ifdef EKEYREVOKED
-    else if (e == EKEYREVOKED) { return MA_ERROR; }
-#endif
-#ifdef EKEYREJECTED
-    else if (e == EKEYREJECTED) { return MA_ERROR; }
-#endif
-#ifdef EOWNERDEAD
-    else if (e == EOWNERDEAD) { return MA_ERROR; }
-#endif
-#ifdef ENOTRECOVERABLE
-    else if (e == ENOTRECOVERABLE) { return MA_ERROR; }
-#endif
-#ifdef ERFKILL
-    else if (e == ERFKILL) { return MA_ERROR; }
-#endif
-#ifdef EHWPOISON
-    else if (e == EHWPOISON) { return MA_ERROR; }
-#endif
-    else {
-        return MA_ERROR;
-    }
+static ma_result ma_result_from_errno(int e) {
+    if (e == 0) { return MA_SUCCESS; }
+    return MA_ERROR;
 }
 
-MA_API ma_result ma_fopen(FILE** ppFile, const char* pFilePath, const char* pOpenMode)
-{
+MA_API ma_result ma_fopen(FILE** ppFile, const char* pFilePath, const char* pOpenMode) {
 #if defined(_MSC_VER) && _MSC_VER >= 1400
     errno_t err;
 #endif
 
-    if (ppFile != NULL) {
-        *ppFile = NULL;  
-    }
-
-    if (pFilePath == NULL || pOpenMode == NULL || ppFile == NULL) {
-        return MA_INVALID_ARGS;
-    }
+    if (ppFile != NULL) { *ppFile = NULL; }
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400
     err = fopen_s(ppFile, pFilePath, pOpenMode);
-    if (err != 0) {
-        return ma_result_from_errno(err);
-    }
+    if (err != 0) { return ma_result_from_errno(err); }
 #else
 #if defined(_WIN32) || defined(__APPLE__)
     *ppFile = fopen(pFilePath, pOpenMode);
@@ -6405,14 +5970,10 @@ MA_API ma_result ma_fopen(FILE** ppFile, const char* pFilePath, const char* pOpe
 #endif
     if (*ppFile == NULL) {
         ma_result result = ma_result_from_errno(errno);
-        if (result == MA_SUCCESS) {
-            result = MA_ERROR;   
-        }
-
+        if (result == MA_SUCCESS) { result = MA_ERROR; }
         return result;
     }
 #endif
-
     return MA_SUCCESS;
 }
 
@@ -6422,29 +5983,18 @@ MA_API ma_result ma_fopen(FILE** ppFile, const char* pFilePath, const char* pOpe
     #endif
 #endif
 
-MA_API ma_result ma_wfopen(FILE** ppFile, const wchar_t* pFilePath, const wchar_t* pOpenMode, const ma_allocation_callbacks* pAllocationCallbacks)
-{
-    if (ppFile != NULL) {
-        *ppFile = NULL;  
-    }
-
-    if (pFilePath == NULL || pOpenMode == NULL || ppFile == NULL) {
-        return MA_INVALID_ARGS;
-    }
+MA_API ma_result ma_wfopen(FILE** ppFile, const wchar_t* pFilePath, const wchar_t* pOpenMode, const ma_allocation_callbacks* pAllocationCallbacks) {
+    if (ppFile != NULL) { *ppFile = NULL; }
 
 #if defined(MA_HAS_WFOPEN)
     {
         
     #if defined(_MSC_VER) && _MSC_VER >= 1400
         errno_t err = _wfopen_s(ppFile, pFilePath, pOpenMode);
-        if (err != 0) {
-            return ma_result_from_errno(err);
-        }
+        if (err != 0) { return ma_result_from_errno(err); }
     #else
         *ppFile = _wfopen(pFilePath, pOpenMode);
-        if (*ppFile == NULL) {
-            return ma_result_from_errno(errno);
-        }
+        if (*ppFile == NULL) { return ma_result_from_errno(errno); }
     #endif
         (void)pAllocationCallbacks;
     }
@@ -6460,14 +6010,10 @@ MA_API ma_result ma_wfopen(FILE** ppFile, const wchar_t* pFilePath, const wchar_
         
         MA_ZERO_OBJECT(&mbs);
         lenMB = wcsrtombs(NULL, &pFilePathTemp, 0, &mbs);
-        if (lenMB == (size_t)-1) {
-            return ma_result_from_errno(errno);
-        }
+        if (lenMB == (size_t)-1) { return ma_result_from_errno(errno); }
 
         pFilePathMB = (char*)ma_malloc(lenMB + 1, pAllocationCallbacks);
-        if (pFilePathMB == NULL) {
-            return MA_OUT_OF_MEMORY;
-        }
+        if (pFilePathMB == NULL) { return MA_OUT_OF_MEMORY; }
 
         pFilePathTemp = pFilePath;
         MA_ZERO_OBJECT(&mbs);
@@ -6492,11 +6038,8 @@ MA_API ma_result ma_wfopen(FILE** ppFile, const wchar_t* pFilePath, const wchar_
         ma_free(pFilePathMB, pAllocationCallbacks);
     }
 
-    if (*ppFile == NULL) {
-        return MA_ERROR;
-    }
+    if (*ppFile == NULL) { return MA_ERROR; }
 #endif
-
     return MA_SUCCESS;
 }
 static MA_INLINE void ma_copy_memory_64(void* dst, const void* src, ma_uint64 sizeInBytes)
@@ -6612,22 +6155,11 @@ static ma_allocation_callbacks ma_allocation_callbacks_init_default(void)
 
 static ma_result ma_allocation_callbacks_init_copy(ma_allocation_callbacks* pDst, const ma_allocation_callbacks* pSrc)
 {
-    if (pDst == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pSrc == NULL) {
         *pDst = ma_allocation_callbacks_init_default();
     } else {
-        if (pSrc->pUserData == NULL && pSrc->onFree == NULL && pSrc->onMalloc == NULL && pSrc->onRealloc == NULL) {
-            *pDst = ma_allocation_callbacks_init_default();
-        } else {
-            if (pSrc->onFree == NULL || (pSrc->onMalloc == NULL && pSrc->onRealloc == NULL)) {
-                return MA_INVALID_ARGS;    
-            } else {
-                *pDst = *pSrc;
-            }
-        }
+        if (pSrc->pUserData == NULL && pSrc->onFree == NULL && pSrc->onMalloc == NULL && pSrc->onRealloc == NULL) { *pDst = ma_allocation_callbacks_init_default(); }
+        else { *pDst = *pSrc; }
     }
 
     return MA_SUCCESS;
@@ -6686,9 +6218,6 @@ MA_API ma_log_callback ma_log_callback_init(ma_log_callback_proc onLog, void* pU
 }
 MA_API ma_result ma_log_init(const ma_allocation_callbacks* pAllocationCallbacks, ma_log* pLog)
 {
-    if (pLog == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pLog);
     ma_allocation_callbacks_init_copy(&pLog->allocationCallbacks, pAllocationCallbacks);
@@ -6746,10 +6275,6 @@ MA_API ma_result ma_log_register_callback(ma_log* pLog, ma_log_callback callback
 {
     ma_result result = MA_SUCCESS;
 
-    if (pLog == NULL || callback.onLog == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_log_lock(pLog);
     {
         if (pLog->callbackCount == ma_countof(pLog->callbacks)) {
@@ -6766,10 +6291,6 @@ MA_API ma_result ma_log_register_callback(ma_log* pLog, ma_log_callback callback
 
 MA_API ma_result ma_log_unregister_callback(ma_log* pLog, ma_log_callback callback)
 {
-    if (pLog == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_log_lock(pLog);
     {
         ma_uint32 iLog;
@@ -6795,10 +6316,6 @@ MA_API ma_result ma_log_unregister_callback(ma_log* pLog, ma_log_callback callba
 
 MA_API ma_result ma_log_post(ma_log* pLog, ma_uint32 level, const char* pMessage)
 {
-    if (pLog == NULL || pMessage == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_log_lock(pLog);
     {
         ma_uint32 iLog;
@@ -6856,10 +6373,6 @@ static int ma_vscprintf(const ma_allocation_callbacks* pAllocationCallbacks, con
 
 MA_API ma_result ma_log_postv(ma_log* pLog, ma_uint32 level, const char* pFormat, va_list args)
 {
-    if (pLog == NULL || pFormat == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || ((!defined(_MSC_VER) || _MSC_VER >= 1900) && !defined(__STRICT_ANSI__) && !defined(_NO_EXT_KEYS)) || (defined(__cplusplus) && __cplusplus >= 201103L)
     {
         ma_result result;
@@ -6869,10 +6382,6 @@ MA_API ma_result ma_log_postv(ma_log* pLog, ma_uint32 level, const char* pFormat
 
         
         length = vsnprintf(pFormattedMessageStack, sizeof(pFormattedMessageStack), pFormat, args);
-        if (length < 0) {
-            return MA_INVALID_OPERATION;    
-        }
-
         if ((size_t)length < sizeof(pFormattedMessageStack)) {
             
             result = ma_log_post(pLog, level, pFormattedMessageStack);
@@ -6884,11 +6393,6 @@ MA_API ma_result ma_log_postv(ma_log* pLog, ma_uint32 level, const char* pFormat
             }
 
             length = vsnprintf(pFormattedMessageHeap, length + 1, pFormat, args);
-            if (length < 0) {
-                ma_free(pFormattedMessageHeap, &pLog->allocationCallbacks);
-                return MA_INVALID_OPERATION;
-            }
-
             result = ma_log_post(pLog, level, pFormattedMessageHeap);
             ma_free(pFormattedMessageHeap, &pLog->allocationCallbacks);
         }
@@ -6917,10 +6421,6 @@ MA_API ma_result ma_log_postv(ma_log* pLog, ma_uint32 level, const char* pFormat
 
             formattedLen = ma_vscprintf(&pLog->allocationCallbacks, pFormat, args2);
             va_end(args2);
-
-            if (formattedLen <= 0) {
-                return MA_INVALID_OPERATION;
-            }
 
             pFormattedMessage = (char*)ma_malloc(formattedLen + 1, &pLog->allocationCallbacks);
             if (pFormattedMessage == NULL) {
@@ -6960,10 +6460,6 @@ MA_API ma_result ma_log_postf(ma_log* pLog, ma_uint32 level, const char* pFormat
 {
     ma_result result;
     va_list args;
-
-    if (pLog == NULL || pFormat == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     va_start(args, pFormat);
     {
@@ -9223,10 +8719,6 @@ static ma_result ma_result_from_GetLastError(DWORD error)
 
 static MA_INLINE ma_result ma_spinlock_lock_ex(volatile ma_spinlock* pSpinlock, ma_bool32 yield)
 {
-    if (pSpinlock == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (;;) {
         if (ma_atomic_exchange_explicit_32(pSpinlock, 1, ma_atomic_memory_order_acquire) == 0) {
             break;
@@ -9375,10 +8867,6 @@ static ma_result ma_mutex_init__posix(ma_mutex* pMutex)
 {
     int result;
 
-    if (pMutex == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pMutex);
 
     result = pthread_mutex_init((pthread_mutex_t*)pMutex, NULL);
@@ -9457,10 +8945,6 @@ static ma_result ma_semaphore_init__posix(int initialValue, ma_semaphore* pSemap
 {
     int result;
 
-    if (pSemaphore == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pSemaphore->value = initialValue;
 
     result = pthread_mutex_init((pthread_mutex_t*)&pSemaphore->lock, NULL);
@@ -9489,10 +8973,6 @@ static void ma_semaphore_uninit__posix(ma_semaphore* pSemaphore)
 
 static ma_result ma_semaphore_wait__posix(ma_semaphore* pSemaphore)
 {
-    if (pSemaphore == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pthread_mutex_lock((pthread_mutex_t*)&pSemaphore->lock);
     {
         
@@ -9509,10 +8989,6 @@ static ma_result ma_semaphore_wait__posix(ma_semaphore* pSemaphore)
 
 static ma_result ma_semaphore_release__posix(ma_semaphore* pSemaphore)
 {
-    if (pSemaphore == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pthread_mutex_lock((pthread_mutex_t*)&pSemaphore->lock);
     {
         pSemaphore->value += 1;
@@ -9696,10 +9172,6 @@ static ma_result ma_thread_create(ma_thread* pThread, ma_thread_priority priorit
     ma_result result;
     ma_thread_proxy_data* pProxyData;
 
-    if (pThread == NULL || entryProc == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pProxyData = (ma_thread_proxy_data*)ma_malloc(sizeof(*pProxyData), pAllocationCallbacks);   
     if (pProxyData == NULL) {
         return MA_OUT_OF_MEMORY;
@@ -9743,11 +9215,6 @@ static void ma_thread_wait(ma_thread* pThread)
 }
 MA_API ma_result ma_mutex_init(ma_mutex* pMutex)
 {
-    if (pMutex == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_mutex_init__posix(pMutex);
 #elif defined(MA_WIN32)
@@ -9797,11 +9264,6 @@ MA_API void ma_mutex_unlock(ma_mutex* pMutex)
 }
 MA_API ma_result ma_event_init(ma_event* pEvent)
 {
-    if (pEvent == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_event_init__posix(pEvent);
 #elif defined(MA_WIN32)
@@ -9814,10 +9276,6 @@ static ma_result ma_event_alloc_and_init(ma_event** ppEvent, ma_allocation_callb
 {
     ma_result result;
     ma_event* pEvent;
-
-    if (ppEvent == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     *ppEvent = NULL;
 
@@ -9864,11 +9322,6 @@ static void ma_event_uninit_and_free(ma_event* pEvent, ma_allocation_callbacks* 
 
 MA_API ma_result ma_event_wait(ma_event* pEvent)
 {
-    if (pEvent == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_event_wait__posix(pEvent);
 #elif defined(MA_WIN32)
@@ -9878,11 +9331,6 @@ MA_API ma_result ma_event_wait(ma_event* pEvent)
 
 MA_API ma_result ma_event_signal(ma_event* pEvent)
 {
-    if (pEvent == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_event_signal__posix(pEvent);
 #elif defined(MA_WIN32)
@@ -9891,11 +9339,6 @@ MA_API ma_result ma_event_signal(ma_event* pEvent)
 }
 MA_API ma_result ma_semaphore_init(int initialValue, ma_semaphore* pSemaphore)
 {
-    if (pSemaphore == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_semaphore_init__posix(initialValue, pSemaphore);
 #elif defined(MA_WIN32)
@@ -9919,11 +9362,6 @@ MA_API void ma_semaphore_uninit(ma_semaphore* pSemaphore)
 
 MA_API ma_result ma_semaphore_wait(ma_semaphore* pSemaphore)
 {
-    if (pSemaphore == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_semaphore_wait__posix(pSemaphore);
 #elif defined(MA_WIN32)
@@ -9933,11 +9371,6 @@ MA_API ma_result ma_semaphore_wait(ma_semaphore* pSemaphore)
 
 MA_API ma_result ma_semaphore_release(ma_semaphore* pSemaphore)
 {
-    if (pSemaphore == NULL) {
-        MA_ASSERT(MA_FALSE);    
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_POSIX)
     return ma_semaphore_release__posix(pSemaphore);
 #elif defined(MA_WIN32)
@@ -9954,10 +9387,6 @@ MA_API ma_result ma_semaphore_release(ma_semaphore* pSemaphore)
 
 MA_API ma_result ma_fence_init(ma_fence* pFence)
 {
-    if (pFence == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFence);
     pFence->counter = 0;
 
@@ -10000,18 +9429,9 @@ MA_API ma_result ma_fence_acquire(ma_fence* pFence) {
 
 MA_API ma_result ma_fence_release(ma_fence* pFence)
 {
-    if (pFence == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (;;) {
         ma_uint32 oldCounter = ma_atomic_load_32(&pFence->counter);
         ma_uint32 newCounter = oldCounter - 1;
-
-        if (oldCounter == 0) {
-            MA_ASSERT(MA_FALSE);
-            return MA_INVALID_OPERATION;    
-        }
 
         if (ma_atomic_compare_exchange_weak_32(&pFence->counter, &oldCounter, newCounter)) {
             #ifndef MA_NO_THREADING
@@ -10023,11 +9443,6 @@ MA_API ma_result ma_fence_release(ma_fence* pFence)
             #endif
 
             return MA_SUCCESS;
-        } else {
-            if (oldCounter == 0) {
-                MA_ASSERT(MA_FALSE);
-                return MA_INVALID_OPERATION;    
-            }
         }
     }
 
@@ -10037,10 +9452,6 @@ MA_API ma_result ma_fence_release(ma_fence* pFence)
 
 MA_API ma_result ma_fence_wait(ma_fence* pFence)
 {
-    if (pFence == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (;;) {
         ma_uint32 counter;
 
@@ -10070,10 +9481,6 @@ MA_API ma_result ma_async_notification_signal(ma_async_notification* pNotificati
 {
     ma_async_notification_callbacks* pNotificationCallbacks = (ma_async_notification_callbacks*)pNotification;
 
-    if (pNotification == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pNotificationCallbacks->onSignal == NULL) {
         return MA_NOT_IMPLEMENTED;
     }
@@ -10088,10 +9495,6 @@ static void ma_async_notification_poll__on_signal(ma_async_notification* pNotifi
 
 MA_API ma_result ma_async_notification_poll_init(ma_async_notification_poll* pNotificationPoll)
 {
-    if (pNotificationPoll == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pNotificationPoll->cb.onSignal = ma_async_notification_poll__on_signal;
     pNotificationPoll->signalled = MA_FALSE;
 
@@ -10113,10 +9516,6 @@ static void ma_async_notification_event__on_signal(ma_async_notification* pNotif
 
 MA_API ma_result ma_async_notification_event_init(ma_async_notification_event* pNotificationEvent)
 {
-    if (pNotificationEvent == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pNotificationEvent->cb.onSignal = ma_async_notification_event__on_signal;
 
     #ifndef MA_NO_THREADING
@@ -10139,10 +9538,6 @@ MA_API ma_result ma_async_notification_event_init(ma_async_notification_event* p
 
 MA_API ma_result ma_async_notification_event_uninit(ma_async_notification_event* pNotificationEvent)
 {
-    if (pNotificationEvent == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #ifndef MA_NO_THREADING
     {
         ma_event_uninit(&pNotificationEvent->e);
@@ -10157,10 +9552,6 @@ MA_API ma_result ma_async_notification_event_uninit(ma_async_notification_event*
 
 MA_API ma_result ma_async_notification_event_wait(ma_async_notification_event* pNotificationEvent)
 {
-    if (pNotificationEvent == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #ifndef MA_NO_THREADING
     {
         return ma_event_wait(&pNotificationEvent->e);
@@ -10174,10 +9565,6 @@ MA_API ma_result ma_async_notification_event_wait(ma_async_notification_event* p
 
 MA_API ma_result ma_async_notification_event_signal(ma_async_notification_event* pNotificationEvent)
 {
-    if (pNotificationEvent == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #ifndef MA_NO_THREADING
     {
         return ma_event_signal(&pNotificationEvent->e);
@@ -10225,14 +9612,6 @@ static ma_result ma_slot_allocator_get_heap_layout(const ma_slot_allocator_confi
 
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->capacity == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
 
     
@@ -10251,10 +9630,6 @@ MA_API ma_result ma_slot_allocator_get_heap_size(const ma_slot_allocator_config*
     ma_result result;
     ma_slot_allocator_heap_layout layout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_slot_allocator_get_heap_layout(pConfig, &layout);
@@ -10272,15 +9647,7 @@ MA_API ma_result ma_slot_allocator_init_preallocated(const ma_slot_allocator_con
     ma_result result;
     ma_slot_allocator_heap_layout heapLayout;
 
-    if (pAllocator == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pAllocator);
-
-    if (pHeap == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     result = ma_slot_allocator_get_heap_layout(pConfig, &heapLayout);
     if (result != MA_SUCCESS) {
@@ -10343,10 +9710,6 @@ MA_API ma_result ma_slot_allocator_alloc(ma_slot_allocator* pAllocator, ma_uint6
     ma_uint32 iAttempt;
     const ma_uint32 maxAttempts = 2;    
 
-    if (pAllocator == NULL || pSlot == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (iAttempt = 0; iAttempt < maxAttempts; iAttempt += 1) {
         
         ma_uint32 iGroup;
@@ -10358,11 +9721,8 @@ MA_API ma_result ma_slot_allocator_alloc(ma_slot_allocator* pAllocator, ma_uint6
                 ma_uint32 bitOffset;
 
                 oldBitfield = ma_atomic_load_32(&pAllocator->pGroups[iGroup].bitfield);  
-
                 
-                if (oldBitfield == 0xFFFFFFFF) {
-                    break;  
-                }
+                if (oldBitfield == 0xFFFFFFFF) { break; }
 
                 bitOffset = ma_ffs_32(~oldBitfield);
                 MA_ASSERT(bitOffset < 32);
@@ -10372,18 +9732,14 @@ MA_API ma_result ma_slot_allocator_alloc(ma_slot_allocator* pAllocator, ma_uint6
                 if (ma_atomic_compare_and_swap_32(&pAllocator->pGroups[iGroup].bitfield, oldBitfield, newBitfield) == oldBitfield) {
                     ma_uint32 slotIndex;
 
-                    
                     ma_atomic_fetch_add_32(&pAllocator->count, 1);
 
-                    
                     slotIndex = (iGroup << 5) + bitOffset;  
                     if (slotIndex >= pAllocator->capacity) {
                         return MA_OUT_OF_MEMORY;
                     }
 
-                    
                     pAllocator->pSlots[slotIndex] += 1;
-
                     
                     *pSlot = (((ma_uint64)pAllocator->pSlots[slotIndex] << 32) | slotIndex);
 
@@ -10409,16 +9765,8 @@ MA_API ma_result ma_slot_allocator_free(ma_slot_allocator* pAllocator, ma_uint64
     ma_uint32 iGroup;
     ma_uint32 iBit;
 
-    if (pAllocator == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     iGroup = (ma_uint32)((slot & 0xFFFFFFFF) >> 5);   
     iBit   = (ma_uint32)((slot & 0xFFFFFFFF) & 31);   
-
-    if (iGroup >= ma_slot_allocator_group_capacity(pAllocator)) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ASSERT(iBit < 32);   
 
@@ -10532,14 +9880,6 @@ static ma_job_proc g_jobVTable[MA_JOB_TYPE_COUNT] =
 
 MA_API ma_result ma_job_process(ma_job* pJob)
 {
-    if (pJob == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pJob->toc.breakup.code >= MA_JOB_TYPE_COUNT) {
-        return MA_INVALID_OPERATION;
-    }
-
     return g_jobVTable[pJob->toc.breakup.code](pJob);
 }
 
@@ -10588,21 +9928,10 @@ typedef struct
 static ma_result ma_job_queue_get_heap_layout(const ma_job_queue_config* pConfig, ma_job_queue_heap_layout* pHeapLayout)
 {
     ma_result result;
-
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->capacity == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
-
     
     {
         ma_slot_allocator_config allocatorConfig;
@@ -10630,10 +9959,6 @@ MA_API ma_result ma_job_queue_get_heap_size(const ma_job_queue_config* pConfig, 
     ma_result result;
     ma_job_queue_heap_layout layout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_job_queue_get_heap_layout(pConfig, &layout);
@@ -10651,10 +9976,6 @@ MA_API ma_result ma_job_queue_init_preallocated(const ma_job_queue_config* pConf
     ma_result result;
     ma_job_queue_heap_layout heapLayout;
     ma_slot_allocator_config allocatorConfig;
-
-    if (pQueue == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pQueue);
 
@@ -10767,11 +10088,6 @@ MA_API ma_result ma_job_queue_post(ma_job_queue* pQueue, const ma_job* pJob)
     ma_uint64 slot;
     ma_uint64 tail;
     ma_uint64 next;
-
-    if (pQueue == NULL || pJob == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     result = ma_slot_allocator_alloc(&pQueue->allocator, &slot);
     if (result != MA_SUCCESS) {
@@ -10832,11 +10148,6 @@ MA_API ma_result ma_job_queue_next(ma_job_queue* pQueue, ma_job* pJob)
     ma_uint64 head;
     ma_uint64 tail;
     ma_uint64 next;
-
-    if (pQueue == NULL || pJob == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if ((pQueue->flags & MA_JOB_QUEUE_FLAG_NON_BLOCKING) == 0) {
         #ifndef MA_NO_THREADING
@@ -11085,10 +10396,6 @@ MA_API ma_result ma_get_backend_from_name(const char* pBackendName, ma_backend* 
 {
     size_t iBackend;
 
-    if (pBackendName == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (iBackend = 0; iBackend < ma_countof(gBackendInfo); iBackend += 1) {
         if (ma_strcmp(pBackendName, gBackendInfo[iBackend].pName) == 0) {
             if (pBackend != NULL) {
@@ -11220,11 +10527,6 @@ MA_API ma_result ma_get_enabled_backends(ma_backend* pBackends, size_t backendCa
     size_t backendCount;
     size_t iBackend;
     ma_result result = MA_SUCCESS;
-
-    if (pBackendCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     backendCount = 0;
 
     for (iBackend = 0; iBackend <= ma_backend_null; iBackend += 1) {
@@ -11253,181 +10555,162 @@ MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend)
 {
     switch (backend)
     {
-        case ma_backend_wasapi:     return MA_TRUE;
-        case ma_backend_dsound:     return MA_FALSE;
-        case ma_backend_winmm:      return MA_FALSE;
-        case ma_backend_coreaudio:  return MA_FALSE;
-        case ma_backend_sndio:      return MA_FALSE;
-        case ma_backend_audio4:     return MA_FALSE;
-        case ma_backend_oss:        return MA_FALSE;
+        case ma_backend_wasapi: return MA_TRUE;
+        case ma_backend_dsound: return MA_FALSE;
+        case ma_backend_winmm: return MA_FALSE;
+        case ma_backend_coreaudio: return MA_FALSE;
+        case ma_backend_sndio: return MA_FALSE;
+        case ma_backend_audio4: return MA_FALSE;
+        case ma_backend_oss: return MA_FALSE;
         case ma_backend_pulseaudio: return MA_FALSE;
-        case ma_backend_alsa:       return MA_FALSE;
-        case ma_backend_jack:       return MA_FALSE;
-        case ma_backend_aaudio:     return MA_FALSE;
-        case ma_backend_opensl:     return MA_FALSE;
-        case ma_backend_webaudio:   return MA_FALSE;
-        case ma_backend_custom:     return MA_FALSE;    
-        case ma_backend_null:       return MA_FALSE;
-        default:                    return MA_FALSE;
+        case ma_backend_alsa: return MA_FALSE;
+        case ma_backend_jack: return MA_FALSE;
+        case ma_backend_aaudio: return MA_FALSE;
+        case ma_backend_opensl: return MA_FALSE;
+        case ma_backend_webaudio: return MA_FALSE;
+        case ma_backend_custom: return MA_FALSE;    
+        case ma_backend_null: return MA_FALSE;
+        default: return MA_FALSE;
     }
 }
 #if defined(MA_WIN32)
-
-#define MA_AUDCLNT_E_NOT_INITIALIZED              ((HRESULT)0x88890001)
-#define MA_AUDCLNT_E_ALREADY_INITIALIZED          ((HRESULT)0x88890002)
-#define MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE          ((HRESULT)0x88890003)
-#define MA_AUDCLNT_E_DEVICE_INVALIDATED           ((HRESULT)0x88890004)
-#define MA_AUDCLNT_E_NOT_STOPPED                  ((HRESULT)0x88890005)
-#define MA_AUDCLNT_E_BUFFER_TOO_LARGE             ((HRESULT)0x88890006)
-#define MA_AUDCLNT_E_OUT_OF_ORDER                 ((HRESULT)0x88890007)
-#define MA_AUDCLNT_E_UNSUPPORTED_FORMAT           ((HRESULT)0x88890008)
-#define MA_AUDCLNT_E_INVALID_SIZE                 ((HRESULT)0x88890009)
-#define MA_AUDCLNT_E_DEVICE_IN_USE                ((HRESULT)0x8889000A)
-#define MA_AUDCLNT_E_BUFFER_OPERATION_PENDING     ((HRESULT)0x8889000B)
-#define MA_AUDCLNT_E_THREAD_NOT_REGISTERED        ((HRESULT)0x8889000C)
-#define MA_AUDCLNT_E_NO_SINGLE_PROCESS            ((HRESULT)0x8889000D)
-#define MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED   ((HRESULT)0x8889000E)
-#define MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED       ((HRESULT)0x8889000F)
-#define MA_AUDCLNT_E_SERVICE_NOT_RUNNING          ((HRESULT)0x88890010)
-#define MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED     ((HRESULT)0x88890011)
-#define MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY          ((HRESULT)0x88890012)
+#define MA_AUDCLNT_E_NOT_INITIALIZED ((HRESULT)0x88890001)
+#define MA_AUDCLNT_E_ALREADY_INITIALIZED ((HRESULT)0x88890002)
+#define MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE ((HRESULT)0x88890003)
+#define MA_AUDCLNT_E_DEVICE_INVALIDATED ((HRESULT)0x88890004)
+#define MA_AUDCLNT_E_NOT_STOPPED ((HRESULT)0x88890005)
+#define MA_AUDCLNT_E_BUFFER_TOO_LARGE ((HRESULT)0x88890006)
+#define MA_AUDCLNT_E_OUT_OF_ORDER ((HRESULT)0x88890007)
+#define MA_AUDCLNT_E_UNSUPPORTED_FORMAT ((HRESULT)0x88890008)
+#define MA_AUDCLNT_E_INVALID_SIZE ((HRESULT)0x88890009)
+#define MA_AUDCLNT_E_DEVICE_IN_USE ((HRESULT)0x8889000A)
+#define MA_AUDCLNT_E_BUFFER_OPERATION_PENDING ((HRESULT)0x8889000B)
+#define MA_AUDCLNT_E_THREAD_NOT_REGISTERED ((HRESULT)0x8889000C)
+#define MA_AUDCLNT_E_NO_SINGLE_PROCESS ((HRESULT)0x8889000D)
+#define MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED ((HRESULT)0x8889000E)
+#define MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED ((HRESULT)0x8889000F)
+#define MA_AUDCLNT_E_SERVICE_NOT_RUNNING ((HRESULT)0x88890010)
+#define MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED ((HRESULT)0x88890011)
+#define MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY ((HRESULT)0x88890012)
 #define MA_AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL ((HRESULT)0x88890013)
-#define MA_AUDCLNT_E_EVENTHANDLE_NOT_SET          ((HRESULT)0x88890014)
-#define MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE        ((HRESULT)0x88890015)
-#define MA_AUDCLNT_E_BUFFER_SIZE_ERROR            ((HRESULT)0x88890016)
-#define MA_AUDCLNT_E_CPUUSAGE_EXCEEDED            ((HRESULT)0x88890017)
-#define MA_AUDCLNT_E_BUFFER_ERROR                 ((HRESULT)0x88890018)
-#define MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED      ((HRESULT)0x88890019)
-#define MA_AUDCLNT_E_INVALID_DEVICE_PERIOD        ((HRESULT)0x88890020)
-#define MA_AUDCLNT_E_INVALID_STREAM_FLAG          ((HRESULT)0x88890021)
+#define MA_AUDCLNT_E_EVENTHANDLE_NOT_SET ((HRESULT)0x88890014)
+#define MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE ((HRESULT)0x88890015)
+#define MA_AUDCLNT_E_BUFFER_SIZE_ERROR ((HRESULT)0x88890016)
+#define MA_AUDCLNT_E_CPUUSAGE_EXCEEDED ((HRESULT)0x88890017)
+#define MA_AUDCLNT_E_BUFFER_ERROR ((HRESULT)0x88890018)
+#define MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED ((HRESULT)0x88890019)
+#define MA_AUDCLNT_E_INVALID_DEVICE_PERIOD ((HRESULT)0x88890020)
+#define MA_AUDCLNT_E_INVALID_STREAM_FLAG ((HRESULT)0x88890021)
 #define MA_AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE ((HRESULT)0x88890022)
-#define MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES     ((HRESULT)0x88890023)
-#define MA_AUDCLNT_E_OFFLOAD_MODE_ONLY            ((HRESULT)0x88890024)
-#define MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY         ((HRESULT)0x88890025)
-#define MA_AUDCLNT_E_RESOURCES_INVALIDATED        ((HRESULT)0x88890026)
-#define MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED         ((HRESULT)0x88890027)
-#define MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED    ((HRESULT)0x88890028)
-#define MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED         ((HRESULT)0x88890029)
-#define MA_AUDCLNT_E_HEADTRACKING_ENABLED         ((HRESULT)0x88890030)
-#define MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED     ((HRESULT)0x88890040)
-#define MA_AUDCLNT_S_BUFFER_EMPTY                 ((HRESULT)0x08890001)
-#define MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED    ((HRESULT)0x08890002)
-#define MA_AUDCLNT_S_POSITION_STALLED             ((HRESULT)0x08890003)
-
-#define MA_DS_OK                                  ((HRESULT)0)
-#define MA_DS_NO_VIRTUALIZATION                   ((HRESULT)0x0878000A)
-#define MA_DSERR_ALLOCATED                        ((HRESULT)0x8878000A)
-#define MA_DSERR_CONTROLUNAVAIL                   ((HRESULT)0x8878001E)
-#define MA_DSERR_INVALIDPARAM                     ((HRESULT)0x80070057) 
-#define MA_DSERR_INVALIDCALL                      ((HRESULT)0x88780032)
-#define MA_DSERR_GENERIC                          ((HRESULT)0x80004005) 
-#define MA_DSERR_PRIOLEVELNEEDED                  ((HRESULT)0x88780046)
-#define MA_DSERR_OUTOFMEMORY                      ((HRESULT)0x8007000E) 
-#define MA_DSERR_BADFORMAT                        ((HRESULT)0x88780064)
-#define MA_DSERR_UNSUPPORTED                      ((HRESULT)0x80004001) 
-#define MA_DSERR_NODRIVER                         ((HRESULT)0x88780078)
-#define MA_DSERR_ALREADYINITIALIZED               ((HRESULT)0x88780082)
-#define MA_DSERR_NOAGGREGATION                    ((HRESULT)0x80040110) 
-#define MA_DSERR_BUFFERLOST                       ((HRESULT)0x88780096)
-#define MA_DSERR_OTHERAPPHASPRIO                  ((HRESULT)0x887800A0)
-#define MA_DSERR_UNINITIALIZED                    ((HRESULT)0x887800AA)
-#define MA_DSERR_NOINTERFACE                      ((HRESULT)0x80004002) 
-#define MA_DSERR_ACCESSDENIED                     ((HRESULT)0x80070005) 
-#define MA_DSERR_BUFFERTOOSMALL                   ((HRESULT)0x887800B4)
-#define MA_DSERR_DS8_REQUIRED                     ((HRESULT)0x887800BE)
-#define MA_DSERR_SENDLOOP                         ((HRESULT)0x887800C8)
-#define MA_DSERR_BADSENDBUFFERGUID                ((HRESULT)0x887800D2)
-#define MA_DSERR_OBJECTNOTFOUND                   ((HRESULT)0x88781161)
-#define MA_DSERR_FXUNAVAILABLE                    ((HRESULT)0x887800DC)
-
-static ma_result ma_result_from_HRESULT(HRESULT hr)
-{
-    switch (hr)
-    {
-        case NOERROR:                                   return MA_SUCCESS;
-        
-
-        case E_POINTER:                                 return MA_INVALID_ARGS;
-        case E_UNEXPECTED:                              return MA_ERROR;
-        case E_NOTIMPL:                                 return MA_NOT_IMPLEMENTED;
-        case E_OUTOFMEMORY:                             return MA_OUT_OF_MEMORY;
-        case E_INVALIDARG:                              return MA_INVALID_ARGS;
-        case E_NOINTERFACE:                             return MA_API_NOT_FOUND;
-        case E_HANDLE:                                  return MA_INVALID_ARGS;
-        case E_ABORT:                                   return MA_ERROR;
-        case E_FAIL:                                    return MA_ERROR;
-        case E_ACCESSDENIED:                            return MA_ACCESS_DENIED;
-
-        
-        case MA_AUDCLNT_E_NOT_INITIALIZED:              return MA_DEVICE_NOT_INITIALIZED;
-        case MA_AUDCLNT_E_ALREADY_INITIALIZED:          return MA_DEVICE_ALREADY_INITIALIZED;
-        case MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE:          return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_DEVICE_INVALIDATED:           return MA_UNAVAILABLE;
-        case MA_AUDCLNT_E_NOT_STOPPED:                  return MA_DEVICE_NOT_STOPPED;
-        case MA_AUDCLNT_E_BUFFER_TOO_LARGE:             return MA_TOO_BIG;
-        case MA_AUDCLNT_E_OUT_OF_ORDER:                 return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_UNSUPPORTED_FORMAT:           return MA_FORMAT_NOT_SUPPORTED;
-        case MA_AUDCLNT_E_INVALID_SIZE:                 return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_DEVICE_IN_USE:                return MA_BUSY;
-        case MA_AUDCLNT_E_BUFFER_OPERATION_PENDING:     return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_THREAD_NOT_REGISTERED:        return MA_DOES_NOT_EXIST;
-        case MA_AUDCLNT_E_NO_SINGLE_PROCESS:            return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:   return MA_SHARE_MODE_NOT_SUPPORTED;
-        case MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED:       return MA_FAILED_TO_OPEN_BACKEND_DEVICE;
-        case MA_AUDCLNT_E_SERVICE_NOT_RUNNING:          return MA_NOT_CONNECTED;
-        case MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:     return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY:          return MA_SHARE_MODE_NOT_SUPPORTED;
+#define MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES ((HRESULT)0x88890023)
+#define MA_AUDCLNT_E_OFFLOAD_MODE_ONLY ((HRESULT)0x88890024)
+#define MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY ((HRESULT)0x88890025)
+#define MA_AUDCLNT_E_RESOURCES_INVALIDATED ((HRESULT)0x88890026)
+#define MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED ((HRESULT)0x88890027)
+#define MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED ((HRESULT)0x88890028)
+#define MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED ((HRESULT)0x88890029)
+#define MA_AUDCLNT_E_HEADTRACKING_ENABLED ((HRESULT)0x88890030)
+#define MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED ((HRESULT)0x88890040)
+#define MA_AUDCLNT_S_BUFFER_EMPTY ((HRESULT)0x08890001)
+#define MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED ((HRESULT)0x08890002)
+#define MA_AUDCLNT_S_POSITION_STALLED ((HRESULT)0x08890003)
+#define MA_DS_OK ((HRESULT)0)
+#define MA_DS_NO_VIRTUALIZATION ((HRESULT)0x0878000A)
+#define MA_DSERR_ALLOCATED ((HRESULT)0x8878000A)
+#define MA_DSERR_CONTROLUNAVAIL ((HRESULT)0x8878001E)
+#define MA_DSERR_INVALIDPARAM ((HRESULT)0x80070057) 
+#define MA_DSERR_INVALIDCALL ((HRESULT)0x88780032)
+#define MA_DSERR_GENERIC ((HRESULT)0x80004005) 
+#define MA_DSERR_PRIOLEVELNEEDED ((HRESULT)0x88780046)
+#define MA_DSERR_OUTOFMEMORY ((HRESULT)0x8007000E) 
+#define MA_DSERR_BADFORMAT ((HRESULT)0x88780064)
+#define MA_DSERR_UNSUPPORTED ((HRESULT)0x80004001) 
+#define MA_DSERR_NODRIVER ((HRESULT)0x88780078)
+#define MA_DSERR_ALREADYINITIALIZED ((HRESULT)0x88780082)
+#define MA_DSERR_NOAGGREGATION ((HRESULT)0x80040110) 
+#define MA_DSERR_BUFFERLOST ((HRESULT)0x88780096)
+#define MA_DSERR_OTHERAPPHASPRIO ((HRESULT)0x887800A0)
+#define MA_DSERR_UNINITIALIZED ((HRESULT)0x887800AA)
+#define MA_DSERR_NOINTERFACE ((HRESULT)0x80004002) 
+#define MA_DSERR_ACCESSDENIED ((HRESULT)0x80070005) 
+#define MA_DSERR_BUFFERTOOSMALL ((HRESULT)0x887800B4)
+#define MA_DSERR_DS8_REQUIRED ((HRESULT)0x887800BE)
+#define MA_DSERR_SENDLOOP ((HRESULT)0x887800C8)
+#define MA_DSERR_BADSENDBUFFERGUID ((HRESULT)0x887800D2)
+#define MA_DSERR_OBJECTNOTFOUND ((HRESULT)0x88781161)
+#define MA_DSERR_FXUNAVAILABLE ((HRESULT)0x887800DC)
+static ma_result ma_result_from_HRESULT(HRESULT hr) {
+    switch (hr) {
+        case NOERROR: return MA_SUCCESS;
+        case E_POINTER: return MA_INVALID_ARGS;
+        case E_UNEXPECTED: return MA_ERROR;
+        case E_NOTIMPL: return MA_NOT_IMPLEMENTED;
+        case E_OUTOFMEMORY: return MA_OUT_OF_MEMORY;
+        case E_INVALIDARG: return MA_INVALID_ARGS;
+        case E_NOINTERFACE: return MA_API_NOT_FOUND;
+        case E_HANDLE: return MA_INVALID_ARGS;
+        case E_ABORT: return MA_ERROR;
+        case E_FAIL: return MA_ERROR;
+        case E_ACCESSDENIED: return MA_ACCESS_DENIED;
+        case MA_AUDCLNT_E_NOT_INITIALIZED: return MA_DEVICE_NOT_INITIALIZED;
+        case MA_AUDCLNT_E_ALREADY_INITIALIZED: return MA_DEVICE_ALREADY_INITIALIZED;
+        case MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_DEVICE_INVALIDATED: return MA_UNAVAILABLE;
+        case MA_AUDCLNT_E_NOT_STOPPED: return MA_DEVICE_NOT_STOPPED;
+        case MA_AUDCLNT_E_BUFFER_TOO_LARGE: return MA_TOO_BIG;
+        case MA_AUDCLNT_E_OUT_OF_ORDER: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_UNSUPPORTED_FORMAT: return MA_FORMAT_NOT_SUPPORTED;
+        case MA_AUDCLNT_E_INVALID_SIZE: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_DEVICE_IN_USE: return MA_BUSY;
+        case MA_AUDCLNT_E_BUFFER_OPERATION_PENDING: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_THREAD_NOT_REGISTERED: return MA_DOES_NOT_EXIST;
+        case MA_AUDCLNT_E_NO_SINGLE_PROCESS: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED: return MA_SHARE_MODE_NOT_SUPPORTED;
+        case MA_AUDCLNT_E_ENDPOINT_CREATE_FAILED: return MA_FAILED_TO_OPEN_BACKEND_DEVICE;
+        case MA_AUDCLNT_E_SERVICE_NOT_RUNNING: return MA_NOT_CONNECTED;
+        case MA_AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_EXCLUSIVE_MODE_ONLY: return MA_SHARE_MODE_NOT_SUPPORTED;
         case MA_AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL: return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_EVENTHANDLE_NOT_SET:          return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE:        return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_BUFFER_SIZE_ERROR:            return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_CPUUSAGE_EXCEEDED:            return MA_ERROR;
-        case MA_AUDCLNT_E_BUFFER_ERROR:                 return MA_ERROR;
-        case MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED:      return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_INVALID_DEVICE_PERIOD:        return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_INVALID_STREAM_FLAG:          return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_EVENTHANDLE_NOT_SET: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_BUFFER_SIZE_ERROR: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_CPUUSAGE_EXCEEDED: return MA_ERROR;
+        case MA_AUDCLNT_E_BUFFER_ERROR: return MA_ERROR;
+        case MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_INVALID_DEVICE_PERIOD: return MA_INVALID_ARGS;
+        case MA_AUDCLNT_E_INVALID_STREAM_FLAG: return MA_INVALID_ARGS;
         case MA_AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE: return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES:     return MA_OUT_OF_MEMORY;
-        case MA_AUDCLNT_E_OFFLOAD_MODE_ONLY:            return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY:         return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_RESOURCES_INVALIDATED:        return MA_INVALID_DATA;
-        case MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED:         return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED:    return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED:         return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_HEADTRACKING_ENABLED:         return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED:     return MA_INVALID_OPERATION;
-        case MA_AUDCLNT_S_BUFFER_EMPTY:                 return MA_NO_SPACE;
-        case MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED:    return MA_ALREADY_EXISTS;
-        case MA_AUDCLNT_S_POSITION_STALLED:             return MA_ERROR;
-
-        
-                  
-        case MA_DS_NO_VIRTUALIZATION:                   return MA_SUCCESS;
-        case MA_DSERR_ALLOCATED:                        return MA_ALREADY_IN_USE;
-        case MA_DSERR_CONTROLUNAVAIL:                   return MA_INVALID_OPERATION;
-              
-        case MA_DSERR_INVALIDCALL:                      return MA_INVALID_OPERATION;
-                    
-        case MA_DSERR_PRIOLEVELNEEDED:                  return MA_INVALID_OPERATION;
-            
-        case MA_DSERR_BADFORMAT:                        return MA_FORMAT_NOT_SUPPORTED;
-          
-        case MA_DSERR_NODRIVER:                         return MA_FAILED_TO_INIT_BACKEND;
-        case MA_DSERR_ALREADYINITIALIZED:               return MA_DEVICE_ALREADY_INITIALIZED;
-        case MA_DSERR_NOAGGREGATION:                    return MA_ERROR;
-        case MA_DSERR_BUFFERLOST:                       return MA_UNAVAILABLE;
-        case MA_DSERR_OTHERAPPHASPRIO:                  return MA_ACCESS_DENIED;
-        case MA_DSERR_UNINITIALIZED:                    return MA_DEVICE_NOT_INITIALIZED;
-            
-            
-        case MA_DSERR_BUFFERTOOSMALL:                   return MA_NO_SPACE;
-        case MA_DSERR_DS8_REQUIRED:                     return MA_INVALID_OPERATION;
-        case MA_DSERR_SENDLOOP:                         return MA_DEADLOCK;
-        case MA_DSERR_BADSENDBUFFERGUID:                return MA_INVALID_ARGS;
-        case MA_DSERR_OBJECTNOTFOUND:                   return MA_NO_DEVICE;
-        case MA_DSERR_FXUNAVAILABLE:                    return MA_UNAVAILABLE;
-
-        default:                                        return MA_ERROR;
+        case MA_AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES: return MA_OUT_OF_MEMORY;
+        case MA_AUDCLNT_E_OFFLOAD_MODE_ONLY: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_NONOFFLOAD_MODE_ONLY: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_RESOURCES_INVALIDATED: return MA_INVALID_DATA;
+        case MA_AUDCLNT_E_RAW_MODE_UNSUPPORTED: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_ENGINE_PERIODICITY_LOCKED: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_ENGINE_FORMAT_LOCKED: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_HEADTRACKING_ENABLED: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_E_HEADTRACKING_UNSUPPORTED: return MA_INVALID_OPERATION;
+        case MA_AUDCLNT_S_BUFFER_EMPTY: return MA_NO_SPACE;
+        case MA_AUDCLNT_S_THREAD_ALREADY_REGISTERED: return MA_ALREADY_EXISTS;
+        case MA_AUDCLNT_S_POSITION_STALLED: return MA_ERROR;
+        case MA_DS_NO_VIRTUALIZATION: return MA_SUCCESS;
+        case MA_DSERR_ALLOCATED: return MA_ALREADY_IN_USE;
+        case MA_DSERR_CONTROLUNAVAIL: return MA_INVALID_OPERATION;
+        case MA_DSERR_INVALIDCALL: return MA_INVALID_OPERATION;
+        case MA_DSERR_PRIOLEVELNEEDED: return MA_INVALID_OPERATION;
+        case MA_DSERR_BADFORMAT: return MA_FORMAT_NOT_SUPPORTED;
+        case MA_DSERR_NODRIVER: return MA_FAILED_TO_INIT_BACKEND;
+        case MA_DSERR_ALREADYINITIALIZED: return MA_DEVICE_ALREADY_INITIALIZED;
+        case MA_DSERR_NOAGGREGATION: return MA_ERROR;
+        case MA_DSERR_BUFFERLOST: return MA_UNAVAILABLE;
+        case MA_DSERR_OTHERAPPHASPRIO: return MA_ACCESS_DENIED;
+        case MA_DSERR_UNINITIALIZED: return MA_DEVICE_NOT_INITIALIZED;
+        case MA_DSERR_BUFFERTOOSMALL: return MA_NO_SPACE;
+        case MA_DSERR_DS8_REQUIRED: return MA_INVALID_OPERATION;
+        case MA_DSERR_SENDLOOP: return MA_DEADLOCK;
+        case MA_DSERR_BADSENDBUFFERGUID: return MA_INVALID_ARGS;
+        case MA_DSERR_OBJECTNOTFOUND: return MA_NO_DEVICE;
+        case MA_DSERR_FXUNAVAILABLE: return MA_UNAVAILABLE;
+        default: return MA_ERROR;
     }
 }
 
@@ -14977,11 +14260,6 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pData != NULL);
 
-    
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
-
     usingProcessLoopback = deviceType == ma_device_type_loopback && pData->loopbackProcessID != 0 && pDeviceID == NULL;
 
     pData->pAudioClient = NULL;
@@ -15397,11 +14675,6 @@ static ma_result ma_device_reinit__wasapi(ma_device* pDevice, ma_device_type dev
 
     MA_ASSERT(pDevice != NULL);
 
-    
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
-    
     if (deviceType == ma_device_type_capture || deviceType == ma_device_type_loopback) {
         if (pDevice->wasapi.pCaptureClient) {
             ma_IAudioCaptureClient_Release((ma_IAudioCaptureClient*)pDevice->wasapi.pCaptureClient);
@@ -15725,11 +14998,6 @@ static ma_result ma_device__get_available_frames__wasapi(ma_device* pDevice, ma_
 
     *pFrameCount = 0;
 
-    if ((ma_ptr)pAudioClient != pDevice->wasapi.pAudioClientPlayback && (ma_ptr)pAudioClient != pDevice->wasapi.pAudioClientCapture) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
     shareMode = ((ma_ptr)pAudioClient == pDevice->wasapi.pAudioClientPlayback) ? pDevice->playback.shareMode : pDevice->capture.shareMode;
     if (shareMode == ma_share_mode_shared) {
         
@@ -15757,11 +15025,6 @@ static ma_result ma_device__get_available_frames__wasapi(ma_device* pDevice, ma_
 static ma_result ma_device_reroute__wasapi(ma_device* pDevice, ma_device_type deviceType)
 {
     ma_result result;
-
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "=== CHANGING DEVICE ===\n");
 
     result = ma_device_reinit__wasapi(pDevice, deviceType);
@@ -18794,10 +18057,6 @@ static ma_result ma_device_stop__winmm(ma_device* pDevice)
     MA_ASSERT(pDevice != NULL);
 
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
-        if (pDevice->winmm.hDeviceCapture == NULL) {
-            return MA_INVALID_ARGS;
-        }
-
         resultMM = ((MA_PFN_waveInReset)pDevice->pContext->winmm.waveInReset)((MA_HWAVEIN)pDevice->winmm.hDeviceCapture);
         if (resultMM != MA_MMSYSERR_NOERROR) {
             ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[WinMM] WARNING: Failed to reset capture device.");
@@ -18808,11 +18067,6 @@ static ma_result ma_device_stop__winmm(ma_device* pDevice)
         ma_uint32 iPeriod;
         MA_WAVEHDR* pWAVEHDR;
 
-        if (pDevice->winmm.hDevicePlayback == NULL) {
-            return MA_INVALID_ARGS;
-        }
-
-        
         pWAVEHDR = (MA_WAVEHDR*)pDevice->winmm.pWAVEHDRPlayback;
         for (iPeriod = 0; iPeriod < pDevice->playback.internalPeriods; iPeriod += 1) {
             if (pWAVEHDR[iPeriod].dwUser == 1) { 
@@ -21846,11 +21100,6 @@ static ma_result ma_wait_for_operation__pulse(ma_context* pContext, ma_ptr pMain
 static ma_result ma_wait_for_operation_and_unref__pulse(ma_context* pContext, ma_ptr pMainLoop, ma_pa_operation* pOP)
 {
     ma_result result;
-
-    if (pOP == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_wait_for_operation__pulse(pContext, pMainLoop, pOP);
     ((ma_pa_operation_unref_proc)pContext->pulse.pa_operation_unref)(pOP);
 
@@ -22984,11 +22233,6 @@ static ma_result ma_device__cork_stream__pulse(ma_device* pDevice, ma_device_typ
     ma_pa_operation* pOP;
     ma_result result;
 
-    
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
-
     wasSuccessful = MA_FALSE;
 
     pStream = (ma_pa_stream*)((deviceType == ma_device_type_capture) ? pDevice->pulse.pStreamCapture : pDevice->pulse.pStreamPlayback);
@@ -24087,25 +23331,23 @@ static void ma_device__on_notification_interruption_ended(ma_device* pDevice)
 }
 #endif
 
-static ma_result ma_result_from_OSStatus(OSStatus status)
-{
-    switch (status)
-    {
-        case noErr:                                   return MA_SUCCESS;
+static ma_result ma_result_from_OSStatus(OSStatus status) {
+    switch (status) {
+        case noErr: return MA_SUCCESS;
     #if defined(MA_APPLE_DESKTOP)
-        case kAudioHardwareNotRunningError:           return MA_DEVICE_NOT_STARTED;
-        case kAudioHardwareUnspecifiedError:          return MA_ERROR;
-        case kAudioHardwareUnknownPropertyError:      return MA_INVALID_ARGS;
-        case kAudioHardwareBadPropertySizeError:      return MA_INVALID_OPERATION;
-        case kAudioHardwareIllegalOperationError:     return MA_INVALID_OPERATION;
-        case kAudioHardwareBadObjectError:            return MA_INVALID_ARGS;
-        case kAudioHardwareBadDeviceError:            return MA_INVALID_ARGS;
-        case kAudioHardwareBadStreamError:            return MA_INVALID_ARGS;
+        case kAudioHardwareNotRunningError: return MA_DEVICE_NOT_STARTED;
+        case kAudioHardwareUnspecifiedError: return MA_ERROR;
+        case kAudioHardwareUnknownPropertyError: return MA_INVALID_ARGS;
+        case kAudioHardwareBadPropertySizeError: return MA_INVALID_OPERATION;
+        case kAudioHardwareIllegalOperationError: return MA_INVALID_OPERATION;
+        case kAudioHardwareBadObjectError: return MA_INVALID_ARGS;
+        case kAudioHardwareBadDeviceError: return MA_INVALID_ARGS;
+        case kAudioHardwareBadStreamError: return MA_INVALID_ARGS;
         case kAudioHardwareUnsupportedOperationError: return MA_INVALID_OPERATION;
-        case kAudioDeviceUnsupportedFormatError:      return MA_FORMAT_NOT_SUPPORTED;
-        case kAudioDevicePermissionsError:            return MA_ACCESS_DENIED;
+        case kAudioDeviceUnsupportedFormatError: return MA_FORMAT_NOT_SUPPORTED;
+        case kAudioDevicePermissionsError: return MA_ACCESS_DENIED;
     #endif
-        default:                                      return MA_ERROR;
+        default: return MA_ERROR;
     }
 }
 
@@ -26162,11 +25404,6 @@ static ma_result ma_device_init_internal__coreaudio(ma_context* pContext, ma_dev
     AudioObjectID deviceObjectID;
 #endif
 
-    
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(deviceType == ma_device_type_playback || deviceType == ma_device_type_capture);
 
@@ -26473,11 +25710,6 @@ static ma_result ma_device_reinit_internal__coreaudio(ma_device* pDevice, ma_dev
 {
     ma_device_init_internal_data__coreaudio data;
     ma_result result;
-
-    
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
 
     data.allowNominalSampleRateChange = MA_FALSE;   
 
@@ -26830,12 +26062,7 @@ static ma_result ma_context_init__coreaudio(ma_context* pContext, const ma_conte
             }
         } else {
             if (pConfig->coreaudio.sessionCategory != ma_ios_session_category_none) {
-            #if defined(__IPHONE_12_0)
-                if (![pAudioSession setCategory: ma_to_AVAudioSessionCategory(pConfig->coreaudio.sessionCategory) withOptions:options error:nil]) {
-                    return MA_INVALID_OPERATION;    
-                }
-            #else
-                
+            #if !defined(__IPHONE_12_0)
                 ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "Session category only supported in iOS 12 and newer.");
             #endif
             }
@@ -28508,28 +27735,11 @@ static ma_result ma_device_init__audio4(ma_device* pDevice, const ma_device_conf
 static ma_result ma_device_start__audio4(ma_device* pDevice)
 {
     MA_ASSERT(pDevice != NULL);
-
-    if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
-        if (pDevice->audio4.fdCapture == -1) {
-            return MA_INVALID_ARGS;
-        }
-    }
-
-    if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
-        if (pDevice->audio4.fdPlayback == -1) {
-            return MA_INVALID_ARGS;
-        }
-    }
-
     return MA_SUCCESS;
 }
 
 static ma_result ma_device_stop_fd__audio4(ma_device* pDevice, int fd)
 {
-    if (fd == -1) {
-        return MA_INVALID_ARGS;
-    }
-
 #if !defined(MA_AUDIO4_USE_NEW_API)
     if (ioctl(fd, AUDIO_FLUSH, 0) < 0) {
         ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[audio4] Failed to stop device. AUDIO_FLUSH failed.");
@@ -28682,11 +27892,6 @@ static ma_result ma_context_open_device__oss(ma_context* pContext, ma_device_typ
     (void)pContext;
 
     *pfd = -1;
-
-    
-    if (deviceType == ma_device_type_duplex) {
-        return MA_INVALID_ARGS;
-    }
 
     deviceName = MA_OSS_DEFAULT_DEVICE_NAME;
     if (pDeviceID != NULL) {
@@ -29614,10 +28819,6 @@ static ma_result ma_open_stream__aaudio(ma_device* pDevice, const ma_device_conf
 
 static ma_result ma_close_stream__aaudio(ma_context* pContext, ma_AAudioStream* pStream)
 {
-    if (pStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_result_from_aaudio(((MA_PFN_AAudioStream_close)pContext->aaudio.AAudioStream_close)(pStream));
 }
 
@@ -29880,18 +29081,11 @@ static ma_result ma_device_start_stream__aaudio(ma_device* pDevice, ma_AAudioStr
 
     MA_ASSERT(pDevice != NULL);
 
-    if (pStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     resultAA = ((MA_PFN_AAudioStream_requestStart)pDevice->pContext->aaudio.AAudioStream_requestStart)(pStream);
     if (resultAA != MA_AAUDIO_OK) {
         return ma_result_from_aaudio(resultAA);
     }
 
-    
-
-    
     currentState = ((MA_PFN_AAudioStream_getState)pDevice->pContext->aaudio.AAudioStream_getState)(pStream);
     if (currentState != MA_AAUDIO_STREAM_STATE_STARTED) {
         ma_result result;
@@ -29915,11 +29109,6 @@ static ma_result ma_device_stop_stream__aaudio(ma_device* pDevice, ma_AAudioStre
     ma_aaudio_stream_state_t currentState;
 
     MA_ASSERT(pDevice != NULL);
-
-    if (pStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     currentState = ((MA_PFN_AAudioStream_getState)pDevice->pContext->aaudio.AAudioStream_getState)(pStream);
     if (currentState == MA_AAUDIO_STREAM_STATE_DISCONNECTED) {
@@ -30120,11 +29309,6 @@ static ma_result ma_device_get_info__aaudio(ma_device* pDevice, ma_device_type t
         pStream = (ma_AAudioStream*)pDevice->aaudio.pStreamPlayback;
         pDeviceInfo->id.aaudio = pDevice->playback.id.aaudio;
         ma_strncpy_s(pDeviceInfo->name, sizeof(pDeviceInfo->name), MA_DEFAULT_PLAYBACK_DEVICE_NAME, (size_t)-1);    
-    }
-
-    
-    if (pStream == NULL) {
-        return MA_INVALID_OPERATION;
     }
 
     pDeviceInfo->nativeDataFormatCount = 0;
@@ -30514,11 +29698,6 @@ static ma_result ma_context_enumerate_devices__opensl(ma_context* pContext, ma_e
     MA_ASSERT(callback != NULL);
 
     MA_ASSERT(g_maOpenSLInitCounter > 0); 
-    if (g_maOpenSLInitCounter == 0) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
 #if 0 && !defined(MA_ANDROID)
     ma_bool32 isTerminated = MA_FALSE;
 
@@ -30653,11 +29832,6 @@ static ma_result ma_context_get_device_info__opensl(ma_context* pContext, ma_dev
     MA_ASSERT(pContext != NULL);
 
     MA_ASSERT(g_maOpenSLInitCounter > 0); 
-    if (g_maOpenSLInitCounter == 0) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
 #if 0 && !defined(MA_ANDROID)
     SLAudioIODeviceCapabilitiesItf deviceCaps;
     SLresult resultSL = (*g_maEngineObjectSL)->GetInterface(g_maEngineObjectSL, (SLInterfaceID)pContext->opensl.SL_IID_AUDIOIODEVICECAPABILITIES, &deviceCaps);
@@ -30799,10 +29973,6 @@ static ma_result ma_device_uninit__opensl(ma_device* pDevice)
     MA_ASSERT(pDevice != NULL);
 
     MA_ASSERT(g_maOpenSLInitCounter > 0); 
-    if (g_maOpenSLInitCounter == 0) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         if (pDevice->opensl.pAudioRecorderObj) {
             MA_OPENSL_OBJ(pDevice->opensl.pAudioRecorderObj)->Destroy((SLObjectItf)pDevice->opensl.pAudioRecorderObj);
@@ -30939,14 +30109,6 @@ static ma_result ma_device_init__opensl(ma_device* pDevice, const ma_device_conf
 #endif
 
     MA_ASSERT(g_maOpenSLInitCounter > 0); 
-    if (g_maOpenSLInitCounter == 0) {
-        return MA_INVALID_OPERATION;
-    }
-
-    if (pConfig->deviceType == ma_device_type_loopback) {
-        return MA_DEVICE_TYPE_NOT_SUPPORTED;
-    }
-
     
 #ifdef MA_ANDROID
     itfIDs[0] = (SLInterfaceID)pDevice->pContext->opensl.SL_IID_ANDROIDSIMPLEBUFFERQUEUE;
@@ -31196,10 +30358,6 @@ static ma_result ma_device_start__opensl(ma_device* pDevice)
     MA_ASSERT(pDevice != NULL);
 
     MA_ASSERT(g_maOpenSLInitCounter > 0); 
-    if (g_maOpenSLInitCounter == 0) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         resultSL = MA_OPENSL_RECORD(pDevice->opensl.pAudioRecorder)->SetRecordState((SLRecordItf)pDevice->opensl.pAudioRecorder, SL_RECORDSTATE_RECORDING);
         if (resultSL != SL_RESULT_SUCCESS) {
@@ -31287,10 +30445,6 @@ static ma_result ma_device_stop__opensl(ma_device* pDevice)
     MA_ASSERT(pDevice != NULL);
 
     MA_ASSERT(g_maOpenSLInitCounter > 0); 
-    if (g_maOpenSLInitCounter == 0) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
         ma_device_drain__opensl(pDevice, ma_device_type_capture);
 
@@ -32559,17 +31713,8 @@ static ma_result ma_device__post_init_setup(ma_device* pDevice, ma_device_type d
 MA_API ma_result ma_device_post_init(ma_device* pDevice, ma_device_type deviceType, const ma_device_descriptor* pDescriptorPlayback, const ma_device_descriptor* pDescriptorCapture)
 {
     ma_result result;
-
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if (deviceType == ma_device_type_capture || deviceType == ma_device_type_duplex || deviceType == ma_device_type_loopback) {
-        if (ma_device_descriptor_is_valid(pDescriptorCapture) == MA_FALSE) {
-            return MA_INVALID_ARGS;
-        }
-
         pDevice->capture.internalFormat             = pDescriptorCapture->format;
         pDevice->capture.internalChannels           = pDescriptorCapture->channels;
         pDevice->capture.internalSampleRate         = pDescriptorCapture->sampleRate;
@@ -32584,10 +31729,6 @@ MA_API ma_result ma_device_post_init(ma_device* pDevice, ma_device_type deviceTy
 
     
     if (deviceType == ma_device_type_playback || deviceType == ma_device_type_duplex) {
-        if (ma_device_descriptor_is_valid(pDescriptorPlayback) == MA_FALSE) {
-            return MA_INVALID_ARGS;
-        }
-
         pDevice->playback.internalFormat             = pDescriptorPlayback->format;
         pDevice->playback.internalChannels           = pDescriptorPlayback->channels;
         pDevice->playback.internalSampleRate         = pDescriptorPlayback->sampleRate;
@@ -32885,17 +32026,8 @@ MA_API ma_result ma_device_job_thread_init(const ma_device_job_thread_config* pC
 {
     ma_result result;
     ma_job_queue_config jobQueueConfig;
-
-    if (pJobThread == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pJobThread);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-    
     jobQueueConfig = ma_job_queue_config_init(pConfig->jobQueueFlags, pConfig->jobQueueCapacity);
 
     result = ma_job_queue_init(&jobQueueConfig, pAllocationCallbacks, &pJobThread->jobQueue);
@@ -32940,25 +32072,12 @@ MA_API void ma_device_job_thread_uninit(ma_device_job_thread* pJobThread, const 
 
 MA_API ma_result ma_device_job_thread_post(ma_device_job_thread* pJobThread, const ma_job* pJob)
 {
-    if (pJobThread == NULL || pJob == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_job_queue_post(&pJobThread->jobQueue, pJob);
 }
 
 MA_API ma_result ma_device_job_thread_next(ma_device_job_thread* pJobThread, ma_job* pJob)
 {
-    if (pJob == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pJob);
-
-    if (pJobThread == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_job_queue_next(&pJobThread->jobQueue, pJob);
 }
 MA_API ma_bool32 ma_device_id_equal(const ma_device_id* pA, const ma_device_id* pB)
@@ -32993,11 +32112,6 @@ MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendC
     ma_uint32 iBackend;
     ma_backend* pBackendsToIterate;
     ma_uint32 backendsToIterateCount;
-
-    if (pContext == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pContext);
 
     
@@ -33206,10 +32320,6 @@ MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendC
 
 MA_API ma_result ma_context_uninit(ma_context* pContext)
 {
-    if (pContext == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pContext->callbacks.onContextUninit != NULL) {
         pContext->callbacks.onContextUninit(pContext);
     }
@@ -33241,15 +32351,6 @@ MA_API ma_log* ma_context_get_log(ma_context* pContext)
 MA_API ma_result ma_context_enumerate_devices(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData)
 {
     ma_result result;
-
-    if (pContext == NULL || callback == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pContext->callbacks.onContextEnumerateDevices == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     ma_mutex_lock(&pContext->deviceEnumLock);
     {
         result = pContext->callbacks.onContextEnumerateDevices(pContext, callback, pUserData);
@@ -33309,15 +32410,6 @@ MA_API ma_result ma_context_get_devices(ma_context* pContext, ma_device_info** p
     if (pPlaybackDeviceCount  != NULL) *pPlaybackDeviceCount  = 0;
     if (ppCaptureDeviceInfos  != NULL) *ppCaptureDeviceInfos  = NULL;
     if (pCaptureDeviceCount   != NULL) *pCaptureDeviceCount   = 0;
-
-    if (pContext == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pContext->callbacks.onContextEnumerateDevices == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     
     ma_mutex_lock(&pContext->deviceEnumLock);
     {
@@ -33360,20 +32452,11 @@ MA_API ma_result ma_context_get_device_info(ma_context* pContext, ma_device_type
     ma_result result;
     ma_device_info deviceInfo;
 
-    
-    if (pContext == NULL || pDeviceInfo == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(&deviceInfo);
 
     
     if (pDeviceID != NULL) {
         MA_COPY_MEMORY(&deviceInfo.id, pDeviceID, sizeof(*pDeviceID));
-    }
-
-    if (pContext->callbacks.onContextGetDeviceInfo == NULL) {
-        return MA_INVALID_OPERATION;
     }
 
     ma_mutex_lock(&pContext->deviceInfoLock);
@@ -33414,50 +32497,14 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
     if (pContext == NULL) {
         return ma_device_init_ex(NULL, 0, NULL, pConfig, pDevice);
     }
-
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDevice);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pContext->callbacks.onDeviceInit == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
-        if (pConfig->capture.channels > MA_MAX_CHANNELS) {
-            return MA_INVALID_ARGS;
-        }
-
-        if (!ma__is_channel_map_valid(pConfig->capture.pChannelMap, pConfig->capture.channels)) {
-            return MA_INVALID_ARGS;
-        }
-    }
-
-    if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex || pConfig->deviceType == ma_device_type_loopback) {
-        if (pConfig->playback.channels > MA_MAX_CHANNELS) {
-            return MA_INVALID_ARGS;
-        }
-
-        if (!ma__is_channel_map_valid(pConfig->playback.pChannelMap, pConfig->playback.channels)) {
-            return MA_INVALID_ARGS;
-        }
-    }
-
     pDevice->pContext = pContext;
 
     
-    pDevice->pUserData      = pConfig->pUserData;
-    pDevice->onData         = pConfig->dataCallback;
+    pDevice->pUserData = pConfig->pUserData;
+    pDevice->onData = pConfig->dataCallback;
     pDevice->onNotification = pConfig->notificationCallback;
-    pDevice->onStop         = pConfig->stopCallback;
+    pDevice->onStop = pConfig->stopCallback;
 
     if (pConfig->playback.pDeviceID != NULL) {
         MA_COPY_MEMORY(&pDevice->playback.id, pConfig->playback.pDeviceID, sizeof(pDevice->playback.id));
@@ -33790,11 +32837,6 @@ MA_API ma_result ma_device_init_ex(const ma_backend backends[], ma_uint32 backen
     ma_backend* pBackendsToIterate;
     ma_uint32 backendsToIterateCount;
     ma_allocation_callbacks allocationCallbacks;
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pContextConfig != NULL) {
         result = ma_allocation_callbacks_init_copy(&allocationCallbacks, &pContextConfig->allocationCallbacks);
         if (result != MA_SUCCESS) {
@@ -33949,17 +32991,7 @@ MA_API ma_log* ma_device_get_log(ma_device* pDevice)
 
 MA_API ma_result ma_device_get_info(ma_device* pDevice, ma_device_type type, ma_device_info* pDeviceInfo)
 {
-    if (pDeviceInfo == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDeviceInfo);
-
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     if (pDevice->pContext->callbacks.onDeviceGetInfo != NULL) {
         return pDevice->pContext->callbacks.onDeviceGetInfo(pDevice, type, pDeviceInfo);
     }
@@ -34015,15 +33047,6 @@ MA_API ma_result ma_device_get_name(ma_device* pDevice, ma_device_type type, cha
 MA_API ma_result ma_device_start(ma_device* pDevice)
 {
     ma_result result;
-
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ma_device_get_state(pDevice) == ma_device_state_uninitialized) {
-        return MA_INVALID_OPERATION;    
-    }
-
     if (ma_device_get_state(pDevice) == ma_device_state_started) {
         return MA_SUCCESS;  
     }
@@ -34045,8 +33068,6 @@ MA_API ma_result ma_device_start(ma_device* pDevice)
         if (ma_context_is_backend_asynchronous(pDevice->pContext)) {
             if (pDevice->pContext->callbacks.onDeviceStart != NULL) {
                 result = pDevice->pContext->callbacks.onDeviceStart(pDevice);
-            } else {
-                result = MA_INVALID_OPERATION;
             }
 
             if (result == MA_SUCCESS) {
@@ -34075,15 +33096,6 @@ MA_API ma_result ma_device_start(ma_device* pDevice)
 MA_API ma_result ma_device_stop(ma_device* pDevice)
 {
     ma_result result;
-
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ma_device_get_state(pDevice) == ma_device_state_uninitialized) {
-        return MA_INVALID_OPERATION;    
-    }
-
     if (ma_device_get_state(pDevice) == ma_device_state_stopped) {
         return MA_SUCCESS;  
     }
@@ -34106,8 +33118,6 @@ MA_API ma_result ma_device_stop(ma_device* pDevice)
             
             if (pDevice->pContext->callbacks.onDeviceStop != NULL) {
                 result = pDevice->pContext->callbacks.onDeviceStop(pDevice);
-            } else {
-                result = MA_INVALID_OPERATION;
             }
 
             ma_device__set_state(pDevice, ma_device_state_stopped);
@@ -34150,41 +33160,18 @@ MA_API ma_device_state ma_device_get_state(const ma_device* pDevice)
 
 MA_API ma_result ma_device_set_master_volume(ma_device* pDevice, float volume)
 {
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (volume < 0.0f) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_atomic_float_set(&pDevice->masterVolumeFactor, volume);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_device_get_master_volume(ma_device* pDevice, float* pVolume)
 {
-    if (pVolume == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pDevice == NULL) {
-        *pVolume = 0;
-        return MA_INVALID_ARGS;
-    }
-
     *pVolume = ma_atomic_float_get(&pDevice->masterVolumeFactor);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_device_set_master_volume_db(ma_device* pDevice, float gainDB)
 {
-    if (gainDB > 0) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_device_set_master_volume(pDevice, ma_volume_db_to_linear(gainDB));
 }
 
@@ -34192,10 +33179,6 @@ MA_API ma_result ma_device_get_master_volume_db(ma_device* pDevice, float* pGain
 {
     float factor;
     ma_result result;
-
-    if (pGainDB == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     result = ma_device_get_master_volume(pDevice, &factor);
     if (result != MA_SUCCESS) {
@@ -34209,19 +33192,6 @@ MA_API ma_result ma_device_get_master_volume_db(ma_device* pDevice, float* pGain
 }
 MA_API ma_result ma_device_handle_backend_data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-    if (pDevice == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pOutput == NULL && pInput == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pDevice->type == ma_device_type_duplex) {
         if (pInput != NULL) {
             ma_device__handle_duplex_callback_capture(pDevice, frameCount, pInput, &pDevice->duplexRB.rb);
@@ -34232,18 +33202,10 @@ MA_API ma_result ma_device_handle_backend_data_callback(ma_device* pDevice, void
         }
     } else {
         if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_loopback) {
-            if (pInput == NULL) {
-                return MA_INVALID_ARGS;
-            }
-
             ma_device__send_frames_to_client(pDevice, frameCount, pInput);
         }
 
         if (pDevice->type == ma_device_type_playback) {
-            if (pOutput == NULL) {
-                return MA_INVALID_ARGS;
-            }
-
             ma_device__read_frames_from_client(pDevice, frameCount, pOutput);
         }
     }
@@ -34753,10 +33715,6 @@ MA_API ma_result ma_mix_pcm_frames_f32(float* pDst, const float* pSrc, ma_uint64
 {
     ma_uint64 iSample;
     ma_uint64 sampleCount;
-
-    if (pDst == NULL || pSrc == NULL || channels == 0) {
-        return MA_INVALID_ARGS;
-    }
 
     if (volume == 0) {
         return MA_SUCCESS;  
@@ -36796,14 +35754,6 @@ static ma_result ma_biquad_get_heap_layout(const ma_biquad_config* pConfig, ma_b
 
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
 
     
@@ -36825,10 +35775,6 @@ MA_API ma_result ma_biquad_get_heap_size(const ma_biquad_config* pConfig, size_t
     ma_result result;
     ma_biquad_heap_layout heapLayout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_biquad_get_heap_layout(pConfig, &heapLayout);
@@ -36845,10 +35791,6 @@ MA_API ma_result ma_biquad_init_preallocated(const ma_biquad_config* pConfig, vo
 {
     ma_result result;
     ma_biquad_heap_layout heapLayout;
-
-    if (pBQ == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pBQ);
 
@@ -36909,28 +35851,6 @@ MA_API void ma_biquad_uninit(ma_biquad* pBQ, const ma_allocation_callbacks* pAll
 
 MA_API ma_result ma_biquad_reinit(const ma_biquad_config* pConfig, ma_biquad* pBQ)
 {
-    if (pBQ == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->a0 == 0) {
-        return MA_INVALID_ARGS; 
-    }
-
-    
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pBQ->format != ma_format_unknown && pBQ->format != pConfig->format) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pBQ->channels != 0 && pBQ->channels != pConfig->channels) {
-        return MA_INVALID_OPERATION;
-    }
     pBQ->format   = pConfig->format;
     pBQ->channels = pConfig->channels;
 
@@ -36954,10 +35874,6 @@ MA_API ma_result ma_biquad_reinit(const ma_biquad_config* pConfig, ma_biquad* pB
 
 MA_API ma_result ma_biquad_clear_cache(ma_biquad* pBQ)
 {
-    if (pBQ == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pBQ->format == ma_format_f32) {
         pBQ->pR1->f32 = 0;
         pBQ->pR2->f32 = 0;
@@ -37037,12 +35953,6 @@ MA_API ma_result ma_biquad_process_pcm_frames(ma_biquad* pBQ, void* pFramesOut, 
 {
     ma_uint32 n;
 
-    if (pBQ == NULL || pFramesOut == NULL || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-
     if (pBQ->format == ma_format_f32) {
          float* pY = (      float*)pFramesOut;
         const float* pX = (const float*)pFramesIn;
@@ -37052,8 +35962,8 @@ MA_API ma_result ma_biquad_process_pcm_frames(ma_biquad* pBQ, void* pFramesOut, 
             pY += pBQ->channels;
             pX += pBQ->channels;
         }
-    } else if (pBQ->format == ma_format_s16) {
-         ma_int16* pY = (      ma_int16*)pFramesOut;
+    } else {
+        ma_int16* pY = ( ma_int16*)pFramesOut;
         const ma_int16* pX = (const ma_int16*)pFramesIn;
 
         for (n = 0; n < frameCount; n += 1) {
@@ -37061,11 +35971,7 @@ MA_API ma_result ma_biquad_process_pcm_frames(ma_biquad* pBQ, void* pFramesOut, 
             pY += pBQ->channels;
             pX += pBQ->channels;
         }
-    } else {
-        MA_ASSERT(MA_FALSE);
-        return MA_INVALID_ARGS; 
     }
-
     return MA_SUCCESS;
 }
 
@@ -37119,26 +36025,11 @@ typedef struct
 static ma_result ma_lpf1_get_heap_layout(const ma_lpf1_config* pConfig, ma_lpf1_heap_layout* pHeapLayout)
 {
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
-
-    
     pHeapLayout->r1Offset = pHeapLayout->sizeInBytes;
     pHeapLayout->sizeInBytes += sizeof(ma_biquad_coefficient) * pConfig->channels;
-
-    
     pHeapLayout->sizeInBytes = ma_align_64(pHeapLayout->sizeInBytes);
-
     return MA_SUCCESS;
 }
 
@@ -37146,11 +36037,6 @@ MA_API ma_result ma_lpf1_get_heap_size(const ma_lpf1_config* pConfig, size_t* pH
 {
     ma_result result;
     ma_lpf1_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_lpf1_get_heap_layout(pConfig, &heapLayout);
     if (result != MA_SUCCESS) {
         return result;
@@ -37165,11 +36051,6 @@ MA_API ma_result ma_lpf1_init_preallocated(const ma_lpf1_config* pConfig, void* 
 {
     ma_result result;
     ma_lpf1_heap_layout heapLayout;
-
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pLPF);
 
     result = ma_lpf1_get_heap_layout(pConfig, &heapLayout);
@@ -37229,26 +36110,6 @@ MA_API void ma_lpf1_uninit(ma_lpf1* pLPF, const ma_allocation_callbacks* pAlloca
 MA_API ma_result ma_lpf1_reinit(const ma_lpf1_config* pConfig, ma_lpf1* pLPF)
 {
     double a;
-
-    if (pLPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pLPF->format != ma_format_unknown && pLPF->format != pConfig->format) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pLPF->channels != 0 && pLPF->channels != pConfig->channels) {
-        return MA_INVALID_OPERATION;
-    }
-
     pLPF->format   = pConfig->format;
     pLPF->channels = pConfig->channels;
 
@@ -37264,10 +36125,6 @@ MA_API ma_result ma_lpf1_reinit(const ma_lpf1_config* pConfig, ma_lpf1* pLPF)
 
 MA_API ma_result ma_lpf1_clear_cache(ma_lpf1* pLPF)
 {
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pLPF->format == ma_format_f32) {
         pLPF->a.f32 = 0;
     } else {
@@ -37321,12 +36178,6 @@ MA_API ma_result ma_lpf1_process_pcm_frames(ma_lpf1* pLPF, void* pFramesOut, con
 {
     ma_uint32 n;
 
-    if (pLPF == NULL || pFramesOut == NULL || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-
     if (pLPF->format == ma_format_f32) {
          float* pY = (      float*)pFramesOut;
         const float* pX = (const float*)pFramesIn;
@@ -37336,7 +36187,7 @@ MA_API ma_result ma_lpf1_process_pcm_frames(ma_lpf1* pLPF, void* pFramesOut, con
             pY += pLPF->channels;
             pX += pLPF->channels;
         }
-    } else if (pLPF->format == ma_format_s16) {
+    } else {
          ma_int16* pY = (      ma_int16*)pFramesOut;
         const ma_int16* pX = (const ma_int16*)pFramesIn;
 
@@ -37345,11 +36196,7 @@ MA_API ma_result ma_lpf1_process_pcm_frames(ma_lpf1* pLPF, void* pFramesOut, con
             pY += pLPF->channels;
             pX += pLPF->channels;
         }
-    } else {
-        MA_ASSERT(MA_FALSE);
-        return MA_INVALID_ARGS; 
     }
-
     return MA_SUCCESS;
 }
 
@@ -37403,17 +36250,7 @@ MA_API ma_result ma_lpf2_init_preallocated(const ma_lpf2_config* pConfig, void* 
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pLPF);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_lpf2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pLPF->bq);
     if (result != MA_SUCCESS) {
@@ -37467,10 +36304,6 @@ MA_API ma_result ma_lpf2_reinit(const ma_lpf2_config* pConfig, ma_lpf2* pLPF)
     ma_result result;
     ma_biquad_config bqConfig;
 
-    if (pLPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_lpf2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pLPF->bq);
     if (result != MA_SUCCESS) {
@@ -37482,12 +36315,7 @@ MA_API ma_result ma_lpf2_reinit(const ma_lpf2_config* pConfig, ma_lpf2* pLPF)
 
 MA_API ma_result ma_lpf2_clear_cache(ma_lpf2* pLPF)
 {
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_biquad_clear_cache(&pLPF->bq);
-
     return MA_SUCCESS;
 }
 
@@ -37503,10 +36331,6 @@ static MA_INLINE void ma_lpf2_process_pcm_frame_f32(ma_lpf2* pLPF, float* pFrame
 
 MA_API ma_result ma_lpf2_process_pcm_frames(ma_lpf2* pLPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pLPF->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -37556,25 +36380,9 @@ static ma_result ma_lpf_get_heap_layout(const ma_lpf_config* pConfig, ma_lpf_hea
     ma_uint32 ilpf2;
 
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->order > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_lpf_calculate_sub_lpf_counts(pConfig->order, &lpf1Count, &lpf2Count);
-
     pHeapLayout->sizeInBytes = 0;
-
     
     pHeapLayout->lpf1Offset = pHeapLayout->sizeInBytes;
     for (ilpf1 = 0; ilpf1 < lpf1Count; ilpf1 += 1) {
@@ -37617,39 +36425,7 @@ static ma_result ma_lpf_reinit__internal(const ma_lpf_config* pConfig, void* pHe
     ma_uint32 ilpf1;
     ma_uint32 ilpf2;
     ma_lpf_heap_layout heapLayout;  
-
-    if (pLPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pLPF->format != ma_format_unknown && pLPF->format != pConfig->format) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pLPF->channels != 0 && pLPF->channels != pConfig->channels) {
-        return MA_INVALID_OPERATION;
-    }
-
-    if (pConfig->order > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_lpf_calculate_sub_lpf_counts(pConfig->order, &lpf1Count, &lpf2Count);
-
-    
-    if (!isNew) {
-        if (pLPF->lpf1Count != lpf1Count || pLPF->lpf2Count != lpf2Count) {
-            return MA_INVALID_OPERATION;
-        }
-    }
-
     if (isNew) {
         result = ma_lpf_get_heap_layout(pConfig, &heapLayout);
         if (result != MA_SUCCESS) {
@@ -37746,10 +36522,6 @@ MA_API ma_result ma_lpf_get_heap_size(const ma_lpf_config* pConfig, size_t* pHea
     ma_result result;
     ma_lpf_heap_layout heapLayout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_lpf_get_heap_layout(pConfig, &heapLayout);
@@ -37764,12 +36536,7 @@ MA_API ma_result ma_lpf_get_heap_size(const ma_lpf_config* pConfig, size_t* pHea
 
 MA_API ma_result ma_lpf_init_preallocated(const ma_lpf_config* pConfig, void* pHeap, ma_lpf* pLPF)
 {
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pLPF);
-
     return ma_lpf_reinit__internal(pConfig, pHeap, pLPF, MA_TRUE);
 }
 
@@ -37835,10 +36602,6 @@ MA_API ma_result ma_lpf_clear_cache(ma_lpf* pLPF)
     ma_uint32 ilpf1;
     ma_uint32 ilpf2;
 
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (ilpf1 = 0; ilpf1 < pLPF->lpf1Count; ilpf1 += 1) {
         ma_lpf1_clear_cache(&pLPF->pLPF1[ilpf1]);
     }
@@ -37891,11 +36654,6 @@ MA_API ma_result ma_lpf_process_pcm_frames(ma_lpf* pLPF, void* pFramesOut, const
     ma_result result;
     ma_uint32 ilpf1;
     ma_uint32 ilpf2;
-
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if (pFramesOut == pFramesIn) {
         for (ilpf1 = 0; ilpf1 < pLPF->lpf1Count; ilpf1 += 1) {
@@ -37935,9 +36693,6 @@ MA_API ma_result ma_lpf_process_pcm_frames(ma_lpf* pLPF, void* pFramesOut, const
                 pFramesOutS16 += pLPF->channels;
                 pFramesInS16  += pLPF->channels;
             }
-        } else {
-            MA_ASSERT(MA_FALSE);
-            return MA_INVALID_OPERATION;    
         }
     }
 
@@ -37996,14 +36751,6 @@ static ma_result ma_hpf1_get_heap_layout(const ma_hpf1_config* pConfig, ma_hpf1_
 
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
 
     
@@ -38021,10 +36768,6 @@ MA_API ma_result ma_hpf1_get_heap_size(const ma_hpf1_config* pConfig, size_t* pH
     ma_result result;
     ma_hpf1_heap_layout heapLayout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_hpf1_get_heap_layout(pConfig, &heapLayout);
     if (result != MA_SUCCESS) {
         return result;
@@ -38039,11 +36782,6 @@ MA_API ma_result ma_hpf1_init_preallocated(const ma_hpf1_config* pConfig, void* 
 {
     ma_result result;
     ma_hpf1_heap_layout heapLayout;
-
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pLPF);
 
     result = ma_hpf1_get_heap_layout(pConfig, &heapLayout);
@@ -38104,25 +36842,6 @@ MA_API ma_result ma_hpf1_reinit(const ma_hpf1_config* pConfig, ma_hpf1* pHPF)
 {
     double a;
 
-    if (pHPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pHPF->format != ma_format_unknown && pHPF->format != pConfig->format) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pHPF->channels != 0 && pHPF->channels != pConfig->channels) {
-        return MA_INVALID_OPERATION;
-    }
-
     pHPF->format   = pConfig->format;
     pHPF->channels = pConfig->channels;
 
@@ -38180,12 +36899,6 @@ MA_API ma_result ma_hpf1_process_pcm_frames(ma_hpf1* pHPF, void* pFramesOut, con
 {
     ma_uint32 n;
 
-    if (pHPF == NULL || pFramesOut == NULL || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-
     if (pHPF->format == ma_format_f32) {
          float* pY = (      float*)pFramesOut;
         const float* pX = (const float*)pFramesIn;
@@ -38195,7 +36908,7 @@ MA_API ma_result ma_hpf1_process_pcm_frames(ma_hpf1* pHPF, void* pFramesOut, con
             pY += pHPF->channels;
             pX += pHPF->channels;
         }
-    } else if (pHPF->format == ma_format_s16) {
+    } else {
          ma_int16* pY = (      ma_int16*)pFramesOut;
         const ma_int16* pX = (const ma_int16*)pFramesIn;
 
@@ -38204,11 +36917,7 @@ MA_API ma_result ma_hpf1_process_pcm_frames(ma_hpf1* pHPF, void* pFramesOut, con
             pY += pHPF->channels;
             pX += pHPF->channels;
         }
-    } else {
-        MA_ASSERT(MA_FALSE);
-        return MA_INVALID_ARGS; 
     }
-
     return MA_SUCCESS;
 }
 
@@ -38262,17 +36971,7 @@ MA_API ma_result ma_hpf2_init_preallocated(const ma_hpf2_config* pConfig, void* 
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pHPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pHPF);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_hpf2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pHPF->bq);
     if (result != MA_SUCCESS) {
@@ -38326,10 +37025,6 @@ MA_API ma_result ma_hpf2_reinit(const ma_hpf2_config* pConfig, ma_hpf2* pHPF)
     ma_result result;
     ma_biquad_config bqConfig;
 
-    if (pHPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_hpf2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pHPF->bq);
     if (result != MA_SUCCESS) {
@@ -38351,10 +37046,6 @@ static MA_INLINE void ma_hpf2_process_pcm_frame_f32(ma_hpf2* pHPF, float* pFrame
 
 MA_API ma_result ma_hpf2_process_pcm_frames(ma_hpf2* pHPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pHPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pHPF->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -38407,18 +37098,6 @@ static ma_result ma_hpf_get_heap_layout(const ma_hpf_config* pConfig, ma_hpf_hea
 
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->order > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_hpf_calculate_sub_hpf_counts(pConfig->order, &hpf1Count, &hpf2Count);
 
     pHeapLayout->sizeInBytes = 0;
@@ -38466,37 +37145,7 @@ static ma_result ma_hpf_reinit__internal(const ma_hpf_config* pConfig, void* pHe
     ma_uint32 ihpf2;
     ma_hpf_heap_layout heapLayout;  
 
-    if (pHPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pHPF->format != ma_format_unknown && pHPF->format != pConfig->format) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pHPF->channels != 0 && pHPF->channels != pConfig->channels) {
-        return MA_INVALID_OPERATION;
-    }
-
-    if (pConfig->order > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_hpf_calculate_sub_hpf_counts(pConfig->order, &hpf1Count, &hpf2Count);
-
-    
-    if (!isNew) {
-        if (pHPF->hpf1Count != hpf1Count || pHPF->hpf2Count != hpf2Count) {
-            return MA_INVALID_OPERATION;
-        }
-    }
 
     if (isNew) {
         result = ma_hpf_get_heap_layout(pConfig, &heapLayout);
@@ -38593,11 +37242,6 @@ MA_API ma_result ma_hpf_get_heap_size(const ma_hpf_config* pConfig, size_t* pHea
 {
     ma_result result;
     ma_hpf_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_hpf_get_heap_layout(pConfig, &heapLayout);
@@ -38612,9 +37256,6 @@ MA_API ma_result ma_hpf_get_heap_size(const ma_hpf_config* pConfig, size_t* pHea
 
 MA_API ma_result ma_hpf_init_preallocated(const ma_hpf_config* pConfig, void* pHeap, ma_hpf* pLPF)
 {
-    if (pLPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pLPF);
 
@@ -38683,11 +37324,6 @@ MA_API ma_result ma_hpf_process_pcm_frames(ma_hpf* pHPF, void* pFramesOut, const
     ma_result result;
     ma_uint32 ihpf1;
     ma_uint32 ihpf2;
-
-    if (pHPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if (pFramesOut == pFramesIn) {
         for (ihpf1 = 0; ihpf1 < pHPF->hpf1Count; ihpf1 += 1) {
@@ -38745,9 +37381,6 @@ MA_API ma_result ma_hpf_process_pcm_frames(ma_hpf* pHPF, void* pFramesOut, const
                 pFramesOutS16 += pHPF->channels;
                 pFramesInS16  += pHPF->channels;
             }
-        } else {
-            MA_ASSERT(MA_FALSE);
-            return MA_INVALID_OPERATION;    
         }
     }
 
@@ -38823,17 +37456,7 @@ MA_API ma_result ma_bpf2_init_preallocated(const ma_bpf2_config* pConfig, void* 
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pBPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pBPF);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_bpf2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pBPF->bq);
     if (result != MA_SUCCESS) {
@@ -38887,10 +37510,6 @@ MA_API ma_result ma_bpf2_reinit(const ma_bpf2_config* pConfig, ma_bpf2* pBPF)
     ma_result result;
     ma_biquad_config bqConfig;
 
-    if (pBPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_bpf2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pBPF->bq);
     if (result != MA_SUCCESS) {
@@ -38912,10 +37531,6 @@ static MA_INLINE void ma_bpf2_process_pcm_frame_f32(ma_bpf2* pBPF, float* pFrame
 
 MA_API ma_result ma_bpf2_process_pcm_frames(ma_bpf2* pBPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pBPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pBPF->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -38955,20 +37570,6 @@ static ma_result ma_bpf_get_heap_layout(const ma_bpf_config* pConfig, ma_bpf_hea
     MA_ASSERT(pHeapLayout != NULL);
 
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->order > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if ((pConfig->order & 0x1) != 0) {
-        return MA_INVALID_ARGS;
-    }
-
     bpf2Count = pConfig->order / 2;
 
     pHeapLayout->sizeInBytes = 0;
@@ -39000,43 +37601,7 @@ static ma_result ma_bpf_reinit__internal(const ma_bpf_config* pConfig, void* pHe
     ma_uint32 ibpf2;
     ma_bpf_heap_layout heapLayout;  
 
-    if (pBPF == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pBPF->format != ma_format_unknown && pBPF->format != pConfig->format) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (pBPF->channels != 0 && pBPF->channels != pConfig->channels) {
-        return MA_INVALID_OPERATION;
-    }
-
-    if (pConfig->order > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if ((pConfig->order & 0x1) != 0) {
-        return MA_INVALID_ARGS;
-    }
-
     bpf2Count = pConfig->order / 2;
-
-    
-    if (!isNew) {
-        if (pBPF->bpf2Count != bpf2Count) {
-            return MA_INVALID_OPERATION;
-        }
-    }
-
     if (isNew) {
         result = ma_bpf_get_heap_layout(pConfig, &heapLayout);
         if (result != MA_SUCCESS) {
@@ -39086,11 +37651,6 @@ MA_API ma_result ma_bpf_get_heap_size(const ma_bpf_config* pConfig, size_t* pHea
 {
     ma_result result;
     ma_bpf_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_bpf_get_heap_layout(pConfig, &heapLayout);
@@ -39105,12 +37665,7 @@ MA_API ma_result ma_bpf_get_heap_size(const ma_bpf_config* pConfig, size_t* pHea
 
 MA_API ma_result ma_bpf_init_preallocated(const ma_bpf_config* pConfig, void* pHeap, ma_bpf* pBPF)
 {
-    if (pBPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pBPF);
-
     return ma_bpf_reinit__internal(pConfig, pHeap, pBPF, MA_TRUE);
 }
 
@@ -39170,11 +37725,6 @@ MA_API ma_result ma_bpf_process_pcm_frames(ma_bpf* pBPF, void* pFramesOut, const
 {
     ma_result result;
     ma_uint32 ibpf2;
-
-    if (pBPF == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if (pFramesOut == pFramesIn) {
         for (ibpf2 = 0; ibpf2 < pBPF->bpf2Count; ibpf2 += 1) {
@@ -39217,9 +37767,6 @@ MA_API ma_result ma_bpf_process_pcm_frames(ma_bpf* pBPF, void* pFramesOut, const
                 pFramesOutS16 += pBPF->channels;
                 pFramesInS16  += pBPF->channels;
             }
-        } else {
-            MA_ASSERT(MA_FALSE);
-            return MA_INVALID_OPERATION;    
         }
     }
 
@@ -39294,17 +37841,7 @@ MA_API ma_result ma_notch2_init_preallocated(const ma_notch2_config* pConfig, vo
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFilter);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_notch2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39357,11 +37894,6 @@ MA_API ma_result ma_notch2_reinit(const ma_notch2_config* pConfig, ma_notch2* pF
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pFilter == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_notch2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39383,10 +37915,6 @@ static MA_INLINE void ma_notch2_process_pcm_frame_f32(ma_notch2* pFilter, float*
 
 MA_API ma_result ma_notch2_process_pcm_frames(ma_notch2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pFilter->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -39462,16 +37990,7 @@ MA_API ma_result ma_peak2_init_preallocated(const ma_peak2_config* pConfig, void
     ma_result result;
     ma_biquad_config bqConfig;
 
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFilter);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_peak2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39524,11 +38043,6 @@ MA_API ma_result ma_peak2_reinit(const ma_peak2_config* pConfig, ma_peak2* pFilt
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pFilter == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_peak2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39550,10 +38064,6 @@ static MA_INLINE void ma_peak2_process_pcm_frame_f32(ma_peak2* pFilter, float* p
 
 MA_API ma_result ma_peak2_process_pcm_frames(ma_peak2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pFilter->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -39626,17 +38136,7 @@ MA_API ma_result ma_loshelf2_init_preallocated(const ma_loshelf2_config* pConfig
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFilter);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_loshelf2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39689,11 +38189,6 @@ MA_API ma_result ma_loshelf2_reinit(const ma_loshelf2_config* pConfig, ma_loshel
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pFilter == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_loshelf2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39715,10 +38210,6 @@ static MA_INLINE void ma_loshelf2_process_pcm_frame_f32(ma_loshelf2* pFilter, fl
 
 MA_API ma_result ma_loshelf2_process_pcm_frames(ma_loshelf2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pFilter->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -39791,17 +38282,7 @@ MA_API ma_result ma_hishelf2_init_preallocated(const ma_hishelf2_config* pConfig
 {
     ma_result result;
     ma_biquad_config bqConfig;
-
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFilter);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_hishelf2__get_biquad_config(pConfig);
     result = ma_biquad_init_preallocated(&bqConfig, pHeap, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39855,10 +38336,6 @@ MA_API ma_result ma_hishelf2_reinit(const ma_hishelf2_config* pConfig, ma_hishel
     ma_result result;
     ma_biquad_config bqConfig;
 
-    if (pFilter == NULL || pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     bqConfig = ma_hishelf2__get_biquad_config(pConfig);
     result = ma_biquad_reinit(&bqConfig, &pFilter->bq);
     if (result != MA_SUCCESS) {
@@ -39880,10 +38357,6 @@ static MA_INLINE void ma_hishelf2_process_pcm_frame_f32(ma_hishelf2* pFilter, fl
 
 MA_API ma_result ma_hishelf2_process_pcm_frames(ma_hishelf2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pFilter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_biquad_process_pcm_frames(&pFilter->bq, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -39913,20 +38386,7 @@ MA_API ma_delay_config ma_delay_config_init(ma_uint32 channels, ma_uint32 sample
 }
 MA_API ma_result ma_delay_init(const ma_delay_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_delay* pDelay)
 {
-    if (pDelay == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDelay);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->decay < 0 || pConfig->decay > 1) {
-        return MA_INVALID_ARGS;
-    }
-
     pDelay->config             = *pConfig;
     pDelay->bufferSizeInFrames = pConfig->delayInFrames;
     pDelay->cursor             = 0;
@@ -39956,36 +38416,20 @@ MA_API ma_result ma_delay_process_pcm_frames(ma_delay* pDelay, void* pFramesOut,
     ma_uint32 iChannel;
     float* pFramesOutF32 = (float*)pFramesOut;
     const float* pFramesInF32 = (const float*)pFramesIn;
-
-    if (pDelay == NULL || pFramesOut == NULL || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
         for (iChannel = 0; iChannel < pDelay->config.channels; iChannel += 1) {
             ma_uint32 iBuffer = (pDelay->cursor * pDelay->config.channels) + iChannel;
 
             if (pDelay->config.delayStart) {
-                
-
-                
                 pFramesOutF32[iChannel] = pDelay->pBuffer[iBuffer] * pDelay->config.wet;
-
-                
                 pDelay->pBuffer[iBuffer] = (pDelay->pBuffer[iBuffer] * pDelay->config.decay) + (pFramesInF32[iChannel] * pDelay->config.dry);
             } else {
-                
-
-                
                 pDelay->pBuffer[iBuffer] = (pDelay->pBuffer[iBuffer] * pDelay->config.decay) + (pFramesInF32[iChannel] * pDelay->config.dry);
-
-                
                 pFramesOutF32[iChannel] = pDelay->pBuffer[iBuffer] * pDelay->config.wet;
             }
         }
 
         pDelay->cursor = (pDelay->cursor + 1) % pDelay->bufferSizeInFrames;
-
         pFramesOutF32 += pDelay->config.channels;
         pFramesInF32  += pDelay->config.channels;
     }
@@ -40068,48 +38512,22 @@ static ma_result ma_gainer_get_heap_layout(const ma_gainer_config* pConfig, ma_g
     MA_ASSERT(pHeapLayout != NULL);
 
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
-
-    
     pHeapLayout->oldGainsOffset = pHeapLayout->sizeInBytes;
     pHeapLayout->sizeInBytes += sizeof(float) * pConfig->channels;
-
-    
     pHeapLayout->newGainsOffset = pHeapLayout->sizeInBytes;
     pHeapLayout->sizeInBytes += sizeof(float) * pConfig->channels;
-
-    
     pHeapLayout->sizeInBytes = ma_align_64(pHeapLayout->sizeInBytes);
-
     return MA_SUCCESS;
 }
 MA_API ma_result ma_gainer_get_heap_size(const ma_gainer_config* pConfig, size_t* pHeapSizeInBytes)
 {
     ma_result result;
     ma_gainer_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_gainer_get_heap_layout(pConfig, &heapLayout);
-    if (result != MA_SUCCESS) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = heapLayout.sizeInBytes;
-
     return MA_SUCCESS;
 }
 MA_API ma_result ma_gainer_init_preallocated(const ma_gainer_config* pConfig, void* pHeap, ma_gainer* pGainer)
@@ -40117,17 +38535,7 @@ MA_API ma_result ma_gainer_init_preallocated(const ma_gainer_config* pConfig, vo
     ma_result result;
     ma_gainer_heap_layout heapLayout;
     ma_uint32 iChannel;
-
-    if (pGainer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pGainer);
-
-    if (pConfig == NULL || pHeap == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_gainer_get_heap_layout(pConfig, &heapLayout);
     if (result != MA_SUCCESS) {
         return result;
@@ -40475,11 +38883,6 @@ static  ma_result ma_gainer_process_pcm_frames_internal(ma_gainer * pGainer, voi
 
 MA_API ma_result ma_gainer_process_pcm_frames(ma_gainer* pGainer, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pGainer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     return ma_gainer_process_pcm_frames_internal(pGainer, pFramesOut, pFramesIn, frameCount);
 }
 
@@ -40501,16 +38904,9 @@ static void ma_gainer_reset_smoothing_time(ma_gainer* pGainer)
 MA_API ma_result ma_gainer_set_gain(ma_gainer* pGainer, float newGain)
 {
     ma_uint32 iChannel;
-
-    if (pGainer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (iChannel = 0; iChannel < pGainer->config.channels; iChannel += 1) {
         ma_gainer_set_gain_by_index(pGainer, newGain, iChannel);
     }
-
-    
     ma_gainer_reset_smoothing_time(pGainer);
 
     return MA_SUCCESS;
@@ -40519,11 +38915,6 @@ MA_API ma_result ma_gainer_set_gain(ma_gainer* pGainer, float newGain)
 MA_API ma_result ma_gainer_set_gains(ma_gainer* pGainer, float* pNewGains)
 {
     ma_uint32 iChannel;
-
-    if (pGainer == NULL || pNewGains == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (iChannel = 0; iChannel < pGainer->config.channels; iChannel += 1) {
         ma_gainer_set_gain_by_index(pGainer, pNewGains[iChannel], iChannel);
     }
@@ -40536,10 +38927,6 @@ MA_API ma_result ma_gainer_set_gains(ma_gainer* pGainer, float* pNewGains)
 
 MA_API ma_result ma_gainer_set_master_volume(ma_gainer* pGainer, float volume)
 {
-    if (pGainer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pGainer->masterVolume = volume;
 
     return MA_SUCCESS;
@@ -40547,10 +38934,6 @@ MA_API ma_result ma_gainer_set_master_volume(ma_gainer* pGainer, float volume)
 
 MA_API ma_result ma_gainer_get_master_volume(const ma_gainer* pGainer, float* pVolume)
 {
-    if (pGainer == NULL || pVolume == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pVolume = pGainer->masterVolume;
 
     return MA_SUCCESS;
@@ -40569,16 +38952,7 @@ MA_API ma_panner_config ma_panner_config_init(ma_format format, ma_uint32 channe
 }
 MA_API ma_result ma_panner_init(const ma_panner_config* pConfig, ma_panner* pPanner)
 {
-    if (pPanner == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pPanner);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pPanner->format   = pConfig->format;
     pPanner->channels = pConfig->channels;
     pPanner->mode     = pConfig->mode;
@@ -40696,10 +39070,6 @@ static void ma_stereo_pan_pcm_frames(void* pFramesOut, const void* pFramesIn, ma
 
 MA_API ma_result ma_panner_process_pcm_frames(ma_panner* pPanner, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pPanner == NULL || pFramesOut == NULL || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pPanner->channels == 2) {
         
         if (pPanner->mode == ma_pan_mode_balance) {
@@ -40768,21 +39138,7 @@ MA_API ma_fader_config ma_fader_config_init(ma_format format, ma_uint32 channels
 }
 MA_API ma_result ma_fader_init(const ma_fader_config* pConfig, ma_fader* pFader)
 {
-    if (pFader == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFader);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pConfig->format != ma_format_f32) {
-        return MA_INVALID_ARGS;
-    }
-
     pFader->config         = *pConfig;
     pFader->volumeBeg      = 1;
     pFader->volumeEnd      = 1;
@@ -40794,11 +39150,6 @@ MA_API ma_result ma_fader_init(const ma_fader_config* pConfig, ma_fader* pFader)
 
 MA_API ma_result ma_fader_process_pcm_frames(ma_fader* pFader, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pFader == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     if (pFader->cursorInFrames < 0) {
         ma_uint64 absCursorInFrames = (ma_uint64)0 - pFader->cursorInFrames;
         if (absCursorInFrames > frameCount) {
@@ -41187,20 +39538,9 @@ typedef struct
 static ma_result ma_spatializer_listener_get_heap_layout(const ma_spatializer_listener_config* pConfig, ma_spatializer_listener_heap_layout* pHeapLayout)
 {
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channelsOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
-
-    
     pHeapLayout->channelMapOutOffset = pHeapLayout->sizeInBytes;
     pHeapLayout->sizeInBytes += ma_align_64(sizeof(*pConfig->pChannelMapOut) * pConfig->channelsOut);
 
@@ -41210,11 +39550,6 @@ MA_API ma_result ma_spatializer_listener_get_heap_size(const ma_spatializer_list
 {
     ma_result result;
     ma_spatializer_listener_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_spatializer_listener_get_heap_layout(pConfig, &heapLayout);
@@ -41231,10 +39566,6 @@ MA_API ma_result ma_spatializer_listener_init_preallocated(const ma_spatializer_
 {
     ma_result result;
     ma_spatializer_listener_heap_layout heapLayout;
-
-    if (pListener == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pListener);
 
@@ -41475,10 +39806,6 @@ static ma_result ma_spatializer_validate_config(const ma_spatializer_config* pCo
 {
     MA_ASSERT(pConfig != NULL);
 
-    if (pConfig->channelsIn == 0 || pConfig->channelsOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     return MA_SUCCESS;
 }
 
@@ -41493,15 +39820,8 @@ typedef struct
 static ma_result ma_spatializer_get_heap_layout(const ma_spatializer_config* pConfig, ma_spatializer_heap_layout* pHeapLayout)
 {
     ma_result result;
-
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_spatializer_validate_config(pConfig);
     if (result != MA_SUCCESS) {
         return result;
@@ -41543,11 +39863,6 @@ MA_API ma_result ma_spatializer_get_heap_size(const ma_spatializer_config* pConf
 {
     ma_result result;
     ma_spatializer_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;  
 
     result = ma_spatializer_get_heap_layout(pConfig, &heapLayout);
@@ -41564,17 +39879,7 @@ MA_API ma_result ma_spatializer_init_preallocated(const ma_spatializer_config* p
     ma_result result;
     ma_spatializer_heap_layout heapLayout;
     ma_gainer_config gainerConfig;
-
-    if (pSpatializer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pSpatializer);
-
-    if (pConfig == NULL || pHeap == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_spatializer_get_heap_layout(pConfig, &heapLayout);
     if (result != MA_SUCCESS) {
         return result;
@@ -41712,12 +40017,6 @@ MA_API ma_result ma_spatializer_process_pcm_frames(ma_spatializer* pSpatializer,
 {
     ma_channel* pChannelMapIn  = pSpatializer->pChannelMapIn;
     ma_channel* pChannelMapOut = pListener->config.pChannelMapOut;
-
-    if (pSpatializer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     if (ma_atomic_load_i32(&pSpatializer->attenuationModel) == ma_attenuation_model_none) {
         if (ma_spatializer_listener_is_enabled(pListener)) {
             
@@ -41920,19 +40219,11 @@ MA_API ma_result ma_spatializer_process_pcm_frames(ma_spatializer* pSpatializer,
 
 MA_API ma_result ma_spatializer_set_master_volume(ma_spatializer* pSpatializer, float volume)
 {
-    if (pSpatializer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_gainer_set_master_volume(&pSpatializer->gainer, volume);
 }
 
 MA_API ma_result ma_spatializer_get_master_volume(const ma_spatializer* pSpatializer, float* pVolume)
 {
-    if (pSpatializer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_gainer_get_master_volume(&pSpatializer->gainer, pVolume);
 }
 
@@ -42326,31 +40617,17 @@ static ma_result ma_linear_resampler_set_rate_internal(ma_linear_resampler* pRes
     ma_lpf_config lpfConfig;
     ma_uint32 oldSampleRateOut; 
 
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (sampleRateIn == 0 || sampleRateOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     oldSampleRateOut = pResampler->config.sampleRateOut;
 
     pResampler->config.sampleRateIn  = sampleRateIn;
     pResampler->config.sampleRateOut = sampleRateOut;
-
     
     gcf = ma_gcf_u32(pResampler->config.sampleRateIn, pResampler->config.sampleRateOut);
     pResampler->config.sampleRateIn  /= gcf;
     pResampler->config.sampleRateOut /= gcf;
 
-    
-    if (pResampler->config.lpfOrder > MA_MAX_FILTER_ORDER) {
-        return MA_INVALID_ARGS;
-    }
-
-    lpfSampleRate      = (ma_uint32)(ma_max(pResampler->config.sampleRateIn, pResampler->config.sampleRateOut));
-    lpfCutoffFrequency = (   double)(ma_min(pResampler->config.sampleRateIn, pResampler->config.sampleRateOut) * 0.5 * pResampler->config.lpfNyquistFactor);
+    lpfSampleRate = (ma_uint32)(ma_max(pResampler->config.sampleRateIn, pResampler->config.sampleRateOut));
+    lpfCutoffFrequency = ( double)(ma_min(pResampler->config.sampleRateIn, pResampler->config.sampleRateOut) * 0.5 * pResampler->config.lpfNyquistFactor);
 
     lpfConfig = ma_lpf_config_init(pResampler->config.format, pResampler->config.channels, lpfSampleRate, lpfCutoffFrequency, pResampler->config.lpfOrder);
 
@@ -42378,19 +40655,6 @@ static ma_result ma_linear_resampler_get_heap_layout(const ma_linear_resampler_c
     MA_ASSERT(pHeapLayout != NULL);
 
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->format != ma_format_f32 && pConfig->format != ma_format_s16) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
 
     
@@ -42434,11 +40698,6 @@ MA_API ma_result ma_linear_resampler_get_heap_size(const ma_linear_resampler_con
 {
     ma_result result;
     ma_linear_resampler_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_linear_resampler_get_heap_layout(pConfig, &heapLayout);
@@ -42455,11 +40714,6 @@ MA_API ma_result ma_linear_resampler_init_preallocated(const ma_linear_resampler
 {
     ma_result result;
     ma_linear_resampler_heap_layout heapLayout;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pResampler);
 
     result = ma_linear_resampler_get_heap_layout(pConfig, &heapLayout);
@@ -42912,18 +41166,10 @@ static ma_result ma_linear_resampler_process_pcm_frames_f32(ma_linear_resampler*
 }
 MA_API ma_result ma_linear_resampler_process_pcm_frames(ma_linear_resampler* pResampler, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut)
 {
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
      if (pResampler->config.format == ma_format_s16) {
         return ma_linear_resampler_process_pcm_frames_s16(pResampler, pFramesIn, pFrameCountIn, pFramesOut, pFrameCountOut);
-    } else if (pResampler->config.format == ma_format_f32) {
-        return ma_linear_resampler_process_pcm_frames_f32(pResampler, pFramesIn, pFrameCountIn, pFramesOut, pFrameCountOut);
     } else {
-        
-        MA_ASSERT(MA_FALSE);
-        return MA_INVALID_ARGS;
+        return ma_linear_resampler_process_pcm_frames_f32(pResampler, pFramesIn, pFrameCountIn, pFramesOut, pFrameCountOut);
     }
 }
 MA_API ma_result ma_linear_resampler_set_rate(ma_linear_resampler* pResampler, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut)
@@ -42935,21 +41181,8 @@ MA_API ma_result ma_linear_resampler_set_rate_ratio(ma_linear_resampler* pResamp
 {
     ma_uint32 n;
     ma_uint32 d;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ratioInOut <= 0) {
-        return MA_INVALID_ARGS;
-    }
-
     d = 1000000;
     n = (ma_uint32)(ratioInOut * d);
-
-    if (n == 0) {
-        return MA_INVALID_ARGS; 
-    }
 
     MA_ASSERT(n != 0);
 
@@ -42977,17 +41210,7 @@ MA_API ma_uint64 ma_linear_resampler_get_output_latency(const ma_linear_resample
 MA_API ma_result ma_linear_resampler_get_required_input_frame_count(const ma_linear_resampler* pResampler, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount)
 {
     ma_uint64 inputFrameCount;
-
-    if (pInputFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pInputFrameCount = 0;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (outputFrameCount == 0) {
         return MA_SUCCESS;
     }
@@ -43010,25 +41233,13 @@ MA_API ma_result ma_linear_resampler_get_expected_output_frame_count(const ma_li
     ma_uint64 outputFrameCount;
     ma_uint64 preliminaryInputFrameCountFromFrac;
     ma_uint64 preliminaryInputFrameCount;
-
-    if (pOutputFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pOutputFrameCount = 0;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     outputFrameCount = (inputFrameCount * pResampler->config.sampleRateOut) / pResampler->config.sampleRateIn;
 
-    
     preliminaryInputFrameCountFromFrac = (pResampler->inTimeFrac + outputFrameCount*pResampler->inAdvanceFrac) / pResampler->config.sampleRateOut;
     preliminaryInputFrameCount         = (pResampler->inTimeInt  + outputFrameCount*pResampler->inAdvanceInt ) + preliminaryInputFrameCountFromFrac;
 
-    
     if (preliminaryInputFrameCount <= inputFrameCount) {
         outputFrameCount += 1;
     }
@@ -43041,16 +41252,10 @@ MA_API ma_result ma_linear_resampler_get_expected_output_frame_count(const ma_li
 MA_API ma_result ma_linear_resampler_reset(ma_linear_resampler* pResampler)
 {
     ma_uint32 iChannel;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     pResampler->inTimeInt  = 1;  
     pResampler->inTimeFrac = 0;
 
-    
     if (pResampler->config.format == ma_format_f32) {
         for (iChannel = 0; iChannel < pResampler->config.channels; iChannel += 1) {
             pResampler->x0.f32[iChannel] = 0;
@@ -43231,17 +41436,7 @@ MA_API ma_result ma_resampler_get_heap_size(const ma_resampler_config* pConfig, 
     ma_result result;
     ma_resampling_backend_vtable* pVTable;
     void* pVTableUserData;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_resampler_get_vtable(pConfig, NULL, &pVTable, &pVTableUserData);
     if (result != MA_SUCCESS) {
         return result;
@@ -43262,17 +41457,7 @@ MA_API ma_result ma_resampler_get_heap_size(const ma_resampler_config* pConfig, 
 MA_API ma_result ma_resampler_init_preallocated(const ma_resampler_config* pConfig, void* pHeap, ma_resampler* pResampler)
 {
     ma_result result;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pResampler);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pResampler->_pHeap        = pHeap;
     pResampler->format        = pConfig->format;
     pResampler->channels      = pConfig->channels;
@@ -43345,37 +41530,12 @@ MA_API void ma_resampler_uninit(ma_resampler* pResampler, const ma_allocation_ca
 
 MA_API ma_result ma_resampler_process_pcm_frames(ma_resampler* pResampler, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut)
 {
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pFrameCountOut == NULL && pFrameCountIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onProcess == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pResampler->pBackendVTable->onProcess(pResampler->pBackendUserData, pResampler->pBackend, pFramesIn, pFrameCountIn, pFramesOut, pFrameCountOut);
 }
 
 MA_API ma_result ma_resampler_set_rate(ma_resampler* pResampler, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut)
 {
     ma_result result;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (sampleRateIn == 0 || sampleRateOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onSetRate == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     result = pResampler->pBackendVTable->onSetRate(pResampler->pBackendUserData, pResampler->pBackend, sampleRateIn, sampleRateOut);
     if (result != MA_SUCCESS) {
         return result;
@@ -43391,24 +41551,9 @@ MA_API ma_result ma_resampler_set_rate_ratio(ma_resampler* pResampler, float rat
 {
     ma_uint32 n;
     ma_uint32 d;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ratio <= 0) {
-        return MA_INVALID_ARGS;
-    }
-
     d = 1000;
     n = (ma_uint32)(ratio * d);
-
-    if (n == 0) {
-        return MA_INVALID_ARGS; 
-    }
-
     MA_ASSERT(n != 0);
-
     return ma_resampler_set_rate(pResampler, n, d);
 }
 
@@ -43440,52 +41585,18 @@ MA_API ma_uint64 ma_resampler_get_output_latency(const ma_resampler* pResampler)
 
 MA_API ma_result ma_resampler_get_required_input_frame_count(const ma_resampler* pResampler, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount)
 {
-    if (pInputFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pInputFrameCount = 0;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onGetRequiredInputFrameCount == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pResampler->pBackendVTable->onGetRequiredInputFrameCount(pResampler->pBackendUserData, pResampler->pBackend, outputFrameCount, pInputFrameCount);
 }
 
 MA_API ma_result ma_resampler_get_expected_output_frame_count(const ma_resampler* pResampler, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount)
 {
-    if (pOutputFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pOutputFrameCount = 0;
-
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onGetExpectedOutputFrameCount == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pResampler->pBackendVTable->onGetExpectedOutputFrameCount(pResampler->pBackendUserData, pResampler->pBackend, inputFrameCount, pOutputFrameCount);
 }
 
 MA_API ma_result ma_resampler_reset(ma_resampler* pResampler)
 {
-    if (pResampler == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pResampler->pBackendVTable == NULL || pResampler->pBackendVTable->onReset == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pResampler->pBackendVTable->onReset(pResampler->pBackendUserData, pResampler->pBackend);
 }
 
@@ -43494,12 +41605,12 @@ MA_API ma_result ma_resampler_reset(ma_resampler* pResampler)
 #define MA_CHANNEL_CONVERTER_FIXED_POINT_SHIFT  12
 #endif
 
-#define MA_PLANE_LEFT      0
-#define MA_PLANE_RIGHT     1
-#define MA_PLANE_FRONT     2
-#define MA_PLANE_BACK      3
-#define MA_PLANE_BOTTOM    4
-#define MA_PLANE_TOP       5
+#define MA_PLANE_LEFT 0
+#define MA_PLANE_RIGHT 1
+#define MA_PLANE_FRONT 2
+#define MA_PLANE_BACK 3
+#define MA_PLANE_BOTTOM 4
+#define MA_PLANE_TOP 5
 
 static float g_maChannelPlaneRatios[MA_CHANNEL_POSITION_COUNT][6] = {
     { 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f},  
@@ -43681,11 +41792,6 @@ static ma_result ma_channel_map_build_shuffle_table(const ma_channel* pChannelMa
     ma_uint32 iChannelIn;
     ma_uint32 iChannelOut;
 
-    if (pShuffleTable == NULL || channelCountIn == 0 || channelCountOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     for (iChannelOut = 0; iChannelOut < channelCountOut; iChannelOut += 1) {
         ma_channel channelOut;
 
@@ -43842,10 +41948,6 @@ static void ma_channel_map_apply_shuffle_table_f32(float* pFramesOut, ma_uint32 
 
 static ma_result ma_channel_map_apply_shuffle_table(void* pFramesOut, ma_uint32 channelsOut, const void* pFramesIn, ma_uint32 channelsIn, ma_uint64 frameCount, const ma_uint8* pShuffleTable, ma_format format)
 {
-    if (pFramesOut == NULL || pFramesIn == NULL || channelsOut == 0 || pShuffleTable == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     switch (format)
     {
         case ma_format_u8:
@@ -43884,14 +41986,6 @@ static ma_result ma_channel_map_apply_mono_out_f32(float* pFramesOut, const floa
     ma_uint64 iFrame;
     ma_uint32 iChannelIn;
     ma_uint32 accumulationCount;
-
-    if (pFramesOut == NULL || pFramesIn == NULL || channelsIn == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-
-    
     accumulationCount = 0;
     for (iChannelIn = 0; iChannelIn < channelsIn; iChannelIn += 1) {
         if (ma_channel_map_get_channel(pChannelMapIn, channelsIn, iChannelIn) != MA_CHANNEL_NONE) {
@@ -43925,11 +42019,6 @@ static ma_result ma_channel_map_apply_mono_in_f32(float* MA_RESTRICT pFramesOut,
 {
     ma_uint64 iFrame;
     ma_uint32 iChannelOut;
-
-    if (pFramesOut == NULL || channelsOut == 0 || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     switch (monoExpansionMode)
     {
@@ -44336,22 +42425,6 @@ static ma_result ma_channel_converter_get_heap_layout(const ma_channel_converter
 
     MA_ASSERT(pHeapLayout != NULL);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channelsIn == 0 || pConfig->channelsOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (!ma_channel_map_is_valid(pConfig->pChannelMapIn, pConfig->channelsIn)) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (!ma_channel_map_is_valid(pConfig->pChannelMapOut, pConfig->channelsOut)) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
 
     
@@ -44396,10 +42469,6 @@ MA_API ma_result ma_channel_converter_get_heap_size(const ma_channel_converter_c
     ma_result result;
     ma_channel_converter_heap_layout heapLayout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_channel_converter_get_heap_layout(pConfig, &heapLayout);
@@ -44416,10 +42485,6 @@ MA_API ma_result ma_channel_converter_init_preallocated(const ma_channel_convert
 {
     ma_result result;
     ma_channel_converter_heap_layout heapLayout;
-
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pConverter);
 
@@ -44509,10 +42574,6 @@ MA_API ma_result ma_channel_converter_init_preallocated(const ma_channel_convert
         {
             case ma_channel_mix_mode_custom_weights:
             {
-                if (pConfig->ppWeights == NULL) {
-                    return MA_INVALID_ARGS; 
-                }
-
                 for (iChannelIn = 0; iChannelIn < pConverter->channelsIn; iChannelIn += 1) {
                     for (iChannelOut = 0; iChannelOut < pConverter->channelsOut; iChannelOut += 1) {
                         float weight = pConfig->ppWeights[iChannelIn][iChannelOut];
@@ -44990,14 +43051,6 @@ static ma_result ma_channel_converter_process_pcm_frames__weights(ma_channel_con
 
 MA_API ma_result ma_channel_converter_process_pcm_frames(ma_channel_converter* pConverter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount)
 {
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pFramesOut == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pFramesIn == NULL) {
         ma_zero_memory_64(pFramesOut, frameCount * ma_get_bytes_per_frame(pConverter->format, pConverter->channelsOut));
         return MA_SUCCESS;
@@ -45019,23 +43072,13 @@ MA_API ma_result ma_channel_converter_process_pcm_frames(ma_channel_converter* p
 
 MA_API ma_result ma_channel_converter_get_input_channel_map(const ma_channel_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap)
 {
-    if (pConverter == NULL || pChannelMap == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_channel_map_copy_or_default(pChannelMap, channelMapCap, pConverter->pChannelMapIn, pConverter->channelsIn);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_channel_converter_get_output_channel_map(const ma_channel_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap)
 {
-    if (pConverter == NULL || pChannelMap == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_channel_map_copy_or_default(pChannelMap, channelMapCap, pConverter->pChannelMapOut, pConverter->channelsOut);
-
     return MA_SUCCESS;
 }
 
@@ -45141,14 +43184,6 @@ static ma_result ma_data_converter_get_heap_layout(const ma_data_converter_confi
 
     MA_ZERO_OBJECT(pHeapLayout);
 
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channelsIn == 0 || pConfig->channelsOut == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pHeapLayout->sizeInBytes = 0;
 
     
@@ -45189,11 +43224,6 @@ MA_API ma_result ma_data_converter_get_heap_size(const ma_data_converter_config*
 {
     ma_result result;
     ma_data_converter_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_data_converter_get_heap_layout(pConfig, &heapLayout);
@@ -45212,10 +43242,6 @@ MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_con
     ma_data_converter_heap_layout heapLayout;
     ma_format midFormat;
     ma_bool32 isResamplingRequired;
-
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pConverter);
 
@@ -45998,10 +44024,6 @@ static ma_result ma_data_converter_process_pcm_frames__channels_first(ma_data_co
 
 MA_API ma_result ma_data_converter_process_pcm_frames(ma_data_converter* pConverter, const void* pFramesIn, ma_uint64* pFrameCountIn, void* pFramesOut, ma_uint64* pFrameCountOut)
 {
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     switch (pConverter->executionPath)
     {
         case ma_data_converter_execution_path_passthrough:    return ma_data_converter_process_pcm_frames__passthrough(pConverter, pFramesIn, pFrameCountIn, pFramesOut, pFrameCountOut);
@@ -46016,27 +44038,11 @@ MA_API ma_result ma_data_converter_process_pcm_frames(ma_data_converter* pConver
 
 MA_API ma_result ma_data_converter_set_rate(ma_data_converter* pConverter, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut)
 {
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConverter->hasResampler == MA_FALSE) {
-        return MA_INVALID_OPERATION;    
-    }
-
     return ma_resampler_set_rate(&pConverter->resampler, sampleRateIn, sampleRateOut);
 }
 
 MA_API ma_result ma_data_converter_set_rate_ratio(ma_data_converter* pConverter, float ratioInOut)
 {
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConverter->hasResampler == MA_FALSE) {
-        return MA_INVALID_OPERATION;    
-    }
-
     return ma_resampler_set_rate_ratio(&pConverter->resampler, ratioInOut);
 }
 
@@ -46068,16 +44074,7 @@ MA_API ma_uint64 ma_data_converter_get_output_latency(const ma_data_converter* p
 
 MA_API ma_result ma_data_converter_get_required_input_frame_count(const ma_data_converter* pConverter, ma_uint64 outputFrameCount, ma_uint64* pInputFrameCount)
 {
-    if (pInputFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pInputFrameCount = 0;
-
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pConverter->hasResampler) {
         return ma_resampler_get_required_input_frame_count(&pConverter->resampler, outputFrameCount, pInputFrameCount);
     } else {
@@ -46088,16 +44085,7 @@ MA_API ma_result ma_data_converter_get_required_input_frame_count(const ma_data_
 
 MA_API ma_result ma_data_converter_get_expected_output_frame_count(const ma_data_converter* pConverter, ma_uint64 inputFrameCount, ma_uint64* pOutputFrameCount)
 {
-    if (pOutputFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pOutputFrameCount = 0;
-
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pConverter->hasResampler) {
         return ma_resampler_get_expected_output_frame_count(&pConverter->resampler, inputFrameCount, pOutputFrameCount);
     } else {
@@ -46108,10 +44096,6 @@ MA_API ma_result ma_data_converter_get_expected_output_frame_count(const ma_data
 
 MA_API ma_result ma_data_converter_get_output_channel_map(const ma_data_converter* pConverter, ma_channel* pChannelMap, size_t channelMapCap)
 {
-    if (pConverter == NULL || pChannelMap == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pConverter->hasChannelConverter) {
         ma_channel_converter_get_input_channel_map(&pConverter->channelConverter, pChannelMap, channelMapCap);
     } else {
@@ -46123,11 +44107,6 @@ MA_API ma_result ma_data_converter_get_output_channel_map(const ma_data_converte
 
 MA_API ma_result ma_data_converter_reset(ma_data_converter* pConverter)
 {
-    if (pConverter == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     if (pConverter->hasResampler == MA_FALSE) {
         return MA_SUCCESS;
     }
@@ -47176,17 +45155,6 @@ MA_API ma_result ma_rb_init_ex(size_t subbufferSizeInBytes, size_t subbufferCoun
     ma_result result;
     const ma_uint32 maxSubBufferSize = 0x7FFFFFFF - (MA_SIMD_ALIGNMENT-1);
 
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (subbufferSizeInBytes == 0 || subbufferCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (subbufferSizeInBytes > maxSubBufferSize) {
-        return MA_INVALID_ARGS;    
-    }
     MA_ZERO_OBJECT(pRB);
 
     result = ma_allocation_callbacks_init_copy(&pRB->allocationCallbacks, pAllocationCallbacks);
@@ -47255,12 +45223,6 @@ MA_API ma_result ma_rb_acquire_read(ma_rb* pRB, size_t* pSizeInBytes, void** ppB
     ma_uint32 readOffsetLoopFlag;
     size_t bytesAvailable;
     size_t bytesRequested;
-
-    if (pRB == NULL || pSizeInBytes == NULL || ppBufferOut == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     writeOffset = ma_atomic_load_32(&pRB->encodedWriteOffset);
     ma_rb__deconstruct_offset(writeOffset, &writeOffsetInBytes, &writeOffsetLoopFlag);
 
@@ -47293,20 +45255,11 @@ MA_API ma_result ma_rb_commit_read(ma_rb* pRB, size_t sizeInBytes)
     ma_uint32 newReadOffsetInBytes;
     ma_uint32 newReadOffsetLoopFlag;
 
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     readOffset = ma_atomic_load_32(&pRB->encodedReadOffset);
     ma_rb__deconstruct_offset(readOffset, &readOffsetInBytes, &readOffsetLoopFlag);
 
     
     newReadOffsetInBytes = (ma_uint32)(readOffsetInBytes + sizeInBytes);
-    if (newReadOffsetInBytes > pRB->subbufferSizeInBytes) {
-        return MA_INVALID_ARGS;    
-    }
-
-    
     newReadOffsetLoopFlag = readOffsetLoopFlag;
     if (newReadOffsetInBytes == pRB->subbufferSizeInBytes) {
         newReadOffsetInBytes = 0;
@@ -47328,11 +45281,6 @@ MA_API ma_result ma_rb_acquire_write(ma_rb* pRB, size_t* pSizeInBytes, void** pp
     ma_uint32 writeOffsetLoopFlag;
     size_t bytesAvailable;
     size_t bytesRequested;
-
-    if (pRB == NULL || pSizeInBytes == NULL || ppBufferOut == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     readOffset = ma_atomic_load_32(&pRB->encodedReadOffset);
     ma_rb__deconstruct_offset(readOffset, &readOffsetInBytes, &readOffsetLoopFlag);
@@ -47370,20 +45318,11 @@ MA_API ma_result ma_rb_commit_write(ma_rb* pRB, size_t sizeInBytes)
     ma_uint32 writeOffsetLoopFlag;
     ma_uint32 newWriteOffsetInBytes;
     ma_uint32 newWriteOffsetLoopFlag;
-
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     writeOffset = ma_atomic_load_32(&pRB->encodedWriteOffset);
     ma_rb__deconstruct_offset(writeOffset, &writeOffsetInBytes, &writeOffsetLoopFlag);
 
     
     newWriteOffsetInBytes = (ma_uint32)(writeOffsetInBytes + sizeInBytes);
-    if (newWriteOffsetInBytes > pRB->subbufferSizeInBytes) {
-        return MA_INVALID_ARGS;    
-    }
-
     
     newWriteOffsetLoopFlag = writeOffsetLoopFlag;
     if (newWriteOffsetInBytes == pRB->subbufferSizeInBytes) {
@@ -47406,11 +45345,6 @@ MA_API ma_result ma_rb_seek_read(ma_rb* pRB, size_t offsetInBytes)
     ma_uint32 writeOffsetLoopFlag;
     ma_uint32 newReadOffsetInBytes;
     ma_uint32 newReadOffsetLoopFlag;
-
-    if (pRB == NULL || offsetInBytes > pRB->subbufferSizeInBytes) {
-        return MA_INVALID_ARGS;
-    }
-
     readOffset = ma_atomic_load_32(&pRB->encodedReadOffset);
     ma_rb__deconstruct_offset(readOffset, &readOffsetInBytes, &readOffsetLoopFlag);
 
@@ -47450,11 +45384,6 @@ MA_API ma_result ma_rb_seek_write(ma_rb* pRB, size_t offsetInBytes)
     ma_uint32 writeOffsetLoopFlag;
     ma_uint32 newWriteOffsetInBytes;
     ma_uint32 newWriteOffsetLoopFlag;
-
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     readOffset = ma_atomic_load_32(&pRB->encodedReadOffset);
     ma_rb__deconstruct_offset(readOffset, &readOffsetInBytes, &readOffsetLoopFlag);
 
@@ -47670,18 +45599,9 @@ MA_API ma_result ma_pcm_rb_init_ex(ma_format format, ma_uint32 channels, ma_uint
 {
     ma_uint32 bpf;
     ma_result result;
-
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pRB);
 
     bpf = ma_get_bytes_per_frame(format, channels);
-    if (bpf == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_rb_init_ex(subbufferSizeInFrames*bpf, subbufferCount, subbufferStrideInFrames*bpf, pOptionalPreallocatedBuffer, pAllocationCallbacks, &pRB->rb);
     if (result != MA_SUCCESS) {
         return result;
@@ -47725,11 +45645,6 @@ MA_API ma_result ma_pcm_rb_acquire_read(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames
 {
     size_t sizeInBytes;
     ma_result result;
-
-    if (pRB == NULL || pSizeInFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     sizeInBytes = *pSizeInFrames * ma_pcm_rb_get_bpf(pRB);
 
     result = ma_rb_acquire_read(&pRB->rb, &sizeInBytes, ppBufferOut);
@@ -47743,10 +45658,6 @@ MA_API ma_result ma_pcm_rb_acquire_read(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames
 
 MA_API ma_result ma_pcm_rb_commit_read(ma_pcm_rb* pRB, ma_uint32 sizeInFrames)
 {
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_rb_commit_read(&pRB->rb, sizeInFrames * ma_pcm_rb_get_bpf(pRB));
 }
 
@@ -47754,11 +45665,6 @@ MA_API ma_result ma_pcm_rb_acquire_write(ma_pcm_rb* pRB, ma_uint32* pSizeInFrame
 {
     size_t sizeInBytes;
     ma_result result;
-
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     sizeInBytes = *pSizeInFrames * ma_pcm_rb_get_bpf(pRB);
 
     result = ma_rb_acquire_write(&pRB->rb, &sizeInBytes, ppBufferOut);
@@ -47772,28 +45678,16 @@ MA_API ma_result ma_pcm_rb_acquire_write(ma_pcm_rb* pRB, ma_uint32* pSizeInFrame
 
 MA_API ma_result ma_pcm_rb_commit_write(ma_pcm_rb* pRB, ma_uint32 sizeInFrames)
 {
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_rb_commit_write(&pRB->rb, sizeInFrames * ma_pcm_rb_get_bpf(pRB));
 }
 
 MA_API ma_result ma_pcm_rb_seek_read(ma_pcm_rb* pRB, ma_uint32 offsetInFrames)
 {
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_rb_seek_read(&pRB->rb, offsetInFrames * ma_pcm_rb_get_bpf(pRB));
 }
 
 MA_API ma_result ma_pcm_rb_seek_write(ma_pcm_rb* pRB, ma_uint32 offsetInFrames)
 {
-    if (pRB == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_rb_seek_write(&pRB->rb, offsetInFrames * ma_pcm_rb_get_bpf(pRB));
 }
 
@@ -47883,10 +45777,6 @@ MA_API ma_result ma_duplex_rb_init(ma_format captureFormat, ma_uint32 captureCha
     ma_uint32 sizeInFrames;
 
     sizeInFrames = (ma_uint32)ma_calculate_frame_count_after_resampling(sampleRate, captureInternalSampleRate, captureInternalPeriodSizeInFrames * 5);
-    if (sizeInFrames == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_pcm_rb_init(captureFormat, captureChannels, sizeInFrames, NULL, pAllocationCallbacks, &pRB->rb);
     if (result != MA_SUCCESS) {
         return result;
@@ -47904,81 +45794,75 @@ MA_API ma_result ma_duplex_rb_uninit(ma_duplex_rb* pRB)
     return MA_SUCCESS;
 }
 
-MA_API const char* ma_result_description(ma_result result)
-{
-    switch (result)
-    {
-        case MA_SUCCESS:                       return "No error";
-        case MA_ERROR:                         return "Unknown error";
-        case MA_INVALID_ARGS:                  return "Invalid argument";
-        case MA_INVALID_OPERATION:             return "Invalid operation";
-        case MA_OUT_OF_MEMORY:                 return "Out of memory";
-        case MA_OUT_OF_RANGE:                  return "Out of range";
-        case MA_ACCESS_DENIED:                 return "Permission denied";
-        case MA_DOES_NOT_EXIST:                return "Resource does not exist";
-        case MA_ALREADY_EXISTS:                return "Resource already exists";
-        case MA_TOO_MANY_OPEN_FILES:           return "Too many open files";
-        case MA_INVALID_FILE:                  return "Invalid file";
-        case MA_TOO_BIG:                       return "Too large";
-        case MA_PATH_TOO_LONG:                 return "Path too long";
-        case MA_NAME_TOO_LONG:                 return "Name too long";
-        case MA_NOT_DIRECTORY:                 return "Not a directory";
-        case MA_IS_DIRECTORY:                  return "Is a directory";
-        case MA_DIRECTORY_NOT_EMPTY:           return "Directory not empty";
-        case MA_AT_END:                        return "At end";
-        case MA_NO_SPACE:                      return "No space available";
-        case MA_BUSY:                          return "Device or resource busy";
-        case MA_IO_ERROR:                      return "Input/output error";
-        case MA_INTERRUPT:                     return "Interrupted";
-        case MA_UNAVAILABLE:                   return "Resource unavailable";
-        case MA_ALREADY_IN_USE:                return "Resource already in use";
-        case MA_BAD_ADDRESS:                   return "Bad address";
-        case MA_BAD_SEEK:                      return "Illegal seek";
-        case MA_BAD_PIPE:                      return "Broken pipe";
-        case MA_DEADLOCK:                      return "Deadlock";
-        case MA_TOO_MANY_LINKS:                return "Too many links";
-        case MA_NOT_IMPLEMENTED:               return "Not implemented";
-        case MA_NO_MESSAGE:                    return "No message of desired type";
-        case MA_BAD_MESSAGE:                   return "Invalid message";
-        case MA_NO_DATA_AVAILABLE:             return "No data available";
-        case MA_INVALID_DATA:                  return "Invalid data";
-        case MA_TIMEOUT:                       return "Timeout";
-        case MA_NO_NETWORK:                    return "Network unavailable";
-        case MA_NOT_UNIQUE:                    return "Not unique";
-        case MA_NOT_SOCKET:                    return "Socket operation on non-socket";
-        case MA_NO_ADDRESS:                    return "Destination address required";
-        case MA_BAD_PROTOCOL:                  return "Protocol wrong type for socket";
-        case MA_PROTOCOL_UNAVAILABLE:          return "Protocol not available";
-        case MA_PROTOCOL_NOT_SUPPORTED:        return "Protocol not supported";
+MA_API const char* ma_result_description(ma_result result) {
+    switch (result) {
+        case MA_SUCCESS: return "No error";
+        case MA_ERROR: return "Unknown error";
+        case MA_INVALID_ARGS: return "Invalid argument";
+        case MA_INVALID_OPERATION: return "Invalid operation";
+        case MA_OUT_OF_MEMORY: return "Out of memory";
+        case MA_OUT_OF_RANGE: return "Out of range";
+        case MA_ACCESS_DENIED: return "Permission denied";
+        case MA_DOES_NOT_EXIST: return "Resource does not exist";
+        case MA_ALREADY_EXISTS: return "Resource already exists";
+        case MA_TOO_MANY_OPEN_FILES: return "Too many open files";
+        case MA_INVALID_FILE: return "Invalid file";
+        case MA_TOO_BIG: return "Too large";
+        case MA_PATH_TOO_LONG: return "Path too long";
+        case MA_NAME_TOO_LONG: return "Name too long";
+        case MA_NOT_DIRECTORY: return "Not a directory";
+        case MA_IS_DIRECTORY: return "Is a directory";
+        case MA_DIRECTORY_NOT_EMPTY: return "Directory not empty";
+        case MA_AT_END: return "At end";
+        case MA_NO_SPACE: return "No space available";
+        case MA_BUSY: return "Device or resource busy";
+        case MA_IO_ERROR: return "Input/output error";
+        case MA_INTERRUPT: return "Interrupted";
+        case MA_UNAVAILABLE: return "Resource unavailable";
+        case MA_ALREADY_IN_USE: return "Resource already in use";
+        case MA_BAD_ADDRESS: return "Bad address";
+        case MA_BAD_SEEK: return "Illegal seek";
+        case MA_BAD_PIPE: return "Broken pipe";
+        case MA_DEADLOCK: return "Deadlock";
+        case MA_TOO_MANY_LINKS: return "Too many links";
+        case MA_NOT_IMPLEMENTED: return "Not implemented";
+        case MA_NO_MESSAGE: return "No message of desired type";
+        case MA_BAD_MESSAGE: return "Invalid message";
+        case MA_NO_DATA_AVAILABLE: return "No data available";
+        case MA_INVALID_DATA: return "Invalid data";
+        case MA_TIMEOUT: return "Timeout";
+        case MA_NO_NETWORK: return "Network unavailable";
+        case MA_NOT_UNIQUE: return "Not unique";
+        case MA_NOT_SOCKET: return "Socket operation on non-socket";
+        case MA_NO_ADDRESS: return "Destination address required";
+        case MA_BAD_PROTOCOL: return "Protocol wrong type for socket";
+        case MA_PROTOCOL_UNAVAILABLE: return "Protocol not available";
+        case MA_PROTOCOL_NOT_SUPPORTED: return "Protocol not supported";
         case MA_PROTOCOL_FAMILY_NOT_SUPPORTED: return "Protocol family not supported";
-        case MA_ADDRESS_FAMILY_NOT_SUPPORTED:  return "Address family not supported";
-        case MA_SOCKET_NOT_SUPPORTED:          return "Socket type not supported";
-        case MA_CONNECTION_RESET:              return "Connection reset";
-        case MA_ALREADY_CONNECTED:             return "Already connected";
-        case MA_NOT_CONNECTED:                 return "Not connected";
-        case MA_CONNECTION_REFUSED:            return "Connection refused";
-        case MA_NO_HOST:                       return "No host";
-        case MA_IN_PROGRESS:                   return "Operation in progress";
-        case MA_CANCELLED:                     return "Operation cancelled";
-        case MA_MEMORY_ALREADY_MAPPED:         return "Memory already mapped";
-
-        case MA_FORMAT_NOT_SUPPORTED:          return "Format not supported";
-        case MA_DEVICE_TYPE_NOT_SUPPORTED:     return "Device type not supported";
-        case MA_SHARE_MODE_NOT_SUPPORTED:      return "Share mode not supported";
-        case MA_NO_BACKEND:                    return "No backend";
-        case MA_NO_DEVICE:                     return "No device";
-        case MA_API_NOT_FOUND:                 return "API not found";
-        case MA_INVALID_DEVICE_CONFIG:         return "Invalid device config";
-
-        case MA_DEVICE_NOT_INITIALIZED:        return "Device not initialized";
-        case MA_DEVICE_NOT_STARTED:            return "Device not started";
-
-        case MA_FAILED_TO_INIT_BACKEND:        return "Failed to initialize backend";
+        case MA_ADDRESS_FAMILY_NOT_SUPPORTED: return "Address family not supported";
+        case MA_SOCKET_NOT_SUPPORTED: return "Socket type not supported";
+        case MA_CONNECTION_RESET: return "Connection reset";
+        case MA_ALREADY_CONNECTED: return "Already connected";
+        case MA_NOT_CONNECTED: return "Not connected";
+        case MA_CONNECTION_REFUSED: return "Connection refused";
+        case MA_NO_HOST: return "No host";
+        case MA_IN_PROGRESS: return "Operation in progress";
+        case MA_CANCELLED: return "Operation cancelled";
+        case MA_MEMORY_ALREADY_MAPPED: return "Memory already mapped";
+        case MA_FORMAT_NOT_SUPPORTED: return "Format not supported";
+        case MA_DEVICE_TYPE_NOT_SUPPORTED: return "Device type not supported";
+        case MA_SHARE_MODE_NOT_SUPPORTED: return "Share mode not supported";
+        case MA_NO_BACKEND: return "No backend";
+        case MA_NO_DEVICE: return "No device";
+        case MA_API_NOT_FOUND: return "API not found";
+        case MA_INVALID_DEVICE_CONFIG: return "Invalid device config";
+        case MA_DEVICE_NOT_INITIALIZED: return "Device not initialized";
+        case MA_DEVICE_NOT_STARTED: return "Device not started";
+        case MA_FAILED_TO_INIT_BACKEND: return "Failed to initialize backend";
         case MA_FAILED_TO_OPEN_BACKEND_DEVICE: return "Failed to open backend device";
         case MA_FAILED_TO_START_BACKEND_DEVICE: return "Failed to start backend device";
         case MA_FAILED_TO_STOP_BACKEND_DEVICE: return "Failed to stop backend device";
-
-        default:                               return "Unknown error";
+        default: return "Unknown error";
     }
 }
 
@@ -48112,21 +45996,7 @@ MA_API ma_data_source_config ma_data_source_config_init(void)
 MA_API ma_result ma_data_source_init(const ma_data_source_config* pConfig, ma_data_source* pDataSource)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDataSourceBase);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->vtable == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pDataSourceBase->vtable           = pConfig->vtable;
     pDataSourceBase->rangeBegInFrames = MA_DATA_SOURCE_DEFAULT_RANGE_BEG;
     pDataSourceBase->rangeEndInFrames = MA_DATA_SOURCE_DEFAULT_RANGE_END;
@@ -48230,11 +46100,6 @@ static ma_result ma_data_source_read_pcm_frames_within_range(ma_data_source* pDa
     if (pDataSourceBase == NULL) {
         return MA_AT_END;
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ASSERT(pDataSourceBase->vtable != NULL);
 
     if ((pDataSourceBase->vtable->flags & MA_DATA_SOURCE_SELF_MANAGED_RANGE_AND_LOOP_POINT) != 0 || (pDataSourceBase->rangeEndInFrames == ~((ma_uint64)0) && (pDataSourceBase->loopEndInFrames == ~((ma_uint64)0) || loop == MA_FALSE))) {
@@ -48305,14 +46170,6 @@ MA_API ma_result ma_data_source_read_pcm_frames(ma_data_source* pDataSource, voi
 
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
-    }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pDataSourceBase == NULL) {
-        return MA_INVALID_ARGS;
     }
 
     loop = ma_data_source_is_looping(pDataSource);
@@ -48430,11 +46287,6 @@ MA_API ma_result ma_data_source_seek_seconds(ma_data_source* pDataSource, float 
     ma_uint64 framesSeeked = 0;
     ma_uint32 sampleRate;
     ma_result result;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_data_source_get_data_format(pDataSource, NULL, NULL, &sampleRate, NULL, 0);
     if (result != MA_SUCCESS) {
         return result;
@@ -48450,42 +46302,17 @@ MA_API ma_result ma_data_source_seek_seconds(ma_data_source* pDataSource, float 
     return result;
 }
 
-MA_API ma_result ma_data_source_get_data_format(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap)
-{
+MA_API ma_result ma_data_source_get_data_format(ma_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap) {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
     ma_result result;
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
-
-    
-    if (pFormat != NULL) {
-        *pFormat = ma_format_unknown;
-    }
-    if (pChannels != NULL) {
-        *pChannels = 0;
-    }
-    if (pSampleRate != NULL) {
-        *pSampleRate = 0;
-    }
-    if (pChannelMap != NULL) {
-        MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap);
-    }
-
-    if (pDataSourceBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    MA_ASSERT(pDataSourceBase->vtable != NULL);
-
-    if (pDataSourceBase->vtable->onGetDataFormat == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
+    if (pChannels != NULL) { *pChannels = 0; }
+    if (pSampleRate != NULL) { *pSampleRate = 0; }
+    if (pChannelMap != NULL) { MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap); }
     result = pDataSourceBase->vtable->onGetDataFormat(pDataSource, &format, &channels, &sampleRate, pChannelMap, channelMapCap);
-    if (result != MA_SUCCESS) {
-        return result;
-    }
+    if (result != MA_SUCCESS) { return result; }
 
     if (pFormat != NULL) {
         *pFormat = format;
@@ -48507,10 +46334,6 @@ MA_API ma_result ma_data_source_get_cursor_in_pcm_frames(ma_data_source* pDataSo
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
     ma_result result;
     ma_uint64 cursor;
-
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     *pCursor = 0;
 
@@ -48542,17 +46365,7 @@ MA_API ma_result ma_data_source_get_cursor_in_pcm_frames(ma_data_source* pDataSo
 MA_API ma_result ma_data_source_get_length_in_pcm_frames(ma_data_source* pDataSource, ma_uint64* pLength)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;
-
-    if (pDataSourceBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ASSERT(pDataSourceBase->vtable != NULL);
 
     
@@ -48574,11 +46387,6 @@ MA_API ma_result ma_data_source_get_cursor_in_seconds(ma_data_source* pDataSourc
     ma_result result;
     ma_uint64 cursorInPCMFrames;
     ma_uint32 sampleRate;
-
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
 
     result = ma_data_source_get_cursor_in_pcm_frames(pDataSource, &cursorInPCMFrames);
@@ -48603,10 +46411,6 @@ MA_API ma_result ma_data_source_get_length_in_seconds(ma_data_source* pDataSourc
     ma_uint64 lengthInPCMFrames;
     ma_uint32 sampleRate;
 
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;
 
     result = ma_data_source_get_length_in_pcm_frames(pDataSource, &lengthInPCMFrames);
@@ -48628,15 +46432,8 @@ MA_API ma_result ma_data_source_get_length_in_seconds(ma_data_source* pDataSourc
 MA_API ma_result ma_data_source_set_looping(ma_data_source* pDataSource, ma_bool32 isLooping)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_atomic_exchange_32(&pDataSourceBase->isLooping, isLooping);
-
     MA_ASSERT(pDataSourceBase->vtable != NULL);
-
     
     if (pDataSourceBase->vtable->onSetLooping == NULL) {
         return MA_SUCCESS;
@@ -48663,16 +46460,6 @@ MA_API ma_result ma_data_source_set_range_in_pcm_frames(ma_data_source* pDataSou
     ma_uint64 relativeCursor;
     ma_uint64 absoluteCursor;
     ma_bool32 doSeekAdjustment = MA_FALSE;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (rangeEndInFrames < rangeBegInFrames) {
-        return MA_INVALID_ARGS; 
-    }
-
-    
     result = ma_data_source_get_cursor_in_pcm_frames(pDataSource, &relativeCursor);
     if (result == MA_SUCCESS) {
         doSeekAdjustment = MA_TRUE;
@@ -48729,23 +46516,9 @@ MA_API void ma_data_source_get_range_in_pcm_frames(const ma_data_source* pDataSo
 MA_API ma_result ma_data_source_set_loop_point_in_pcm_frames(ma_data_source* pDataSource, ma_uint64 loopBegInFrames, ma_uint64 loopEndInFrames)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (loopEndInFrames < loopBegInFrames) {
-        return MA_INVALID_ARGS; 
-    }
-
-    if (loopEndInFrames > pDataSourceBase->rangeEndInFrames && loopEndInFrames != ~((ma_uint64)0)) {
-        return MA_INVALID_ARGS; 
-    }
-
     pDataSourceBase->loopBegInFrames = loopBegInFrames;
     pDataSourceBase->loopEndInFrames = loopEndInFrames;
 
-    
     if (pDataSourceBase->loopEndInFrames > (pDataSourceBase->rangeEndInFrames - pDataSourceBase->rangeBegInFrames) && pDataSourceBase->loopEndInFrames != ~((ma_uint64)0)) {
         pDataSourceBase->loopEndInFrames = (pDataSourceBase->rangeEndInFrames - pDataSourceBase->rangeBegInFrames);
     }
@@ -48780,11 +46553,6 @@ MA_API void ma_data_source_get_loop_point_in_pcm_frames(const ma_data_source* pD
 MA_API ma_result ma_data_source_set_current(ma_data_source* pDataSource, ma_data_source* pCurrentDataSource)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pDataSourceBase->pCurrent = pCurrentDataSource;
 
     return MA_SUCCESS;
@@ -48804,13 +46572,7 @@ MA_API ma_data_source* ma_data_source_get_current(const ma_data_source* pDataSou
 MA_API ma_result ma_data_source_set_next(ma_data_source* pDataSource, ma_data_source* pNextDataSource)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pDataSourceBase->pNext = pNextDataSource;
-
     return MA_SUCCESS;
 }
 
@@ -48828,13 +46590,7 @@ MA_API ma_data_source* ma_data_source_get_next(const ma_data_source* pDataSource
 MA_API ma_result ma_data_source_set_next_callback(ma_data_source* pDataSource, ma_data_source_get_next_proc onGetNext)
 {
     ma_data_source_base* pDataSourceBase = (ma_data_source_base*)pDataSource;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pDataSourceBase->onGetNext = onGetNext;
-
     return MA_SUCCESS;
 }
 
@@ -48914,11 +46670,6 @@ MA_API ma_result ma_audio_buffer_ref_init(ma_format format, ma_uint32 channels, 
 {
     ma_result result;
     ma_data_source_config dataSourceConfig;
-
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pAudioBufferRef);
 
     dataSourceConfig = ma_data_source_config_init();
@@ -48950,10 +46701,6 @@ MA_API void ma_audio_buffer_ref_uninit(ma_audio_buffer_ref* pAudioBufferRef)
 
 MA_API ma_result ma_audio_buffer_ref_set_data(ma_audio_buffer_ref* pAudioBufferRef, const void* pData, ma_uint64 sizeInFrames)
 {
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pAudioBufferRef->cursor       = 0;
     pAudioBufferRef->sizeInFrames = sizeInFrames;
     pAudioBufferRef->pData        = pData;
@@ -49006,16 +46753,7 @@ MA_API ma_uint64 ma_audio_buffer_ref_read_pcm_frames(ma_audio_buffer_ref* pAudio
 
 MA_API ma_result ma_audio_buffer_ref_seek_to_pcm_frame(ma_audio_buffer_ref* pAudioBufferRef, ma_uint64 frameIndex)
 {
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (frameIndex > pAudioBufferRef->sizeInFrames) {
-        return MA_INVALID_ARGS;
-    }
-
     pAudioBufferRef->cursor = (size_t)frameIndex;
-
     return MA_SUCCESS;
 }
 
@@ -49033,10 +46771,6 @@ MA_API ma_result ma_audio_buffer_ref_map(ma_audio_buffer_ref* pAudioBufferRef, v
         *pFrameCount = 0;       
     }
 
-    if (pAudioBufferRef == NULL || ppFramesOut == NULL || pFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     framesAvailable = pAudioBufferRef->sizeInFrames - pAudioBufferRef->cursor;
     if (frameCount > framesAvailable) {
         frameCount = framesAvailable;
@@ -49052,15 +46786,7 @@ MA_API ma_result ma_audio_buffer_ref_unmap(ma_audio_buffer_ref* pAudioBufferRef,
 {
     ma_uint64 framesAvailable;
 
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     framesAvailable = pAudioBufferRef->sizeInFrames - pAudioBufferRef->cursor;
-    if (frameCount > framesAvailable) {
-        return MA_INVALID_ARGS;   
-    }
-
     pAudioBufferRef->cursor += frameCount;
 
     if (pAudioBufferRef->cursor == pAudioBufferRef->sizeInFrames) {
@@ -49081,50 +46807,21 @@ MA_API ma_bool32 ma_audio_buffer_ref_at_end(const ma_audio_buffer_ref* pAudioBuf
 
 MA_API ma_result ma_audio_buffer_ref_get_cursor_in_pcm_frames(const ma_audio_buffer_ref* pAudioBufferRef, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
-
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = pAudioBufferRef->cursor;
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_audio_buffer_ref_get_length_in_pcm_frames(const ma_audio_buffer_ref* pAudioBufferRef, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;
-
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = pAudioBufferRef->sizeInFrames;
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_audio_buffer_ref_get_available_frames(const ma_audio_buffer_ref* pAudioBufferRef, ma_uint64* pAvailableFrames)
 {
-    if (pAvailableFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pAvailableFrames = 0;
-
-    if (pAudioBufferRef == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pAudioBufferRef->sizeInFrames <= pAudioBufferRef->cursor) {
         *pAvailableFrames = 0;
     } else {
@@ -49151,21 +46848,7 @@ MA_API ma_audio_buffer_config ma_audio_buffer_config_init(ma_format format, ma_u
 static ma_result ma_audio_buffer_init_ex(const ma_audio_buffer_config* pConfig, ma_bool32 doCopy, ma_audio_buffer* pAudioBuffer)
 {
     ma_result result;
-
-    if (pAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_MEMORY(pAudioBuffer, sizeof(*pAudioBuffer) - sizeof(pAudioBuffer->_pExtraData));   
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->sizeInFrames == 0) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_audio_buffer_ref_init(pConfig->format, pConfig->channels, NULL, 0, &pAudioBuffer->ref);
     if (result != MA_SUCCESS) {
         return result;
@@ -49235,33 +46918,16 @@ MA_API void ma_audio_buffer_uninit(ma_audio_buffer* pAudioBuffer)
 
 MA_API ma_result ma_audio_buffer_get_cursor_in_pcm_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pCursor)
 {
-    if (pAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_audio_buffer_ref_get_cursor_in_pcm_frames(&pAudioBuffer->ref, pCursor);
 }
 
 MA_API ma_result ma_audio_buffer_get_available_frames(const ma_audio_buffer* pAudioBuffer, ma_uint64* pAvailableFrames)
 {
-    if (pAvailableFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pAvailableFrames = 0;
-
-    if (pAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_audio_buffer_ref_get_available_frames(&pAudioBuffer->ref, pAvailableFrames);
 }
 MA_API ma_result ma_paged_audio_buffer_data_init(ma_format format, ma_uint32 channels, ma_paged_audio_buffer_data* pData)
 {
-    if (pData == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pData);
 
     pData->format   = format;
@@ -49311,16 +46977,7 @@ MA_API ma_result ma_paged_audio_buffer_data_get_length_in_pcm_frames(ma_paged_au
 {
     ma_paged_audio_buffer_page* pPage;
 
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;
-
-    if (pData == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     for (pPage = (ma_paged_audio_buffer_page*)ma_atomic_load_ptr(&pData->head.pNext); pPage != NULL; pPage = (ma_paged_audio_buffer_page*)ma_atomic_load_ptr(&pPage->pNext)) {
         *pLength += pPage->sizeInFrames;
@@ -49333,17 +46990,7 @@ MA_API ma_result ma_paged_audio_buffer_data_allocate_page(ma_paged_audio_buffer_
 {
     ma_paged_audio_buffer_page* pPage;
     ma_uint64 allocationSize;
-
-    if (ppPage == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *ppPage = NULL;
-
-    if (pData == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     allocationSize = sizeof(*pPage) + (pageSizeInFrames * ma_get_bytes_per_frame(pData->format, pData->channels));
     if (allocationSize > MA_SIZE_MAX) {
         return MA_OUT_OF_MEMORY;    
@@ -49368,25 +47015,12 @@ MA_API ma_result ma_paged_audio_buffer_data_allocate_page(ma_paged_audio_buffer_
 
 MA_API ma_result ma_paged_audio_buffer_data_free_page(ma_paged_audio_buffer_data* pData, ma_paged_audio_buffer_page* pPage, const ma_allocation_callbacks* pAllocationCallbacks)
 {
-    if (pData == NULL || pPage == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     ma_free(pPage, pAllocationCallbacks);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_paged_audio_buffer_data_append_page(ma_paged_audio_buffer_data* pData, ma_paged_audio_buffer_page* pPage)
 {
-    if (pData == NULL || pPage == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-
-    
     for (;;) {
         ma_paged_audio_buffer_page* pOldTail = (ma_paged_audio_buffer_page*)ma_atomic_load_ptr(&pData->pTail);
         ma_paged_audio_buffer_page* pNewTail = pPage;
@@ -49457,22 +47091,7 @@ MA_API ma_result ma_paged_audio_buffer_init(const ma_paged_audio_buffer_config* 
 {
     ma_result result;
     ma_data_source_config dataSourceConfig;
-
-    if (pPagedAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pPagedAudioBuffer);
-
-    
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->pData == NULL) {
-        return MA_INVALID_ARGS; 
-    }
-
     dataSourceConfig = ma_data_source_config_init();
     dataSourceConfig.vtable = &g_ma_paged_audio_buffer_data_source_vtable;
 
@@ -49504,10 +47123,6 @@ MA_API ma_result ma_paged_audio_buffer_read_pcm_frames(ma_paged_audio_buffer* pP
     ma_uint64 totalFramesRead = 0;
     ma_format format;
     ma_uint32 channels;
-
-    if (pPagedAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     format   = pPagedAudioBuffer->pData->format;
     channels = pPagedAudioBuffer->pData->channels;
@@ -49554,10 +47169,6 @@ MA_API ma_result ma_paged_audio_buffer_read_pcm_frames(ma_paged_audio_buffer* pP
 
 MA_API ma_result ma_paged_audio_buffer_seek_to_pcm_frame(ma_paged_audio_buffer* pPagedAudioBuffer, ma_uint64 frameIndex)
 {
-    if (pPagedAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (frameIndex == pPagedAudioBuffer->absoluteCursor) {
         return MA_SUCCESS;  
     }
@@ -49602,18 +47213,8 @@ MA_API ma_result ma_paged_audio_buffer_seek_to_pcm_frame(ma_paged_audio_buffer* 
 
 MA_API ma_result ma_paged_audio_buffer_get_cursor_in_pcm_frames(ma_paged_audio_buffer* pPagedAudioBuffer, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;   
-
-    if (pPagedAudioBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = pPagedAudioBuffer->absoluteCursor;
-
     return MA_SUCCESS;
 }
 
@@ -49625,17 +47226,7 @@ MA_API ma_result ma_paged_audio_buffer_get_length_in_pcm_frames(ma_paged_audio_b
 MA_API ma_result ma_vfs_open(ma_vfs* pVFS, const char* pFilePath, ma_uint32 openMode, ma_vfs_file* pFile)
 {
     ma_vfs_callbacks* pCallbacks = (ma_vfs_callbacks*)pVFS;
-
-    if (pFile == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pFile = NULL;
-
-    if (pVFS == NULL || pFilePath == NULL || openMode == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pCallbacks->onOpen == NULL) {
         return MA_NOT_IMPLEMENTED;
     }
@@ -49646,17 +47237,7 @@ MA_API ma_result ma_vfs_open(ma_vfs* pVFS, const char* pFilePath, ma_uint32 open
 MA_API ma_result ma_vfs_open_w(ma_vfs* pVFS, const wchar_t* pFilePath, ma_uint32 openMode, ma_vfs_file* pFile)
 {
     ma_vfs_callbacks* pCallbacks = (ma_vfs_callbacks*)pVFS;
-
-    if (pFile == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pFile = NULL;
-
-    if (pVFS == NULL || pFilePath == NULL || openMode == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pCallbacks->onOpenW == NULL) {
         return MA_NOT_IMPLEMENTED;
     }
@@ -49667,15 +47248,6 @@ MA_API ma_result ma_vfs_open_w(ma_vfs* pVFS, const wchar_t* pFilePath, ma_uint32
 MA_API ma_result ma_vfs_close(ma_vfs* pVFS, ma_vfs_file file)
 {
     ma_vfs_callbacks* pCallbacks = (ma_vfs_callbacks*)pVFS;
-
-    if (pVFS == NULL || file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pCallbacks->onClose == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pCallbacks->onClose(pVFS, file);
 }
 
@@ -49688,15 +47260,6 @@ MA_API ma_result ma_vfs_read(ma_vfs* pVFS, ma_vfs_file file, void* pDst, size_t 
     if (pBytesRead != NULL) {
         *pBytesRead = 0;
     }
-
-    if (pVFS == NULL || file == NULL || pDst == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pCallbacks->onRead == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     result = pCallbacks->onRead(pVFS, file, pDst, sizeInBytes, &bytesRead);
 
     if (pBytesRead != NULL) {
@@ -49717,72 +47280,26 @@ MA_API ma_result ma_vfs_write(ma_vfs* pVFS, ma_vfs_file file, const void* pSrc, 
     if (pBytesWritten != NULL) {
         *pBytesWritten = 0;
     }
-
-    if (pVFS == NULL || file == NULL || pSrc == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pCallbacks->onWrite == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pCallbacks->onWrite(pVFS, file, pSrc, sizeInBytes, pBytesWritten);
 }
 
 MA_API ma_result ma_vfs_seek(ma_vfs* pVFS, ma_vfs_file file, ma_int64 offset, ma_seek_origin origin)
 {
     ma_vfs_callbacks* pCallbacks = (ma_vfs_callbacks*)pVFS;
-
-    if (pVFS == NULL || file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pCallbacks->onSeek == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pCallbacks->onSeek(pVFS, file, offset, origin);
 }
 
 MA_API ma_result ma_vfs_tell(ma_vfs* pVFS, ma_vfs_file file, ma_int64* pCursor)
 {
     ma_vfs_callbacks* pCallbacks = (ma_vfs_callbacks*)pVFS;
-
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
-
-    if (pVFS == NULL || file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pCallbacks->onTell == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pCallbacks->onTell(pVFS, file, pCursor);
 }
 
 MA_API ma_result ma_vfs_info(ma_vfs* pVFS, ma_vfs_file file, ma_file_info* pInfo)
 {
     ma_vfs_callbacks* pCallbacks = (ma_vfs_callbacks*)pVFS;
-
-    if (pInfo == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pInfo);
-
-    if (pVFS == NULL || file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pCallbacks->onInfo == NULL) {
-        return MA_NOT_IMPLEMENTED;
-    }
-
     return pCallbacks->onInfo(pVFS, file, pInfo);
 }
 #if !defined(MA_USE_WIN32_FILEIO) && (defined(MA_WIN32) && defined(MA_WIN32_DESKTOP) && !defined(MA_NO_WIN32_FILEIO) && !defined(MA_POSIX))
@@ -50272,16 +47789,7 @@ static ma_result ma_default_vfs_info__stdio(ma_vfs* pVFS, ma_vfs_file file, ma_f
 #endif
 static ma_result ma_default_vfs_open(ma_vfs* pVFS, const char* pFilePath, ma_uint32 openMode, ma_vfs_file* pFile)
 {
-    if (pFile == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pFile = NULL;
-
-    if (pFilePath == NULL || openMode == 0) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_open__win32(pVFS, pFilePath, openMode, pFile);
 #else
@@ -50291,16 +47799,7 @@ static ma_result ma_default_vfs_open(ma_vfs* pVFS, const char* pFilePath, ma_uin
 
 static ma_result ma_default_vfs_open_w(ma_vfs* pVFS, const wchar_t* pFilePath, ma_uint32 openMode, ma_vfs_file* pFile)
 {
-    if (pFile == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pFile = NULL;
-
-    if (pFilePath == NULL || openMode == 0) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_open_w__win32(pVFS, pFilePath, openMode, pFile);
 #else
@@ -50310,10 +47809,6 @@ static ma_result ma_default_vfs_open_w(ma_vfs* pVFS, const wchar_t* pFilePath, m
 
 static ma_result ma_default_vfs_close(ma_vfs* pVFS, ma_vfs_file file)
 {
-    if (file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_close__win32(pVFS, file);
 #else
@@ -50325,10 +47820,6 @@ static ma_result ma_default_vfs_read(ma_vfs* pVFS, ma_vfs_file file, void* pDst,
 {
     if (pBytesRead != NULL) {
         *pBytesRead = 0;
-    }
-
-    if (file == NULL || pDst == NULL) {
-        return MA_INVALID_ARGS;
     }
 
 #if defined(MA_USE_WIN32_FILEIO)
@@ -50344,10 +47835,6 @@ static ma_result ma_default_vfs_write(ma_vfs* pVFS, ma_vfs_file file, const void
         *pBytesWritten = 0;
     }
 
-    if (file == NULL || pSrc == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_write__win32(pVFS, file, pSrc, sizeInBytes, pBytesWritten);
 #else
@@ -50357,10 +47844,6 @@ static ma_result ma_default_vfs_write(ma_vfs* pVFS, ma_vfs_file file, const void
 
 static ma_result ma_default_vfs_seek(ma_vfs* pVFS, ma_vfs_file file, ma_int64 offset, ma_seek_origin origin)
 {
-    if (file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_seek__win32(pVFS, file, offset, origin);
 #else
@@ -50370,16 +47853,7 @@ static ma_result ma_default_vfs_seek(ma_vfs* pVFS, ma_vfs_file file, ma_int64 of
 
 static ma_result ma_default_vfs_tell(ma_vfs* pVFS, ma_vfs_file file, ma_int64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
-
-    if (file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_tell__win32(pVFS, file, pCursor);
 #else
@@ -50389,16 +47863,7 @@ static ma_result ma_default_vfs_tell(ma_vfs* pVFS, ma_vfs_file file, ma_int64* p
 
 static ma_result ma_default_vfs_info(ma_vfs* pVFS, ma_vfs_file file, ma_file_info* pInfo)
 {
-    if (pInfo == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pInfo);
-
-    if (file == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
 #if defined(MA_USE_WIN32_FILEIO)
     return ma_default_vfs_info__win32(pVFS, file, pInfo);
 #else
@@ -50407,10 +47872,6 @@ static ma_result ma_default_vfs_info(ma_vfs* pVFS, ma_vfs_file file, ma_file_inf
 }
 MA_API ma_result ma_default_vfs_init(ma_default_vfs* pVFS, const ma_allocation_callbacks* pAllocationCallbacks)
 {
-    if (pVFS == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pVFS->cb.onOpen  = ma_default_vfs_open;
     pVFS->cb.onOpenW = ma_default_vfs_open_w;
     pVFS->cb.onClose = ma_default_vfs_close;
@@ -50507,10 +47968,6 @@ static ma_result ma_vfs_open_and_read_file_ex(ma_vfs* pVFS, const char* pFilePat
     }
     if (pSize != NULL) {
         *pSize = 0;
-    }
-
-    if (ppData == NULL) {
-        return MA_INVALID_ARGS;
     }
 
     if (pFilePath != NULL) {
@@ -51471,15 +48928,6 @@ static ma_result ma_decoder__init_data_converter(ma_decoder* pDecoder, const ma_
         return result;  
     }
     
-    if (pConfig->channels > MA_MAX_CHANNELS) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (internalChannels > MA_MAX_CHANNELS) {
-        return MA_INVALID_ARGS;
-    }
-    
     if (pConfig->format == ma_format_unknown) {
         pDecoder->outputFormat = internalFormat;
     } else {
@@ -51906,17 +49354,11 @@ static ma_result ma_wav_init_internal(const ma_decoding_backend_config* pConfig,
     ma_result result;
     ma_data_source_config dataSourceConfig;
 
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pWav);
     pWav->format = ma_format_unknown;   
 
     if (pConfig != NULL && (pConfig->preferredFormat == ma_format_f32 || pConfig->preferredFormat == ma_format_s16 || pConfig->preferredFormat == ma_format_s32)) {
         pWav->format = pConfig->preferredFormat;
-    } else {
-        
     }
 
     dataSourceConfig = ma_data_source_config_init();
@@ -51975,10 +49417,6 @@ MA_API ma_result ma_wav_init(ma_read_proc onRead, ma_seek_proc onSeek, ma_tell_p
     result = ma_wav_init_internal(pConfig, pWav);
     if (result != MA_SUCCESS) {
         return result;
-    }
-
-    if (onRead == NULL || onSeek == NULL) {
-        return MA_INVALID_ARGS; 
     }
 
     pWav->onRead = onRead;
@@ -52133,14 +49571,6 @@ MA_API ma_result ma_wav_read_pcm_frames(ma_wav* pWav, void* pFramesOut, ma_uint6
         *pFramesRead = 0;
     }
 
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_WAV)
     {
         
@@ -52206,10 +49636,6 @@ MA_API ma_result ma_wav_read_pcm_frames(ma_wav* pWav, void* pFramesOut, ma_uint6
 
 MA_API ma_result ma_wav_seek_to_pcm_frame(ma_wav* pWav, ma_uint64 frameIndex)
 {
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_WAV)
     {
         ma_bool32 wavResult;
@@ -52249,10 +49675,6 @@ MA_API ma_result ma_wav_get_data_format(ma_wav* pWav, ma_format* pFormat, ma_uin
         MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap);
     }
 
-    if (pWav == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pFormat != NULL) {
         *pFormat = pWav->format;
     }
@@ -52284,16 +49706,7 @@ MA_API ma_result ma_wav_get_data_format(ma_wav* pWav, ma_format* pFormat, ma_uin
 
 MA_API ma_result ma_wav_get_cursor_in_pcm_frames(ma_wav* pWav, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;   
-
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_WAV)
     {
         ma_result wavResult = ma_dr_wav_get_cursor_in_pcm_frames(&pWav->dr, pCursor);
@@ -52314,16 +49727,7 @@ MA_API ma_result ma_wav_get_cursor_in_pcm_frames(ma_wav* pWav, ma_uint64* pCurso
 
 MA_API ma_result ma_wav_get_length_in_pcm_frames(ma_wav* pWav, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;   
-
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_WAV)
     {
         ma_result wavResult = ma_dr_wav_get_length_in_pcm_frames(&pWav->dr, pLength);
@@ -52581,17 +49985,11 @@ static ma_result ma_flac_init_internal(const ma_decoding_backend_config* pConfig
     ma_result result;
     ma_data_source_config dataSourceConfig;
 
-    if (pFlac == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pFlac);
     pFlac->format = ma_format_f32;    
 
     if (pConfig != NULL && (pConfig->preferredFormat == ma_format_f32 || pConfig->preferredFormat == ma_format_s16 || pConfig->preferredFormat == ma_format_s32)) {
         pFlac->format = pConfig->preferredFormat;
-    } else {
-        
     }
 
     dataSourceConfig = ma_data_source_config_init();
@@ -52613,11 +50011,6 @@ MA_API ma_result ma_flac_init(ma_read_proc onRead, ma_seek_proc onSeek, ma_tell_
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (onRead == NULL || onSeek == NULL) {
-        return MA_INVALID_ARGS; 
-    }
-
     pFlac->onRead = onRead;
     pFlac->onSeek = onSeek;
     pFlac->onTell = onTell;
@@ -52753,15 +50146,6 @@ MA_API ma_result ma_flac_read_pcm_frames(ma_flac* pFlac, void* pFramesOut, ma_ui
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pFlac == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_FLAC)
     {
         
@@ -52828,10 +50212,6 @@ MA_API ma_result ma_flac_read_pcm_frames(ma_flac* pFlac, void* pFramesOut, ma_ui
 
 MA_API ma_result ma_flac_seek_to_pcm_frame(ma_flac* pFlac, ma_uint64 frameIndex)
 {
-    if (pFlac == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_FLAC)
     {
         ma_bool32 flacResult;
@@ -52870,11 +50250,6 @@ MA_API ma_result ma_flac_get_data_format(ma_flac* pFlac, ma_format* pFormat, ma_
     if (pChannelMap != NULL) {
         MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap);
     }
-
-    if (pFlac == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pFormat != NULL) {
         *pFormat = pFlac->format;
     }
@@ -52906,16 +50281,7 @@ MA_API ma_result ma_flac_get_data_format(ma_flac* pFlac, ma_format* pFormat, ma_
 
 MA_API ma_result ma_flac_get_cursor_in_pcm_frames(ma_flac* pFlac, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;   
-
-    if (pFlac == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_FLAC)
     {
         *pCursor = pFlac->dr->currentPCMFrame;
@@ -52933,16 +50299,7 @@ MA_API ma_result ma_flac_get_cursor_in_pcm_frames(ma_flac* pFlac, ma_uint64* pCu
 
 MA_API ma_result ma_flac_get_length_in_pcm_frames(ma_flac* pFlac, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;   
-
-    if (pFlac == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_FLAC)
     {
         *pLength = pFlac->dr->totalPCMFrameCount;
@@ -53199,17 +50556,11 @@ static ma_result ma_mp3_init_internal(const ma_decoding_backend_config* pConfig,
     ma_result result;
     ma_data_source_config dataSourceConfig;
 
-    if (pMP3 == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pMP3);
     pMP3->format = ma_format_f32;    
 
     if (pConfig != NULL && (pConfig->preferredFormat == ma_format_f32 || pConfig->preferredFormat == ma_format_s16)) {
         pMP3->format = pConfig->preferredFormat;
-    } else {
-        
     }
 
     dataSourceConfig = ma_data_source_config_init();
@@ -53278,11 +50629,6 @@ MA_API ma_result ma_mp3_init(ma_read_proc onRead, ma_seek_proc onSeek, ma_tell_p
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (onRead == NULL || onSeek == NULL) {
-        return MA_INVALID_ARGS; 
-    }
-
     pMP3->onRead = onRead;
     pMP3->onSeek = onSeek;
     pMP3->onTell = onTell;
@@ -53436,14 +50782,6 @@ MA_API ma_result ma_mp3_read_pcm_frames(ma_mp3* pMP3, void* pFramesOut, ma_uint6
         *pFramesRead = 0;
     }
 
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pMP3 == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_MP3)
     {
         
@@ -53502,10 +50840,6 @@ MA_API ma_result ma_mp3_read_pcm_frames(ma_mp3* pMP3, void* pFramesOut, ma_uint6
 
 MA_API ma_result ma_mp3_seek_to_pcm_frame(ma_mp3* pMP3, ma_uint64 frameIndex)
 {
-    if (pMP3 == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_MP3)
     {
         ma_bool32 mp3Result;
@@ -53544,11 +50878,6 @@ MA_API ma_result ma_mp3_get_data_format(ma_mp3* pMP3, ma_format* pFormat, ma_uin
     if (pChannelMap != NULL) {
         MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap);
     }
-
-    if (pMP3 == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pFormat != NULL) {
         *pFormat = pMP3->format;
     }
@@ -53580,16 +50909,7 @@ MA_API ma_result ma_mp3_get_data_format(ma_mp3* pMP3, ma_format* pFormat, ma_uin
 
 MA_API ma_result ma_mp3_get_cursor_in_pcm_frames(ma_mp3* pMP3, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;   
-
-    if (pMP3 == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_MP3)
     {
         *pCursor = pMP3->dr.currentPCMFrame;
@@ -53607,16 +50927,7 @@ MA_API ma_result ma_mp3_get_cursor_in_pcm_frames(ma_mp3* pMP3, ma_uint64* pCurso
 
 MA_API ma_result ma_mp3_get_length_in_pcm_frames(ma_mp3* pMP3, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;   
-
-    if (pMP3 == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_MP3)
     {
         *pLength = ma_dr_mp3_get_pcm_frame_count(&pMP3->dr);
@@ -53853,10 +51164,6 @@ static ma_result ma_stbvorbis_init_internal(const ma_decoding_backend_config* pC
 
     (void)pConfig;
 
-    if (pVorbis == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pVorbis);
     pVorbis->format = ma_format_f32;    
 
@@ -53963,10 +51270,6 @@ MA_API ma_result ma_stbvorbis_init(ma_read_proc onRead, ma_seek_proc onSeek, ma_
     result = ma_stbvorbis_init_internal(pConfig, pVorbis);
     if (result != MA_SUCCESS) {
         return result;
-    }
-
-    if (onRead == NULL || onSeek == NULL) {
-        return MA_INVALID_ARGS; 
     }
 
     pVorbis->onRead = onRead;
@@ -54117,14 +51420,6 @@ MA_API ma_result ma_stbvorbis_read_pcm_frames(ma_stbvorbis* pVorbis, void* pFram
         *pFramesRead = 0;
     }
 
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pVorbis == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_VORBIS)
     {
         
@@ -54242,8 +51537,6 @@ MA_API ma_result ma_stbvorbis_read_pcm_frames(ma_stbvorbis* pVorbis, void* pFram
                     }
                 }
             }
-        } else {
-            result = MA_INVALID_ARGS;
         }
 
         pVorbis->cursor += totalFramesRead;
@@ -54278,10 +51571,6 @@ MA_API ma_result ma_stbvorbis_read_pcm_frames(ma_stbvorbis* pVorbis, void* pFram
 
 MA_API ma_result ma_stbvorbis_seek_to_pcm_frame(ma_stbvorbis* pVorbis, ma_uint64 frameIndex)
 {
-    if (pVorbis == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_VORBIS)
     {
         
@@ -54292,11 +51581,6 @@ MA_API ma_result ma_stbvorbis_seek_to_pcm_frame(ma_stbvorbis* pVorbis, ma_uint64
 
             
             if (frameIndex < pVorbis->cursor) {
-                if (frameIndex > 0x7FFFFFFF) {
-                    return MA_INVALID_ARGS; 
-                }
-
-                
                 stb_vorbis_close(pVorbis->stb);
                 ma_free(pVorbis->push.pData, &pVorbis->allocationCallbacks);
 
@@ -54333,10 +51617,6 @@ MA_API ma_result ma_stbvorbis_seek_to_pcm_frame(ma_stbvorbis* pVorbis, ma_uint64
         } else {
             
             int vorbisResult;
-
-            if (frameIndex > UINT_MAX) {
-                return MA_INVALID_ARGS; 
-            }
 
             vorbisResult = stb_vorbis_seek(pVorbis->stb, (unsigned int)frameIndex);  
             if (vorbisResult == 0) {
@@ -54375,11 +51655,6 @@ MA_API ma_result ma_stbvorbis_get_data_format(ma_stbvorbis* pVorbis, ma_format* 
     if (pChannelMap != NULL) {
         MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap);
     }
-
-    if (pVorbis == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     if (pFormat != NULL) {
         *pFormat = pVorbis->format;
     }
@@ -54411,16 +51686,7 @@ MA_API ma_result ma_stbvorbis_get_data_format(ma_stbvorbis* pVorbis, ma_format* 
 
 MA_API ma_result ma_stbvorbis_get_cursor_in_pcm_frames(ma_stbvorbis* pVorbis, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;   
-
-    if (pVorbis == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_VORBIS)
     {
         *pCursor = pVorbis->cursor;
@@ -54438,16 +51704,7 @@ MA_API ma_result ma_stbvorbis_get_cursor_in_pcm_frames(ma_stbvorbis* pVorbis, ma
 
 MA_API ma_result ma_stbvorbis_get_length_in_pcm_frames(ma_stbvorbis* pVorbis, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;   
-
-    if (pVorbis == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_VORBIS)
     {
         if (pVorbis->usingPushMode) {
@@ -54631,11 +51888,6 @@ static ma_result ma_decoder__preinit(ma_decoder_read_proc onRead, ma_decoder_see
     ma_data_source_config dataSourceConfig;
 
     MA_ASSERT(pConfig != NULL);
-
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDecoder);
 
     dataSourceConfig = ma_data_source_config_init();
@@ -54875,11 +52127,6 @@ static ma_result ma_decoder__preinit_memory_wrapper(const void* pData, size_t da
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (pData == NULL || dataSize == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pDecoder->data.memory.pData = (const ma_uint8*)pData;
     pDecoder->data.memory.dataSize = dataSize;
     pDecoder->data.memory.currentReadPos = 0;
@@ -54899,12 +52146,6 @@ MA_API ma_result ma_decoder_init_memory(const void* pData, size_t dataSize, cons
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (pData == NULL || dataSize == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     result = MA_NO_BACKEND;
 
     if (config.encodingFormat != ma_encoding_format_unknown) {
@@ -55193,10 +52434,6 @@ static ma_result ma_decoder__preinit_vfs(ma_vfs* pVFS, const char* pFilePath, co
         return result;
     }
 
-    if (pFilePath == NULL || pFilePath[0] == '\0') {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_vfs_or_default_open(pVFS, pFilePath, MA_OPEN_MODE_READ, &file);
     if (result != MA_SUCCESS) {
         return result;
@@ -55317,11 +52554,6 @@ static ma_result ma_decoder__preinit_vfs_w(ma_vfs* pVFS, const wchar_t* pFilePat
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (pFilePath == NULL || pFilePath[0] == '\0') {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_vfs_or_default_open_w(pVFS, pFilePath, MA_OPEN_MODE_READ, &file);
     if (result != MA_SUCCESS) {
         return result;
@@ -55437,10 +52669,6 @@ static ma_result ma_decoder__preinit_file(const char* pFilePath, const ma_decode
     result = ma_decoder__preinit(NULL, NULL, NULL, NULL, pConfig, pDecoder);
     if (result != MA_SUCCESS) {
         return result;
-    }
-
-    if (pFilePath == NULL || pFilePath[0] == '\0') {
-        return MA_INVALID_ARGS;
     }
 
     return MA_SUCCESS;
@@ -55572,11 +52800,6 @@ static ma_result ma_decoder__preinit_file_w(const wchar_t* pFilePath, const ma_d
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (pFilePath == NULL || pFilePath[0] == '\0') {
-        return MA_INVALID_ARGS;
-    }
-
     return MA_SUCCESS;
 }
 
@@ -55700,10 +52923,6 @@ MA_API ma_result ma_decoder_init_file_w(const wchar_t* pFilePath, const ma_decod
 
 MA_API ma_result ma_decoder_uninit(ma_decoder* pDecoder)
 {
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pDecoder->pBackend != NULL) {
         if (pDecoder->pBackendVTable != NULL && pDecoder->pBackendVTable->onUninit != NULL) {
             pDecoder->pBackendVTable->onUninit(pDecoder->pBackendUserData, pDecoder->pBackend, &pDecoder->allocationCallbacks);
@@ -55734,19 +52953,6 @@ MA_API ma_result ma_decoder_read_pcm_frames(ma_decoder* pDecoder, void* pFramesO
     if (pFramesRead != NULL) {
         *pFramesRead = 0;   
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pDecoder->pBackend == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     
     if (pDecoder->converter.isPassthrough) {
         result = ma_data_source_read_pcm_frames(pDecoder->pBackend, pFramesOut, frameCount, &totalFramesReadOut);
@@ -55881,10 +53087,6 @@ MA_API ma_result ma_decoder_read_pcm_frames(ma_decoder* pDecoder, void* pFramesO
 
 MA_API ma_result ma_decoder_seek_to_pcm_frame(ma_decoder* pDecoder, ma_uint64 frameIndex)
 {
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pDecoder->pBackend != NULL) {
         ma_result result;
         ma_uint64 internalFrameIndex;
@@ -55923,10 +53125,6 @@ MA_API ma_result ma_decoder_seek_to_pcm_frame(ma_decoder* pDecoder, ma_uint64 fr
 
 MA_API ma_result ma_decoder_get_data_format(ma_decoder* pDecoder, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap)
 {
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pFormat != NULL) {
         *pFormat = pDecoder->outputFormat;
     }
@@ -55948,33 +53146,14 @@ MA_API ma_result ma_decoder_get_data_format(ma_decoder* pDecoder, ma_format* pFo
 
 MA_API ma_result ma_decoder_get_cursor_in_pcm_frames(ma_decoder* pDecoder, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
-
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = pDecoder->readPointerInPCMFrames;
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_decoder_get_length_in_pcm_frames(ma_decoder* pDecoder, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;
-
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pDecoder->pBackend != NULL) {
         ma_result result;
         ma_uint64 internalLengthInPCMFrames;
@@ -56007,16 +53186,7 @@ MA_API ma_result ma_decoder_get_available_frames(ma_decoder* pDecoder, ma_uint64
     ma_result result;
     ma_uint64 totalFrameCount;
 
-    if (pAvailableFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pAvailableFrames = 0;
-
-    if (pDecoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_decoder_get_length_in_pcm_frames(pDecoder, &totalFrameCount);
     if (result != MA_SUCCESS) {
         return result;
@@ -56149,11 +53319,6 @@ MA_API ma_result ma_decode_memory(const void* pData, size_t dataSize, ma_decoder
     if (ppPCMFramesOut != NULL) {
         *ppPCMFramesOut = NULL;
     }
-
-    if (pData == NULL || dataSize == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     config = ma_decoder_config_init_copy(pConfig);
 
     result = ma_decoder_init_memory(pData, dataSize, &config, &decoder);
@@ -56280,20 +53445,7 @@ MA_API ma_result ma_encoder_preinit(const ma_encoder_config* pConfig, ma_encoder
 {
     ma_result result;
 
-    if (pEncoder == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pEncoder);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->format == ma_format_unknown || pConfig->channels == 0 || pConfig->sampleRate == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pEncoder->config = *pConfig;
 
     result = ma_allocation_callbacks_init_copy(&pEncoder->config.allocationCallbacks, &pConfig->allocationCallbacks);
@@ -56310,11 +53462,6 @@ MA_API ma_result ma_encoder_init__internal(ma_encoder_write_proc onWrite, ma_enc
 
     
     MA_ASSERT(pEncoder != NULL);
-
-    if (onWrite == NULL || onSeek == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pEncoder->onWrite   = onWrite;
     pEncoder->onSeek    = onSeek;
     pEncoder->pUserData = pUserData;
@@ -56454,11 +53601,6 @@ MA_API ma_result ma_encoder_write_pcm_frames(ma_encoder* pEncoder, const void* p
     if (pFramesWritten != NULL) {
         *pFramesWritten = 0;
     }
-
-    if (pEncoder == NULL || pFramesIn == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return pEncoder->onWritePCMFrames(pEncoder, pFramesIn, frameCount, pFramesWritten);
 }
 #endif  
@@ -56535,11 +53677,6 @@ MA_API ma_result ma_waveform_init(const ma_waveform_config* pConfig, ma_waveform
 {
     ma_result result;
     ma_data_source_config dataSourceConfig;
-
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pWaveform);
 
     dataSourceConfig = ma_data_source_config_init();
@@ -56568,20 +53705,12 @@ MA_API void ma_waveform_uninit(ma_waveform* pWaveform)
 
 MA_API ma_result ma_waveform_set_amplitude(ma_waveform* pWaveform, double amplitude)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.amplitude = amplitude;
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_waveform_set_frequency(ma_waveform* pWaveform, double frequency)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.frequency = frequency;
     ma_waveform__update_advance(pWaveform);
 
@@ -56590,20 +53719,12 @@ MA_API ma_result ma_waveform_set_frequency(ma_waveform* pWaveform, double freque
 
 MA_API ma_result ma_waveform_set_type(ma_waveform* pWaveform, ma_waveform_type type)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.type = type;
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_waveform_set_sample_rate(ma_waveform* pWaveform, ma_uint32 sampleRate)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.sampleRate = sampleRate;
     ma_waveform__update_advance(pWaveform);
 
@@ -56843,14 +53964,6 @@ MA_API ma_result ma_waveform_read_pcm_frames(ma_waveform* pWaveform, void* pFram
         *pFramesRead = 0;
     }
 
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pFramesOut != NULL) {
         switch (pWaveform->config.type)
         {
@@ -56889,12 +54002,7 @@ MA_API ma_result ma_waveform_read_pcm_frames(ma_waveform* pWaveform, void* pFram
 
 MA_API ma_result ma_waveform_seek_to_pcm_frame(ma_waveform* pWaveform, ma_uint64 frameIndex)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->time = pWaveform->advance * (ma_int64)frameIndex;    
-
     return MA_SUCCESS;
 }
 
@@ -56917,10 +54025,6 @@ MA_API ma_result ma_pulsewave_init(const ma_pulsewave_config* pConfig, ma_pulsew
 {
     ma_result result;
     ma_waveform_config config;
-
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pWaveform);
 
@@ -56953,15 +54057,6 @@ MA_API ma_result ma_pulsewave_read_pcm_frames(ma_pulsewave* pWaveform, void* pFr
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pFramesOut != NULL) {
         ma_waveform_read_pcm_frames__square(&pWaveform->waveform, pWaveform->config.dutyCycle, pFramesOut, frameCount);
     } else {
@@ -56977,21 +54072,12 @@ MA_API ma_result ma_pulsewave_read_pcm_frames(ma_pulsewave* pWaveform, void* pFr
 
 MA_API ma_result ma_pulsewave_seek_to_pcm_frame(ma_pulsewave* pWaveform, ma_uint64 frameIndex)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_waveform_seek_to_pcm_frame(&pWaveform->waveform, frameIndex);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_pulsewave_set_amplitude(ma_pulsewave* pWaveform, double amplitude)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.amplitude = amplitude;
     ma_waveform_set_amplitude(&pWaveform->waveform, amplitude);
 
@@ -57000,10 +54086,6 @@ MA_API ma_result ma_pulsewave_set_amplitude(ma_pulsewave* pWaveform, double ampl
 
 MA_API ma_result ma_pulsewave_set_frequency(ma_pulsewave* pWaveform, double frequency)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.frequency = frequency;
     ma_waveform_set_frequency(&pWaveform->waveform, frequency);
 
@@ -57012,10 +54094,6 @@ MA_API ma_result ma_pulsewave_set_frequency(ma_pulsewave* pWaveform, double freq
 
 MA_API ma_result ma_pulsewave_set_sample_rate(ma_pulsewave* pWaveform, ma_uint32 sampleRate)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.sampleRate = sampleRate;
     ma_waveform_set_sample_rate(&pWaveform->waveform, sampleRate);
 
@@ -57024,10 +54102,6 @@ MA_API ma_result ma_pulsewave_set_sample_rate(ma_pulsewave* pWaveform, ma_uint32
 
 MA_API ma_result ma_pulsewave_set_duty_cycle(ma_pulsewave* pWaveform, double dutyCycle)
 {
-    if (pWaveform == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pWaveform->config.dutyCycle = dutyCycle;
 
     return MA_SUCCESS;
@@ -57106,16 +54180,7 @@ typedef struct
 static ma_result ma_noise_get_heap_layout(const ma_noise_config* pConfig, ma_noise_heap_layout* pHeapLayout)
 {
     MA_ASSERT(pHeapLayout != NULL);
-
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->channels == 0) {
-        return MA_INVALID_ARGS;
-    }
 
     pHeapLayout->sizeInBytes = 0;
 
@@ -57153,10 +54218,6 @@ MA_API ma_result ma_noise_get_heap_size(const ma_noise_config* pConfig, size_t* 
     ma_result result;
     ma_noise_heap_layout heapLayout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_noise_get_heap_layout(pConfig, &heapLayout);
@@ -57175,11 +54236,6 @@ MA_API ma_result ma_noise_init_preallocated(const ma_noise_config* pConfig, void
     ma_noise_heap_layout heapLayout;
     ma_data_source_config dataSourceConfig;
     ma_uint32 iChannel;
-
-    if (pNoise == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNoise);
 
     result = ma_noise_get_heap_layout(pConfig, &heapLayout);
@@ -57527,15 +54583,6 @@ MA_API ma_result ma_noise_read_pcm_frames(ma_noise* pNoise, void* pFramesOut, ma
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pNoise == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if (pFramesOut == NULL) {
         framesRead = frameCount;
@@ -57806,10 +54853,6 @@ static ma_result ma_resource_manager_data_buffer_node_insert(ma_resource_manager
     MA_ASSERT(pDataBufferNode  != NULL);
 
     result = ma_resource_manager_data_buffer_node_insert_point(pResourceManager, pDataBufferNode->hashedName32, &pInsertPoint);
-    if (result != MA_SUCCESS) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_resource_manager_data_buffer_node_insert_at(pResourceManager, pDataBufferNode, pInsertPoint);
 }
 #endif
@@ -58211,25 +55254,7 @@ MA_API ma_result ma_resource_manager_init(const ma_resource_manager_config* pCon
 {
     ma_result result;
     ma_job_queue_config jobQueueConfig;
-
-    if (pResourceManager == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pResourceManager);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    #ifndef MA_NO_THREADING
-    {
-        if (pConfig->jobThreadCount > ma_countof(pResourceManager->jobThreads)) {
-            return MA_INVALID_ARGS; 
-        }
-    }
-    #endif
-
     pResourceManager->config = *pConfig;
     ma_allocation_callbacks_init_copy(&pResourceManager->config.allocationCallbacks, &pConfig->allocationCallbacks);
 
@@ -58262,21 +55287,12 @@ MA_API ma_result ma_resource_manager_init(const ma_resource_manager_config* pCon
     
     if ((pResourceManager->config.flags & MA_RESOURCE_MANAGER_FLAG_NO_THREADING) != 0) {
         pResourceManager->config.flags |= MA_RESOURCE_MANAGER_FLAG_NON_BLOCKING;
-
-        
-        if (pResourceManager->config.jobThreadCount > 0) {
-            return MA_INVALID_ARGS;
-        }
     }
 
     
     jobQueueConfig.capacity = pResourceManager->config.jobQueueCapacity;
     jobQueueConfig.flags    = 0;
     if ((pResourceManager->config.flags & MA_RESOURCE_MANAGER_FLAG_NON_BLOCKING) != 0) {
-        if (pResourceManager->config.jobThreadCount > 0) {
-            return MA_INVALID_ARGS; 
-        }
-
         jobQueueConfig.flags |= MA_JOB_QUEUE_FLAG_NON_BLOCKING;
     }
 
@@ -58947,16 +55963,6 @@ static ma_result ma_resource_manager_data_buffer_node_acquire(ma_resource_manage
     if (ppDataBufferNode != NULL) {
         *ppDataBufferNode = NULL;   
     }
-
-    if (pResourceManager == NULL || (pFilePath == NULL && pFilePathW == NULL && hashedName32 == 0)) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pExistingData != NULL && pExistingData->type == ma_resource_manager_data_supply_type_unknown) {
-        return MA_INVALID_ARGS;
-    }
-
     
     if (ma_resource_manager_is_threading_enabled(pResourceManager) == MA_FALSE) {
         flags &= ~MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_ASYNC;
@@ -59074,15 +56080,7 @@ static ma_result ma_resource_manager_data_buffer_node_unacquire(ma_resource_mana
     ma_uint32 refCount = 0xFFFFFFFF; 
     ma_uint32 hashedName32 = 0;
 
-    if (pResourceManager == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pDataBufferNode == NULL) {
-        if (pName == NULL && pNameW == NULL) {
-            return MA_INVALID_ARGS;
-        }
-
         if (pName != NULL) {
             hashedName32 = ma_hash_string_32(pName);
         } else {
@@ -59223,21 +56221,7 @@ static ma_result ma_resource_manager_data_buffer_init_ex_internal(ma_resource_ma
     ma_bool32 async;
     ma_uint32 flags;
     ma_resource_manager_pipeline_notifications notifications;
-
-    if (pDataBuffer == NULL) {
-        if (pConfig != NULL && pConfig->pNotifications != NULL) {
-            ma_resource_manager_pipeline_notifications_signal_all_notifications(pConfig->pNotifications);
-        }
-
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDataBuffer);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pConfig->pNotifications != NULL) {
         notifications = *pConfig->pNotifications;   
     } else {
@@ -59403,11 +56387,6 @@ MA_API ma_result ma_resource_manager_data_buffer_init_w(ma_resource_manager* pRe
 MA_API ma_result ma_resource_manager_data_buffer_init_copy(ma_resource_manager* pResourceManager, const ma_resource_manager_data_buffer* pExistingDataBuffer, ma_resource_manager_data_buffer* pDataBuffer)
 {
     ma_resource_manager_data_source_config config;
-
-    if (pExistingDataBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ASSERT(pExistingDataBuffer->pNode != NULL);  
 
     config = ma_resource_manager_data_source_config_init();
@@ -59435,11 +56414,6 @@ static ma_result ma_resource_manager_data_buffer_uninit_internal(ma_resource_man
 MA_API ma_result ma_resource_manager_data_buffer_uninit(ma_resource_manager_data_buffer* pDataBuffer)
 {
     ma_result result;
-
-    if (pDataBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (ma_resource_manager_data_buffer_result(pDataBuffer) == MA_SUCCESS) {
         
         return ma_resource_manager_data_buffer_uninit_internal(pDataBuffer);
@@ -59484,11 +56458,6 @@ MA_API ma_result ma_resource_manager_data_buffer_read_pcm_frames(ma_resource_man
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     
     MA_ASSERT(ma_resource_manager_data_buffer_node_result(pDataBuffer->pNode) != MA_UNAVAILABLE);
 
@@ -59637,10 +56606,6 @@ MA_API ma_result ma_resource_manager_data_buffer_get_cursor_in_pcm_frames(ma_res
     
     MA_ASSERT(ma_resource_manager_data_buffer_node_result(pDataBuffer->pNode) != MA_UNAVAILABLE);
 
-    if (pDataBuffer == NULL || pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
 
     switch (ma_resource_manager_data_buffer_node_get_data_supply_type(pDataBuffer->pNode))
@@ -59676,11 +56641,6 @@ MA_API ma_result ma_resource_manager_data_buffer_get_length_in_pcm_frames(ma_res
 {
     
     MA_ASSERT(ma_resource_manager_data_buffer_node_result(pDataBuffer->pNode) != MA_UNAVAILABLE);
-
-    if (pDataBuffer == NULL || pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (ma_resource_manager_data_buffer_node_get_data_supply_type(pDataBuffer->pNode) == ma_resource_manager_data_supply_type_unknown) {
         return MA_BUSY; 
     }
@@ -59690,10 +56650,6 @@ MA_API ma_result ma_resource_manager_data_buffer_get_length_in_pcm_frames(ma_res
 
 MA_API ma_result ma_resource_manager_data_buffer_result(const ma_resource_manager_data_buffer* pDataBuffer)
 {
-    if (pDataBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return (ma_result)ma_atomic_load_i32((ma_result*)&pDataBuffer->result);    
 }
 
@@ -59709,21 +56665,10 @@ MA_API ma_bool32 ma_resource_manager_data_buffer_is_looping(const ma_resource_ma
 
 MA_API ma_result ma_resource_manager_data_buffer_get_available_frames(ma_resource_manager_data_buffer* pDataBuffer, ma_uint64* pAvailableFrames)
 {
-    if (pAvailableFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pAvailableFrames = 0;
-
-    if (pDataBuffer == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (ma_resource_manager_data_buffer_node_get_data_supply_type(pDataBuffer->pNode) == ma_resource_manager_data_supply_type_unknown) {
         if (ma_resource_manager_data_buffer_node_result(pDataBuffer->pNode) == MA_BUSY) {
             return MA_BUSY;
-        } else {
-            return MA_INVALID_OPERATION;    
         }
     }
 
@@ -59920,21 +56865,7 @@ MA_API ma_result ma_resource_manager_data_stream_init_ex(ma_resource_manager* pR
     ma_resource_manager_inline_notification waitNotification;
     ma_resource_manager_pipeline_notifications notifications;
     ma_uint32 flags;
-
-    if (pDataStream == NULL) {
-        if (pConfig != NULL && pConfig->pNotifications != NULL) {
-            ma_resource_manager_pipeline_notifications_signal_all_notifications(pConfig->pNotifications);
-        }
-
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDataStream);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (pConfig->pNotifications != NULL) {
         notifications = *pConfig->pNotifications;    
     } else {
@@ -59962,15 +56893,6 @@ MA_API ma_result ma_resource_manager_data_stream_init_ex(ma_resource_manager* pR
     ma_data_source_set_range_in_pcm_frames(pDataStream, pConfig->rangeBegInPCMFrames, pConfig->rangeEndInPCMFrames);
     ma_data_source_set_loop_point_in_pcm_frames(pDataStream, pConfig->loopPointBegInPCMFrames, pConfig->loopPointEndInPCMFrames);
     ma_data_source_set_looping(pDataStream, (flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_LOOPING) != 0);
-
-    if (pResourceManager == NULL || (pConfig->pFilePath == NULL && pConfig->pFilePathW == NULL)) {
-        ma_resource_manager_pipeline_notifications_signal_all_notifications(&notifications);
-        return MA_INVALID_ARGS;
-    }
-
-    
-
-    
     if (pConfig->pFilePath != NULL) {
         pFilePathCopy  = ma_copy_string(pConfig->pFilePath, &pResourceManager->config.allocationCallbacks);
     } else {
@@ -60063,27 +56985,15 @@ MA_API ma_result ma_resource_manager_data_stream_uninit(ma_resource_manager_data
 {
     ma_resource_manager_inline_notification freeEvent;
     ma_job job;
-
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     ma_atomic_exchange_i32(&pDataStream->result, MA_UNAVAILABLE);
-
-    
     ma_resource_manager_inline_notification_init(pDataStream->pResourceManager, &freeEvent);
-
     job = ma_job_init(MA_JOB_TYPE_RESOURCE_MANAGER_FREE_DATA_STREAM);
     job.order = ma_resource_manager_data_stream_next_execution_order(pDataStream);
     job.data.resourceManager.freeDataStream.pDataStream       = pDataStream;
     job.data.resourceManager.freeDataStream.pDoneNotification = &freeEvent;
     job.data.resourceManager.freeDataStream.pDoneFence        = NULL;
     ma_resource_manager_post_job(pDataStream->pResourceManager, &job);
-
-    
     ma_resource_manager_inline_notification_wait_and_uninit(&freeEvent);
-
     return MA_SUCCESS;
 }
 static ma_uint32 ma_resource_manager_data_stream_get_page_size_in_frames(ma_resource_manager_data_stream* pDataStream)
@@ -60163,15 +57073,6 @@ static ma_result ma_resource_manager_data_stream_map(ma_resource_manager_data_st
     if (ppFramesOut != NULL) {
         *ppFramesOut = NULL;
     }
-
-    if (pDataStream == NULL || ppFramesOut == NULL || pFrameCount == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_SUCCESS) {
-        return MA_INVALID_OPERATION;
-    }
-
     
     if (ma_resource_manager_data_stream_seek_counter(pDataStream) > 0) {
         return MA_BUSY;
@@ -60218,46 +57119,20 @@ static ma_result ma_resource_manager_data_stream_unmap(ma_resource_manager_data_
     
     MA_ASSERT(ma_resource_manager_data_stream_result(pDataStream) != MA_UNAVAILABLE);
 
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_SUCCESS) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
-    if (frameCount > 0xFFFFFFFF) {
-        return MA_INVALID_ARGS;
-    }
-
     pageSizeInFrames = ma_resource_manager_data_stream_get_page_size_in_frames(pDataStream);
-
-    
     ma_resource_manager_data_stream_set_absolute_cursor(pDataStream, ma_atomic_load_64(&pDataStream->absoluteCursor) + frameCount);
-
-    
     newRelativeCursor = pDataStream->relativeCursor + (ma_uint32)frameCount;
-
-    
     if (newRelativeCursor >= pageSizeInFrames) {
         newRelativeCursor -= pageSizeInFrames;
-
-        
         job = ma_job_init(MA_JOB_TYPE_RESOURCE_MANAGER_PAGE_DATA_STREAM);
         job.order = ma_resource_manager_data_stream_next_execution_order(pDataStream);
         job.data.resourceManager.pageDataStream.pDataStream = pDataStream;
         job.data.resourceManager.pageDataStream.pageIndex   = pDataStream->currentPageIndex;
-
-        
         ma_atomic_exchange_32(&pDataStream->isPageValid[pDataStream->currentPageIndex], MA_FALSE);
-
-        
         pDataStream->relativeCursor   = newRelativeCursor;
         pDataStream->currentPageIndex = (pDataStream->currentPageIndex + 1) & 0x01;
         return ma_resource_manager_post_job(pDataStream->pResourceManager, &job);
     } else {
-        
         pDataStream->relativeCursor = newRelativeCursor;
         return MA_SUCCESS;
     }
@@ -60273,22 +57148,7 @@ MA_API ma_result ma_resource_manager_data_stream_read_pcm_frames(ma_resource_man
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
     }
-
-    if (frameCount == 0) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     MA_ASSERT(ma_resource_manager_data_stream_result(pDataStream) != MA_UNAVAILABLE);
-
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_SUCCESS) {
-        return MA_INVALID_OPERATION;
-    }
-
     
     if (ma_resource_manager_data_stream_seek_counter(pDataStream) > 0) {
         return MA_BUSY;
@@ -60338,19 +57198,8 @@ MA_API ma_result ma_resource_manager_data_stream_seek_to_pcm_frame(ma_resource_m
     ma_result streamResult;
 
     streamResult = ma_resource_manager_data_stream_result(pDataStream);
-
-    
     MA_ASSERT(streamResult != MA_UNAVAILABLE);
 
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (streamResult != MA_SUCCESS && streamResult != MA_BUSY) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
     if (ma_atomic_load_32(&pDataStream->seekCounter) == 0) {
         if (ma_atomic_load_64(&pDataStream->absoluteCursor) == frameIndex) {
             return MA_SUCCESS;
@@ -60358,20 +57207,12 @@ MA_API ma_result ma_resource_manager_data_stream_seek_to_pcm_frame(ma_resource_m
     }
     
     ma_atomic_fetch_add_32(&pDataStream->seekCounter, 1);
-
-    
     ma_resource_manager_data_stream_set_absolute_cursor(pDataStream, frameIndex);
-
-    
     pDataStream->relativeCursor   = 0;
     pDataStream->currentPageIndex = 0;
     ma_atomic_exchange_32(&pDataStream->isPageValid[0], MA_FALSE);
     ma_atomic_exchange_32(&pDataStream->isPageValid[1], MA_FALSE);
-
-    
     ma_atomic_exchange_32(&pDataStream->isDecoderAtEnd, MA_FALSE);
-
-    
     job = ma_job_init(MA_JOB_TYPE_RESOURCE_MANAGER_SEEK_DATA_STREAM);
     job.order = ma_resource_manager_data_stream_next_execution_order(pDataStream);
     job.data.resourceManager.seekDataStream.pDataStream = pDataStream;
@@ -60399,70 +57240,33 @@ MA_API ma_result ma_resource_manager_data_stream_get_data_format(ma_resource_man
     if (pChannelMap != NULL) {
         MA_ZERO_MEMORY(pChannelMap, sizeof(*pChannelMap) * channelMapCap);
     }
-
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_SUCCESS) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
     return ma_data_source_get_data_format(&pDataStream->decoder, pFormat, pChannels, pSampleRate, pChannelMap, channelMapCap);
 }
 
 MA_API ma_result ma_resource_manager_data_stream_get_cursor_in_pcm_frames(ma_resource_manager_data_stream* pDataStream, ma_uint64* pCursor)
 {
     ma_result result;
-
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pCursor = 0;
 
     
     MA_ASSERT(ma_resource_manager_data_stream_result(pDataStream) != MA_UNAVAILABLE);
-
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     result = ma_resource_manager_data_stream_result(pDataStream);
-    if (result != MA_SUCCESS && result != MA_BUSY) {
-        return MA_INVALID_OPERATION;
-    }
-
     *pCursor = ma_atomic_load_64(&pDataStream->absoluteCursor);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_resource_manager_data_stream_get_length_in_pcm_frames(ma_resource_manager_data_stream* pDataStream, ma_uint64* pLength)
 {
     ma_result streamResult;
-
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pLength = 0;
 
     streamResult = ma_resource_manager_data_stream_result(pDataStream);
 
     
     MA_ASSERT(streamResult != MA_UNAVAILABLE);
-
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if (streamResult != MA_SUCCESS) {
         return streamResult;
     }
-
     
     *pLength = pDataStream->totalLengthInPCMFrames;
     if (*pLength == 0) {
@@ -60474,10 +57278,6 @@ MA_API ma_result ma_resource_manager_data_stream_get_length_in_pcm_frames(ma_res
 
 MA_API ma_result ma_resource_manager_data_stream_result(const ma_resource_manager_data_stream* pDataStream)
 {
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return (ma_result)ma_atomic_load_i32(&pDataStream->result);
 }
 
@@ -60501,19 +57301,9 @@ MA_API ma_result ma_resource_manager_data_stream_get_available_frames(ma_resourc
     ma_uint32 pageIndex1;
     ma_uint32 relativeCursor;
     ma_uint64 availableFrames;
-
-    if (pAvailableFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pAvailableFrames = 0;
-
-    if (pDataStream == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    pageIndex0     =  pDataStream->currentPageIndex;
-    pageIndex1     = (pDataStream->currentPageIndex + 1) & 0x01;
+    pageIndex0 =  pDataStream->currentPageIndex;
+    pageIndex1 = (pDataStream->currentPageIndex + 1) & 0x01;
     relativeCursor =  pDataStream->relativeCursor;
 
     availableFrames = 0;
@@ -60529,20 +57319,7 @@ MA_API ma_result ma_resource_manager_data_stream_get_available_frames(ma_resourc
 }
 static ma_result ma_resource_manager_data_source_preinit(ma_resource_manager* pResourceManager, const ma_resource_manager_data_source_config* pConfig, ma_resource_manager_data_source* pDataSource)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDataSource);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pResourceManager == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     pDataSource->flags = pConfig->flags;
     if (pConfig->isLooping) {
         pDataSource->flags |= MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_LOOPING;
@@ -60596,11 +57373,6 @@ MA_API ma_result ma_resource_manager_data_source_init_copy(ma_resource_manager* 
 {
     ma_result result;
     ma_resource_manager_data_source_config config;
-
-    if (pExistingDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     config = ma_resource_manager_data_source_config_init();
     config.flags = pExistingDataSource->flags;
 
@@ -60608,22 +57380,11 @@ MA_API ma_result ma_resource_manager_data_source_init_copy(ma_resource_manager* 
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    
-    if ((pExistingDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
-        return MA_INVALID_OPERATION;
-    }
-
     return ma_resource_manager_data_buffer_init_copy(pResourceManager, &pExistingDataSource->backend.buffer, &pDataSource->backend.buffer);
 }
 
 MA_API ma_result ma_resource_manager_data_source_uninit(ma_resource_manager_data_source* pDataSource)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_uninit(&pDataSource->backend.stream);
     } else {
@@ -60633,15 +57394,9 @@ MA_API ma_result ma_resource_manager_data_source_uninit(ma_resource_manager_data
 
 MA_API ma_result ma_resource_manager_data_source_read_pcm_frames(ma_resource_manager_data_source* pDataSource, void* pFramesOut, ma_uint64 frameCount, ma_uint64* pFramesRead)
 {
-    
     if (pFramesRead != NULL) {
         *pFramesRead = 0;
     }
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_read_pcm_frames(&pDataSource->backend.stream, pFramesOut, frameCount, pFramesRead);
     } else {
@@ -60651,10 +57406,6 @@ MA_API ma_result ma_resource_manager_data_source_read_pcm_frames(ma_resource_man
 
 MA_API ma_result ma_resource_manager_data_source_seek_to_pcm_frame(ma_resource_manager_data_source* pDataSource, ma_uint64 frameIndex)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_seek_to_pcm_frame(&pDataSource->backend.stream, frameIndex);
     } else {
@@ -60664,10 +57415,6 @@ MA_API ma_result ma_resource_manager_data_source_seek_to_pcm_frame(ma_resource_m
 
 MA_API ma_result ma_resource_manager_data_source_map(ma_resource_manager_data_source* pDataSource, void** ppFramesOut, ma_uint64* pFrameCount)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_map(&pDataSource->backend.stream, ppFramesOut, pFrameCount);
     } else {
@@ -60677,10 +57424,6 @@ MA_API ma_result ma_resource_manager_data_source_map(ma_resource_manager_data_so
 
 MA_API ma_result ma_resource_manager_data_source_unmap(ma_resource_manager_data_source* pDataSource, ma_uint64 frameCount)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_unmap(&pDataSource->backend.stream, frameCount);
     } else {
@@ -60690,10 +57433,6 @@ MA_API ma_result ma_resource_manager_data_source_unmap(ma_resource_manager_data_
 
 MA_API ma_result ma_resource_manager_data_source_get_data_format(ma_resource_manager_data_source* pDataSource, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_get_data_format(&pDataSource->backend.stream, pFormat, pChannels, pSampleRate, pChannelMap, channelMapCap);
     } else {
@@ -60703,10 +57442,6 @@ MA_API ma_result ma_resource_manager_data_source_get_data_format(ma_resource_man
 
 MA_API ma_result ma_resource_manager_data_source_get_cursor_in_pcm_frames(ma_resource_manager_data_source* pDataSource, ma_uint64* pCursor)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_get_cursor_in_pcm_frames(&pDataSource->backend.stream, pCursor);
     } else {
@@ -60716,10 +57451,6 @@ MA_API ma_result ma_resource_manager_data_source_get_cursor_in_pcm_frames(ma_res
 
 MA_API ma_result ma_resource_manager_data_source_get_length_in_pcm_frames(ma_resource_manager_data_source* pDataSource, ma_uint64* pLength)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_get_length_in_pcm_frames(&pDataSource->backend.stream, pLength);
     } else {
@@ -60729,10 +57460,6 @@ MA_API ma_result ma_resource_manager_data_source_get_length_in_pcm_frames(ma_res
 
 MA_API ma_result ma_resource_manager_data_source_result(const ma_resource_manager_data_source* pDataSource)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_result(&pDataSource->backend.stream);
     } else {
@@ -60742,10 +57469,6 @@ MA_API ma_result ma_resource_manager_data_source_result(const ma_resource_manage
 
 MA_API ma_result ma_resource_manager_data_source_set_looping(ma_resource_manager_data_source* pDataSource, ma_bool32 isLooping)
 {
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_set_looping(&pDataSource->backend.stream, isLooping);
     } else {
@@ -60768,15 +57491,7 @@ MA_API ma_bool32 ma_resource_manager_data_source_is_looping(const ma_resource_ma
 
 MA_API ma_result ma_resource_manager_data_source_get_available_frames(ma_resource_manager_data_source* pDataSource, ma_uint64* pAvailableFrames)
 {
-    if (pAvailableFrames == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pAvailableFrames = 0;
-
-    if (pDataSource == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     if ((pDataSource->flags & MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM) != 0) {
         return ma_resource_manager_data_stream_get_available_frames(&pDataSource->backend.stream, pAvailableFrames);
@@ -60786,10 +57501,6 @@ MA_API ma_result ma_resource_manager_data_source_get_available_frames(ma_resourc
 }
 MA_API ma_result ma_resource_manager_post_job(ma_resource_manager* pResourceManager, const ma_job* pJob)
 {
-    if (pResourceManager == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_job_queue_post(&pResourceManager->jobQueue, pJob);
 }
 
@@ -60801,10 +57512,6 @@ MA_API ma_result ma_resource_manager_post_job_quit(ma_resource_manager* pResourc
 
 MA_API ma_result ma_resource_manager_next_job(ma_resource_manager* pResourceManager, ma_job* pJob)
 {
-    if (pResourceManager == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_job_queue_next(&pResourceManager->jobQueue, pJob);
 }
 static ma_result ma_job_process__resource_manager__load_data_buffer_node(ma_job* pJob)
@@ -61159,13 +57866,6 @@ static ma_result ma_job_process__resource_manager__load_data_stream(ma_job* pJob
     if (pJob->order != ma_atomic_load_32(&pDataStream->executionPointer)) {
         return ma_resource_manager_post_job(pResourceManager, pJob);    
     }
-
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_BUSY) {
-        result = MA_INVALID_OPERATION;  
-        goto done;
-    }
-
-    
     decoderConfig = ma_resource_manager__init_decoder_config(pResourceManager);
 
     if (pJob->data.resourceManager.loadDataStream.pFilePath != NULL) {
@@ -61286,13 +57986,6 @@ static ma_result ma_job_process__resource_manager__page_data_stream(ma_job* pJob
     if (pJob->order != ma_atomic_load_32(&pDataStream->executionPointer)) {
         return ma_resource_manager_post_job(pResourceManager, pJob);    
     }
-
-    
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_SUCCESS) {
-        result = MA_INVALID_OPERATION;
-        goto done;
-    }
-
     ma_resource_manager_data_stream_fill_page(pDataStream, pJob->data.resourceManager.pageDataStream.pageIndex);
 
 done:
@@ -61316,22 +58009,9 @@ static ma_result ma_job_process__resource_manager__seek_data_stream(ma_job* pJob
     if (pJob->order != ma_atomic_load_32(&pDataStream->executionPointer)) {
         return ma_resource_manager_post_job(pResourceManager, pJob);    
     }
-
-    
-    if (ma_resource_manager_data_stream_result(pDataStream) != MA_SUCCESS || pDataStream->isDecoderInitialized == MA_FALSE) {
-        result = MA_INVALID_OPERATION;
-        goto done;
-    }
-
-    
     ma_decoder_seek_to_pcm_frame(&pDataStream->decoder, pJob->data.resourceManager.seekDataStream.frameIndex);
-
-    
     ma_resource_manager_data_stream_fill_pages(pDataStream);
-
-    
     ma_atomic_fetch_sub_32(&pDataStream->seekCounter, 1);
-
 done:
     ma_atomic_fetch_add_32(&pDataStream->executionPointer, 1);
     return result;
@@ -61339,10 +58019,6 @@ done:
 
 MA_API ma_result ma_resource_manager_process_job(ma_resource_manager* pResourceManager, ma_job* pJob)
 {
-    if (pResourceManager == NULL || pJob == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_job_process(pJob);
 }
 
@@ -61351,11 +58027,6 @@ MA_API ma_result ma_resource_manager_process_next_job(ma_resource_manager* pReso
     ma_result result;
     ma_job job;
 
-    if (pResourceManager == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     result = ma_resource_manager_next_job(pResourceManager, &job);
     if (result != MA_SUCCESS) {
         return result;
@@ -61556,14 +58227,9 @@ MA_API ma_result ma_node_graph_init(const ma_node_graph_config* pConfig, const m
     ma_node_config baseConfig;
     ma_node_config endpointConfig;
 
-    if (pNodeGraph == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNodeGraph);
     pNodeGraph->processingSizeInFrames = pConfig->processingSizeInFrames;
 
-    
     baseConfig = ma_node_config_init();
     baseConfig.vtable = &g_node_graph_node_vtable;
     baseConfig.pOutputChannels = &pConfig->channels;
@@ -61650,10 +58316,6 @@ MA_API ma_result ma_node_graph_read_pcm_frames(ma_node_graph* pNodeGraph, void* 
 
     if (pFramesRead != NULL) {
         *pFramesRead = 0;   
-    }
-
-    if (pNodeGraph == NULL) {
-        return MA_INVALID_ARGS;
     }
 
     channels = ma_node_get_output_channels(&pNodeGraph->endpoint, 0);
@@ -61756,10 +58418,6 @@ MA_API ma_uint64 ma_node_graph_get_time(const ma_node_graph* pNodeGraph)
 
 MA_API ma_result ma_node_graph_set_time(ma_node_graph* pNodeGraph, ma_uint64 globalTime)
 {
-    if (pNodeGraph == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_node_set_time(&pNodeGraph->endpoint, globalTime); 
 }
 #define MA_NODE_OUTPUT_BUS_FLAG_HAS_READ    0x01    
@@ -61772,10 +58430,6 @@ static ma_result ma_node_output_bus_init(ma_node* pNode, ma_uint32 outputBusInde
     MA_ASSERT(channels < 256);
 
     MA_ZERO_OBJECT(pOutputBus);
-
-    if (channels == 0) {
-        return MA_INVALID_ARGS;
-    }
 
     pOutputBus->pNode          = pNode;
     pOutputBus->outputBusIndex = (ma_uint8)outputBusIndex;
@@ -61842,12 +58496,7 @@ static ma_result ma_node_input_bus_init(ma_uint32 channels, ma_node_input_bus* p
 {
     MA_ASSERT(pInputBus != NULL);
     MA_ASSERT(channels < 256);
-
     MA_ZERO_OBJECT(pInputBus);
-
-    if (channels == 0) {
-        return MA_INVALID_ARGS;
-    }
 
     pInputBus->channels = (ma_uint8)channels;
 
@@ -62231,40 +58880,14 @@ static ma_result ma_node_translate_bus_counts(const ma_node_config* pConfig, ma_
         inputBusCount = pConfig->inputBusCount;
     } else {
         inputBusCount = pConfig->vtable->inputBusCount;
-
-        if (pConfig->inputBusCount != MA_NODE_BUS_COUNT_UNKNOWN && pConfig->inputBusCount != pConfig->vtable->inputBusCount) {
-            return MA_INVALID_ARGS; 
-        }
     }
 
     if (pConfig->vtable->outputBusCount == MA_NODE_BUS_COUNT_UNKNOWN) {
         outputBusCount = pConfig->outputBusCount;
     } else {
         outputBusCount = pConfig->vtable->outputBusCount;
-
-        if (pConfig->outputBusCount != MA_NODE_BUS_COUNT_UNKNOWN && pConfig->outputBusCount != pConfig->vtable->outputBusCount) {
-            return MA_INVALID_ARGS; 
-        }
     }
 
-    
-    if (inputBusCount > MA_MAX_NODE_BUS_COUNT || outputBusCount > MA_MAX_NODE_BUS_COUNT) {
-        return MA_INVALID_ARGS;
-    }
-    
-    if ((inputBusCount > 0 && pConfig->pInputChannels == NULL) || (outputBusCount > 0 && pConfig->pOutputChannels == NULL)) {
-        return MA_INVALID_ARGS; 
-    }
-    
-    if ((pConfig->vtable->flags & MA_NODE_FLAG_PASSTHROUGH) != 0) {
-        if ((pConfig->vtable->inputBusCount != 0 && pConfig->vtable->inputBusCount != 1) || pConfig->vtable->outputBusCount != 1) {
-            return MA_INVALID_ARGS; 
-        }
-
-        if (pConfig->pInputChannels[0] != pConfig->pOutputChannels[0]) {
-            return MA_INVALID_ARGS; 
-        }
-    }
     *pInputBusCount  = inputBusCount;
     *pOutputBusCount = outputBusCount;
 
@@ -62280,10 +58903,6 @@ static ma_result ma_node_get_heap_layout(ma_node_graph* pNodeGraph, const ma_nod
     MA_ASSERT(pHeapLayout != NULL);
 
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL || pConfig->vtable == NULL || pConfig->vtable->onProcess == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     result = ma_node_translate_bus_counts(pConfig, &inputBusCount, &outputBusCount);
     if (result != MA_SUCCESS) {
@@ -62347,10 +58966,6 @@ MA_API ma_result ma_node_get_heap_size(ma_node_graph* pNodeGraph, const ma_node_
     ma_result result;
     ma_node_heap_layout heapLayout;
 
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_node_get_heap_layout(pNodeGraph, pConfig, &heapLayout);
@@ -62370,10 +58985,6 @@ MA_API ma_result ma_node_init_preallocated(ma_node_graph* pNodeGraph, const ma_n
     ma_node_heap_layout heapLayout;
     ma_uint32 iInputBus;
     ma_uint32 iOutputBus;
-
-    if (pNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     MA_ZERO_OBJECT(pNodeBase);
 
@@ -62557,12 +59168,6 @@ static ma_result ma_node_detach_full(ma_node* pNode)
 {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
     ma_uint32 iInputBus;
-
-    if (pNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     ma_node_detach_all_output_buses(pNode);
 
     
@@ -62586,15 +59191,6 @@ MA_API ma_result ma_node_detach_output_bus(ma_node* pNode, ma_uint32 outputBusIn
     ma_result result = MA_SUCCESS;
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
     ma_node_base* pInputNodeBase;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (outputBusIndex >= ma_node_get_output_bus_count(pNode)) {
-        return MA_INVALID_ARGS; 
-    }
-
     
     ma_node_output_bus_lock(&pNodeBase->pOutputBuses[outputBusIndex]);
     {
@@ -62611,11 +59207,6 @@ MA_API ma_result ma_node_detach_output_bus(ma_node* pNode, ma_uint32 outputBusIn
 MA_API ma_result ma_node_detach_all_output_buses(ma_node* pNode)
 {
     ma_uint32 iOutputBus;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     for (iOutputBus = 0; iOutputBus < ma_node_get_output_bus_count(pNode); iOutputBus += 1) {
         ma_node_detach_output_bus(pNode, iOutputBus);
     }
@@ -62627,42 +59218,13 @@ MA_API ma_result ma_node_attach_output_bus(ma_node* pNode, ma_uint32 outputBusIn
 {
     ma_node_base* pNodeBase  = (ma_node_base*)pNode;
     ma_node_base* pOtherNodeBase = (ma_node_base*)pOtherNode;
-
-    if (pNodeBase == NULL || pOtherNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pNodeBase == pOtherNodeBase) {
-        return MA_INVALID_OPERATION;    
-    }
-
-    if (outputBusIndex >= ma_node_get_output_bus_count(pNode) || otherNodeInputBusIndex >= ma_node_get_input_bus_count(pOtherNode)) {
-        return MA_INVALID_OPERATION;    
-    }
-
-    
-    if (ma_node_get_output_channels(pNode, outputBusIndex) != ma_node_get_input_channels(pOtherNode, otherNodeInputBusIndex)) {
-        return MA_INVALID_OPERATION;    
-    }
-
-    
     ma_node_input_bus_attach(&pOtherNodeBase->pInputBuses[otherNodeInputBusIndex], &pNodeBase->pOutputBuses[outputBusIndex], pOtherNode, otherNodeInputBusIndex);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_node_set_output_bus_volume(ma_node* pNode, ma_uint32 outputBusIndex, float volume)
 {
     ma_node_base* pNodeBase = (ma_node_base*)pNode;
-
-    if (pNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (outputBusIndex >= ma_node_get_output_bus_count(pNode)) {
-        return MA_INVALID_ARGS; 
-    }
-
     return ma_node_output_bus_set_volume(&pNodeBase->pOutputBuses[outputBusIndex], volume);
 }
 
@@ -62699,17 +59261,7 @@ MA_API ma_node_state ma_node_get_state(const ma_node* pNode)
 
 MA_API ma_result ma_node_set_state_time(ma_node* pNode, ma_node_state state, ma_uint64 globalTime)
 {
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (state != ma_node_state_started && state != ma_node_state_stopped) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_atomic_exchange_64(&((ma_node_base*)pNode)->stateTimes[state], globalTime);
-
     return MA_SUCCESS;
 }
 
@@ -62775,12 +59327,7 @@ MA_API ma_uint64 ma_node_get_time(const ma_node* pNode)
 
 MA_API ma_result ma_node_set_time(ma_node* pNode, ma_uint64 localTime)
 {
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_atomic_exchange_64(&((ma_node_base*)pNode)->localTime, localTime);
-
     return MA_SUCCESS;
 }
 static void ma_node_process_pcm_frames_internal(ma_node* pNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
@@ -62816,21 +59363,7 @@ static ma_result ma_node_read_pcm_frames(ma_node* pNode, ma_uint32 outputBusInde
 
     
     MA_ASSERT(pFramesRead != NULL); 
-    if (pFramesRead == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pFramesRead = 0;   
-
-    if (pNodeBase == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (outputBusIndex >= ma_node_get_output_bus_count(pNodeBase)) {
-        return MA_INVALID_ARGS; 
-    }
-
-    
     if (ma_node_get_state_by_time_range(pNode, globalTime, globalTime + frameCount) != ma_node_state_started) {
         return MA_SUCCESS;  
     }
@@ -62839,17 +59372,14 @@ static ma_result ma_node_read_pcm_frames(ma_node* pNode, ma_uint32 outputBusInde
     startTime = ma_node_get_state_time(pNode, ma_node_state_started);
     stopTime  = ma_node_get_state_time(pNode, ma_node_state_stopped);
 
-    
     timeOffsetBeg = (globalTimeBeg < startTime) ? (ma_uint32)(globalTimeEnd - startTime) : 0;
     timeOffsetEnd = (globalTimeEnd > stopTime)  ? (ma_uint32)(globalTimeEnd - stopTime)  : 0;
 
-    
     if (timeOffsetBeg > 0) {
         ma_silence_pcm_frames(pFramesOut, timeOffsetBeg, ma_format_f32, ma_node_get_output_channels(pNode, outputBusIndex));
         pFramesOut += timeOffsetBeg * ma_node_get_output_channels(pNode, outputBusIndex);
         frameCount -= timeOffsetBeg;
     }
-
     
     if (timeOffsetEnd > 0) {
         frameCount -= timeOffsetEnd;
@@ -62857,7 +59387,6 @@ static ma_result ma_node_read_pcm_frames(ma_node* pNode, ma_uint32 outputBusInde
     
     inputBusCount  = ma_node_get_input_bus_count(pNode);
     outputBusCount = ma_node_get_output_bus_count(pNode);
-
     
     if (inputBusCount == 0 && outputBusCount == 1) {
         
@@ -62881,7 +59410,6 @@ static ma_result ma_node_read_pcm_frames(ma_node* pNode, ma_uint32 outputBusInde
             MA_ASSERT(outputBusCount == 1);
             MA_ASSERT(outputBusIndex == 0);
 
-            
             ppFramesOut[0] = pFramesOut;
             ppFramesIn[0] = ppFramesOut[0];
 
@@ -62895,7 +59423,6 @@ static ma_result ma_node_read_pcm_frames(ma_node* pNode, ma_uint32 outputBusInde
                     ma_node_process_pcm_frames_internal(pNode, (const float**)ppFramesIn, &frameCountIn, ppFramesOut, &frameCountOut);  
                 }
 
-                
                 MA_ASSERT(frameCountIn  == totalFramesRead);
                 MA_ASSERT(frameCountOut == totalFramesRead);
             }
@@ -63109,35 +59636,16 @@ MA_API ma_result ma_data_source_node_init(ma_node_graph* pNodeGraph, const ma_da
     ma_format format;   
     ma_uint32 channels; 
     ma_node_config baseConfig;
-
-    if (pDataSourceNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDataSourceNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     result = ma_data_source_get_data_format(pConfig->pDataSource, &format, &channels, NULL, NULL, 0);    
     if (result != MA_SUCCESS) {
         return result;
     }
-
     MA_ASSERT(format == ma_format_f32); 
-    if (format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     
     baseConfig = pConfig->nodeConfig;
     baseConfig.vtable = &g_ma_data_source_node_vtable;  
-
-    
-    if (baseConfig.pOutputChannels != NULL) {
-        return MA_INVALID_ARGS;
-    }
 
     baseConfig.pOutputChannels = &channels;
 
@@ -63158,10 +59666,6 @@ MA_API void ma_data_source_node_uninit(ma_data_source_node* pDataSourceNode, con
 
 MA_API ma_result ma_data_source_node_set_looping(ma_data_source_node* pDataSourceNode, ma_bool32 isLooping)
 {
-    if (pDataSourceNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_data_source_set_looping(pDataSourceNode->pDataSource, isLooping);
 }
 
@@ -63222,21 +59726,7 @@ MA_API ma_result ma_splitter_node_init(ma_node_graph* pNodeGraph, const ma_split
     ma_uint32 pInputChannels[1];
     ma_uint32 pOutputChannels[MA_MAX_NODE_BUS_COUNT];
     ma_uint32 iOutputBus;
-
-    if (pSplitterNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pSplitterNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->outputBusCount > MA_MAX_NODE_BUS_COUNT) {
-        return MA_INVALID_ARGS; 
-    }
-
     
     pInputChannels[0]  = pConfig->channels;
     for (iOutputBus = 0; iOutputBus < pConfig->outputBusCount; iOutputBus += 1) {
@@ -63295,21 +59785,7 @@ MA_API ma_result ma_biquad_node_init(ma_node_graph* pNodeGraph, const ma_biquad_
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->biquad.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_biquad_init(&pConfig->biquad, pAllocationCallbacks, &pNode->biquad);
     if (result != MA_SUCCESS) {
         return result;
@@ -63382,21 +59858,7 @@ MA_API ma_result ma_lpf_node_init(ma_node_graph* pNodeGraph, const ma_lpf_node_c
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->lpf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_lpf_init(&pConfig->lpf, pAllocationCallbacks, &pNode->lpf);
     if (result != MA_SUCCESS) {
         return result;
@@ -63418,11 +59880,6 @@ MA_API ma_result ma_lpf_node_init(ma_node_graph* pNodeGraph, const ma_lpf_node_c
 MA_API ma_result ma_lpf_node_reinit(const ma_lpf_config* pConfig, ma_lpf_node* pNode)
 {
     ma_lpf_node* pLPFNode = (ma_lpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_lpf_reinit(pConfig, &pLPFNode->lpf);
 }
 
@@ -63471,20 +59928,7 @@ MA_API ma_result ma_hpf_node_init(ma_node_graph* pNodeGraph, const ma_hpf_node_c
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->hpf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
 
     result = ma_hpf_init(&pConfig->hpf, pAllocationCallbacks, &pNode->hpf);
     if (result != MA_SUCCESS) {
@@ -63507,11 +59951,6 @@ MA_API ma_result ma_hpf_node_init(ma_node_graph* pNodeGraph, const ma_hpf_node_c
 MA_API ma_result ma_hpf_node_reinit(const ma_hpf_config* pConfig, ma_hpf_node* pNode)
 {
     ma_hpf_node* pHPFNode = (ma_hpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_hpf_reinit(pConfig, &pHPFNode->hpf);
 }
 
@@ -63560,21 +59999,7 @@ MA_API ma_result ma_bpf_node_init(ma_node_graph* pNodeGraph, const ma_bpf_node_c
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->bpf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_bpf_init(&pConfig->bpf, pAllocationCallbacks, &pNode->bpf);
     if (result != MA_SUCCESS) {
         return result;
@@ -63596,11 +60021,6 @@ MA_API ma_result ma_bpf_node_init(ma_node_graph* pNodeGraph, const ma_bpf_node_c
 MA_API ma_result ma_bpf_node_reinit(const ma_bpf_config* pConfig, ma_bpf_node* pNode)
 {
     ma_bpf_node* pBPFNode = (ma_bpf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_bpf_reinit(pConfig, &pBPFNode->bpf);
 }
 
@@ -63649,28 +60069,14 @@ MA_API ma_result ma_notch_node_init(ma_node_graph* pNodeGraph, const ma_notch_no
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->notch.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_notch2_init(&pConfig->notch, pAllocationCallbacks, &pNode->notch);
     if (result != MA_SUCCESS) {
         return result;
     }
 
     baseNodeConfig = ma_node_config_init();
-    baseNodeConfig.vtable          = &g_ma_notch_node_vtable;
+    baseNodeConfig.vtable = &g_ma_notch_node_vtable;
     baseNodeConfig.pInputChannels  = &pConfig->notch.channels;
     baseNodeConfig.pOutputChannels = &pConfig->notch.channels;
 
@@ -63685,11 +60091,6 @@ MA_API ma_result ma_notch_node_init(ma_node_graph* pNodeGraph, const ma_notch_no
 MA_API ma_result ma_notch_node_reinit(const ma_notch_config* pConfig, ma_notch_node* pNode)
 {
     ma_notch_node* pNotchNode = (ma_notch_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_notch2_reinit(pConfig, &pNotchNode->notch);
 }
 
@@ -63738,20 +60139,7 @@ MA_API ma_result ma_peak_node_init(ma_node_graph* pNodeGraph, const ma_peak_node
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->peak.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
 
     result = ma_peak2_init(&pConfig->peak, pAllocationCallbacks, &pNode->peak);
     if (result != MA_SUCCESS) {
@@ -63775,11 +60163,6 @@ MA_API ma_result ma_peak_node_init(ma_node_graph* pNodeGraph, const ma_peak_node
 MA_API ma_result ma_peak_node_reinit(const ma_peak_config* pConfig, ma_peak_node* pNode)
 {
     ma_peak_node* pPeakNode = (ma_peak_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_peak2_reinit(pConfig, &pPeakNode->peak);
 }
 
@@ -63828,21 +60211,7 @@ MA_API ma_result ma_loshelf_node_init(ma_node_graph* pNodeGraph, const ma_loshel
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->loshelf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_loshelf2_init(&pConfig->loshelf, pAllocationCallbacks, &pNode->loshelf);
     if (result != MA_SUCCESS) {
         return result;
@@ -63864,11 +60233,6 @@ MA_API ma_result ma_loshelf_node_init(ma_node_graph* pNodeGraph, const ma_loshel
 MA_API ma_result ma_loshelf_node_reinit(const ma_loshelf_config* pConfig, ma_loshelf_node* pNode)
 {
     ma_loshelf_node* pLoshelfNode = (ma_loshelf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_loshelf2_reinit(pConfig, &pLoshelfNode->loshelf);
 }
 
@@ -63917,21 +60281,7 @@ MA_API ma_result ma_hishelf_node_init(ma_node_graph* pNodeGraph, const ma_hishel
 {
     ma_result result;
     ma_node_config baseNodeConfig;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pNode);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->hishelf.format != ma_format_f32) {
-        return MA_INVALID_ARGS; 
-    }
-
     result = ma_hishelf2_init(&pConfig->hishelf, pAllocationCallbacks, &pNode->hishelf);
     if (result != MA_SUCCESS) {
         return result;
@@ -63953,11 +60303,6 @@ MA_API ma_result ma_hishelf_node_init(ma_node_graph* pNodeGraph, const ma_hishel
 MA_API ma_result ma_hishelf_node_reinit(const ma_hishelf_config* pConfig, ma_hishelf_node* pNode)
 {
     ma_hishelf_node* pHishelfNode = (ma_hishelf_node*)pNode;
-
-    if (pNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_hishelf2_reinit(pConfig, &pHishelfNode->hishelf);
 }
 
@@ -64003,11 +60348,6 @@ MA_API ma_result ma_delay_node_init(ma_node_graph* pNodeGraph, const ma_delay_no
 {
     ma_result result;
     ma_node_config baseConfig;
-
-    if (pDelayNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pDelayNode);
 
     result = ma_delay_init(&pConfig->delay, pAllocationCallbacks, &pDelayNode->delay);
@@ -64187,38 +60527,20 @@ static ma_uint64 ma_engine_node_get_required_input_frame_count(const ma_engine_n
 
 static ma_result ma_engine_node_set_volume(ma_engine_node* pEngineNode, float volume)
 {
-    if (pEngineNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     ma_atomic_float_set(&pEngineNode->volume, volume);
-
     
     if (pEngineNode->volumeSmoothTimeInPCMFrames == 0) {
-        
         ma_spatializer_set_master_volume(&pEngineNode->spatializer, volume);
     } else {
-        
         ma_gainer_set_gain(&pEngineNode->volumeGainer, volume);
     }
-
     return MA_SUCCESS;
 }
 
 static ma_result ma_engine_node_get_volume(const ma_engine_node* pEngineNode, float* pVolume)
 {
-    if (pVolume == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pVolume = 0.0f;
-
-    if (pEngineNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pVolume = ma_atomic_float_get((ma_atomic_float*)&pEngineNode->volume);
-
     return MA_SUCCESS;
 }
 static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNode, const float** ppFramesIn, ma_uint32* pFrameCountIn, float** ppFramesOut, ma_uint32* pFrameCountOut)
@@ -64590,16 +60912,7 @@ static ma_result ma_engine_node_get_heap_layout(const ma_engine_node_config* pCo
     ma_channel defaultStereoChannelMap[2] = {MA_CHANNEL_SIDE_LEFT, MA_CHANNEL_SIDE_RIGHT};  
 
     MA_ASSERT(pHeapLayout);
-
     MA_ZERO_OBJECT(pHeapLayout);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    if (pConfig->pEngine == NULL) {
-        return MA_INVALID_ARGS; 
-    }
 
     pHeapLayout->sizeInBytes = 0;
 
@@ -64661,11 +60974,6 @@ MA_API ma_result ma_engine_node_get_heap_size(const ma_engine_node_config* pConf
 {
     ma_result result;
     ma_engine_node_heap_layout heapLayout;
-
-    if (pHeapSizeInBytes == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     *pHeapSizeInBytes = 0;
 
     result = ma_engine_node_get_heap_layout(pConfig, &heapLayout);
@@ -64691,22 +60999,12 @@ MA_API ma_result ma_engine_node_init_preallocated(const ma_engine_node_config* p
     ma_uint32 channelsIn;
     ma_uint32 channelsOut;
     ma_channel defaultStereoChannelMap[2] = {MA_CHANNEL_SIDE_LEFT, MA_CHANNEL_SIDE_RIGHT};  
-
-    if (pEngineNode == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pEngineNode);
 
     result = ma_engine_node_get_heap_layout(pConfig, &heapLayout);
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (pConfig->pinnedListenerIndex != MA_LISTENER_INDEX_CLOSEST && pConfig->pinnedListenerIndex >= ma_engine_get_listener_count(pConfig->pEngine)) {
-        return MA_INVALID_ARGS; 
-    }
-
     pEngineNode->_pHeap = pHeap;
     MA_ZERO_MEMORY(pHeap, heapLayout.sizeInBytes);
 
@@ -64937,11 +61235,6 @@ MA_API ma_result ma_engine_init(const ma_engine_config* pConfig, ma_engine* pEng
     ma_engine_config engineConfig;
     ma_spatializer_listener_config listenerConfig;
     ma_uint32 iListener;
-
-    if (pEngine == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pEngine);
 
     
@@ -65027,11 +61320,6 @@ MA_API ma_result ma_engine_init(const ma_engine_config* pConfig, ma_engine* pEng
         }
     }
     #endif
-
-    if (engineConfig.channels == 0 || engineConfig.sampleRate == 0) {
-        return MA_INVALID_ARGS;
-    }
-
     pEngine->sampleRate = engineConfig.sampleRate;
 
     
@@ -65060,11 +61348,6 @@ MA_API ma_result ma_engine_init(const ma_engine_config* pConfig, ma_engine* pEng
     
     if (engineConfig.listenerCount == 0) {
         engineConfig.listenerCount = 1;
-    }
-
-    if (engineConfig.listenerCount > MA_ENGINE_MAX_LISTENERS) {
-        result = MA_INVALID_ARGS;   
-        goto on_error_1;
     }
 
     for (iListener = 0; iListener < engineConfig.listenerCount; iListener += 1) {
@@ -65378,17 +61661,10 @@ MA_API ma_uint32 ma_engine_get_sample_rate(const ma_engine* pEngine)
 MA_API ma_result ma_engine_start(ma_engine* pEngine)
 {
     ma_result result;
-
-    if (pEngine == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_DEVICE_IO)
     {
         if (pEngine->pDevice != NULL) {
             result = ma_device_start(pEngine->pDevice);
-        } else {
-            result = MA_INVALID_OPERATION;  
         }
     }
     #else
@@ -65407,17 +61683,10 @@ MA_API ma_result ma_engine_start(ma_engine* pEngine)
 MA_API ma_result ma_engine_stop(ma_engine* pEngine)
 {
     ma_result result;
-
-    if (pEngine == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     #if !defined(MA_NO_DEVICE_IO)
     {
         if (pEngine->pDevice != NULL) {
             result = ma_device_stop(pEngine->pDevice);
-        } else {
-            result = MA_INVALID_OPERATION;  
         }
     }
     #else
@@ -65435,10 +61704,6 @@ MA_API ma_result ma_engine_stop(ma_engine* pEngine)
 
 MA_API ma_result ma_engine_set_volume(ma_engine* pEngine, float volume)
 {
-    if (pEngine == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return ma_node_set_output_bus_volume(ma_node_graph_get_endpoint(&pEngine->nodeGraph), 0, volume);
 }
 
@@ -65659,17 +61924,8 @@ MA_API void playSound(ma_engine* pEngine, const char* pFilePath) {
 #endif
 static ma_result ma_sound_preinit(ma_engine* pEngine, ma_sound* pSound)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pSound);
     pSound->seekTarget = MA_SEEK_TARGET_NONE;
-
-    if (pEngine == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     return MA_SUCCESS;
 }
 
@@ -65767,11 +62023,6 @@ MA_API ma_result ma_sound_init_from_file(ma_engine* pEngine, const char* pFilePa
 MA_API ma_result ma_sound_init_from_file_w(ma_engine* pEngine, const wchar_t* pFilePath, ma_uint32 flags, ma_sound_group* pGroup, ma_fence* pDoneFence, ma_sound* pSound)
 {
     ma_sound_config config;
-
-    if (pFilePath == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     config = ma_sound_config_init_2(pEngine);
     config.pFilePathW         = pFilePath;
     config.flags              = flags;
@@ -65790,16 +62041,6 @@ MA_API ma_result ma_sound_init_copy(ma_engine* pEngine, const ma_sound* pExistin
     if (result != MA_SUCCESS) {
         return result;
     }
-
-    if (pExistingSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pExistingSound->pResourceManagerDataSource == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     
     pSound->pResourceManagerDataSource = (ma_resource_manager_data_source*)ma_malloc(sizeof(*pSound->pResourceManagerDataSource), &pEngine->allocationCallbacks);
     if (pSound->pResourceManagerDataSource == NULL) {
@@ -65911,38 +62152,20 @@ MA_API void ma_sound_start(ma_sound* pSound) {
 
 MA_API ma_result ma_sound_stop(ma_sound* pSound)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     ma_node_set_state(pSound, ma_node_state_stopped);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_sound_stop_with_fade_in_pcm_frames(ma_sound* pSound, ma_uint64 fadeLengthInFrames)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     ma_sound_set_stop_time_with_fade_in_pcm_frames(pSound, ma_engine_get_time_in_pcm_frames(ma_sound_get_engine(pSound)) + fadeLengthInFrames, fadeLengthInFrames);
-
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_sound_stop_with_fade_in_milliseconds(ma_sound* pSound, ma_uint64 fadeLengthInMilliseconds)
 {
     ma_uint64 sampleRate;
-
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     sampleRate = ma_engine_get_sample_rate(ma_sound_get_engine(pSound));
-
     return ma_sound_stop_with_fade_in_pcm_frames(pSound, (fadeLengthInMilliseconds * sampleRate) / 1000);
 }
 
@@ -66217,18 +62440,7 @@ MA_API ma_bool32 ma_sound_is_looping(const ma_sound* pSound)
 
 MA_API ma_result ma_sound_seek_to_pcm_frame(ma_sound* pSound, ma_uint64 frameIndex)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pSound->pDataSource == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
-    
     ma_atomic_exchange_64(&pSound->seekTarget, frameIndex);
-
     return MA_SUCCESS;
 }
 
@@ -66237,11 +62449,6 @@ MA_API ma_result ma_sound_seek_to_second(ma_sound* pSound, float seekPointInSeco
     ma_uint64 frameIndex;
     ma_uint32 sampleRate;
     ma_result result;
-
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     result = ma_sound_get_data_format(pSound, NULL, NULL, &sampleRate, NULL, 0);
     if (result != MA_SUCCESS) {
         return result;
@@ -66255,11 +62462,6 @@ MA_API ma_result ma_sound_seek_to_second(ma_sound* pSound, float seekPointInSeco
 
 MA_API ma_result ma_sound_get_data_format(ma_sound* pSound, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate, ma_channel* pChannelMap, size_t channelMapCap)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     if (pSound->pDataSource == NULL) {
         ma_uint32 channels;
 
@@ -66289,16 +62491,6 @@ MA_API ma_result ma_sound_get_data_format(ma_sound* pSound, ma_format* pFormat, 
 MA_API ma_result ma_sound_get_cursor_in_pcm_frames(ma_sound* pSound, ma_uint64* pCursor)
 {
     ma_uint64 seekTarget;
-
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pSound->pDataSource == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     seekTarget = ma_atomic_load_64(&pSound->seekTarget);
     if (seekTarget != MA_SEEK_TARGET_NONE) {
         *pCursor = seekTarget;
@@ -66310,15 +62502,6 @@ MA_API ma_result ma_sound_get_cursor_in_pcm_frames(ma_sound* pSound, ma_uint64* 
 
 MA_API ma_result ma_sound_get_length_in_pcm_frames(ma_sound* pSound, ma_uint64* pLength)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pSound->pDataSource == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     return ma_data_source_get_length_in_pcm_frames(pSound->pDataSource, pLength);
 }
 
@@ -66350,32 +62533,13 @@ MA_API ma_result ma_sound_get_cursor_in_seconds(ma_sound* pSound, float* pCursor
 
 MA_API ma_result ma_sound_get_length_in_seconds(ma_sound* pSound, float* pLength)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pSound->pDataSource == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     return ma_data_source_get_length_in_seconds(pSound->pDataSource, pLength);
 }
 
 MA_API ma_result ma_sound_set_end_callback(ma_sound* pSound, ma_sound_end_proc callback, void* pUserData)
 {
-    if (pSound == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
-    if (pSound->pDataSource == NULL) {
-        return MA_INVALID_OPERATION;
-    }
-
     pSound->endCallback          = callback;
     pSound->pEndCallbackUserData = pUserData;
-
     return MA_SUCCESS;
 }
 MA_API ma_result ma_sound_group_init(ma_engine* pEngine, ma_uint32 flags, ma_sound_group* pParentGroup, ma_sound_group* pGroup)
@@ -66389,26 +62553,12 @@ MA_API ma_result ma_sound_group_init(ma_engine* pEngine, ma_uint32 flags, ma_sou
 MA_API ma_result ma_sound_group_init_ex(ma_engine* pEngine, const ma_sound_group_config* pConfig, ma_sound_group* pGroup)
 {
     ma_sound_config soundConfig;
-
-    if (pGroup == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
     MA_ZERO_OBJECT(pGroup);
-
-    if (pConfig == NULL) {
-        return MA_INVALID_ARGS;
-    }
-
-    
     soundConfig = *pConfig;
     soundConfig.pFilePath   = NULL;
     soundConfig.pFilePathW  = NULL;
     soundConfig.pDataSource = NULL;
-
-    
     soundConfig.flags |= MA_SOUND_FLAG_NO_SPATIALIZATION;
-
     return ma_sound_init_ex(pEngine, &soundConfig, pGroup);
 }
 
@@ -69126,9 +65276,6 @@ MA_API ma_bool32 ma_dr_wav_init_memory_write_sequential_pcm_frames(ma_dr_wav* pW
 MA_API ma_result ma_dr_wav_uninit(ma_dr_wav* pWav)
 {
     ma_result result = MA_SUCCESS;
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
     if (pWav->onWrite != NULL) {
         ma_uint32 paddingSize = 0;
         if (pWav->container == ma_dr_wav_container_riff || pWav->container == ma_dr_wav_container_rf64) {
@@ -69404,25 +65551,13 @@ MA_API ma_bool32 ma_dr_wav_seek_to_pcm_frame(ma_dr_wav* pWav, ma_uint64 targetFr
 }
 MA_API ma_result ma_dr_wav_get_cursor_in_pcm_frames(ma_dr_wav* pWav, ma_uint64* pCursor)
 {
-    if (pCursor == NULL) {
-        return MA_INVALID_ARGS;
-    }
     *pCursor = 0;
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
     *pCursor = pWav->readCursorInPCMFrames;
     return MA_SUCCESS;
 }
 MA_API ma_result ma_dr_wav_get_length_in_pcm_frames(ma_dr_wav* pWav, ma_uint64* pLength)
 {
-    if (pLength == NULL) {
-        return MA_INVALID_ARGS;
-    }
     *pLength = 0;
-    if (pWav == NULL) {
-        return MA_INVALID_ARGS;
-    }
     *pLength = pWav->totalPCMFrameCount;
     return MA_SUCCESS;
 }
