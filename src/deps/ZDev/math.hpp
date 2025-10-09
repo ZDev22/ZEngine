@@ -20,9 +20,9 @@
 #define LAPLACE 1.3862943611
 #define BERNOUILLI .0787456776
 
-#include <cmath>
+#include <math.h>
 #include <vector>
-#include <cstring>
+#include <string.h>
 
 #include "vector.hpp"
 #include "bigInts.hpp"
@@ -177,7 +177,7 @@ inline float averageMinMax(const vector<float>& floats) {
 template<typename T>
 void setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 template<typename T>
-void setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
+void setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
 inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
@@ -243,3 +243,6 @@ inline bitset<range> createRandomBitset() {
     for (unsigned long long i = 0; i < range; i++) { if (Random()) bits.set(i); }
     return bits;
 }
+
+// Points
+inline float moveTowards(float position, float target, float ease) { return (position - target) / ease; }

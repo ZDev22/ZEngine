@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../vulkan/sprite.hpp"
+#include "../../engine/sprite.hpp"
 #include "math.hpp"
 
 class Collision {

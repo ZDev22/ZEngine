@@ -1,6 +1,4 @@
 #include "slimeAttack.hpp"
-#include "../../deps/ZDev/math.hpp"
-#include "../../deps/ZDev/collision.hpp"
 
 SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Collision& collision) : keyboard(keyboard), pipeline(pipeline), collision(collision), slimeAttackEnemies(*this, collision, pipeline) {}
 
@@ -43,17 +41,20 @@ void SlimeAttack::tick() {
             slimeAttackSpeed[1] = 0.f;
         }
 
+        bool canMove = true;
         if(slimeAttackTouchingGround) {
             if (keyboard.keyPressed(GLFW_KEY_W)) {
                 slimeAttackSpeed[1] = -4.f;
                 slimeAttackTouchingGround = false; 
+                canMove = false;
             }
         }
     
-        if (keyboard.keyHit(GLFW_KEY_Q)) { slimeAttackEnemies.spawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME); }
-        if(keyboard.keyPressed(GLFW_KEY_A)) { slimeAttackSpeed[0] = -1.f; }
-        else if(keyboard.keyPressed(GLFW_KEY_D)) { slimeAttackSpeed[0] = 1.f; }
-        else { slimeAttackSpeed[0] = 0.f; }
+        if (canMove) {
+            if(keyboard.keyPressed(GLFW_KEY_A)) { slimeAttackSpeed[0] = -1.f; }
+            else if(keyboard.keyPressed(GLFW_KEY_D)) { slimeAttackSpeed[0] = 1.f; }
+            else { slimeAttackSpeed[0] = 0.f; }
+        }
 
         slimeAttackSpeed[1] += 15.f * deltaTime;
         sprites[0].position[0] += slimeAttackSpeed[0] * deltaTime;

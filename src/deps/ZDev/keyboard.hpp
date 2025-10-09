@@ -10,7 +10,7 @@
 #include "../glfw/glfw3.h"
 
 #include "vector.hpp"
-#include <cstring>
+#include <string.h>
 
 class Keyboard {
 public:
@@ -128,13 +128,13 @@ public:
     bool numLock() { return modifiers[1]; }
 
     // Reset
-    void resetKeys() { std::memset(keys + 104, 0, 104); }
-    void resetKeyStates() { std::memset(keys, 0, 104); }
-    void fullResetKeys() { std::memset(keys, 0, 208); }
-    void hitAllKeys() { std::memset(keys, 2, 104); }
-    void pressAllKeys() { std::memset(keys, 3, 104); }
-    void releaseAllKeys() { std::memset(keys, 1, 104); }
-    void lockAllKeys() { std::memset(keys + 104, 1, 104); }
+    void resetKeys() { memset(keys + 104, 0, 104); }
+    void resetKeyStates() { memset(keys, 0, 104); }
+    void fullResetKeys() { memset(keys, 0, 208); }
+    void hitAllKeys() { memset(keys, 2, 104); }
+    void pressAllKeys() { memset(keys, 3, 104); }
+    void releaseAllKeys() { memset(keys, 1, 104); }
+    void lockAllKeys() { memset(keys + 104, 1, 104); }
 
     // MOUSE
     void updateMouse() {
