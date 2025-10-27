@@ -11,13 +11,13 @@ public:
     bool checkCollision();
 
     struct Stats {
-        float startPos[2];
+        float slope[2];
         float speed;
         float health;
         unsigned int ID;
     };
 
-    vector<Stats> astroids;
+    std::vector<Stats> astroids;
 private:
     Pipeline& pipeline;
     Collision& collision;

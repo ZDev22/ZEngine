@@ -163,7 +163,7 @@ public:
         }
     }
 
-    void clearAABB() { AABB.clear(); }
+    inline void clearAABB() { AABB.clear(); }
     
 private:
     std::vector<AABBS> AABB;

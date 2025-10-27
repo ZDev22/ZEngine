@@ -15,7 +15,6 @@ std::string answer = "0";
 
 void TerminalCalculator() {
     std::cout << "\x1b[2J\x1b[H";
-    std::cout << "\033[2J\033[H";
     std::cout.flush();
 
     while (true) {

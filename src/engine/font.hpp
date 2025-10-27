@@ -1,15 +1,14 @@
 #pragma once
 
-#include <string> 
 #include <cstdio>
 #include <cstdlib>
 
-inline unsigned char* loadTTF(const std::string& filepath) {
-    FILE* file = std::fopen(filepath.c_str(), "rb");
+inline unsigned char* loadTTF(const char* filepath) {
+    FILE* file = std::fopen(filepath, "rb");
     if (!file) { throw("Failed to open font file"); }
 
     std::fseek(file, 0, SEEK_END);
-    unsigned int fileSize = static_cast<unsigned int>(std::ftell(file));
+    unsigned int fileSize = (unsigned int)std::ftell(file);
     std::rewind(file);
 
     unsigned char* buffer = new unsigned char[fileSize];

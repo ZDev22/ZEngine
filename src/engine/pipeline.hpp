@@ -3,7 +3,6 @@
 #include "device.hpp"
 #include "global.hpp"
 #include "model.hpp"
-#include "../deps/ZDev/vector.hpp"
 
 class Renderer;
 class Sprite;
@@ -18,14 +17,10 @@ public:
     VkDescriptorPool getDescriptorPool() const { return descriptorPool; }
 
     int switchTexture(Sprite& sprite, int textureID);
-    std::shared_ptr<Model> makeModel(const vector<float>& positions);
+    std::shared_ptr<Model> makeModel(const std::vector<float>& positions);
     void createSprite(std::shared_ptr<Model> model, unsigned char textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a);
     void createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex);
     std::shared_ptr<Model> getSquareModel() { return squareModel; }
-
-    void loadFlappyBird();
-    void loadSlimeAttack();
-    void loadAstroids();
 
 private:
     static std::vector<char> readFile(const std::string& filepath);
@@ -33,6 +28,9 @@ private:
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
     void loadSprites();
+    void loadFlappyBird();
+    void loadSlimeAttack();
+    void loadAstroids();
 
     Device& device;
     Renderer& renderer;
@@ -45,11 +43,11 @@ private:
 
     std::shared_ptr<Model> squareModel;
     std::vector<std::string> texturePaths;
-    vector<std::string> fonts;
+    std::vector<std::string> fonts;
 
 #ifdef _WIN32
-    vector<vector<unsigned char>> fontAtlases;
-    vector<float> fontSizes;
+    std::vector<std::vector<unsigned char>> fontAtlases;
+    std::vector<float> fontSizes;
     std::vector<const char*> lastTexts;
 #endif
 };

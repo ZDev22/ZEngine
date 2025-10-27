@@ -7,7 +7,7 @@
 
 class AppWindow {
 public:
-    AppWindow(int w, int h);
+    AppWindow(int width, int height);
     ~AppWindow();
 
     bool shouldClose() { return glfwWindowShouldClose(window); }

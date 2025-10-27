@@ -8,17 +8,17 @@ void Astroid::tick() {
 
         Stats stats;
         stats.ID = sprites.size();
-        stats.startPos[0] = sprites[stats.ID].position[0];
-        stats.startPos[1] = sprites[stats.ID].position[1];
+        stats.slope[0] = -sprites[stats.ID].position[0] / 180;
+        stats.slope[1] = -sprites[stats.ID].position[1] / 180;
         stats.speed = Random(.1f, .2f);
         stats.health = Random(1, 5);
         astroids.push_back(stats);
     }
 
     for (unsigned int i = 0; i < sprites.size(); i++) {
-        if (sprites[i].textureIndex == 0) {
-            sprites[i].position[0] += moveTowards(sprites[i].position[0], 0.f, 0.f);
-            sprites[i].position[1] += moveTowards(sprites[i].position[1], 0.f, 0.f);
+        if (sprites[i].textureIndex > 0) {
+            sprites[i].position[0] += astroids[i].stats.slope[0];
+            sprites[i].position[1] += astroids[i].stats.slope[1];
         }
     }
 }

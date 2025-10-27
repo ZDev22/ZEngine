@@ -6,7 +6,6 @@ Renderer::Renderer(AppWindow& window, Device& device) : window{ window }, device
     createCommandBuffers();
 }
 
-Renderer::~Renderer() { freeCommandBuffers(); }
 void Renderer::recreateSwapChain() {
     auto extent = window.getExtent();
     vkDeviceWaitIdle(device.device());

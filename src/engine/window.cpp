@@ -1,6 +1,6 @@
 #include "window.hpp"
 
-AppWindow::AppWindow(int w, int h) : width{ w }, height{ h } { initWindow(); }
+AppWindow::AppWindow(int width, int height) : width(width), height(height) { initWindow(); }
 AppWindow::~AppWindow() {
     glfwDestroyWindow(window);
     glfwTerminate();

@@ -4,8 +4,7 @@
 #include <stdio.h>
 #endif 
 #define STBI_VERSION 1
-enum
-{
+enum {
     STBI_default = 0, 
     STBI_grey = 1,
     STBI_grey_alpha = 2,
@@ -25,11 +24,10 @@ extern "C" {
 #define STBIDEF extern
 #endif
 #endif
-    typedef struct
-    {
-        int      (*read)  (void* user, char* data, int size);   
-        void     (*skip)  (void* user, int n);                 
-        int      (*eof)   (void* user);                       
+    typedef struct {
+        int (*read) (void* user, char* data, int size);   
+        void (*skip) (void* user, int n);                 
+        int (*eof) (void* user);                       
     } stbi_io_callbacks;
     STBIDEF stbi_uc* stbi_load_from_memory(stbi_uc           const* buffer, int len, int* x, int* y, int* channels_in_file, int desired_channels);
     STBIDEF stbi_uc* stbi_load_from_callbacks(stbi_io_callbacks const* clbk, void* user, int* x, int* y, int* channels_in_file, int desired_channels);
@@ -236,15 +234,13 @@ typedef unsigned char validate_uint32[sizeof(stbi__uint32) == 4 ? 1 : -1];
 #ifdef _MSC_VER
 #if _MSC_VER >= 1400  
 #include <intrin.h> 
-static int stbi__cpuid3(void)
-{
+static int stbi__cpuid3(void) {
     int info[4];
     __cpuid(info, 1);
     return info[3];
 }
 #else
-static int stbi__cpuid3(void)
-{
+static int stbi__cpuid3(void) {
     int res;
     __asm {
         mov  eax, 1
@@ -256,8 +252,7 @@ static int stbi__cpuid3(void)
 #endif
 #define STBI_SIMD_ALIGN(type, name) __declspec(align(16)) type name
 #if !defined(STBI_NO_JPEG) && defined(STBI_SSE2)
-static int stbi__sse2_available(void)
-{
+static int stbi__sse2_available(void) {
     int info3 = stbi__cpuid3();
     return ((info3 >> 26) & 1) != 0;
 }
@@ -265,10 +260,7 @@ static int stbi__sse2_available(void)
 #else 
 #define STBI_SIMD_ALIGN(type, name) type name __attribute__((aligned(16)))
 #if !defined(STBI_NO_JPEG) && defined(STBI_SSE2)
-static int stbi__sse2_available(void)
-{
-    return 1;
-}
+static int stbi__sse2_available(void) { return 1; }
 #endif
 #endif
 #endif
@@ -289,8 +281,7 @@ static int stbi__sse2_available(void)
 #ifndef STBI_MAX_DIMENSIONS
 #define STBI_MAX_DIMENSIONS (1 << 24)
 #endif
-typedef struct
-{
+typedef struct {
     stbi__uint32 img_x, img_y;
     int img_n, img_out_n;
     stbi_io_callbacks io;
@@ -303,16 +294,14 @@ typedef struct
     stbi_uc* img_buffer_original, * img_buffer_original_end;
 } stbi__context;
 static void stbi__refill_buffer(stbi__context* s);
-static void stbi__start_mem(stbi__context* s, stbi_uc const* buffer, int len)
-{
+static void stbi__start_mem(stbi__context* s, stbi_uc const* buffer, int len) {
     s->io.read = NULL;
     s->read_from_callbacks = 0;
     s->callback_already_read = 0;
     s->img_buffer = s->img_buffer_original = (stbi_uc*)buffer;
     s->img_buffer_end = s->img_buffer_original_end = (stbi_uc*)buffer + len;
 }
-static void stbi__start_callbacks(stbi__context* s, stbi_io_callbacks* c, void* user)
-{
+static void stbi__start_callbacks(stbi__context* s, stbi_io_callbacks* c, void* user) {
     s->io = *c;
     s->io_user_data = user;
     s->buflen = sizeof(s->buffer_start);
@@ -323,46 +312,30 @@ static void stbi__start_callbacks(stbi__context* s, stbi_io_callbacks* c, void* 
     s->img_buffer_original_end = s->img_buffer_end;
 }
 #ifndef STBI_NO_STDIO
-static int stbi__stdio_read(void* user, char* data, int size)
-{
-    return (int)fread(data, 1, size, (FILE*)user);
-}
-static void stbi__stdio_skip(void* user, int n)
-{
+static int stbi__stdio_read(void* user, char* data, int size) { return (int)fread(data, 1, size, (FILE*)user); }
+static void stbi__stdio_skip(void* user, int n) {
     int ch;
     fseek((FILE*)user, n, SEEK_CUR);
     ch = fgetc((FILE*)user);  
-    if (ch != EOF) {
-        ungetc(ch, (FILE*)user);  
-    }
+    if (ch != EOF) { ungetc(ch, (FILE*)user); }
 }
-static int stbi__stdio_eof(void* user)
-{
-    return feof((FILE*)user) || ferror((FILE*)user);
-}
-static stbi_io_callbacks stbi__stdio_callbacks =
-{
+static int stbi__stdio_eof(void* user) { return feof((FILE*)user) || ferror((FILE*)user); }
+static stbi_io_callbacks stbi__stdio_callbacks = {
    stbi__stdio_read,
    stbi__stdio_skip,
    stbi__stdio_eof,
 };
-static void stbi__start_file(stbi__context* s, FILE* f)
-{
-    stbi__start_callbacks(s, &stbi__stdio_callbacks, (void*)f);
-}
+static void stbi__start_file(stbi__context* s, FILE* f) { stbi__start_callbacks(s, &stbi__stdio_callbacks, (void*)f); }
 #endif 
-static void stbi__rewind(stbi__context* s)
-{
+static void stbi__rewind(stbi__context* s) {
     s->img_buffer = s->img_buffer_original;
     s->img_buffer_end = s->img_buffer_original_end;
 }
-enum
-{
+enum {
     STBI_ORDER_RGB,
     STBI_ORDER_BGR
 };
-typedef struct
-{
+typedef struct {
     int bits_per_channel;
     int num_channels;
     int channel_order;
@@ -421,13 +394,9 @@ static
 STBI_THREAD_LOCAL
 #endif
 const char* stbi__g_failure_reason;
-STBIDEF const char* stbi_failure_reason(void)
-{
-    return stbi__g_failure_reason;
-}
+STBIDEF const char* stbi_failure_reason(void) { return stbi__g_failure_reason; }
 #ifndef STBI_NO_FAILURE_STRINGS
-static int stbi__err(const char* str)
-{
+static int stbi__err(const char* str) {
     stbi__g_failure_reason = str;
     return 0;
 }
@@ -5867,8 +5836,7 @@ static int stbi__info_main(stbi__context* s, int* x, int* y, int* comp)
 #endif
     return stbi__err("unknown image type", "Image not of any known type, or corrupt");
 }
-static int stbi__is_16_main(stbi__context* s)
-{
+static int stbi__is_16_main(stbi__context* s) {
 #ifndef STBI_NO_PNG
     if (stbi__png_is16(s))  return 1;
 #endif
@@ -5881,8 +5849,7 @@ static int stbi__is_16_main(stbi__context* s)
     return 0;
 }
 #ifndef STBI_NO_STDIO
-STBIDEF int stbi_info(char const* filename, int* x, int* y, int* comp)
-{
+STBIDEF int stbi_info(char const* filename, int* x, int* y, int* comp) {
     FILE* f = stbi__fopen(filename, "rb");
     int result;
     if (!f) return stbi__err("can't fopen", "Unable to open file");
@@ -5890,8 +5857,7 @@ STBIDEF int stbi_info(char const* filename, int* x, int* y, int* comp)
     fclose(f);
     return result;
 }
-STBIDEF int stbi_info_from_file(FILE* f, int* x, int* y, int* comp)
-{
+STBIDEF int stbi_info_from_file(FILE* f, int* x, int* y, int* comp) {
     int r;
     stbi__context s;
     long pos = ftell(f);
@@ -5900,8 +5866,7 @@ STBIDEF int stbi_info_from_file(FILE* f, int* x, int* y, int* comp)
     fseek(f, pos, SEEK_SET);
     return r;
 }
-STBIDEF int stbi_is_16_bit(char const* filename)
-{
+STBIDEF int stbi_is_16_bit(char const* filename) {
     FILE* f = stbi__fopen(filename, "rb");
     int result;
     if (!f) return stbi__err("can't fopen", "Unable to open file");
@@ -5909,8 +5874,7 @@ STBIDEF int stbi_is_16_bit(char const* filename)
     fclose(f);
     return result;
 }
-STBIDEF int stbi_is_16_bit_from_file(FILE* f)
-{
+STBIDEF int stbi_is_16_bit_from_file(FILE* f) {
     int r;
     stbi__context s;
     long pos = ftell(f);
@@ -5920,26 +5884,22 @@ STBIDEF int stbi_is_16_bit_from_file(FILE* f)
     return r;
 }
 #endif 
-STBIDEF int stbi_info_from_memory(stbi_uc const* buffer, int len, int* x, int* y, int* comp)
-{
+STBIDEF int stbi_info_from_memory(stbi_uc const* buffer, int len, int* x, int* y, int* comp) {
     stbi__context s;
     stbi__start_mem(&s, buffer, len);
     return stbi__info_main(&s, x, y, comp);
 }
-STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const* c, void* user, int* x, int* y, int* comp)
-{
+STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const* c, void* user, int* x, int* y, int* comp) {
     stbi__context s;
     stbi__start_callbacks(&s, (stbi_io_callbacks*)c, user);
     return stbi__info_main(&s, x, y, comp);
 }
-STBIDEF int stbi_is_16_bit_from_memory(stbi_uc const* buffer, int len)
-{
+STBIDEF int stbi_is_16_bit_from_memory(stbi_uc const* buffer, int len) {
     stbi__context s;
     stbi__start_mem(&s, buffer, len);
     return stbi__is_16_main(&s);
 }
-STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const* c, void* user)
-{
+STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const* c, void* user) {
     stbi__context s;
     stbi__start_callbacks(&s, (stbi_io_callbacks*)c, user);
     return stbi__is_16_main(&s);

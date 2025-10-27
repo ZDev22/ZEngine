@@ -50,7 +50,6 @@ typedef unsigned __int64 ma_uint64;
         #pragma GCC diagnostic pop
     #endif
 #endif
-
 #if MA_SIZEOF_PTR == 8
     typedef ma_uint64 ma_uintptr;
 #else
@@ -402,23 +401,18 @@ typedef enum {
 typedef enum {
     ma_standard_sample_rate_48000 = 48000,     
     ma_standard_sample_rate_44100 = 44100,
-
     ma_standard_sample_rate_32000 = 32000,     
     ma_standard_sample_rate_24000 = 24000,
     ma_standard_sample_rate_22050 = 22050,
-
     ma_standard_sample_rate_88200 = 88200,     
     ma_standard_sample_rate_96000 = 96000,
     ma_standard_sample_rate_176400 = 176400,
     ma_standard_sample_rate_192000 = 192000,
-
     ma_standard_sample_rate_16000 = 16000,     
     ma_standard_sample_rate_11025 = 11025,
     ma_standard_sample_rate_8000  = 8000,
-
     ma_standard_sample_rate_352800 = 352800,    
     ma_standard_sample_rate_384000 = 384000,
-
     ma_standard_sample_rate_min = ma_standard_sample_rate_8000,
     ma_standard_sample_rate_max = ma_standard_sample_rate_384000,
     ma_standard_sample_rate_count = 14         
@@ -453,29 +447,22 @@ typedef struct {
 typedef struct {
     ma_int32 state;
 } ma_lcg;
-
 #define MA_ATOMIC_SAFE_TYPE_DECL(c89TypeExtension, typeSize, type) \
-    typedef struct \
-    { \
+    typedef struct { \
         MA_ATOMIC(typeSize, ma_##type) value; \
     } ma_atomic_##type; \
 
 #define MA_ATOMIC_SAFE_TYPE_DECL_PTR(type) \
-    typedef struct \
-    { \
+    typedef struct { \
         MA_ATOMIC(MA_SIZEOF_PTR, ma_##type*) value; \
     } ma_atomic_ptr_##type; \
-
 MA_ATOMIC_SAFE_TYPE_DECL(32,  4, uint32)
 MA_ATOMIC_SAFE_TYPE_DECL(i32, 4, int32)
 MA_ATOMIC_SAFE_TYPE_DECL(64,  8, uint64)
 MA_ATOMIC_SAFE_TYPE_DECL(f32, 4, float)
 MA_ATOMIC_SAFE_TYPE_DECL(32,  4, bool32)
-
 typedef ma_uint32 ma_spinlock;
-
 #ifndef MA_NO_THREADING
-
     typedef enum {
         ma_thread_priority_idle     = -5,
         ma_thread_priority_lowest   = -4,
@@ -500,8 +487,7 @@ typedef ma_uint32 ma_spinlock;
     #endif
 
     #if defined(MA_POSIX)
-        typedef struct
-        {
+        typedef struct {
             ma_uint32 value;
             ma_pthread_mutex_t lock;
             ma_pthread_cond_t cond;
@@ -509,10 +495,8 @@ typedef ma_uint32 ma_spinlock;
     #elif defined(MA_WIN32)
         typedef ma_handle ma_event;
     #endif
-
     #if defined(MA_POSIX)
-        typedef struct
-        {
+        typedef struct {
             int value;
             ma_pthread_mutex_t lock;
             ma_pthread_cond_t cond;
@@ -521,19 +505,13 @@ typedef ma_uint32 ma_spinlock;
         typedef ma_handle ma_semaphore;
     #endif
 #else
-    
     #ifndef MA_NO_DEVICE_IO
         #error "MA_NO_THREADING cannot be used without MA_NO_DEVICE_IO";
     #endif
 #endif  
-
 MA_API void ma_version(ma_uint32* pMajor, ma_uint32* pMinor, ma_uint32* pRevision);
-
-
 MA_API const char* ma_version_string(void);
-
 #include <stdarg.h> 
-
 #if defined(__has_attribute)
     #if __has_attribute(format)
         #define MA_ATTRIBUTE_FORMAT(fmt, va) __attribute__((format(printf, fmt, va)))
@@ -542,22 +520,16 @@ MA_API const char* ma_version_string(void);
 #ifndef MA_ATTRIBUTE_FORMAT
 #define MA_ATTRIBUTE_FORMAT(fmt, va)
 #endif
-
 #ifndef MA_MAX_LOG_CALLBACKS
 #define MA_MAX_LOG_CALLBACKS    4
 #endif
-
 typedef void (* ma_log_callback_proc)(void* pUserData, ma_uint32 level, const char* pMessage);
-
-typedef struct
-{
+typedef struct {
     ma_log_callback_proc onLog;
     void* pUserData;
 } ma_log_callback;
-
 MA_API ma_log_callback ma_log_callback_init(ma_log_callback_proc onLog, void* pUserData);
-typedef struct
-{
+typedef struct {
     ma_log_callback callbacks[MA_MAX_LOG_CALLBACKS];
     ma_uint32 callbackCount;
     ma_allocation_callbacks allocationCallbacks;    
@@ -565,7 +537,6 @@ typedef struct
     ma_mutex lock;  
 #endif
 } ma_log;
-
 MA_API ma_result ma_log_init(const ma_allocation_callbacks* pAllocationCallbacks, ma_log* pLog);
 MA_API void ma_log_uninit(ma_log* pLog);
 MA_API ma_result ma_log_register_callback(ma_log* pLog, ma_log_callback callback);
@@ -573,15 +544,11 @@ MA_API ma_result ma_log_unregister_callback(ma_log* pLog, ma_log_callback callba
 MA_API ma_result ma_log_post(ma_log* pLog, ma_uint32 level, const char* pMessage);
 MA_API ma_result ma_log_postv(ma_log* pLog, ma_uint32 level, const char* pFormat, va_list args);
 MA_API ma_result ma_log_postf(ma_log* pLog, ma_uint32 level, const char* pFormat, ...) MA_ATTRIBUTE_FORMAT(3, 4);
-
-typedef union
-{
+typedef union {
     float    f32;
     ma_int32 s32;
 } ma_biquad_coefficient;
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     double b0;
@@ -591,11 +558,8 @@ typedef struct
     double a1;
     double a2;
 } ma_biquad_config;
-
 MA_API ma_biquad_config ma_biquad_config_init(ma_format format, ma_uint32 channels, double b0, double b1, double b2, double a0, double a1, double a2);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_biquad_coefficient b0;
@@ -605,12 +569,9 @@ typedef struct
     ma_biquad_coefficient a2;
     ma_biquad_coefficient* pR1;
     ma_biquad_coefficient* pR2;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_biquad;
-
 MA_API ma_result ma_biquad_get_heap_size(const ma_biquad_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_biquad_init_preallocated(const ma_biquad_config* pConfig, void* pHeap, ma_biquad* pBQ);
 MA_API ma_result ma_biquad_init(const ma_biquad_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_biquad* pBQ);
@@ -619,31 +580,23 @@ MA_API ma_result ma_biquad_reinit(const ma_biquad_config* pConfig, ma_biquad* pB
 MA_API ma_result ma_biquad_clear_cache(ma_biquad* pBQ);
 MA_API ma_result ma_biquad_process_pcm_frames(ma_biquad* pBQ, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_biquad_get_latency(const ma_biquad* pBQ);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double cutoffFrequency;
     double q;
 } ma_lpf1_config, ma_lpf2_config;
-
 MA_API ma_lpf1_config ma_lpf1_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency);
 MA_API ma_lpf2_config ma_lpf2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, double q);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_biquad_coefficient a;
     ma_biquad_coefficient* pR1;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_lpf1;
-
 MA_API ma_result ma_lpf1_get_heap_size(const ma_lpf1_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_lpf1_init_preallocated(const ma_lpf1_config* pConfig, void* pHeap, ma_lpf1* pLPF);
 MA_API ma_result ma_lpf1_init(const ma_lpf1_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_lpf1* pLPF);
@@ -652,9 +605,7 @@ MA_API ma_result ma_lpf1_reinit(const ma_lpf1_config* pConfig, ma_lpf1* pLPF);
 MA_API ma_result ma_lpf1_clear_cache(ma_lpf1* pLPF);
 MA_API ma_result ma_lpf1_process_pcm_frames(ma_lpf1* pLPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_lpf1_get_latency(const ma_lpf1* pLPF);
-
-typedef struct
-{
+typedef struct {
     ma_biquad bq;   
 } ma_lpf2;
 
@@ -666,19 +617,15 @@ MA_API ma_result ma_lpf2_reinit(const ma_lpf2_config* pConfig, ma_lpf2* pLPF);
 MA_API ma_result ma_lpf2_clear_cache(ma_lpf2* pLPF);
 MA_API ma_result ma_lpf2_process_pcm_frames(ma_lpf2* pLPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_lpf2_get_latency(const ma_lpf2* pLPF);
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double cutoffFrequency;
     ma_uint32 order;    
 } ma_lpf_config;
-
 MA_API ma_lpf_config ma_lpf_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -686,12 +633,9 @@ typedef struct
     ma_uint32 lpf2Count;
     ma_lpf1* pLPF1;
     ma_lpf2* pLPF2;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_lpf;
-
 MA_API ma_result ma_lpf_get_heap_size(const ma_lpf_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_lpf_init_preallocated(const ma_lpf_config* pConfig, void* pHeap, ma_lpf* pLPF);
 MA_API ma_result ma_lpf_init(const ma_lpf_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_lpf* pLPF);
@@ -700,31 +644,23 @@ MA_API ma_result ma_lpf_reinit(const ma_lpf_config* pConfig, ma_lpf* pLPF);
 MA_API ma_result ma_lpf_clear_cache(ma_lpf* pLPF);
 MA_API ma_result ma_lpf_process_pcm_frames(ma_lpf* pLPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_lpf_get_latency(const ma_lpf* pLPF);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double cutoffFrequency;
     double q;
 } ma_hpf1_config, ma_hpf2_config;
-
 MA_API ma_hpf1_config ma_hpf1_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency);
 MA_API ma_hpf2_config ma_hpf2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, double q);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_biquad_coefficient a;
     ma_biquad_coefficient* pR1;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_hpf1;
-
 MA_API ma_result ma_hpf1_get_heap_size(const ma_hpf1_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_hpf1_init_preallocated(const ma_hpf1_config* pConfig, void* pHeap, ma_hpf1* pLPF);
 MA_API ma_result ma_hpf1_init(const ma_hpf1_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_hpf1* pHPF);
@@ -745,19 +681,15 @@ MA_API void ma_hpf2_uninit(ma_hpf2* pHPF, const ma_allocation_callbacks* pAlloca
 MA_API ma_result ma_hpf2_reinit(const ma_hpf2_config* pConfig, ma_hpf2* pHPF);
 MA_API ma_result ma_hpf2_process_pcm_frames(ma_hpf2* pHPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_hpf2_get_latency(const ma_hpf2* pHPF);
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double cutoffFrequency;
     ma_uint32 order;    
 } ma_hpf_config;
-
 MA_API ma_hpf_config ma_hpf_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -765,12 +697,9 @@ typedef struct
     ma_uint32 hpf2Count;
     ma_hpf1* pHPF1;
     ma_hpf2* pHPF2;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_hpf;
-
 MA_API ma_result ma_hpf_get_heap_size(const ma_hpf_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_hpf_init_preallocated(const ma_hpf_config* pConfig, void* pHeap, ma_hpf* pLPF);
 MA_API ma_result ma_hpf_init(const ma_hpf_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_hpf* pHPF);
@@ -778,23 +707,17 @@ MA_API void ma_hpf_uninit(ma_hpf* pHPF, const ma_allocation_callbacks* pAllocati
 MA_API ma_result ma_hpf_reinit(const ma_hpf_config* pConfig, ma_hpf* pHPF);
 MA_API ma_result ma_hpf_process_pcm_frames(ma_hpf* pHPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_hpf_get_latency(const ma_hpf* pHPF);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double cutoffFrequency;
     double q;
 } ma_bpf2_config;
-
 MA_API ma_bpf2_config ma_bpf2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, double q);
-
-typedef struct
-{
+typedef struct {
     ma_biquad bq;   
 } ma_bpf2;
-
 MA_API ma_result ma_bpf2_get_heap_size(const ma_bpf2_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_bpf2_init_preallocated(const ma_bpf2_config* pConfig, void* pHeap, ma_bpf2* pBPF);
 MA_API ma_result ma_bpf2_init(const ma_bpf2_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_bpf2* pBPF);
@@ -802,29 +725,22 @@ MA_API void ma_bpf2_uninit(ma_bpf2* pBPF, const ma_allocation_callbacks* pAlloca
 MA_API ma_result ma_bpf2_reinit(const ma_bpf2_config* pConfig, ma_bpf2* pBPF);
 MA_API ma_result ma_bpf2_process_pcm_frames(ma_bpf2* pBPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_bpf2_get_latency(const ma_bpf2* pBPF);
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double cutoffFrequency;
     ma_uint32 order;    
 } ma_bpf_config;
-
 MA_API ma_bpf_config ma_bpf_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double cutoffFrequency, ma_uint32 order);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 bpf2Count;
     ma_bpf2* pBPF2;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_bpf;
-
 MA_API ma_result ma_bpf_get_heap_size(const ma_bpf_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_bpf_init_preallocated(const ma_bpf_config* pConfig, void* pHeap, ma_bpf* pBPF);
 MA_API ma_result ma_bpf_init(const ma_bpf_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_bpf* pBPF);
@@ -832,23 +748,17 @@ MA_API void ma_bpf_uninit(ma_bpf* pBPF, const ma_allocation_callbacks* pAllocati
 MA_API ma_result ma_bpf_reinit(const ma_bpf_config* pConfig, ma_bpf* pBPF);
 MA_API ma_result ma_bpf_process_pcm_frames(ma_bpf* pBPF, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_bpf_get_latency(const ma_bpf* pBPF);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
     double q;
     double frequency;
 } ma_notch2_config, ma_notch_config;
-
 MA_API ma_notch2_config ma_notch2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double q, double frequency);
-
-typedef struct
-{
+typedef struct {
     ma_biquad bq;
 } ma_notch2;
-
 MA_API ma_result ma_notch2_get_heap_size(const ma_notch2_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_notch2_init_preallocated(const ma_notch2_config* pConfig, void* pHeap, ma_notch2* pFilter);
 MA_API ma_result ma_notch2_init(const ma_notch2_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_notch2* pFilter);
@@ -856,9 +766,7 @@ MA_API void ma_notch2_uninit(ma_notch2* pFilter, const ma_allocation_callbacks* 
 MA_API ma_result ma_notch2_reinit(const ma_notch2_config* pConfig, ma_notch2* pFilter);
 MA_API ma_result ma_notch2_process_pcm_frames(ma_notch2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_notch2_get_latency(const ma_notch2* pFilter);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -866,14 +774,10 @@ typedef struct
     double q;
     double frequency;
 } ma_peak2_config, ma_peak_config;
-
 MA_API ma_peak2_config ma_peak2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double q, double frequency);
-
-typedef struct
-{
+typedef struct {
     ma_biquad bq;
 } ma_peak2;
-
 MA_API ma_result ma_peak2_get_heap_size(const ma_peak2_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_peak2_init_preallocated(const ma_peak2_config* pConfig, void* pHeap, ma_peak2* pFilter);
 MA_API ma_result ma_peak2_init(const ma_peak2_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_peak2* pFilter);
@@ -881,9 +785,7 @@ MA_API void ma_peak2_uninit(ma_peak2* pFilter, const ma_allocation_callbacks* pA
 MA_API ma_result ma_peak2_reinit(const ma_peak2_config* pConfig, ma_peak2* pFilter);
 MA_API ma_result ma_peak2_process_pcm_frames(ma_peak2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_peak2_get_latency(const ma_peak2* pFilter);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -891,14 +793,10 @@ typedef struct
     double shelfSlope;
     double frequency;
 } ma_loshelf2_config, ma_loshelf_config;
-
 MA_API ma_loshelf2_config ma_loshelf2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double shelfSlope, double frequency);
-
-typedef struct
-{
+typedef struct {
     ma_biquad bq;
 } ma_loshelf2;
-
 MA_API ma_result ma_loshelf2_get_heap_size(const ma_loshelf2_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_loshelf2_init_preallocated(const ma_loshelf2_config* pConfig, void* pHeap, ma_loshelf2* pFilter);
 MA_API ma_result ma_loshelf2_init(const ma_loshelf2_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_loshelf2* pFilter);
@@ -906,9 +804,7 @@ MA_API void ma_loshelf2_uninit(ma_loshelf2* pFilter, const ma_allocation_callbac
 MA_API ma_result ma_loshelf2_reinit(const ma_loshelf2_config* pConfig, ma_loshelf2* pFilter);
 MA_API ma_result ma_loshelf2_process_pcm_frames(ma_loshelf2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_loshelf2_get_latency(const ma_loshelf2* pFilter);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
@@ -916,14 +812,10 @@ typedef struct
     double shelfSlope;
     double frequency;
 } ma_hishelf2_config, ma_hishelf_config;
-
 MA_API ma_hishelf2_config ma_hishelf2_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate, double gainDB, double shelfSlope, double frequency);
-
-typedef struct
-{
+typedef struct {
     ma_biquad bq;
 } ma_hishelf2;
-
 MA_API ma_result ma_hishelf2_get_heap_size(const ma_hishelf2_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_hishelf2_init_preallocated(const ma_hishelf2_config* pConfig, void* pHeap, ma_hishelf2* pFilter);
 MA_API ma_result ma_hishelf2_init(const ma_hishelf2_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_hishelf2* pFilter);
@@ -931,9 +823,7 @@ MA_API void ma_hishelf2_uninit(ma_hishelf2* pFilter, const ma_allocation_callbac
 MA_API ma_result ma_hishelf2_reinit(const ma_hishelf2_config* pConfig, ma_hishelf2* pFilter);
 MA_API ma_result ma_hishelf2_process_pcm_frames(ma_hishelf2* pFilter, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API ma_uint32 ma_hishelf2_get_latency(const ma_hishelf2* pFilter);
-
-typedef struct
-{
+typedef struct {
     ma_uint32 channels;
     ma_uint32 sampleRate;
     ma_uint32 delayInFrames;
@@ -942,16 +832,13 @@ typedef struct
     float dry;                  
     float decay;                
 } ma_delay_config;
-
 MA_API ma_delay_config ma_delay_config_init(ma_uint32 channels, ma_uint32 sampleRate, ma_uint32 delayInFrames, float decay);
-typedef struct
-{
+typedef struct {
     ma_delay_config config;
     ma_uint32 cursor;               
     ma_uint32 bufferSizeInFrames;
     float* pBuffer;
 } ma_delay;
-
 MA_API ma_result ma_delay_init(const ma_delay_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_delay* pDelay);
 MA_API void ma_delay_uninit(ma_delay* pDelay, const ma_allocation_callbacks* pAllocationCallbacks);
 MA_API ma_result ma_delay_process_pcm_frames(ma_delay* pDelay, void* pFramesOut, const void* pFramesIn, ma_uint32 frameCount);
@@ -961,27 +848,20 @@ MA_API void ma_delay_set_dry(ma_delay* pDelay, float value);
 MA_API float ma_delay_get_dry(const ma_delay* pDelay);
 MA_API void ma_delay_set_decay(ma_delay* pDelay, float value);
 MA_API float ma_delay_get_decay(const ma_delay* pDelay);
-
-typedef struct
-{
+typedef struct {
     ma_uint32 channels;
     ma_uint32 smoothTimeInFrames;
 } ma_gainer_config;
-
 MA_API ma_gainer_config ma_gainer_config_init(ma_uint32 channels, ma_uint32 smoothTimeInFrames);
-typedef struct
-{
+typedef struct {
     ma_gainer_config config;
     ma_uint32 t;
     float masterVolume;
     float* pOldGains;
     float* pNewGains;
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
-} ma_gainer;
-
+} ma_gainer
 MA_API ma_result ma_gainer_get_heap_size(const ma_gainer_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_gainer_init_preallocated(const ma_gainer_config* pConfig, void* pHeap, ma_gainer* pGainer);
 MA_API ma_result ma_gainer_init(const ma_gainer_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_gainer* pGainer);
@@ -991,96 +871,72 @@ MA_API ma_result ma_gainer_set_gain(ma_gainer* pGainer, float newGain);
 MA_API ma_result ma_gainer_set_gains(ma_gainer* pGainer, float* pNewGains);
 MA_API ma_result ma_gainer_set_master_volume(ma_gainer* pGainer, float volume);
 MA_API ma_result ma_gainer_get_master_volume(const ma_gainer* pGainer, float* pVolume);
-
-typedef enum
-{
+typedef enum {
     ma_pan_mode_balance = 0,    
     ma_pan_mode_pan             
 } ma_pan_mode;
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_pan_mode mode;
     float pan;
 } ma_panner_config;
-
 MA_API ma_panner_config ma_panner_config_init(ma_format format, ma_uint32 channels);
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_pan_mode mode;
     float pan;  
 } ma_panner;
-
 MA_API ma_result ma_panner_init(const ma_panner_config* pConfig, ma_panner* pPanner);
 MA_API ma_result ma_panner_process_pcm_frames(ma_panner* pPanner, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API void ma_panner_set_mode(ma_panner* pPanner, ma_pan_mode mode);
 MA_API ma_pan_mode ma_panner_get_mode(const ma_panner* pPanner);
 MA_API void ma_panner_set_pan(ma_panner* pPanner, float pan);
 MA_API float ma_panner_get_pan(const ma_panner* pPanner);
-
-typedef struct
-{
+typedef struct {
     ma_format format;
     ma_uint32 channels;
     ma_uint32 sampleRate;
 } ma_fader_config;
-
 MA_API ma_fader_config ma_fader_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRate);
-
-typedef struct
-{
+typedef struct {
     ma_fader_config config;
     float volumeBeg;            
     float volumeEnd;
     ma_uint64 lengthInFrames;   
     ma_int64  cursorInFrames;   
 } ma_fader;
-
 MA_API ma_result ma_fader_init(const ma_fader_config* pConfig, ma_fader* pFader);
 MA_API ma_result ma_fader_process_pcm_frames(ma_fader* pFader, void* pFramesOut, const void* pFramesIn, ma_uint64 frameCount);
 MA_API void ma_fader_get_data_format(const ma_fader* pFader, ma_format* pFormat, ma_uint32* pChannels, ma_uint32* pSampleRate);
 MA_API void ma_fader_set_fade(ma_fader* pFader, float volumeBeg, float volumeEnd, ma_uint64 lengthInFrames);
 MA_API void ma_fader_set_fade_ex(ma_fader* pFader, float volumeBeg, float volumeEnd, ma_uint64 lengthInFrames, ma_int64 startOffsetInFrames);
 MA_API float ma_fader_get_current_volume(const ma_fader* pFader);
-
-typedef struct
-{
+typedef struct {
     float x;
     float y;
     float z;
 } ma_vec3f;
-
-typedef struct
-{
+typedef struct {
     ma_vec3f v;
     ma_spinlock lock;
 } ma_atomic_vec3f;
-
-typedef enum
-{
+typedef enum {
     ma_attenuation_model_none,          
     ma_attenuation_model_inverse,       
     ma_attenuation_model_linear,        
     ma_attenuation_model_exponential    
 } ma_attenuation_model;
-
-typedef enum
-{
+typedef enum {
     ma_positioning_absolute,
     ma_positioning_relative
 } ma_positioning;
-
-typedef enum
-{
+typedef enum {
     ma_handedness_right,
     ma_handedness_left
 } ma_handedness;
-typedef struct
-{
+typedef struct {
     ma_uint32 channelsOut;
     ma_channel* pChannelMapOut;
     ma_handedness handedness;   
@@ -1090,21 +946,16 @@ typedef struct
     float speedOfSound;
     ma_vec3f worldUp;
 } ma_spatializer_listener_config;
-
 MA_API ma_spatializer_listener_config ma_spatializer_listener_config_init(ma_uint32 channelsOut);
-typedef struct
-{
+typedef struct {
     ma_spatializer_listener_config config;
     ma_atomic_vec3f position;  
     ma_atomic_vec3f direction; 
     ma_atomic_vec3f velocity;
     ma_bool32 isEnabled;
-
-    
     ma_bool32 _ownsHeap;
     void* _pHeap;
 } ma_spatializer_listener;
-
 MA_API ma_result ma_spatializer_listener_get_heap_size(const ma_spatializer_listener_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_spatializer_listener_init_preallocated(const ma_spatializer_listener_config* pConfig, void* pHeap, ma_spatializer_listener* pListener);
 MA_API ma_result ma_spatializer_listener_init(const ma_spatializer_listener_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_spatializer_listener* pListener);
@@ -1122,8 +973,7 @@ MA_API void ma_spatializer_listener_set_world_up(ma_spatializer_listener* pListe
 MA_API ma_vec3f ma_spatializer_listener_get_world_up(const ma_spatializer_listener* pListener);
 MA_API void ma_spatializer_listener_set_enabled(ma_spatializer_listener* pListener, ma_bool32 isEnabled);
 MA_API ma_bool32 ma_spatializer_listener_is_enabled(const ma_spatializer_listener* pListener);
-typedef struct
-{
+typedef struct {
     ma_uint32 channelsIn;
     ma_uint32 channelsOut;
     ma_channel* pChannelMapIn;
@@ -1143,10 +993,8 @@ typedef struct
     float minSpatializationChannelGain; 
     ma_uint32 gainSmoothTimeInFrames;   
 } ma_spatializer_config;
-
 MA_API ma_spatializer_config ma_spatializer_config_init(ma_uint32 channelsIn, ma_uint32 channelsOut);
-typedef struct
-{
+typedef struct {
     ma_uint32 channelsIn;
     ma_uint32 channelsOut;
     ma_channel* pChannelMapIn;
@@ -1171,12 +1019,9 @@ typedef struct
     float minSpatializationChannelGain;
     ma_gainer gainer;   
     float* pNewChannelGainsOut; 
-
-    
     void* _pHeap;
     ma_bool32 _ownsHeap;
 } ma_spatializer;
-
 MA_API ma_result ma_spatializer_get_heap_size(const ma_spatializer_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_spatializer_init_preallocated(const ma_spatializer_config* pConfig, void* pHeap, ma_spatializer* pSpatializer);
 MA_API ma_result ma_spatializer_init(const ma_spatializer_config* pConfig, const ma_allocation_callbacks* pAllocationCallbacks, ma_spatializer* pSpatializer);

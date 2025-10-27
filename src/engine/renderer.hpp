@@ -7,7 +7,7 @@
 class Renderer {
 public:
     Renderer(AppWindow& window, Device& device);
-    ~Renderer();
+    inline ~Renderer() { freeCommandBuffers(); }
 
     VkRenderPass getSwapChainRenderPass() const { return swapChain->getRenderPass(); }
     bool isFrameInProgress() const { return isFrameStarted; }

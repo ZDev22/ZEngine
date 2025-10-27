@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifdef _WIN32
-vector<vector<stbtt_bakedchar>> fontCharDatas;
+std::vector<std::vector<stbtt_bakedchar>> fontCharDatas;
 #endif
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
@@ -184,8 +184,8 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code) {
     return shaderModule;
 }
 
-std::shared_ptr<Model> Pipeline::makeModel(const vector<float>& positions) {
-    vector<Model::Vertex> vertices;
+std::shared_ptr<Model> Pipeline::makeModel(const std::vector<float>& positions) {
+    std::vector<Model::Vertex> vertices;
     vertices.reserve(positions.size() / 2);
 
     for (unsigned int i = 0; i < positions.size(); i += 2) {
@@ -290,8 +290,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
     else { updateTextureIndex = textureIndex; }
 #else
     unsigned int atlasSize = fontSize * 16.f;
-    vector<unsigned char> grayscale(atlasSize * atlasSize);
-    vector<stbtt_bakedchar> charData(96);
+    std::vector<unsigned char> grayscale(atlasSize * atlasSize);
+    std::vector<stbtt_bakedchar> charData(96);
 
     int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
 

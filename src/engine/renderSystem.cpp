@@ -41,7 +41,7 @@ void RenderSystem::initializeSpriteData() {
 }
 
 void RenderSystem::createTextureArrayDescriptorSet() {
-    vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
+    std::vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
 
     for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
         Texture* texture = spriteTextures[i].get();
@@ -87,7 +87,7 @@ void RenderSystem::createTextureArrayDescriptorSet() {
 }
 
 void RenderSystem::updateAllTextures() {
-    vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
+    std::vector<VkDescriptorImageInfo> imageInfos(MAX_TEXTURES);
 
     for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
         Texture* texture = spriteTextures[i].get();

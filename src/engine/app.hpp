@@ -1,7 +1,5 @@
 #pragma once
 
-#include "window.hpp"
-#include "device.hpp"
 #include "renderer.hpp"
 #include "renderSystem.hpp"
 

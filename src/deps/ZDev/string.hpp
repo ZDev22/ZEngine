@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
+#include <vector>
 
 struct StringIndex {
     unsigned int begin;
@@ -69,8 +69,8 @@ inline unsigned int howManyItemsInString(char item, const char* str, unsigned in
     return items;
 }
 
-inline vector<unsigned int> itemIndexsInString(char item, const char* str, unsigned int strSize) {
-    vector<unsigned int> items;
+inline std::vector<unsigned int> itemIndexsInString(char item, const char* str, unsigned int strSize) {
+    std::vector<unsigned int> items;
     for (unsigned int i = 0; i < strSize; i++) { if (str[i] == item) { items.push_back(i); }}
     return items;
 }
@@ -86,8 +86,8 @@ inline unsigned int howManyStringsInString(const char* item, unsigned int itemSi
     return items;
 }
 
-inline vector<StringIndex> stringIndexsInString(const char* item, unsigned int itemSize, const char* str, unsigned int strSize) {
-    vector<StringIndex> items = 0;
+inline std::vector<StringIndex> stringIndexsInString(const char* item, unsigned int itemSize, const char* str, unsigned int strSize) {
+    std::vector<StringIndex> items = 0;
     for (unsigned int i = 0; i < strSize; i++) {
         if (str[i] == item[i]) {
             for (unsigned int q = 1; q < itemSize; q++) { if (str[i + q] != item[i + q]) { break; }}
