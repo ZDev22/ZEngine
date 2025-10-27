@@ -41,7 +41,7 @@ VkResult SwapChain::acquireNextImage(unsigned int* imageIndex) {
 }
 
 VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
-    if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
+    if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, 18446744073709551615ULL); }
     imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
     VkSubmitInfo submitInfo = {};
@@ -103,7 +103,7 @@ void SwapChain::createSwapChain() {
             if (windowExtent.height < swapChainSupport.capabilities.minImageExtent.height) { windowExtent.height = swapChainSupport.capabilities.minImageExtent.height; }
             if (windowExtent.height > swapChainSupport.capabilities.maxImageExtent.height) { windowExtent.height = swapChainSupport.capabilities.maxImageExtent.height; }
             extent = windowExtent;
-        } 
+        }
         else { extent = swapChainSupport.capabilities.currentExtent; }
     }
 
@@ -131,8 +131,8 @@ void SwapChain::createSwapChain() {
     }
     else {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        createInfo.queueFamilyIndexCount = 0;  	
-        createInfo.pQueueFamilyIndices = nullptr;  
+        createInfo.queueFamilyIndexCount = 0;
+        createInfo.pQueueFamilyIndices = nullptr;
     }
 
     createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
@@ -169,9 +169,9 @@ void SwapChain::createImageViews() {
 
 void SwapChain::createRenderPass() {
     VkAttachmentDescription depthAttachment{};
-    
+
     VkFormat depthFormat = device.findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-    
+
     depthAttachment.format = depthFormat;
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

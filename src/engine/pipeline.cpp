@@ -238,7 +238,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         fontAtlases[font].resize(atlasSize * atlasSize);
         fontCharDatas[font].resize(96);
 
-        const unsigned char* fontData = loadTTF(fonts[font]);
+        const unsigned char* fontData = loadTTF(fonts[font].c_str());
         int result = stbtt_BakeFontBitmap(fontData, 0, fontSize, fontAtlases[font].data(), atlasSize, atlasSize, 32, 96, fontCharDatas[font].data());
         if (result <= 0) { throw("Failed to bake font"); }
         fontSizes[font] = fontSize;
@@ -293,7 +293,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
     std::vector<unsigned char> grayscale(atlasSize * atlasSize);
     std::vector<stbtt_bakedchar> charData(96);
 
-    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
+    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font].c_str()), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
 
     float min_y = 0.0f;
     float max_y = 0.0f;

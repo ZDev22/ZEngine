@@ -5,6 +5,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include "../deps/glfw/glfw3.h"
 
+#include <string>
+
 class AppWindow {
 public:
     AppWindow(int width, int height);
@@ -15,7 +17,7 @@ public:
     bool wasWindowResized() { return framebufferResized; }
     void resetWindowResizedFlag() { framebufferResized = false; }
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-    void setWindowName(const char* name) { glfwSetWindowTitle(window, name); }
+    void setWindowName(const std::string name) { glfwSetWindowTitle(window, name.c_str()); }
     GLFWwindow* getWindow() { return window; }
 
 private:

@@ -5,9 +5,9 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "../miniaudio.h"
 
-//#include "../games/flappyBird/flappyBird.hpp"
+#include "../games/flappyBird/flappyBird.hpp"
 //#include "../games/slimeAttack/slimeAttack.hpp"
-#include "../games/astroids/astroids.hpp"
+//#include "../games/astroids/astroids.hpp"
 
 #include "../games/terminalCalculator/terminalCalculator.hpp"
 
@@ -43,9 +43,9 @@ App::App() : pipeline(device, renderer, "texture") {
     #if FPS_CAP_SET
     deltaTime = FPS_CAP * 2.f;
     #endif
-    //pipeline.loadFlappyBird();
+    pipeline.loadFlappyBird();
     //pipeline.loadSlimeAttack();
-    pipeline.loadAstroids();
+    //pipeline.loadAstroids();
     renderSystem = std::make_unique<RenderSystem>(device, window, renderer, vertex, pipeline.getDescriptorSetLayout());
 }
 
@@ -54,9 +54,9 @@ void App::run() {
     Collision collision;
     ma_engine_init(nullptr, &audio);
 
-    //FlappyBird flappyBird{keyboard, audio, pipeline, collision, vertex};
+    FlappyBird flappyBird{keyboard, audio, pipeline, collision, vertex};
     //SlimeAttack slimeAttack{keyboard, pipeline, collision};
-    Astroids astroids{keyboard, audio, pipeline, collision, vertex};
+    //Astroids astroids{keyboard, audio, pipeline, collision, vertex};
 
     std::thread render(&App::render, this);
     render.detach();
@@ -101,9 +101,9 @@ void App::run() {
         keyboard.updateMouse();
         #endif
 
-        //flappyBird.tick();
+        flappyBird.tick();
         //slimeAttack.tick();
-        astroids.tick();
+        //astroids.tick();
 
         keyboard.resetKeys();
         collision.clearAABB();

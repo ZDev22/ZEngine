@@ -22,15 +22,16 @@ public:
     void createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex);
     std::shared_ptr<Model> getSquareModel() { return squareModel; }
 
+    void loadFlappyBird();
+    void loadSlimeAttack();
+    void loadAstroids();
+
 private:
     static std::vector<char> readFile(const std::string& filepath);
     void createGraphicsPipeline(const std::string& shader);
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
     void loadSprites();
-    void loadFlappyBird();
-    void loadSlimeAttack();
-    void loadAstroids();
 
     Device& device;
     Renderer& renderer;
