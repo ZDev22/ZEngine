@@ -1,10 +1,14 @@
-## v1.8
+## v1.9 - DEV
+- Added camera zoom (BROKEN ON LINUX)
+
+## v1.8 - 10/5/25
+- More bigInts.hpp functionality
 - Compile-time per-game settings
 - HUGE terminal game optimizations
 - Removed a bunch of useless vulkan files
 - Optimizations
 
-# v1.7
+# v1.7 - 9/9/25
 - Added bigInts.hpp
 - Added font.hpp
 - MUCH more keyboard.hpp functionality
@@ -15,14 +19,14 @@
 - Minimized memory leak
 - Optimizations
 
-## v0.7
+## v0.7 - 8/20/25
 - Re-added dynamically creatable sprites
 - Added dynamically loadable textures
 - Make shaders easier to add & maintain
 - Made GPU selection better on multi-GPU PCs
 - HUGE optimizations
 
-## v0.6
+## v0.6 - 7/20/25
 - Added audio.hpp
 - Added string.hpp
 - Remove validation layers
@@ -31,7 +35,7 @@
 - Added camera
 - Optimizations
 
-## v0.5
+## v0.5 - 7/13/25
 - Added collision.hpp
 - More math.hpp functionality
 - Optimized textures
@@ -39,23 +43,23 @@
 - Fixed .gitignore
 - Multithreading
 
-## v0.4
+## v0.4 - 6/27/25
 - More math.hpp functionality
 - More keyboard.hpp functionality
 - Better texture loading
 - Added .gitignore
 - Optimizations
 
-## v0.3
+## v0.3 - 6/24/25
 - Added keyboard.hpp
 - Added math.hpp
 - Bugfixes
 
-## v0.2
+## v0.2 - 6/17/25
 - Added Linux support
 - HUGE optimizations
 
-# v0.1
+# v0.1 - 6/4/25
 - Vulkan support
 - Support for sprite creation
 - Support for texture loading
