@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../../vulkan/sprite.hpp"
-#include "math.hpp"
+#include "../../engine/sprite.hpp"
 
 class Collision {
 public:
@@ -9,6 +8,8 @@ public:
         float pos[4] = {3.402823466e+38f, 3.402823466e+38f, -3.402823466e+38f, -3.402823466e+38f};
         unsigned int ID;
     };
+
+    inline float absolute(const float i) { return i < 0 ? -i : i; }
 
     bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
         dataA.setRotationMatrix();
@@ -164,7 +165,7 @@ public:
     }
 
     void clearAABB() { AABB.clear(); }
-    
+
 private:
     std::vector<AABBS> AABB;
 };

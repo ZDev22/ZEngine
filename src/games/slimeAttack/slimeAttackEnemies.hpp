@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../deps/ZDev/vector.hpp"
+#include <vector>
 #include "../../deps/ZDev/collision.hpp"
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
@@ -25,14 +25,14 @@ private:
     Collision& collision;
     Pipeline& pipeline;
 
-    struct Enemy { 
+    struct Enemy {
         int health;
         float cooldown;
         float spawnCooldown;
         float speed[2];
         bool skip;
     };
-    vector<Enemy> enemies = {};
+    std::vector<Enemy> enemies = {};
 
     int wave = 1;
     int aliveEnemies = 0;
