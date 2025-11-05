@@ -10,10 +10,6 @@
 
 #include "../games/terminalCalculator/terminalCalculator.hpp"
 
-float deltaTime = 0.f;
-
-bool shouldClose = false;
-
 #if NO_DECOR && !NO_FPS
 #include <iostream>
 #endif
@@ -63,7 +59,7 @@ void App::run() {
     #if !FPS_CAP_SET
     appcpslastTime = std::chrono::high_resolution_clock::now();
     #endif
-    while (!shouldClose) {
+    while (!window->close) {
         #if FPS_CAP_SET
         std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appWait)));
         appcpscurrentTime = std::chrono::high_resolution_clock::now();
@@ -86,7 +82,7 @@ void App::run() {
             #if NO_DECOR
                 std::cout << "cps: " << std::to_string(appcps) << " - fps: " << std::to_string(appfps) << std::endl;
             #else
-                window.setWindowName("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps));
+                RGFW_window_setName(window, ("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps)).c_str());
             #endif
             apptimer = 0.f;
             appcps = 0;
@@ -95,7 +91,7 @@ void App::run() {
         appcps++;
         #endif
 
-        glfwPollEvents();
+        window.pollEvents();
         #if USE_MOUSE
         keyboard.updateMouse();
         #endif
@@ -106,7 +102,6 @@ void App::run() {
         keyboard.resetKeys();
         collision.clearAABB();
         renderSystem->updateSprites();
-        shouldClose = window.shouldClose();
 
         #if FPS_CAP_SET
         appcpslastTime = std::chrono::high_resolution_clock::now();
@@ -122,7 +117,7 @@ void App::run() {
 }
 
 void App::render() {
-    while (!shouldClose) {
+    while (!window->close) {
         #if FPS_CAP_SET
         std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appFrameWait)));
         appfpscurrentTime = std::chrono::high_resolution_clock::now();

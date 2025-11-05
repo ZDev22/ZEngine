@@ -10,7 +10,7 @@
 
 Device::Device(AppWindow& window) : window{ window } {
     std::cout << "Creating instance...\n"; createInstance();
-    std::cout << "Creating surface...\n"; window.createWindowSurface(instance, &surface_);
+    std::cout << "Creating surface...\n"; surface = RGFW_createVkSurface(window, instance, nullptr);
     std::cout << "Creating physical device...\n"; pickPhysicalDevice();
     std::cout << "Creating logical device...\n"; createLogicalDevice();
     std::cout << "Creating command pool...\n"; createCommandPool();

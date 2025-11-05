@@ -1,4 +1,5 @@
 ## v1.9 - DEV
+- Switched from GLFW to RGFW
 - Added camera zoom (BROKEN ON LINUX)
 - Bugfixes
 

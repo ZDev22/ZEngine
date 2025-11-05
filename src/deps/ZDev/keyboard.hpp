@@ -5,26 +5,24 @@
 #define KEY_HIT 2
 #define KEY_PRESSED 3
 
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
-#include "../glfw/glfw3.h"
+#include "rgfw.h"
 
 #include <string.h>
 #include <vector>
 
 class Keyboard {
 public:
-    explicit Keyboard(GLFWwindow* window) : window(window) {}
-
     // KEYBOARD
 
+    explicit Keyboard(RGFW_window* window) : window(window) {}
+
     // Utility
-    unsigned char getKeyIndex(const unsigned short key) const { for (unsigned char i = 0; i < 104; ++i) { if (glfwKeys[i] == key) return i; } return 0; }
+    unsigned char getKeyIndex(const unsigned short key) const { for (unsigned char i = 0; i < 104; ++i) { if (rgfwKeys[i] == key) return i; } return 0; }
     unsigned char updateKeyState(const unsigned short key) {
         unsigned char index = getKeyIndex(key);
         unsigned char &cache = keys[index];
         if (keys[index + 104] == 0) {
-            if (glfwGetKey(window, key) == GLFW_PRESS) {
+            if (RGFW_keyPressed(window, key)) {
                 if (cache == KEY_IDLE) { cache = KEY_HIT; }
                 else { cache = KEY_PRESSED; }
             }
@@ -38,40 +36,40 @@ public:
     }
 
     // Casual
-    bool keyPressed(const unsigned short key) { return glfwGetKey(window, key) == GLFW_PRESS; }
+    bool keyPressed(const unsigned short key) { return RGFW_keyPressed(window, key); }
     bool keyHit(const unsigned short key) { return updateKeyState(key) == KEY_HIT; }
     bool keyReleased(const unsigned short key) { return updateKeyState(key) == KEY_RELEASED; }
-    bool keyIdle(const unsigned short key) { return glfwGetKey(window, key) == GLFW_RELEASE; }
-    bool keysPressed(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (glfwGetKey(window, keysArray[i]) != GLFW_PRESS) return false; } return true; }
+    bool keyIdle(const unsigned short key) { return !RGFW_keyPressed(window, key); }
+    bool keysPressed(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (!RGFW_keyPressed(window, keysArray[i])) return false; } return true; }
     bool keysHit(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) != KEY_HIT) return false; } return true; }
     bool keysReleased(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) != KEY_RELEASED) return false; } return true; }
-    bool keysIdle(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (glfwGetKey(window, keysArray[i]) != GLFW_RELEASE) return false; } return true; }
-    bool anyKeyPressed() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) return true; } return false; }
-    bool anyKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) return true; } return false; }
-    bool anyKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) return true; } return false; }
-    bool anyKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) return true; } return false; }
-    short whatKeyPressed() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) return glfwKeys[i]; } return -1; }
-    short whatKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) return glfwKeys[i]; } return -1; }
-    short whatKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) return glfwKeys[i]; } return -1; }
-    short whatKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) return glfwKeys[i]; } return -1; }
+    bool keysIdle(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (RGFW_keyPressed(window, keysArray[i])) return false; } return true; }
+    bool anyKeyPressed() { for (unsigned char i = 0; i < 104; i++) { if (RGFW_keyPressed(window, rgfwKeys[i])) return true; } return false; }
+    bool anyKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_HIT) return true; } return false; }
+    bool anyKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_RELEASED) return true; } return false; }
+    bool anyKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (!RGFW_keyPressed(window, rgfwKeys[i])) return true; } return false; }
+    short whatKeyPressed() { for (unsigned char i = 0; i < 104; i++) { if (RGFW_keyPressed(window, rgfwKeys[i])) return rgfwKeys[i]; } return -1; }
+    short whatKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_HIT) return rgfwKeys[i]; } return -1; }
+    short whatKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_RELEASED) return rgfwKeys[i]; } return -1; }
+    short whatKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (!RGFW_keyPressed(window, rgfwKeys[i])) return rgfwKeys[i]; } return -1; }
     std::vector<short> whatKeysPressed() {
         std::vector<short> keysPressed;
-        for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) keysPressed.push_back(glfwKeys[i]); }
+        for (unsigned char i = 0; i < 104; i++) { if (RGFW_keyPressed(window, rgfwKeys[i])) keysPressed.push_back(rgfwKeys[i]); }
         return keysPressed;
     }
     std::vector<short> whatKeysHit() {
         std::vector<short> keysHit;
-        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) keysHit.push_back(glfwKeys[i]); }
+        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_HIT) keysHit.push_back(rgfwKeys[i]); }
         return keysHit;
     }
     std::vector<short> whatKeysReleased() {
         std::vector<short> keysReleased;
-        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) keysReleased.push_back(glfwKeys[i]);}
+        for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_RELEASED) keysReleased.push_back(rgfwKeys[i]);}
         return keysReleased;
     }
     std::vector<short> whatKeysIdle() {
         std::vector<short> keysIdle;
-        for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) keysIdle.push_back(glfwKeys[i]); }
+        for (unsigned char i = 0; i < 104; i++) { if (!RGFW_keyPressed(window, rgfwKeys[i])) keysIdle.push_back(rgfwKeys[i]); }
         return keysIdle;
     }
 
@@ -87,20 +85,20 @@ public:
     bool isKeyBound(const unsigned short key) { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) return true; } return false;}
     bool keyPressedKeyBind(const unsigned short key) {
         for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) { return updateKeyState(keyBinds[i].rebindedKey) == KEY_HIT; }}
-        return glfwGetKey(window, key) == GLFW_PRESS;
+        return RGFW_keyPressed(window, key);
     }
     bool keyHitKeyBind(const unsigned short key) {
-        for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) { return glfwGetKey(window, keyBinds[i].rebindedKey) == GLFW_PRESS; }}
+        for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) { return RGFW_keyPressed(window, keyBinds[i].rebindedKey); }}
         return updateKeyState(key) == KEY_HIT;
     }
     bool keyReleasedKeyBind(const unsigned short key) {
-        for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) { return glfwGetKey(window, keyBinds[i].rebindedKey) == KEY_RELEASED; }}
+        for (unsigned short i = 0; i < keyBinds.size(); i++) { if (keyBinds[i].key == key) { return !RGFW_keyPressed(window, keyBinds[i].rebindedKey); }}
         return updateKeyState(key) == KEY_RELEASED;
     }
-    bool anyKeyBindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (glfwGetKey(window, keyBinds[i].key) != GLFW_PRESS) return false; } return true; }
-    bool anyKeyRebindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (glfwGetKey(window, keyBinds[i].rebindedKey) != GLFW_PRESS) return false; } return true; }
-    short whatKeyBindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (glfwGetKey(window, keyBinds[i].key) == GLFW_PRESS) return keyBinds[i].key; } return -1; }
-    short whatKeyRebindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (glfwGetKey(window, keyBinds[i].rebindedKey) == GLFW_PRESS) return keyBinds[i].rebindedKey; } return -1; }
+    bool anyKeyBindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (!RGFW_keyPressed(window, keyBinds[i].key)) return false; } return true; }
+    bool anyKeyRebindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (!RGFW_keyPressed(window, keyBinds[i].rebindedKey)) return false; } return true; }
+    short whatKeyBindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (RGFW_keyPressed(window, keyBinds[i].key)) return keyBinds[i].key; } return -1; }
+    short whatKeyRebindPressed() { for (unsigned short i = 0; i < keyBinds.size(); i++) { if (RGFW_keyPressed(window, keyBinds[i].rebindedKey)) return keyBinds[i].rebindedKey; } return -1; }
 
     // Simulation
     void simulateKey(const unsigned short key, const unsigned char newKeyState) {
@@ -115,14 +113,14 @@ public:
             keys[index + 104] = 0;
         }
     }
-    bool keyPressedSimulated(const unsigned short key) { return keys[getKeyIndex(key)] == GLFW_PRESS; }
-    bool keysPressedSimulated(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (keys[getKeyIndex(keysArray[i])] == GLFW_PRESS) return true; } return false; }
-    bool anyKeyPressedSimulated() { for (unsigned char i = 0; i < 104; i++) { if (keys[getKeyIndex(keys[i])] == GLFW_PRESS) return true; } return false; }
+    bool keyPressedSimulated(const unsigned short key) { return keys[getKeyIndex(key)] == KEY_PRESSED; }
+    bool keysPressedSimulated(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (keys[getKeyIndex(keysArray[i])] == KEY_PRESSED) return true; } return false; }
+    bool anyKeyPressedSimulated() { for (unsigned char i = 0; i < 104; i++) { if (keys[getKeyIndex(keys[i])] == KEY_PRESSED) return true; } return false; }
 
     // Modifiers
-    void applyModifiers() {
-        if (updateKeyState(GLFW_KEY_CAPS_LOCK) == KEY_HIT) { modifiers[0] = !modifiers[0]; }
-        if (updateKeyState(GLFW_KEY_NUM_LOCK) == KEY_HIT) { modifiers[1] = !modifiers[1]; }
+    void updateModifiers() {
+        if (updateKeyState(RGFW_capsLock) == KEY_HIT) { modifiers[0] = !modifiers[0]; }
+        if (updateKeyState(RGFW_numLock) == KEY_HIT) { modifiers[1] = !modifiers[1]; }
     }
     bool capsLock() { return modifiers[0]; }
     bool numLock() { return modifiers[1]; }
@@ -137,8 +135,9 @@ public:
     void lockAllKeys() { memset(keys + 104, 1, 104); }
 
     // MOUSE
+
     void updateMouse() {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (RGFW_mousePressed(window, RGFW_mouse_left)) {
             mouseState[0] = true;
             if (mouseState[1] == KEY_IDLE) { mouseState[1] = KEY_HIT; }
             else { mouseState[1] = KEY_PRESSED; }
@@ -149,7 +148,7 @@ public:
             else { mouseState[1] = KEY_IDLE; }
         }
 
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        if (RGFW_mousePressed(window, RGFW_mouse_right)) {
             mouseState[2] = true;
             if (mouseState[3] == KEY_IDLE) { mouseState[3] = KEY_HIT; }
             else { mouseState[3] = KEY_PRESSED; }
@@ -161,8 +160,8 @@ public:
         }
     }
 
-    void updateMousePosition() { glfwGetCursorPos(window, &mousePosition[0], &mousePosition[1]); }
-    void setMousePosition(double newPosition[2]) { glfwSetCursorPos(window, newPosition[0], newPosition[1]); }
+    void updateMousePosition() { mousePosition[0] = window->mouseX; mousePosition[1] = window->mouseY; }
+    void setMousePosition(double newPosition[2]) { RGFW_setMousePosition(window, newPosition[0], newPosition[1]); }
     float getMouseX() { return mousePosition[0]; }
     float getMouseY() { return mousePosition[1]; }
     bool LMBPressed() { return mouseState[0]; }
@@ -173,15 +172,14 @@ public:
     bool RMBReleased() { return mouseState[3] == KEY_RELEASED; }
 
 private:
-    GLFWwindow* window;
-
+    RGFW_window* window;
     unsigned char keys[208] = {0};
-    const unsigned short glfwKeys[104] = {
-        /*common   */ GLFW_KEY_A, GLFW_KEY_S, GLFW_KEY_W, GLFW_KEY_D, GLFW_KEY_SPACE, GLFW_KEY_E, GLFW_KEY_Q, GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C, GLFW_KEY_T, GLFW_KEY_F, GLFW_KEY_G, GLFW_KEY_H, GLFW_KEY_I, GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_RIGHT, GLFW_KEY_LEFT, GLFW_KEY_DOWN, GLFW_KEY_UP, GLFW_KEY_V, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9, GLFW_KEY_0,
-        /*rare     */ GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT, GLFW_KEY_ENTER, GLFW_KEY_ESCAPE, GLFW_KEY_TAB, GLFW_KEY_BACKSPACE, GLFW_KEY_INSERT, GLFW_KEY_DELETE, GLFW_KEY_PERIOD, GLFW_KEY_SLASH, GLFW_KEY_SEMICOLON, GLFW_KEY_COMMA, GLFW_KEY_LEFT_SUPER,
-        /*legendary*/ GLFW_KEY_B, GLFW_KEY_M, GLFW_KEY_N, GLFW_KEY_O, GLFW_KEY_P, GLFW_KEY_R, GLFW_KEY_U, GLFW_KEY_Y, GLFW_KEY_KP_0, GLFW_KEY_KP_1, GLFW_KEY_KP_2, GLFW_KEY_KP_3, GLFW_KEY_KP_4, GLFW_KEY_KP_5, GLFW_KEY_KP_6, GLFW_KEY_KP_7, GLFW_KEY_KP_8, GLFW_KEY_KP_9, GLFW_KEY_KP_DECIMAL, GLFW_KEY_KP_DIVIDE, GLFW_KEY_KP_MULTIPLY, GLFW_KEY_KP_SUBTRACT, GLFW_KEY_KP_ADD, GLFW_KEY_KP_ENTER, GLFW_KEY_KP_EQUAL, GLFW_KEY_HOME, GLFW_KEY_END, GLFW_KEY_CAPS_LOCK, GLFW_KEY_NUM_LOCK, GLFW_KEY_PRINT_SCREEN, GLFW_KEY_PAUSE, GLFW_KEY_F1, GLFW_KEY_F2, GLFW_KEY_F3, GLFW_KEY_F4, GLFW_KEY_F5, GLFW_KEY_F6, GLFW_KEY_F7, GLFW_KEY_F8, GLFW_KEY_F9, GLFW_KEY_F10,
-        /*mythic   */ GLFW_KEY_LEFT_CONTROL, GLFW_KEY_LEFT_ALT, GLFW_KEY_RIGHT_CONTROL, GLFW_KEY_RIGHT_ALT, GLFW_KEY_RIGHT_SUPER, GLFW_KEY_MENU, GLFW_KEY_APOSTROPHE, GLFW_KEY_MINUS, GLFW_KEY_EQUAL, GLFW_KEY_LEFT_BRACKET, GLFW_KEY_BACKSLASH, GLFW_KEY_RIGHT_BRACKET, GLFW_KEY_GRAVE_ACCENT, GLFW_KEY_PAGE_UP, GLFW_KEY_PAGE_DOWN
-        /*secret      GLFW_KEY_F11, GLFW_KEY_F12, GLFW_KEY_F13, GLFW_KEY_F14, GLFW_KEY_F15, GLFW_KEY_F16, GLFW_KEY_F17, GLFW_KEY_F18, GLFW_KEY_F19, GLFW_KEY_F20, GLFW_KEY_F21, GLFW_KEY_F22, GLFW_KEY_F23, GLFW_KEY_F24, GLFW_KEY_F25, GLFW_KEY_WORLD_1, GLFW_KEY_WORLD_2 */
+    const unsigned short rgfwKeys[104] = {
+        /*common   */ RGFW_a, RGFW_s, RGFW_w, RGFW_d, RGFW_space, RGFW_e, RGFW_q, RGFW_z, RGFW_x, RGFW_c, RGFW_t, RGFW_f, RGFW_g, RGFW_h, RGFW_i, RGFW_j, RGFW_k, RGFW_l, RGFW_right, RGFW_left, RGFW_down, RGFW_up, RGFW_v, RGFW_1, RGFW_2, RGFW_3, RGFW_4, RGFW_5, RGFW_6, RGFW_7, RGFW_8, RGFW_9, RGFW_0,
+        /*rare     */ RGFW_rightShift, RGFW_leftShift, RGFW_enter, RGFW_escape, RGFW_tab, RGFW_backspace, RGFW_insert, RGFW_delete, RGFW_period, RGFW_slash, RGFW_semicolon, RGFW_comma, RGFW_leftSuper,
+        /*legendary*/ RGFW_b, RGFW_m, RGFW_n, RGFW_o, RGFW_p, RGFW_r, RGFW_u, RGFW_y, RGFW_numpad0, RGFW_numpad1, RGFW_numpad2, RGFW_numpad3, RGFW_numpad4, RGFW_numpad5, RGFW_numpad6, RGFW_numpad7, RGFW_numpad8, RGFW_numpad9, RGFW_numpadDecimal, RGFW_numpadDivide, RGFW_numpadMultiply, RGFW_numpadSubtract, RGFW_numpadAdd, RGFW_numpadEnter, RGFW_numpadEqual, RGFW_home, RGFW_end, RGFW_capsLock, RGFW_numLock, RGFW_printScreen, RGFW_pause, RGFW_F1, RGFW_F2, RGFW_F3, RGFW_F4, RGFW_F5, RGFW_F6, RGFW_F7, RGFW_F8, RGFW_F9, RGFW_F10,
+        /*mythic   */ RGFW_leftControl, RGFW_leftAlt, RGFW_rightControl, RGFW_rightAlt, RGFW_rightSuper, RGFW_menu, RGFW_apostrophe, RGFW_minus, RGFW_equal, RGFW_leftBracket, RGFW_backslash, RGFW_rightBracket, RGFW_graveAccent, RGFW_pageUp, RGFW_pageDown
+        /*secret      RGFW_KEY_F11, RGFW_KEY_F12, RGFW_KEY_F13, RGFW_KEY_F14, RGFW_KEY_F15, RGFW_KEY_F16, RGFW_KEY_F17, RGFW_KEY_F18, RGFW_KEY_F19, RGFW_KEY_F20, RGFW_KEY_F21, RGFW_KEY_F22, RGFW_KEY_F23, RGFW_KEY_F24, RGFW_KEY_F25, RGFW_KEY_WORLD_1, RGFW_KEY_WORLD_2 */ // excluded because of little use and looping
     };
     std::vector<KeyBind> keyBinds;
     bool modifiers[2] = {false};
