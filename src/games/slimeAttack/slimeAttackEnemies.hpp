@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../deps/ZDev/vector.hpp"
 #include "../../deps/ZDev/collision.hpp"
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
@@ -9,8 +10,8 @@
 #define SLIMEATTACK_ENEMY_TYPE_BOSS 7
 
 class Pipeline;
-struct SlimeAttack;
-struct SlimeAttackEnemies {
+class SlimeAttack;
+class SlimeAttackEnemies {
 public:
     SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision, Pipeline& pipeline);
 
@@ -31,7 +32,7 @@ private:
         float speed[2];
         bool skip;
     };
-    std::vector<Enemy> enemies = {};
+    vector<Enemy> enemies = {};
 
     int wave = 1;
     int aliveEnemies = 0;

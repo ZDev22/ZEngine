@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../engine/sprite.hpp"
+#include "../../vulkan/sprite.hpp"
 #include "math.hpp"
 
 class Collision {
@@ -163,7 +163,7 @@ public:
         }
     }
 
-    inline void clearAABB() { AABB.clear(); }
+    void clearAABB() { AABB.clear(); }
     
 private:
     std::vector<AABBS> AABB;

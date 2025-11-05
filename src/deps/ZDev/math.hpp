@@ -20,10 +20,11 @@
 #define LAPLACE 1.3862943611
 #define BERNOUILLI .0787456776
 
+#include <cmath>
 #include <vector>
-#include <math.h>
-#include <string.h>
+#include <cstring>
 
+#include "vector.hpp"
 #include "bigInts.hpp"
 
 // Global
@@ -125,12 +126,12 @@ private:
 
 // Averages
 template<typename T>
-inline T average(const std::vector<T>& items) {
+inline T average(const vector<T>& items) {
     T sum = 0;
     for (unsigned int i = 0; i < items.size(); ++i) sum += items[i];
     return sum / items.size();
 }
-inline bool average(const std::vector<bool>& bools) {
+inline bool average(const vector<bool>& bools) {
     if (bools.size() == 0) return Random();
     int averageTrue = 0, averageFalse = 0;
     for (unsigned int i = 0; i < bools.size(); ++i) {
@@ -142,7 +143,7 @@ inline bool average(const std::vector<bool>& bools) {
     return Random();
 }
 template<typename T>
-inline T averageMinMax(const std::vector<T>& items) {
+inline T averageMinMax(const vector<T>& items) {
     T minVal = items[0], maxVal = items[0];
     unsigned long long sum = 0;
 
@@ -157,7 +158,7 @@ inline T averageMinMax(const std::vector<T>& items) {
     }
     return static_cast<short>(sum / items.size());
 }
-inline float averageMinMax(const std::vector<float>& floats) {
+inline float averageMinMax(const vector<float>& floats) {
     float minVal = floats[0], maxVal = floats[0], sum = 0.f;
 
     for (unsigned int i = 0; i < floats.size(); ++i) {
@@ -174,11 +175,11 @@ inline float averageMinMax(const std::vector<float>& floats) {
 
 // Values
 template<typename T>
-void setValuesInRange(std::vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+void setValuesInRange(vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 template<typename T>
-void setZero(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
-inline void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
-inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
+void setZero(vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
+inline void setTrue(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
+inline void setFalse(vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
 // Cmath debloated functions
 template<typename T>

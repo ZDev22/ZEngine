@@ -9,8 +9,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include "../glfw/glfw3.h"
 
-#include <vector>
-#include <string.h>
+#include "vector.hpp"
+#include <cstring>
 
 class Keyboard {
 public:
@@ -54,23 +54,23 @@ public:
     short whatKeyHit() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) return glfwKeys[i]; } return -1; }
     short whatKeyReleased() { for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) return glfwKeys[i]; } return -1; }
     short whatKeyIdle() { for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) return glfwKeys[i]; } return -1; }
-    std::vector<short> whatKeysPressed() {
-        std::vector<short> keysPressed;
+    vector<short> whatKeysPressed() {
+        vector<short> keysPressed;
         for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_PRESS) keysPressed.push_back(glfwKeys[i]); }
         return keysPressed;
     }
-    std::vector<short> whatKeysHit() {
-        std::vector<short> keysHit;
+    vector<short> whatKeysHit() {
+        vector<short> keysHit;
         for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_HIT) keysHit.push_back(glfwKeys[i]); }
         return keysHit;
     }
-    std::vector<short> whatKeysReleased() {
-        std::vector<short> keysReleased;
+    vector<short> whatKeysReleased() {
+        vector<short> keysReleased;
         for (unsigned char i = 0; i < 104; i++) { if (updateKeyState(glfwKeys[i]) == KEY_RELEASED) keysReleased.push_back(glfwKeys[i]);}
         return keysReleased;
     }
-    std::vector<short> whatKeysIdle() {
-        std::vector<short> keysIdle;
+    vector<short> whatKeysIdle() {
+        vector<short> keysIdle;
         for (unsigned char i = 0; i < 104; i++) { if (glfwGetKey(window, glfwKeys[i]) == GLFW_RELEASE) keysIdle.push_back(glfwKeys[i]); }
         return keysIdle;
     }
@@ -128,13 +128,13 @@ public:
     bool numLock() { return modifiers[1]; }
 
     // Reset
-    void resetKeys() { memset(keys + 104, 0, 104); }
-    void resetKeyStates() { memset(keys, 0, 104); }
-    void fullResetKeys() { memset(keys, 0, 208); }
-    void hitAllKeys() { memset(keys, 2, 104); }
-    void pressAllKeys() { memset(keys, 3, 104); }
-    void releaseAllKeys() { memset(keys, 1, 104); }
-    void lockAllKeys() { memset(keys + 104, 1, 104); }
+    void resetKeys() { std::memset(keys + 104, 0, 104); }
+    void resetKeyStates() { std::memset(keys, 0, 104); }
+    void fullResetKeys() { std::memset(keys, 0, 208); }
+    void hitAllKeys() { std::memset(keys, 2, 104); }
+    void pressAllKeys() { std::memset(keys, 3, 104); }
+    void releaseAllKeys() { std::memset(keys, 1, 104); }
+    void lockAllKeys() { std::memset(keys + 104, 1, 104); }
 
     // MOUSE
     void updateMouse() {
@@ -183,7 +183,7 @@ private:
         /*mythic   */ GLFW_KEY_LEFT_CONTROL, GLFW_KEY_LEFT_ALT, GLFW_KEY_RIGHT_CONTROL, GLFW_KEY_RIGHT_ALT, GLFW_KEY_RIGHT_SUPER, GLFW_KEY_MENU, GLFW_KEY_APOSTROPHE, GLFW_KEY_MINUS, GLFW_KEY_EQUAL, GLFW_KEY_LEFT_BRACKET, GLFW_KEY_BACKSLASH, GLFW_KEY_RIGHT_BRACKET, GLFW_KEY_GRAVE_ACCENT, GLFW_KEY_PAGE_UP, GLFW_KEY_PAGE_DOWN
         /*secret      GLFW_KEY_F11, GLFW_KEY_F12, GLFW_KEY_F13, GLFW_KEY_F14, GLFW_KEY_F15, GLFW_KEY_F16, GLFW_KEY_F17, GLFW_KEY_F18, GLFW_KEY_F19, GLFW_KEY_F20, GLFW_KEY_F21, GLFW_KEY_F22, GLFW_KEY_F23, GLFW_KEY_F24, GLFW_KEY_F25, GLFW_KEY_WORLD_1, GLFW_KEY_WORLD_2 */
     };
-    std::vector<KeyBind> keyBinds;
+    vector<KeyBind> keyBinds;
     bool modifiers[2] = {false};
     double mousePosition[2];
     unsigned char mouseState[4] = {0};
