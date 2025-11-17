@@ -55,8 +55,8 @@ void Renderer::endFrame() {
     vkEndCommandBuffer(commandBuffer);
 
     auto result = swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized()) {
-        window.resetWindowResizedFlag();
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.resized()) {
+        window.resetResized();
         recreateSwapChain();
     }
 }
@@ -79,9 +79,9 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
 
     VkViewport viewport{};
     viewport.x = 0.f;
-    viewport.y = 0.f; 
+    viewport.y = 0.f;
     viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
-    viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height); 
+    viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -90,4 +90,4 @@ void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
     scissor.offset = { 0, 0 };
     scissor.extent = swapChain->getSwapChainExtent();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-}    
+}

@@ -2,6 +2,8 @@
 
 #include "window.hpp"
 
+#include <vulkan/vulkan.h>
+
 #include <vector>
 
 class Device {

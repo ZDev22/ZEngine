@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
+#include "window.hpp"
 
 #include <vector>
 #include <string>

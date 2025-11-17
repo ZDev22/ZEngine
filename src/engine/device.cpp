@@ -1,16 +1,10 @@
-#ifdef _WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#elif defined(__linux__)
-#define VK_USE_PLATFORM_WAYLAND_KHR
-#endif
-
 #include "device.hpp"
 
 #include <iostream>
 
 Device::Device(AppWindow& window) : window{ window } {
     std::cout << "Creating instance...\n"; createInstance();
-    std::cout << "Creating surface...\n"; surface = RGFW_createVkSurface(window, instance, nullptr);
+    std::cout << "Creating surface...\n"; RGFW_window_createVKSurface(window.get(), instance, &surface_);
     std::cout << "Creating physical device...\n"; pickPhysicalDevice();
     std::cout << "Creating logical device...\n"; createLogicalDevice();
     std::cout << "Creating command pool...\n"; createCommandPool();
@@ -36,7 +30,7 @@ void Device::createInstance() {
     auto extensions = getRequiredExtensions();
     std::cout << "Enabling extensions:\n";
     for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
-    
+
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
@@ -53,13 +47,13 @@ void Device::pickPhysicalDevice() {
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
     if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
     else if (deviceCount == 1) { std::cout << "Found 1 GPU\n"; }
-    else { std::cout << "Found " << " GPUs\n"; }
+    else { std::cout << "Found " << deviceCount << " GPUs\n"; }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     short highScore = 0;
-    for (unsigned int i = 0; i < devices.size(); ++i) { 
+    for (unsigned int i = 0; i < devices.size(); ++i) {
         short newScore = isDeviceSuitable(devices[i]);
         if (newScore > highScore) {
             highScore = newScore;
@@ -140,12 +134,11 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
 }
 
 std::vector<const char*> Device::getRequiredExtensions() {
-    unsigned int glfwExtensionCount = 0;
-    const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    size_t rgfWExtensionCount = 0;
+    const char** rgfWExtensions = RGFW_getVKRequiredInstanceExtensions(&rgfWExtensionCount);
+    if (!rgfWExtensions || rgfWExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
 
-    if (!glfwExtensions || glfwExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
-
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    std::vector<const char*> extensions(rgfWExtensions, rgfWExtensions + rgfWExtensionCount);
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     return extensions;
 }
@@ -161,7 +154,7 @@ void Device::hasGflwRequiredInstanceExtensions() {
     for (const char* required : requiredExtensions) {
         bool found = false;
         for (const auto& ext : extensions) { if (std::string(ext.extensionName) == required) { found = true; break; }}
-        if (!found) { std::cerr << "Warning: Missing required GLFW extension: " << required << std::endl; }
+        if (!found) { std::cerr << "Warning: Missing required RGFW extension: " << required << std::endl; }
     }
 }
 
@@ -176,7 +169,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     for (auto it = requiredExtensions.begin(); it != requiredExtensions.end();) {
         bool found = false;
         for (const auto& extension : availableExtensions) { if (std::string(extension.extensionName) == *it) { found = true; break; }}
-        if (found) { it = requiredExtensions.erase(it); } 
+        if (found) { it = requiredExtensions.erase(it); }
         else { ++it; }
     }
 

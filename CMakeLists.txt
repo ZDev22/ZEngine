@@ -25,8 +25,8 @@ else()
    message(FATAL_ERROR "Unsupported platform!")
 endif()
 
-add_library(VulkanLocal STATIC IMPORTED GLOBAL)
-set_target_properties(VulkanLocal PROPERTIES
+add_library(Vulkan STATIC IMPORTED GLOBAL)
+set_target_properties(Vulkan PROPERTIES
    IMPORTED_LOCATION "${VULKAN_LIBRARY_PATH}"
    INTERFACE_INCLUDE_DIRECTORIES "${VULKAN_INCLUDE_DIR}"
 )
@@ -35,6 +35,7 @@ file(GLOB_RECURSE ALL_CPP_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
 file(GLOB_RECURSE ALL_C_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c")
 
 set(SOURCES "")
+list(APPEND SOURCES "src/deps/rgfw.cpp")
 foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    if(NOT F MATCHES "^src/deps/")
        list(APPEND SOURCES "${F}")
@@ -51,14 +52,22 @@ target_include_directories(main PRIVATE
 )
 
 target_link_libraries(main PRIVATE
-   VulkanLocal
+    Vulkan
 )
 
 if(UNIX AND NOT APPLE)
-   target_link_libraries(main PRIVATE
-       dl
-       pthread
-   )
+find_package(X11 REQUIRED)
+    target_link_libraries(main PRIVATE
+        ${X11_LIBRARIES}
+        dl
+        Xrandr
+        wayland-client
+        wayland-egl
+        wayland-client
+        wayland-cursor
+        xkbcommon
+        EGL
+    )
 endif()
 
 set_target_properties(main PROPERTIES WIN32_EXECUTABLE FALSE)

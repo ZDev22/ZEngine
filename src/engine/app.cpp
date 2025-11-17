@@ -3,7 +3,7 @@
 #include <thread>
 
 #define MINIAUDIO_IMPLEMENTATION
-#include "../miniaudio.h"
+#include "../deps/miniaudio.h"
 
 #include "../games/flappyBird/flappyBird.hpp"
 //#include "../games/slimeAttack/slimeAttack.hpp"
@@ -45,7 +45,7 @@ App::App() : pipeline(device, renderer, "texture") {
 
 void App::run() {
     Collision collision;
-    Keyboard keyboard{window.getWindow()};
+    Keyboard keyboard{window.get()};
 
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
@@ -59,7 +59,7 @@ void App::run() {
     #if !FPS_CAP_SET
     appcpslastTime = std::chrono::high_resolution_clock::now();
     #endif
-    while (!window->close) {
+    while (!window.shouldClose()) {
         #if FPS_CAP_SET
         std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appWait)));
         appcpscurrentTime = std::chrono::high_resolution_clock::now();
@@ -117,7 +117,7 @@ void App::run() {
 }
 
 void App::render() {
-    while (!window->close) {
+    while (!window.shouldClose()) {
         #if FPS_CAP_SET
         std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appFrameWait)));
         appfpscurrentTime = std::chrono::high_resolution_clock::now();

@@ -15,14 +15,14 @@ void FlappyBird::tick() {
         sprites[0].position[1] += flappyBirdSpeedY * deltaTime;
         sprites[0].rotation -= 90.f * deltaTime;
         if (!flappyBirdDead) {
-            if (keyboard.keyHit(GLFW_KEY_SPACE)) {
+            if (keyboard.keyHit(RGFW_space)) {
                 flappyBirdSpeedY = -1.3f;
                 sprites[0].rotation = 60.f;
                 sprites[0].textureIndex = 0;
 
                 playSound(&audio, "assets/sounds/chirp.mp3");
                 pipeline.createSprite(pipeline.getSquareModel(), 3, 0.f, 0.f, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
-                sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f, pipeline);
+                //sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f, pipeline);
                 vertex.cameraZoom[0] -= .025f;
                 vertex.cameraZoom[1] -= .025f;
             }
@@ -41,7 +41,7 @@ void FlappyBird::tick() {
             flappyBirdDead = false;
         }
     }
-    else { if (keyboard.keyPressed(GLFW_KEY_SPACE)) { flappyBirdStarted = true; }}
+    else { if (keyboard.keyPressed(RGFW_space)) { flappyBirdStarted = true; }}
 
     for (unsigned int i = 1; i < sprites.size() / 2; i++) {
         unsigned int index = ((i - 1) * 2) + 1;
