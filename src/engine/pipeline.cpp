@@ -2,7 +2,6 @@
 #include "renderer.hpp"
 #include "sprite.hpp"
 #include "font.hpp"
-#include "../deps/ZDev/math.hpp"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../deps/stb_truetype.h"
@@ -11,7 +10,7 @@
 #include <fstream>
 
 #ifdef _WIN32
-std::vector<std::vector<stbtt_bakedchar>> fontCharDatas;
+    std::vector<std::vector<stbtt_bakedchar>> fontCharDatas;
 #endif
 
 Pipeline::Pipeline(Device& device, Renderer& renderer, const std::string& shader) : device(device), renderer(renderer) { createGraphicsPipeline(shader); }
@@ -362,7 +361,6 @@ void Pipeline::loadFlappyBird() {
     createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
     for (float i = 1.f; i < 5.f; i += 1.f) {
-        float y = Random(.4f, 1.4f);
         createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
         createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
     }

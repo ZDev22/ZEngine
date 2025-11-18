@@ -21,7 +21,7 @@ pacman -S --needed base-devel mingw-w64-x86_64-toolchain
 ```bash
 sudo apt update
 sudo apt install build-essential cmake gdb -y #C/C++/Cmake
-sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev -y #X11
+sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev -y libxi-dev #X11
 sudo apt install libwayland-dev wayland-protocols -y #Wayland
 sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
 ```

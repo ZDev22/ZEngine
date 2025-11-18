@@ -1,24 +1,24 @@
 #pragma once
 
-#define PI 3.1415926535
-#define PIR 0.0174532925
-#define PID 57.2957795131
-#define E 2.7182818284
-#define GOLDENRATIO 1.6180339887
-#define SQRT2 1.4142135624
-#define SQRT3 1.7320508076
-#define SQRT5 2.2360679775
-#define LN2 .6931471806
-#define LN10 2.3025850929
-#define APERY 1.2020569032
-#define FEIGENBAUM 4.6692016091
-#define PHI 1.6180339887
-#define EULERMASCHERONI .5772156649
-#define CATALAN .9159655941
-#define GLAISHER 1.2824271291
-#define Khinchin 2.6854520010
-#define LAPLACE 1.3862943611
-#define BERNOUILLI .0787456776
+#define PI 3.1415926535f
+#define PIR .0174532925f
+#define PID 57.2957795131f
+#define E 2.7182818284f
+#define GOLDENRATIO 1.6180339887f
+#define SQRT2 1.4142135624f
+#define SQRT3 1.7320508076f
+#define SQRT5 2.2360679775f
+#define LN2 .6931471806f
+#define LN10 2.3025850929f
+#define APERY 1.2020569032f
+#define FEIGENBAUM 4.6692016091f
+#define PHI 1.6180339887f
+#define EULERMASCHERONI .5772156649f
+#define CATALAN .9159655941f
+#define GLAISHER 1.2824271291f
+#define Khinchin 2.6854520010f
+#define LAPLACE 1.3862943611f
+#define BERNOUILLI .0787456776f
 
 #include <cmath>
 #include <vector>
@@ -27,41 +27,41 @@
 #include "bigInts.hpp"
 
 // Global
-inline constexpr float clamp(const float value, const float minValue, const float maxValue) {
+inline float clamp(const float value, const float minValue, const float maxValue) {
     if (value < minValue) { return minValue; }
     if (value > maxValue) { return maxValue; }
     return value;
 }
 
 // Interpolation
-inline constexpr float smoothStep(const float edge0, const float edge1, const float x) {
+inline float smoothStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * (3 - 2 * t);
 }
-inline constexpr float smootherStep(const float edge0, const float edge1, const float x) {
+inline float smootherStep(const float edge0, const float edge1, const float x) {
     if (edge0 == edge1) { return edge0; }
     float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
-inline constexpr float linearInterpolate(const float a, const float b, const float t) { return a + (b - a) * t; }
-inline constexpr float easeInSine(const float t) { return 1 - cos((t * PI) / 2); }
-inline constexpr float easeOutSine(const float t) { return sin((t * PI) / 2); }
-inline constexpr float easeInOutSine(const float t) { return -(cos(PI * t) - 1) / 2; }
-inline constexpr float easeInExpo(const float t) { return (t == 0) ? 0 : pow(2, 10 * (t - 1)); }
-inline constexpr float easeOutExpo(const float t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
-inline constexpr float easeInOutExpo(const float t) {
+inline float linearInterpolate(const float a, const float b, const float t) { return a + (b - a) * t; }
+inline float easeInSine(const float t) { return 1 - cos((t * PI) / 2); }
+inline float easeOutSine(const float t) { return sin((t * PI) / 2); }
+inline float easeInOutSine(const float t) { return -(cos(PI * t) - 1) / 2; }
+inline float easeInExpo(const float t) { return (t == 0) ? 0 : pow(2, 10 * (t - 1)); }
+inline float easeOutExpo(const float t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
+inline float easeInOutExpo(const float t) {
     if (t == 0 || t == 1) { return t; }
     if (t < .5f) { return pow(2, 20 * t - 10) / 2; }
     return (2 - pow(2, -20 * t + 10)) / 2;
 }
-inline constexpr float easeInCirc(const float t) { return 1 - sqrt(1 - t * t); }
-inline constexpr float easeOutCirc(const float t) { return sqrt(1 - (t - 1) * (t - 1)); }
-inline constexpr float easeInOutCirc(const float t) {
+inline float easeInCirc(const float t) { return 1 - sqrt(1 - t * t); }
+inline float easeOutCirc(const float t) { return sqrt(1 - (t - 1) * (t - 1)); }
+inline float easeInOutCirc(const float t) {
     if (t < .5f) { return (1 - sqrt(1 - 4 * t * t)) / 2; }
     return (sqrt(1 - pow(-2 * t + 2, 2)) + 1) / 2;
 }
-inline constexpr float easeOutBounce(const float t) {
+inline float easeOutBounce(const float t) {
     if (t < 4.f / 11.f) { return (121.f * t * t) / 16.f; }
     else if (t < 8.f / 11.f) { return (363.f / 40.f * t * t) - (99.f / 10.f * t) + 17.f / 5.f; }
     else if (t < 9.f / 10.f) { return (4356.f / 361.f * t * t) - (35442 / 1805.f * t) + 16061.f / 1805.f; }
@@ -182,12 +182,12 @@ inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { for (
 
 // Cmath debloated functions
 template<typename T>
-inline constexpr T absolute(const T i) { return i < 0 ? -i : i; }
-inline constexpr bool absolute(bool i) { return true; }
+inline T absolute(const T i) { return i < 0 ? -i : i; }
+inline bool absolute(bool i) { return true; }
 
 // Exponents
 template<unsigned long long bitCount>
-inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
+inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     bigInt<bitCount> result = 1;
     while (exp > 0) {
         if (exp & 1) { result *= base; }
@@ -198,14 +198,14 @@ inline constexpr bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int e
 }
 
 template<unsigned long long bitCount>
-inline constexpr bigInt<bitCount> factorial(unsigned int n) {
+inline bigInt<bitCount> factorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     return result;
 }
 
 template<unsigned long long bitCount>
-inline constexpr bigInt<bitCount> superFactorial(unsigned int n) {
+inline bigInt<bitCount> superFactorial(unsigned int n) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
 
@@ -221,7 +221,7 @@ inline constexpr bigInt<bitCount> superFactorial(unsigned int n) {
 }
 
 template<unsigned long long bitCount>
-inline constexpr bigInt<bitCount> exponentFactorial(unsigned int n) {
+inline bigInt<bitCount> exponentFactorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     bigInt<bitCount> base = result;

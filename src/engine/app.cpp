@@ -11,24 +11,24 @@
 #include "../games/terminalCalculator/terminalCalculator.hpp"
 
 #if NO_DECOR && !NO_FPS
-#include <iostream>
+    #include <iostream>
 #endif
 
 #if !NO_FPS
-float apptimer = 0.f;
-int appcps = 0;
-int appfps = 0;
+    float apptimer = 0.f;
+    int appcps = 0;
+    int appfps = 0;
 #endif
 
 #if FPS_CAP_SET
-bool updateFrame = false;
-float updatetimer = 0.f;
-std::chrono::high_resolution_clock::time_point appfpscurrentTime;
-std::chrono::high_resolution_clock::time_point appfpslastTime;
-float appWait = 0.f;
-float appFrameWait = 0.f;
+    bool updateFrame = false;
+    float updatetimer = 0.f;
+    std::chrono::high_resolution_clock::time_point appfpscurrentTime;
+    std::chrono::high_resolution_clock::time_point appfpslastTime;
+    float appWait = 0.f;
+    float appFrameWait = 0.f;
 #else
-std::chrono::duration<float> appcpselapsed;
+    std::chrono::duration<float> appcpselapsed;
 #endif
 
 std::chrono::high_resolution_clock::time_point appcpscurrentTime;
@@ -36,7 +36,7 @@ std::chrono::high_resolution_clock::time_point appcpslastTime;
 
 App::App() : pipeline(device, renderer, "texture") {
     #if FPS_CAP_SET
-    deltaTime = FPS_CAP * 2.f;
+        deltaTime = FPS_CAP * 2.f;
     #endif
     pipeline.loadFlappyBird();
     //pipeline.loadSlimeAttack();
@@ -57,43 +57,43 @@ void App::run() {
     render.detach();
 
     #if !FPS_CAP_SET
-    appcpslastTime = std::chrono::high_resolution_clock::now();
+        appcpslastTime = std::chrono::high_resolution_clock::now();
     #endif
     while (!window.shouldClose()) {
         #if FPS_CAP_SET
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appWait)));
-        appcpscurrentTime = std::chrono::high_resolution_clock::now();
-        updatetimer += FPS_CAP;
-        #if !NO_FPS
-        apptimer += FPS_CAP;
-        #endif
-        if (updateFrame) {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appWait)));
+            appcpscurrentTime = std::chrono::high_resolution_clock::now();
+            updatetimer += FPS_CAP;
+            #if !NO_FPS
+                apptimer += FPS_CAP;
+            #endif
+            if (updateFrame) {
         #else
             appcpscurrentTime = std::chrono::high_resolution_clock::now();
             appcpselapsed = appcpscurrentTime - appcpslastTime;
             deltaTime = appcpselapsed.count();
             appcpslastTime = appcpscurrentTime;
             #if !NO_FPS
-            apptimer += deltaTime;
+                apptimer += deltaTime;
             #endif
         #endif
         #if !NO_FPS
-        if (apptimer > 1.f) {
-            #if NO_DECOR
-                std::cout << "cps: " << std::to_string(appcps) << " - fps: " << std::to_string(appfps) << std::endl;
-            #else
-                RGFW_window_setName(window, ("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps)).c_str());
-            #endif
-            apptimer = 0.f;
-            appcps = 0;
-            appfps = 0;
-        }
-        appcps++;
+            if (apptimer > 1.f) {
+                #if NO_DECOR
+                    std::cout << "cps: " << std::to_string(appcps) << " - fps: " << std::to_string(appfps) << std::endl;
+                #else
+                    RGFW_window_setName(window, ("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps)).c_str());
+                #endif
+                apptimer = 0.f;
+                appcps = 0;
+                appfps = 0;
+            }
+            appcps++;
         #endif
 
         window.pollEvents();
         #if USE_MOUSE
-        keyboard.updateMouse();
+            keyboard.updateMouse();
         #endif
 
         flappyBird.tick();
@@ -104,12 +104,12 @@ void App::run() {
         renderSystem->updateSprites();
 
         #if FPS_CAP_SET
-        appcpslastTime = std::chrono::high_resolution_clock::now();
-        auto duration = appcpslastTime - appcpscurrentTime;
-        appWait = std::chrono::duration<float>(duration).count();
-        updateFrame = false;
-        }
-        else if (updatetimer > FPS_CAP) { updateFrame = true; updatetimer = 0.f;}
+            appcpslastTime = std::chrono::high_resolution_clock::now();
+            auto duration = appcpslastTime - appcpscurrentTime;
+            appWait = std::chrono::duration<float>(duration).count();
+            updateFrame = false;
+            }
+            else if (updatetimer > FPS_CAP) { updateFrame = true; updatetimer = 0.f;}
         #endif
     }
     ma_engine_uninit(&audio);
@@ -119,9 +119,9 @@ void App::run() {
 void App::render() {
     while (!window.shouldClose()) {
         #if FPS_CAP_SET
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appFrameWait)));
-        appfpscurrentTime = std::chrono::high_resolution_clock::now();
-        if (updateFrame) {
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)((FPS_CAP * 1000) - appFrameWait)));
+            appfpscurrentTime = std::chrono::high_resolution_clock::now();
+            if (updateFrame) {
         #endif
         if (auto commandBuffer = renderer.beginFrame()) {
             renderer.beginSwapChainRenderPass(commandBuffer);
@@ -129,14 +129,14 @@ void App::render() {
             vkCmdEndRenderPass(commandBuffer);
             renderer.endFrame();
             #if !NO_FPS
-            appfps++;
+                appfps++;
             #endif
         }
         #if FPS_CAP_SET
-        appfpslastTime = std::chrono::high_resolution_clock::now();
-        auto duration = appfpslastTime - appfpscurrentTime;
-        appFrameWait = std::chrono::duration<float>(duration).count();
-        }
+            appfpslastTime = std::chrono::high_resolution_clock::now();
+            auto duration = appfpslastTime - appfpscurrentTime;
+            appFrameWait = std::chrono::duration<float>(duration).count();
+            }
         #endif
     }
 }
