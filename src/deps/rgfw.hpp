@@ -1180,7 +1180,6 @@ const char** RGFW_getVKRequiredInstanceExtensions(size_t* count); /*!< gets (sta
 #include <vulkan/vulkan.h>
 
 VkResult RGFW_window_createVKSurface(RGFW_window* win, VkInstance instance, VkSurfaceKHR* surface);
-RGFW_bool RGFW_getVKPresentationSupport(VkInstance instance, VkPhysicalDevice physicalDevice, u32 queueFamilyIndex);
 #ifdef RGFW_DIRECTX
 #ifndef RGFW_WINDOWS
 	#undef RGFW_DIRECTX
@@ -1636,7 +1635,7 @@ void RGFW_window_moveToMonitor(RGFW_window* win, RGFW_monitor m);
 
 RGFW_bool RGFW_window_setIcon(RGFW_window* win, u8* icon, RGFW_area a, i32 channels);
 
-void RGFW_captureCursor(RGFW_window* win, RGFW_rect);
+void RGFW_captureCursor(RGFW_window* win, RGFW_rect r);
 void RGFW_releaseCursor(RGFW_window* win);
 
 void RGFW_window_mouseHold(RGFW_window* win, RGFW_area area);
@@ -1870,8 +1869,6 @@ const char** RGFW_getVKRequiredInstanceExtensions(size_t* count);
 
 VkResult RGFW_window_createVKSurface(RGFW_window* win, VkInstance instance, VkSurfaceKHR* surface);
 
-
-RGFW_bool RGFW_getVKPresentationSupport(VkInstance instance, VkPhysicalDevice physicalDevice, u32 queueFamilyIndex);
 
 /*
 This is where OS specific stuff starts
@@ -2365,13 +2362,13 @@ inline PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
 	typedef HGLRC(WINAPI* PFN_wglGetCurrentContext)(void);
 	typedef BOOL(WINAPI* PFN_wglShareLists)(HGLRC, HGLRC);
 
-	PFN_wglCreateContext wglCreateContextSRC;
-	PFN_wglDeleteContext wglDeleteContextSRC;
-	PFN_wglGetProcAddress wglGetProcAddressSRC;
-	PFN_wglMakeCurrent wglMakeCurrentSRC;
-	PFN_wglGetCurrentDC wglGetCurrentDCSRC;
-	PFN_wglGetCurrentContext wglGetCurrentContextSRC;
-	PFN_wglShareLists wglShareListsSRC;
+	inline PFN_wglCreateContext wglCreateContextSRC;
+	inline PFN_wglDeleteContext wglDeleteContextSRC;
+	inline PFN_wglGetProcAddress wglGetProcAddressSRC;
+	inline PFN_wglMakeCurrent wglMakeCurrentSRC;
+	inline PFN_wglGetCurrentDC wglGetCurrentDCSRC;
+	inline PFN_wglGetCurrentContext wglGetCurrentContextSRC;
+	inline PFN_wglShareLists wglShareListsSRC;
 
 	#define wglCreateContext wglCreateContextSRC
 	#define wglDeleteContext wglDeleteContextSRC
@@ -2431,7 +2428,7 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area);
 
 void RGFW_releaseCursor(RGFW_window* win);
 
-void RGFW_captureCursor(RGFW_window* win, RGFW_rect rect);
+void RGFW_captureCursor(RGFW_window* win, RGFW_rect r);
 
 #define RGFW_LOAD_LIBRARY(x, lib) if (x == NULL) x = LoadLibraryA(lib)
 
@@ -2546,9 +2543,9 @@ RGFW_bool RGFW_window_setMouseDefault(RGFW_window* win);
 
 RGFW_bool RGFW_window_setMouseStandard(RGFW_window* win, u8 mouse);
 
-void RGFW_window_hide(RGFW_window* win)
+void RGFW_window_hide(RGFW_window* win);
 
-void RGFW_window_show(RGFW_window* win;
+void RGFW_window_show(RGFW_window* win);
 
 #define RGFW_FREE_LIBRARY(x) if (x != NULL) FreeLibrary(x); x = NULL;
 void RGFW_deinit(void);
@@ -3070,7 +3067,7 @@ EM_BOOL Emscripten_on_resize(int eventType, const EmscriptenUiEvent* e, void* us
 
 EM_BOOL Emscripten_on_fullscreenchange(int eventType, const EmscriptenFullscreenChangeEvent* e, void* userData);
 
-EM_BOOL Emscripten_on_focusin(int eventType, const EmscriptenFocusEvent* e, void* userData;
+EM_BOOL Emscripten_on_focusin(int eventType, const EmscriptenFocusEvent* e, void* userData);
 
 EM_BOOL Emscripten_on_focusout(int eventType, const EmscriptenFocusEvent* e, void* userData);
 

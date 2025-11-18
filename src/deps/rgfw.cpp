@@ -1136,28 +1136,6 @@ wayland:
 #endif
 }
 
-
-RGFW_bool RGFW_getVKPresentationSupport(VkInstance instance, VkPhysicalDevice physicalDevice, u32 queueFamilyIndex) {
-    RGFW_ASSERT(instance);
-	if (_RGFW.windowCount == -1) RGFW_init();
-#ifdef RGFW_X11
-	Visual* visual = DefaultVisual(_RGFW.display, DefaultScreen(_RGFW.display));
-    if (_RGFW.root)
-        visual = _RGFW.root->src.visual.visual;
-
-    RGFW_bool out = vkGetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice, queueFamilyIndex, _RGFW.display, XVisualIDFromVisual(visual));
-    return out;
-#endif
-#if defined(RGFW_WAYLAND)
-wayland:
-    RGFW_bool wlout = vkGetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice, queueFamilyIndex, _RGFW.wl_display);
-    return wlout;
-#elif defined(RGFW_WINDOWS)
-#elif defined(RGFW_MACOS) && !defined(RGFW_MACOS_X11)
-    return RGFW_FALSE; /* TODO */
-#endif
-}
-
 /*
 This is where OS specific stuff starts
 */
@@ -4011,7 +3989,6 @@ u64 RGFW_getTimerValue(void) {
 */
 
 #ifdef RGFW_WINDOWS
-#ifdef RGFW_OPENGL
 
 RGFW_proc RGFW_getProcAddress(const char* procname) {
     RGFW_proc proc = (RGFW_proc)wglGetProcAddress(procname);
@@ -4237,7 +4214,6 @@ void RGFW_captureCursor(RGFW_window* win, RGFW_rect rect) {
 	const RAWINPUTDEVICE id = { 0x01, 0x02, 0, win->src.window };
 	RegisterRawInputDevices(&id, 1, sizeof(id));
 }
-#endif
 
 #ifdef RGFW_DIRECTX
 int RGFW_window_createDXSwapChain(RGFW_window* win, IDXGIFactory* pFactory, IUnknown* pDevice, IDXGISwapChain** swapchain) {
