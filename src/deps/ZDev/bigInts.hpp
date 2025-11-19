@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 // Use unsigned long long for precise, large numbers
 template<unsigned long long bitCount>
 struct bigInt {
@@ -7,17 +9,17 @@ struct bigInt {
     unsigned long long limbs[bytes] = {0};
 
     constexpr bigInt() = default;
-    constexpr bigInt(unsigned long long v) { limbs[0] = v; }
     template<typename T>
     constexpr bigInt(const T v) { limbs[0] = v; }
     constexpr bigInt(const unsigned long long* init, unsigned int count) {
         unsigned int limit = count < bytes ? count : bytes;
-        for (unsigned int i = 0; i < limit; i++) { limbs[i] = init[i]; }
-        for (unsigned int i = limit; i < bytes; i++) { limbs[i] = 0; }
+        unsigned int i = 0;
+        for (; i < limit; i++) { limbs[i] = init[i]; }
+        memset(&limbs[i], 0, (bytes - i) * 8);
     }
 
     bool isZero() const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != 0) return false; } return true; }
-    void setZero() { for (unsigned int i = 0; i < bytes; i++) { limbs[i] = 0; }}
+    void setZero() { memset(limbs, 0, bytes); }
     unsigned long long mod(unsigned long long m) {
         if (m == 0) { return 0; }
         __uint128_t rem = 0;
@@ -48,28 +50,41 @@ struct bigInt {
     }
 
     bigInt operator+(const bigInt& rhs) const {
-        bigInt res;
+        bigInt result;
         __uint128_t carry = 0;
         for (unsigned int i = 0; i < bytes; i++) {
             __uint128_t sum = static_cast<__uint128_t>(limbs[i]) + rhs.limbs[i] + carry;
-            res.limbs[i] = sum;
+            result.limbs[i] = sum;
             carry = sum >> 64;
         }
-        return res;
+        return result;
     }
-    template<typename T> bigInt operator+(const T rhs) const { return *this + bigInt(rhs); }
+    template<typename T> bigInt operator+(const T rhs) const { 
+        __uint128_t sum = static_cast<__uint128_t>(limbs[0] + rhs);
+        bigInt result = (unsigned long long)sum;
+        
+        __uint128_t carry = sum >> 64;
+        if (carry == 0) { return result; }
+        for (unsigned int i = 1; i < bytes; i++) {
+            sum = limbs[i] + carry;
+            result.limbs[i] = (unsigned long long)sum;
+            carry = sum >> 64;
+            if (carry == 0) { break; }
+        }
+        return result;
+    }
     bigInt& operator+=(const bigInt& rhs) { *this = *this + rhs; return *this; }
     template<typename T> bigInt& operator+=(const T rhs) { *this = *this + bigInt(rhs); return *this; }
 
     bigInt operator-(const bigInt& rhs) const {
-        bigInt res;
+        bigInt result;
         __uint128_t borrow;
         for (unsigned int i = 0; i < bytes; i++) {
             unsigned long long tmp = limbs[i] - rhs.limbs[i] - borrow;
             borrow = static_cast<__uint128_t>(limbs[i]) < static_cast<__uint128_t>(rhs.limbs[i]) + borrow ? 1 : 0;
-            res.limbs[i] = tmp;
+            result.limbs[i] = tmp;
         }
-        return res;
+        return result;
     }
     template<typename T> bigInt operator-(const T rhs) const { return *this - bigInt(rhs); }
     bigInt& operator-=(const bigInt& rhs) { *this = *this - rhs; return *this; }
@@ -97,28 +112,28 @@ struct bigInt {
     
         unsigned int shift = (this_top - (this_count - 1)) + (rhs_top - (rhs_count - 1));
     
-        bigInt res;
+        bigInt result;
         unsigned __int128 carry = 0;
         for (unsigned int i = 0; i < this_count + rhs_count; ++i) {
             __uint128_t val = tmp[i] + carry;
             unsigned int limb_idx = i + shift;
-            if (limb_idx < bytes) { res.limbs[limb_idx] = (unsigned long long)val; }
+            if (limb_idx < bytes) { result.limbs[limb_idx] = (unsigned long long)val; }
             carry = val >> 64;
         }
-        return res;
+        return result;
     }
 
     bigInt operator*(const bigInt& rhs) const {
-        unsigned long long res_limbs[bytes] = {0};
+        unsigned long long result_limbs[bytes] = {0};
         __uint128_t tmp[bytes * 2] = {0};
         __uint128_t carry = 0;
         for (unsigned int i = 0; i < bytes; i++) { for (unsigned int j = 0; j < bytes; ++j) { if (i + j < bytes * 2) { tmp[i + j] += static_cast<__uint128_t>(limbs[i]) * rhs.limbs[j]; }}}
         for (unsigned int i = 0; i < bytes; i++) {
             tmp[i] += carry;
-            res_limbs[i] = tmp[i];
+            result_limbs[i] = tmp[i];
             carry = tmp[i] >> 64;
         }
-        return bigInt(res_limbs, bytes);
+        return bigInt(result_limbs, bytes);
     }
     template<typename T> bigInt operator*(const T rhs) const { return *this * bigInt(rhs); }
     bigInt& operator*=(const bigInt& rhs) { *this = *this * rhs; return *this; }
@@ -161,36 +176,36 @@ struct bigInt {
     }
     template<typename T> bigInt operator%(const T rhs) const { return *this % bigInt(rhs); }
     bigInt operator&(const bigInt& rhs) const {
-        bigInt res;
-        for (unsigned int i = 0; i < bytes; i++) res.limbs[i] = limbs[i] & rhs.limbs[i];
-        return res;
+        bigInt result;
+        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = limbs[i] & rhs.limbs[i];
+        return result;
     }
     template<typename T> bigInt operator&(const T rhs) const { return *this & bigInt(rhs); }
     bigInt& operator&=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; i++) limbs[i] &= rhs.limbs[i]; return *this; }
     template<typename T> bigInt& operator&=(const T rhs) { *this &= bigInt(rhs); return *this; }
 
     bigInt operator|(const bigInt& rhs) const {
-        bigInt res;
-        for (unsigned int i = 0; i < bytes; i++) res.limbs[i] = limbs[i] | rhs.limbs[i];
-        return res;
+        bigInt result;
+        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = limbs[i] | rhs.limbs[i];
+        return result;
     }
     template<typename T> bigInt operator|(const T rhs) const { return *this | bigInt(rhs); }
     bigInt& operator|=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; i++) limbs[i] |= rhs.limbs[i]; return *this; }
     template<typename T> bigInt& operator|=(const T rhs) { *this |= bigInt(rhs); return *this; }
 
     bigInt operator^(const bigInt& rhs) const {
-        bigInt res;
-        for (unsigned int i = 0; i < bytes; i++) res.limbs[i] = limbs[i] ^ rhs.limbs[i];
-        return res;
+        bigInt result;
+        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = limbs[i] ^ rhs.limbs[i];
+        return result;
     }
     template<typename T> bigInt operator^(const T rhs) const { return *this ^ bigInt(rhs); }
     bigInt& operator^=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; i++) limbs[i] ^= rhs.limbs[i]; return *this; }
     template<typename T> bigInt& operator^=(const T rhs) { *this ^= bigInt(rhs); return *this; }
 
     bigInt operator~() const {
-        bigInt res;
-        for (unsigned int i = 0; i < bytes; i++) res.limbs[i] = ~limbs[i];
-        return res;
+        bigInt result;
+        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = ~limbs[i];
+        return result;
     }
 
     bool operator==(const bigInt& rhs) const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != rhs.limbs[i]) return false; } return true; }
@@ -229,7 +244,7 @@ struct bigInt {
         for (unsigned int i = 0; i < bytes; i++) limbs[i] = nw[i];
         return *this;
     }
-    bigInt operator<<(int n) const { bigInt res = *this; res <<= n; return res; }
+    bigInt operator<<(int n) const { bigInt result = *this; result <<= n; return result; }
 
     bigInt& operator>>=(int n) {
         if (n <= 0) { return *this; }
@@ -247,7 +262,7 @@ struct bigInt {
         for (unsigned int i = 0; i < bytes; i++) limbs[i] = nw[i];
         return *this;
     }
-    bigInt operator>>(int n) const { bigInt res = *this; res >>= n; return res; }
+    bigInt operator>>(int n) const { bigInt result = *this; result >>= n; return result; }
     unsigned long long operator[](unsigned long long index) const { return limbs[index]; }
 };
 
@@ -271,114 +286,114 @@ inline const char* toString(const bigInt<bitCount>& v) {
     return buf;
 }
 
-// Use doubles for less precise, larger numbers
-template<unsigned int limbCount>
-struct bigDouble {
-    double limbs[limbCount] = {0.0};
+// Use doubles for less precise, larger numbers (DEPRICATED, _float128 not availiable on Clang [will look into this later])
+// template<unsigned int limbCount>
+// struct bigDouble {
+//     double limbs[limbCount] = {0.0};
 
-    constexpr bigDouble() {}
-    constexpr bigDouble(double v) { setZero(); limbs[0] = v; }
+//     constexpr bigDouble() {}
+//     constexpr bigDouble(double v) { setZero(); limbs[0] = v; }
 
-    void setZero() { for (unsigned int i = 0; i < limbCount; i++) limbs[i] = 0.0; }
-    bool isZero() const { for (unsigned int i = 0; i < limbCount; i++) if (limbs[i] != 0.0) return false; return true; }
+//     void setZero() { for (unsigned int i = 0; i < limbCount; i++) limbs[i] = 0.0; }
+//     bool isZero() const { for (unsigned int i = 0; i < limbCount; i++) if (limbs[i] != 0.0) return false; return true; }
 
-    __float128 mod(__float128 m) const {
-        if (m == 0.0Q) { return 0.0Q; }
-        __float128 r = 0.0Q;
-        const __float128 BASE = 9007199254740992.0Q;
-        for (unsigned int i = limbCount; i-- > 0; ) {
-            __float128 temp = r * BASE + static_cast<__float128>(limbs[i]);
-            __float128 q = temp / m;
-            __int128 qi = static_cast<__int128>(q);
-            r = temp - m * static_cast<__float128>(qi);
-        }
-        return r;
-    }
+//     __float128 mod(__float128 m) const {
+//         if (m == 0.0Q) { return 0.0Q; }
+//         __float128 r = 0.0Q;
+//         const __float128 BASE = 9007199254740992.0Q;
+//         for (unsigned int i = limbCount; i-- > 0; ) {
+//             __float128 temp = r * BASE + static_cast<__float128>(limbs[i]);
+//             __float128 q = temp / m;
+//             __int128 qi = static_cast<__int128>(q);
+//             r = temp - m * static_cast<__float128>(qi);
+//         }
+//         return r;
+//     }
 
-    void operator=(const bigDouble& rhs) { for (unsigned int i = 0; i < limbCount; i++) limbs[i] = rhs.limbs[i]; }
-    template<typename T>
-    void operator=(const T rhs) { setZero(); limbs[0] = static_cast<double>(rhs); }
+//     void operator=(const bigDouble& rhs) { for (unsigned int i = 0; i < limbCount; i++) limbs[i] = rhs.limbs[i]; }
+//     template<typename T>
+//     void operator=(const T rhs) { setZero(); limbs[0] = static_cast<double>(rhs); }
 
-    bigDouble operator+(const bigDouble& rhs) const {
-        bigDouble res;
-        __int128 carry = 0;
-        for (unsigned int i = 0; i < limbCount; i++) {
-            __float128 t = static_cast<__float128>(limbs[i]) + static_cast<__float128>(rhs.limbs[i]) + static_cast<__float128>(carry);
-            __int128 c = static_cast<__int128>(t / 9007199254740992.0Q);
-            __float128 rem = t - static_cast<__float128>(c) * 9007199254740992.0Q;
-            res.limbs[i] = static_cast<double>(rem);
-            carry = c;
-        }
-        return res;
-    }
+//     bigDouble operator+(const bigDouble& rhs) const {
+//         bigDouble result;
+//         __int128 carry = 0;
+//         for (unsigned int i = 0; i < limbCount; i++) {
+//             __float128 t = static_cast<__float128>(limbs[i]) + static_cast<__float128>(rhs.limbs[i]) + static_cast<__float128>(carry);
+//             __int128 c = static_cast<__int128>(t / 9007199254740992.0Q);
+//             __float128 rem = t - static_cast<__float128>(c) * 9007199254740992.0Q;
+//             result.limbs[i] = static_cast<double>(rem);
+//             carry = c;
+//         }
+//         return result;
+//     }
 
-    __float128 operator/(__float128 m) {
-            if (m == 0.0Q) { return 0.0Q; }
-            __float128 carry = 0.0Q;
-            const __float128 BASE = 9007199254740992.0Q;
-            for (int i = limbCount - 1; i >= 0; --i) {
-                __float128 cur = carry * BASE + static_cast<__float128>(limbs[i]);
-                __int128 qint = static_cast<__int128>(cur / m);
-                __float128 q = static_cast<__float128>(qint);
-                __float128 r = cur - q * m;
-                limbs[i] = static_cast<double>(q);
-                carry = r;
-            }
-            return carry;
-        }
+//     __float128 operator/(__float128 m) {
+//             if (m == 0.0Q) { return 0.0Q; }
+//             __float128 carry = 0.0Q;
+//             const __float128 BASE = 9007199254740992.0Q;
+//             for (int i = limbCount - 1; i >= 0; --i) {
+//                 __float128 cur = carry * BASE + static_cast<__float128>(limbs[i]);
+//                 __int128 qint = static_cast<__int128>(cur / m);
+//                 __float128 q = static_cast<__float128>(qint);
+//                 __float128 r = cur - q * m;
+//                 limbs[i] = static_cast<double>(q);
+//                 carry = r;
+//             }
+//             return carry;
+//         }
 
-    double operator[](unsigned int index) const { return limbs[index]; }
-};
+//     double operator[](unsigned int index) const { return limbs[index]; }
+// };
 
-    template<unsigned int limbCount>
-    inline const char* doubleToString(const bigDouble<limbCount>& v) {
-    static char buf[limbCount * 20 + 64];
-    int pos = 0;
+//     template<unsigned int limbCount>
+//     inline const char* doubleToString(const bigDouble<limbCount>& v) {
+//     static char buf[limbCount * 20 + 64];
+//     int pos = 0;
 
-    if (v.isZero()) {
-        buf[pos++] = '0';
-        buf[pos] = '\0';
-        return buf;
-    }
+//     if (v.isZero()) {
+//         buf[pos++] = '0';
+//         buf[pos] = '\0';
+//         return buf;
+//     }
 
-    bigDouble<limbCount> temp;
-    temp = v;
-    char int_digits[limbCount * 20 + 1];
-    int digit_count = 0;
-    const int max_digits = static_cast<int>(limbCount * 20);
+//     bigDouble<limbCount> temp;
+//     temp = v;
+//     char int_digits[limbCount * 20 + 1];
+//     int digit_count = 0;
+//     const int max_digits = static_cast<int>(limbCount * 20);
 
-    while (!temp.isZero() && digit_count < max_digits) {
-        __float128 rem = temp / 10.0Q;
-        int d = static_cast<int>(rem);
-        if (d < 0) d = 0;
-        if (d > 9) d = 9;
-        int_digits[digit_count++] = '0' + d;
-    }
+//     while (!temp.isZero() && digit_count < max_digits) {
+//         __float128 rem = temp / 10.0Q;
+//         int d = static_cast<int>(rem);
+//         if (d < 0) d = 0;
+//         if (d > 9) d = 9;
+//         int_digits[digit_count++] = '0' + d;
+//     }
 
-    if (digit_count == 0) {
-        buf[pos++] = '0';
-    }
-    else {
-        for (int k = digit_count - 1; k >= 0; --k) { buf[pos++] = int_digits[k]; }
-    }
+//     if (digit_count == 0) {
+//         buf[pos++] = '0';
+//     }
+//     else {
+//         for (int k = digit_count - 1; k >= 0; --k) { buf[pos++] = int_digits[k]; }
+//     }
 
-    __float128 frac_part = v.mod(1.0Q);
-    if (frac_part > 0.0Q) {
-        buf[pos++] = '.';
-        for (int k = 0; k < 50 && pos < (int)(limbCount * 20 + 63); ++k) {
-            frac_part *= 10.0Q;
-            int d = static_cast<int>(frac_part);
-            if (d < 0) d = 0;
-            if (d > 9) d = 9;
-            buf[pos++] = '0' + d;
-            frac_part -= static_cast<__float128>(d);
-            if (frac_part == 0.0Q) break;
-        }
-    }
+//     __float128 frac_part = v.mod(1.0Q);
+//     if (frac_part > 0.0Q) {
+//         buf[pos++] = '.';
+//         for (int k = 0; k < 50 && pos < (int)(limbCount * 20 + 63); ++k) {
+//             frac_part *= 10.0Q;
+//             int d = static_cast<int>(frac_part);
+//             if (d < 0) d = 0;
+//             if (d > 9) d = 9;
+//             buf[pos++] = '0' + d;
+//             frac_part -= static_cast<__float128>(d);
+//             if (frac_part == 0.0Q) break;
+//         }
+//     }
 
-    buf[pos] = '\0';
-    return buf;
-}
+//     buf[pos] = '\0';
+//     return buf;
+// }
 
 // Custom bitset for storing large quantities of 1's and 0's effeciently.
 template <unsigned long long N>
@@ -387,8 +402,10 @@ struct bitset {
 
     constexpr bitset() {}
 
+    void off() { memset(&data, 0, (N + 63) / 64); }
+    void on() { memset(&data, 0, (N + 63) / 64); }
     void set(unsigned long long pos) { data[pos / 64] |= (1ULL << (pos % 64)); }
-    void reset(unsigned long long pos) { data[pos / 64] &= ~(1ULL << (pos % 64)); }
+    void resultet(unsigned long long pos) { data[pos / 64] &= ~(1ULL << (pos % 64)); }
     void flip(unsigned long long pos) { data[pos / 64] ^= (1ULL << (pos % 64)); }
     bool check(unsigned long long pos) const { return data[pos / 64] & (1ULL << (pos % 64)); }
 

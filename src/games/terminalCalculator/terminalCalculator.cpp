@@ -30,7 +30,12 @@ void TerminalCalculator() {
         else if (operationType == "basic") { selectedOperation = 1; }
         else if (operationType == "advanced") { selectedOperation = 2; }
         else if (operationType == "binary") { selectedOperation = 3; }
-        else if (operationType == "clear") { break; }
+        else if (operationType == "clear") { 
+            std::cout << "\x1b[2J\x1b[H";
+            std::cout << "\033[2J\033[H";
+            std::cout.flush();
+            break;
+        }
 
         switch (selectedOperation) {
         case 1:
@@ -48,10 +53,21 @@ void TerminalCalculator() {
             else if (operation == "*") { answer = std::to_string(std::stof(num1) * std::stof(num2)); }
             else if (operation == "&") { answer = std::to_string(std::stoi(num1) % std::stoi(num2)); }
             else if (operation == "^") { answer = std::to_string(pow(std::stof(num1), std::stof(num2))); }
-            else if (operation == "+d") {
-                bigDouble<128> dnum1 = std::stod(num1);
-                bigDouble<128> dnum2 = std::stod(num2);
-                answer = doubleToString<128>(dnum1 + dnum2);
+            else if (operation == "+b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 + std::stoi(num2));
+            }
+            else if (operation == "-b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 - std::stoi(num2));
+            }
+            else if (operation == "/b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 / std::stoi(num2));
+            }
+            else if (operation == "*b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 * std::stoi(num2));
             }
 
             std::cout << std::endl << "Answer: " << answer << std::endl;

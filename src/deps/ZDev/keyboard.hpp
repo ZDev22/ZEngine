@@ -177,9 +177,8 @@ private:
     const unsigned short rgfwKeys[97] = {
         /*common   */ RGFW_a, RGFW_s, RGFW_w, RGFW_d, RGFW_space, RGFW_e, RGFW_q, RGFW_z, RGFW_x, RGFW_c, RGFW_t, RGFW_f, RGFW_g, RGFW_h, RGFW_i, RGFW_j, RGFW_k, RGFW_l, RGFW_right, RGFW_left, RGFW_down, RGFW_up, RGFW_v, RGFW_1, RGFW_2, RGFW_3, RGFW_4, RGFW_5, RGFW_6, RGFW_7, RGFW_8, RGFW_9, RGFW_0,
         /*rare     */ RGFW_shiftR, RGFW_shiftL, RGFW_return, RGFW_escape, RGFW_tab, RGFW_backSpace, RGFW_insert, RGFW_delete, RGFW_period, RGFW_slash, RGFW_semicolon, RGFW_comma, RGFW_superL,
-        /*legendary*/ RGFW_b, RGFW_m, RGFW_n, RGFW_o, RGFW_p, RGFW_r, RGFW_u, RGFW_y, RGFW_KP_0, RGFW_KP_1, RGFW_KP_2, RGFW_KP_3, RGFW_KP_4, RGFW_KP_5, RGFW_KP_6, RGFW_KP_7, RGFW_KP_8, RGFW_KP_9, RGFW_KP_Period, RGFW_KP_Slash, RGFW_multiply, RGFW_KP_Minus, RGFW_KP_Return, RGFW_home, RGFW_end, RGFW_capsLock, RGFW_numLock, RGFW_F1, RGFW_F2, RGFW_F3, RGFW_F4, RGFW_F5, RGFW_F6, RGFW_F7, RGFW_F8, RGFW_F9, RGFW_F10,
+        /*legendary*/ RGFW_b, RGFW_m, RGFW_n, RGFW_o, RGFW_p, RGFW_r, RGFW_u, RGFW_y, RGFW_KP_0, RGFW_KP_1, RGFW_KP_2, RGFW_KP_3, RGFW_KP_4, RGFW_KP_5, RGFW_KP_6, RGFW_KP_7, RGFW_KP_8, RGFW_KP_9, RGFW_KP_Period, RGFW_KP_Slash, RGFW_multiply, RGFW_KP_Minus, RGFW_KP_Return, RGFW_home, RGFW_end, RGFW_capsLock, RGFW_numLock, RGFW_F1, RGFW_F2, RGFW_F3, RGFW_F4, RGFW_F5, RGFW_F6, RGFW_F7, RGFW_F8, RGFW_F9, RGFW_F10, RGFW_F11, RGFW_F12,
         /*mythic   */ RGFW_controlL, RGFW_altL, RGFW_controlR, RGFW_altR, RGFW_superR, RGFW_apostrophe, RGFW_minus, RGFW_equals, RGFW_bracket, RGFW_backSlash, RGFW_pageUp, RGFW_pageDown
-        /*secret      RGFW_KEY_F11, RGFW_KEY_F12, RGFW_KEY_F13, RGFW_KEY_F14, RGFW_KEY_F15, RGFW_KEY_F16, RGFW_KEY_F17, RGFW_KEY_F18, RGFW_KEY_F19, RGFW_KEY_F20, RGFW_KEY_F21, RGFW_KEY_F22, RGFW_KEY_F23, RGFW_KEY_F24, RGFW_KEY_F25, RGFW_KEY_WORLD_1, RGFW_KEY_WORLD_2 */ // excluded because of little use and looping
     };
     std::vector<KeyBind> keyBinds;
     bool modifiers[2] = {false};

@@ -522,8 +522,6 @@ typedef struct RGFW_window_src {
 #endif
 	void* view; /* apple viewpoint thingy */
 	void* mouse;
-#if defined(RGFW_OSMESA) || defined(RGFW_BUFFER)
-#endif
 } RGFW_window_src;
 #elif defined(RGFW_WASM)
 typedef struct RGFW_window_src {

@@ -1,6 +1,6 @@
 #include "engine/app.hpp"
 
-#if true // render the screen and tick the game (disable if it's a terminal game)
+#if false // render the screen and tick the game (disable if it's a terminal game)
 
 #include "engine/shaders.hpp"
 
