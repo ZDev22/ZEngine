@@ -3927,7 +3927,7 @@ void RGFW_win32_makeWindowTransparent(RGFW_window* win) {
 			bb.hRgnBlur = NULL;
 			DwmEnableBlurBehindWindowSRC(win->src.window, &bb);
 
-	} 
+	}
 	else
 	#endif
 	{
@@ -4496,7 +4496,9 @@ void RGFW_window_setOpacity(RGFW_window* win, u8 opacity) {
 
 void RGFW_window_restore(RGFW_window* win) { RGFW_window_show(win); }
 
-RGFW_bool RGFW_window_isFloating(RGFW_window* win) return (GetWindowLongPtr(win->src.window, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
+RGFW_bool RGFW_window_isFloating(RGFW_window* win) {
+    return (GetWindowLongPtr(win->src.window, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
+}
 
 i32 RGFW_checkXInput(RGFW_window* win, RGFW_event* e) {
 	#ifndef RGFW_NO_XINPUT
@@ -5126,7 +5128,9 @@ void RGFW_freeMouse(RGFW_mouse* mouse) {
 	DestroyCursor((HCURSOR)mouse);
 }
 
-RGFW_bool RGFW_window_setMouseDefault(RGFW_window* win) return RGFW_window_setMouseStandard(win, RGFW_mouseArrow);
+RGFW_bool RGFW_window_setMouseDefault(RGFW_window* win) {
+    return RGFW_window_setMouseStandard(win, RGFW_mouseArrow);
+}
 
 RGFW_bool RGFW_window_setMouseStandard(RGFW_window* win, u8 mouse) {
 	RGFW_ASSERT(win != NULL);
