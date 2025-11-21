@@ -20,11 +20,16 @@
 #define LAPLACE 1.3862943611f
 #define BERNOUILLI .0787456776f
 
-#include <cmath>
+#include <math.h>
 #include <vector>
-#include <cstring>
+#include <string.h>
 
-#include "bigInts.hpp"
+#ifdef BIG_INT_MATHPP
+    #include "bigInts.hpp"
+#endif
+#ifdef BITSET_MATHPP
+    #include "bitset.hpp"
+#endif
 
 // Global
 inline float clamp(const float value, const float minValue, const float maxValue) {
@@ -176,7 +181,7 @@ inline float averageMinMax(const std::vector<float>& floats) {
 template<typename T>
 void setValuesInRange(std::vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 template<typename T>
-void setZero(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { std::memset(vec.data() + startIndex, 0, count); }
+void setZero(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
 inline void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
@@ -186,6 +191,7 @@ inline T absolute(const T i) { return i < 0 ? -i : i; }
 inline bool absolute(bool i) { return true; }
 
 // Exponents
+#ifdef BIG_INT_MATHPP
 template<unsigned long long bitCount>
 inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     bigInt<bitCount> result = 1;
@@ -228,6 +234,7 @@ inline bigInt<bitCount> exponentFactorial(unsigned int n) {
     for (unsigned int i = 1; i < n; i++) { result *= base; }
     return result;
 }
+#endif
 
 // Conversions
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
@@ -236,9 +243,11 @@ inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32
 inline constexpr float fahrenheit(const float celsius) { return (celsius / .5555555555f) + 32.f; }
 
 // Bitset
+#ifdef BITSET_MATHPP
 template<unsigned long long range>
 inline bitset<range> createRandomBitset() {
     bitset<range> bits;
     for (unsigned long long i = 0; i < range; i++) { if (Random()) bits.set(i); }
     return bits;
 }
+#endif

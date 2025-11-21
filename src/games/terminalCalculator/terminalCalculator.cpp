@@ -1,4 +1,6 @@
 #include "terminalCalculator.hpp"
+#define BIG_INT_MATHPP
+#define BITSET_MATHPP
 #include "../../deps/ZDev/math.hpp"
 
 #include <string>
@@ -68,6 +70,26 @@ void TerminalCalculator() {
             else if (operation == "*b") {
                 bigInt<128> bnum1 = std::stoi(num1);
                 answer = toString<128>(bnum1 * std::stoi(num2));
+            }
+            else if (operation == "+bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 + bnum2);
+            }
+            else if (operation == "-bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 - bnum2);
+            }
+            else if (operation == "/bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 / bnum2);
+            }
+            else if (operation == "*bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 * bnum2);
             }
 
             std::cout << std::endl << "Answer: " << answer << std::endl;
