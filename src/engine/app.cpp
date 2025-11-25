@@ -82,7 +82,7 @@ void App::run() {
                 #if NO_DECOR
                     std::cout << "cps: " << std::to_string(appcps) << " - fps: " << std::to_string(appfps) << std::endl;
                 #else
-                    RGFW_window_setName(window, ("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps)).c_str());
+                    RGFW_window_setName(window.get(), ("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps)).c_str());
                 #endif
                 apptimer = 0.f;
                 appcps = 0;
