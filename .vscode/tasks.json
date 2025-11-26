@@ -2,6 +2,62 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "linux",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "linux-debug",
+        "--",
+        "-j${input:jobs}"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "linuxrelease",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "linux-release",
+        "--",
+        "-j${input:jobs}"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "mac",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "mac-debug",
+        "--",
+        "-j${input:jobs}"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "macrelease",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "mac-release",
+        "--",
+        "-j${input:jobs}"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
       "label": "windows",
       "type": "shell",
       "command": "cmake",
@@ -26,34 +82,6 @@
         "--build",
         "--preset",
         "windows-release",
-        "--",
-        "-j${input:jobs}"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "linux",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "--preset",
-        "linux-debug",
-        "--",
-        "-j${input:jobs}"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "linuxrelease",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "--preset",
-        "linux-release",
         "--",
         "-j${input:jobs}"
       ],

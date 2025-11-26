@@ -4,7 +4,7 @@
   "configurePresets": [
     {
       "name": "linux",
-      "displayName": "Linux GCC Debug",
+      "displayName": "Linux Debug",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/linux/gcc-debug",
       "cacheVariables": {
@@ -13,9 +13,29 @@
     },
     {
       "name": "linuxrelease",
-      "displayName": "Linux GCC Release",
+      "displayName": "Linux Release",
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/linux/gcc-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
+      }
+    },
+    {
+      "name": "mac",
+      "displayName": "Mac Debug",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/mac/gcc-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "macrelease",
+      "displayName": "Mac Release",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/mac/gcc-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
@@ -46,6 +66,8 @@
   "buildPresets": [
     {"name": "linux","configurePreset": "linux"},
     {"name": "linuxrelease","configurePreset": "linuxrelease"},
+    {"name": "mac","configurePreset": "mac"},
+    {"name": "macrelease","configurePreset": "macrelease"},
     {"name": "windows","configurePreset": "windows"},
     {"name": "windowsrelease","configurePreset": "windowsrelease"}
   ]

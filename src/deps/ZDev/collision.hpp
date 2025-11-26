@@ -67,7 +67,7 @@ public:
             AABB.push_back(a);
             return (a.pos[0] <= AABB[usingBAABB].pos[2] && a.pos[2] >= AABB[usingBAABB].pos[0]) && (a.pos[1] <= AABB[usingBAABB].pos[3] && a.pos[3] >= AABB[usingBAABB].pos[1]);
         }
-        else if (usingAAABB == -1 && usingBAABB == -1) {
+        else {
             dataA.setRotationMatrix();
             dataB.setRotationMatrix();
 

@@ -1,7 +1,11 @@
-/build/windows/*
-!build/windows/Debug/
-!build/windows/Release/
-
 /build/linux/*
 !build/linux/Debug/
 !build/linux/Release/
+
+/build/mac/*
+!build/mac/Debug/
+!build/mac/Release/
+
+/build/windows/*
+!build/windows/Debug/
+!build/windows/Release/

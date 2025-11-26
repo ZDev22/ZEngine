@@ -245,7 +245,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
 
     auto& grayscale = fontAtlases[font];
     auto& charData = fontCharDatas[font];
-    unsigned int atlasSize = static_cast<unsigned int>(std::sqrt(grayscale.size()));
+    unsigned int atlasSize = static_cast<unsigned int>(sqrt(grayscale.size()));
 
     float min_y = 0.0f;
     float max_y = 0.0f;
@@ -266,8 +266,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
 
-        int dst_x = static_cast<int>(std::round(current_x + cd.xoff));
-        int dst_y = static_cast<int>(std::round(cd.yoff - min_y));
+        int dst_x = static_cast<int>(current_x + cd.xoff);
+        int dst_y = static_cast<int>(cd.yoff - min_y);
 
         int width = cd.x1 - cd.x0;
         int height = cd.y1 - cd.y0;
@@ -308,8 +308,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
 
-        int dst_x = static_cast<int>(std::round(current_x + cd.xoff));
-        int dst_y = static_cast<int>(std::round(cd.yoff - min_y));
+        int dst_x = static_cast<int>(current_x + cd.xoff);
+        int dst_y = static_cast<int>(cd.yoff - min_y);
 
         for (int py = 0; py < cd.y1 - cd.y0; ++py) {
             for (int px = 0; px < cd.x1 - cd.x0; ++px) {

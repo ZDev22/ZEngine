@@ -806,11 +806,6 @@ i32* RGFW_initFormatAttribs(u32 useSoftware) {
 			attribs[index] = RGFW_GL_RENDER_TYPE;
 			index += 1;
 		}
-	#endif
-
-	#ifdef RGFW_MACOS
-		/* macOS has the surface attribs and the opengl attribs connected for some reason
-			maybe this is to give macOS more control to limit openGL/the opengl version? */
 
 		attribs[index] = 99;
 		attribs[index + 1] = 0x1000;
@@ -1069,10 +1064,18 @@ wayland:
 
     return vkCreateWin32SurfaceKHR(instance, &win32, NULL, surface);
 #elif defined(RGFW_MACOS) && !defined(RGFW_MACOS_X11)
-    void* contentView = ((void* (*)(id, SEL))objc_msgSend)((id)win->src.window, sel_getUid("contentView"));
-    VkMacOSSurfaceCreateFlagsMVK macos = { VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK, 0, 0, win->src.display, (void*)contentView };
+    id nswindow = (id)win->src.window;
+    id contentView = ((id(*)(id, SEL))objc_msgSend)(nswindow, sel_getUid("contentView"));
+    id metalLayer = ((id(*)(id, SEL))objc_msgSend)((id)objc_getClass("CAMetalLayer"), sel_getUid("layer"));
 
-    return vkCreateMacOSSurfaceMVK(instance, &macos, NULL, surface);
+    ((void(*)(id, SEL, bool))objc_msgSend)(contentView, sel_getUid("setWantsLayer:"), true);
+    ((void(*)(id, SEL, id))objc_msgSend)(contentView, sel_getUid("setLayer:"), metalLayer);
+
+    VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
+    surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+    surfaceInfo.pView = (void*)contentView;
+
+    return vkCreateMacOSSurfaceMVK(instance, &surfaceInfo, NULL, surface);
 #endif
 }
 
@@ -5578,7 +5581,6 @@ u32 RGFW_OnClose(id self) {
 	return false;
 }
 
-/* NOTE(EimaMei): Fixes the constant clicking when the app is running under a terminal. */
 bool acceptsFirstResponder(void) { return true; }
 bool performKeyEquivalent(id event) { RGFW_UNUSED(event); return true; }
 
@@ -5715,7 +5717,7 @@ void RGFW__osxInputValueChangedCallback(void *context, IOReturn result, void *se
 			RGFW_gamepadButtonCallback(_RGFW.root, (u16)index, button, (u8)intValue);
 			RGFW_gamepadPressed[index][button].prev = RGFW_gamepadPressed[index][button].current;
 			RGFW_gamepadPressed[index][button].current = RGFW_BOOL(intValue);
-			RGFW_eventQueuePush((RGFW_event){.type = intValue ? RGFW_gamepadButtonPressed: RGFW_gamepadButtonReleased,
+			RGFW_eventQueuePush((RGFW_event){.type = static_cast<RGFW_eventType>(intValue ? RGFW_gamepadButtonPressed: RGFW_gamepadButtonReleased),
 											.button = button,
 											.gamepad = (u16)index,
 											._win = _RGFW.root});
@@ -6112,25 +6114,25 @@ i32 RGFW_init(void) {
 }
 
 RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowFlags flags, RGFW_window* win) {
-	static u8 RGFW_loaded = 0;
-	RGFW_window_basic_init(win, rect, flags);
+    static u8 RGFW_loaded = 0;
+    RGFW_window_basic_init(win, rect, flags);
 
     /* RR Create an autorelease pool */
-	id pool = objc_msgSend_class(objc_getClass("NSAutoreleasePool"), sel_registerName("alloc"));
-	pool = objc_msgSend_id(pool, sel_registerName("init"));
+    id pool = objc_msgSend_class(objc_getClass("NSAutoreleasePool"), sel_registerName("alloc"));
+    pool = objc_msgSend_id(pool, sel_registerName("init"));
 
-	RGFW_window_setMouseDefault(win);
+    RGFW_window_setMouseDefault(win);
 
-	NSRect windowRect;
-	windowRect.origin.x = win->r.x;
-	windowRect.origin.y = win->r.y;
-	windowRect.size.width = win->r.w;
-	windowRect.size.height = win->r.h;
+    NSRect windowRect;
+    windowRect.origin.x = win->r.x;
+    windowRect.origin.y = win->r.y;
+    windowRect.size.width = win->r.w;
+    windowRect.size.height = win->r.h;
 
 	NSBackingStoreType macArgs = NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSBackingStoreBuffered | NSWindowStyleMaskTitled;
-
+    
 	if (!(flags & RGFW_windowNoResize))
-		macArgs |= NSWindowStyleMaskResizable;
+        macArgs |= NSWindowStyleMaskResizable;
 	if (!(flags & RGFW_windowNoBorder))
 		macArgs |= NSWindowStyleMaskTitled;
 	{
@@ -6142,34 +6144,34 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	}
 
 	id str = NSString_stringWithUTF8String(name);
-	objc_msgSend_void_id((id)win->src.window, sel_registerName("setTitle:"), str);
+    objc_msgSend_void_id((id)win->src.window, sel_registerName("setTitle:"), str);
 
-	if ((flags & RGFW_windowNoInitAPI) == 0) {
-		RGFW_window_initOpenGL(win, RGFW_BOOL(flags & RGFW_windowOpenglSoftware));
+    if ((flags & RGFW_windowNoInitAPI) == 0) {
+        RGFW_window_initOpenGL(win, RGFW_BOOL(flags & RGFW_windowOpenglSoftware));
         RGFW_window_initBuffer(win);
     }
 
-	#ifdef RGFW_OPENGL
-	else
-	#endif
-	{
-		NSRect contentRect = (NSRect){{0, 0}, {win->r.w, win->r.h}};
+#ifdef RGFW_OPENGL
+    else
+#endif
+    {
+        NSRect contentRect = (NSRect){{0, 0}, {static_cast<CGFloat>(win->r.w), static_cast<CGFloat>(win->r.h)}};
 		win->src.view = ((id(*)(id, SEL, NSRect))objc_msgSend) (NSAlloc(objc_getClass("NSView")), sel_registerName("initWithFrame:"), contentRect);
-    	}
+    }
 
 	void* contentView = NSWindow_contentView((id)win->src.window);
 	objc_msgSend_void_bool(contentView, sel_registerName("setWantsLayer:"), true);
 	objc_msgSend_int((id)win->src.view, sel_registerName("setLayerContentsPlacement:"),  4);
 	objc_msgSend_void_id((id)win->src.window, sel_registerName("setContentView:"), win->src.view);
 
-	if (flags & RGFW_windowTransparent) {
-		objc_msgSend_void_bool(win->src.window, sel_registerName("setOpaque:"), false);
+    if (flags & RGFW_windowTransparent) {
+        objc_msgSend_void_bool(win->src.window, sel_registerName("setOpaque:"), false);
 
 		objc_msgSend_void_id((id)win->src.window, sel_registerName("setBackgroundColor:"),
 			NSColor_colorWithSRGB(0, 0, 0, 0));
-	}
+    }
 
-	Class delegateClass = objc_allocateClassPair(objc_getClass("NSObject"), "WindowDelegate", 0);
+    Class delegateClass = objc_allocateClassPair(objc_getClass("NSObject"), "WindowDelegate", 0);
 
 	class_addIvar(
 		delegateClass, "RGFW_window",
@@ -6186,48 +6188,48 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	class_addMethod(delegateClass, sel_registerName("windowDidResignKey:"), (IMP) RGFW__osxWindowResignKey, "");
 	class_addMethod(delegateClass, sel_registerName("draggingEntered:"), (IMP)draggingEntered, "l@:@");
 	class_addMethod(delegateClass, sel_registerName("draggingUpdated:"), (IMP)draggingUpdated, "l@:@");
-	class_addMethod(delegateClass, sel_registerName("draggingExited:"), (IMP)RGFW__osxDraggingEnded, "v@:@");
-	class_addMethod(delegateClass, sel_registerName("draggingEnded:"), (IMP)RGFW__osxDraggingEnded, "v@:@");
-	class_addMethod(delegateClass, sel_registerName("prepareForDragOperation:"), (IMP)prepareForDragOperation, "B@:@");
-	class_addMethod(delegateClass, sel_registerName("performDragOperation:"), (IMP)performDragOperation, "B@:@");
+    class_addMethod(delegateClass, sel_registerName("draggingExited:"), (IMP)RGFW__osxDraggingEnded, "v@:@");
+    class_addMethod(delegateClass, sel_registerName("draggingEnded:"), (IMP)RGFW__osxDraggingEnded, "v@:@");
+    class_addMethod(delegateClass, sel_registerName("prepareForDragOperation:"), (IMP)prepareForDragOperation, "B@:@");
+    class_addMethod(delegateClass, sel_registerName("performDragOperation:"), (IMP)performDragOperation, "B@:@");
 
-	id delegate = objc_msgSend_id(NSAlloc(delegateClass), sel_registerName("init"));
+    id delegate = objc_msgSend_id(NSAlloc(delegateClass), sel_registerName("init"));
 
 	if (RGFW_COCOA_FRAME_NAME)
 		objc_msgSend_ptr(win->src.view, sel_registerName("setFrameAutosaveName:"), RGFW_COCOA_FRAME_NAME);
 
 	object_setInstanceVariable(delegate, "RGFW_window", win);
 
-	objc_msgSend_void_id((id)win->src.window, sel_registerName("setDelegate:"), delegate);
+    objc_msgSend_void_id((id)win->src.window, sel_registerName("setDelegate:"), delegate);
 
-	if (flags & RGFW_windowAllowDND) {
+    if (flags & RGFW_windowAllowDND) {
 		win->_flags |= RGFW_windowAllowDND;
 
-		NSPasteboardType types[] = {NSPasteboardTypeURL, NSPasteboardTypeFileURL, NSPasteboardTypeString};
+        NSPasteboardType types[] = {NSPasteboardTypeURL, NSPasteboardTypeFileURL, NSPasteboardTypeString};
 		NSregisterForDraggedTypes((id)win->src.window, types, 3);
-	}
+    }
 
-	RGFW_window_setFlags(win, flags);
+    RGFW_window_setFlags(win, flags);
 
     /* Show the window */
 	objc_msgSend_void_bool(NSApp, sel_registerName("activateIgnoringOtherApps:"), true);
 	((id(*)(id, SEL, SEL))objc_msgSend)((id)win->src.window, sel_registerName("makeKeyAndOrderFront:"), NULL);
-	RGFW_window_show(win);
+    RGFW_window_show(win);
 
-	if (!RGFW_loaded) {
+    if (!RGFW_loaded) {
 		objc_msgSend_void(win->src.window, sel_registerName("makeMainWindow"));
 
 		RGFW_loaded = 1;
-	}
+    }
 
-	objc_msgSend_void(win->src.window, sel_registerName("makeKeyWindow"));
+    objc_msgSend_void(win->src.window, sel_registerName("makeKeyWindow"));
 
 	objc_msgSend_void(NSApp, sel_registerName("finishLaunching"));
 	NSRetain(win->src.window);
 	NSRetain(NSApp);
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new  window was created");
-	return win;
+  	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new  window was created");
+    return win;
 }
 
 void RGFW_window_setBorder(RGFW_window* win, RGFW_bool border) {
@@ -6540,7 +6542,7 @@ void RGFW_window_move(RGFW_window* win, RGFW_point v) {
 	win->r.x = v.x;
 	win->r.y = v.y;
 	((void(*)(id, SEL, NSRect, bool, bool))objc_msgSend)
-		((id)win->src.window, sel_registerName("setFrame:display:animate:"), (NSRect){{win->r.x, win->r.y}, {win->r.w, win->r.h}}, true, true);
+		((id)win->src.window, sel_registerName("setFrame:display:animate:"), (NSRect){{static_cast<CGFloat>(win->r.x), static_cast<CGFloat>(win->r.y)}, {static_cast<CGFloat>(win->r.w), static_cast<CGFloat>(win->r.h)}}, true, true);
 }
 
 void RGFW_window_resize(RGFW_window* win, RGFW_area a) {
@@ -6554,7 +6556,7 @@ void RGFW_window_resize(RGFW_window* win, RGFW_area a) {
 	win->r.h = (i32)a.h;
 
 	((void(*)(id, SEL, NSRect, bool, bool))objc_msgSend)
-		((id)win->src.window, sel_registerName("setFrame:display:animate:"), (NSRect){{win->r.x, win->r.y}, {win->r.w, win->r.h + offset}}, true, true);
+		((id)win->src.window, sel_registerName("setFrame:display:animate:"), (NSRect){{static_cast<CGFloat>(win->r.x), static_cast<CGFloat>(win->r.y)}, {static_cast<CGFloat>(win->r.w), static_cast<CGFloat>(win->r.h + offset)}}, true, true);
 }
 
 void RGFW_window_focus(RGFW_window* win) {
@@ -6654,12 +6656,12 @@ void RGFW_window_setAspectRatio(RGFW_window* win, RGFW_area a) {
 	if (a.w == 0 && a.h == 0) a = RGFW_AREA(1, 1);
 
 	((void (*)(id, SEL, NSSize))objc_msgSend)
-		((id)win->src.window, sel_registerName("setContentAspectRatio:"), (NSSize){a.w, a.h});
+		((id)win->src.window, sel_registerName("setContentAspectRatio:"), (NSSize){static_cast<CGFloat>(a.w), static_cast<CGFloat>(a.h)});
 }
 
 void RGFW_window_setMinSize(RGFW_window* win, RGFW_area a) {
 	((void (*)(id, SEL, NSSize))objc_msgSend)
-		((id)win->src.window, sel_registerName("setMinSize:"), (NSSize){a.w, a.h});
+		((id)win->src.window, sel_registerName("setMinSize:"), (NSSize){static_cast<CGFloat>(a.w), static_cast<CGFloat>(a.h)});
 }
 
 void RGFW_window_setMaxSize(RGFW_window* win, RGFW_area a) {
@@ -6668,7 +6670,7 @@ void RGFW_window_setMaxSize(RGFW_window* win, RGFW_area a) {
 	}
 
 	((void (*)(id, SEL, NSSize))objc_msgSend)
-		((id)win->src.window, sel_registerName("setMaxSize:"), (NSSize){a.w, a.h});
+		((id)win->src.window, sel_registerName("setMaxSize:"), (NSSize){static_cast<CGFloat>(a.w), static_cast<CGFloat>(a.h)});
 }
 
 RGFW_bool RGFW_window_setIconEx(RGFW_window* win, u8* data, RGFW_area area, i32 channels, u8 type) {
@@ -6685,7 +6687,7 @@ RGFW_bool RGFW_window_setIconEx(RGFW_window* win, u8* data, RGFW_area area, i32 
 	RGFW_MEMCPY(NSBitmapImageRep_bitmapData(representation), data, area.w * area.h * (u32)channels);
 
 	/* Add ze representation. */
-	id dock_image = ((id(*)(id, SEL, NSSize))objc_msgSend) (NSAlloc((id)objc_getClass("NSImage")), sel_registerName("initWithSize:"), ((NSSize){area.w, area.h}));
+	id dock_image = ((id(*)(id, SEL, NSSize))objc_msgSend) (NSAlloc((id)objc_getClass("NSImage")), sel_registerName("initWithSize:"), ((NSSize){static_cast<CGFloat>(area.w), static_cast<CGFloat>(area.h)}));
 
 	objc_msgSend_void_id(dock_image, sel_registerName("addRepresentation:"), representation);
 
@@ -6716,7 +6718,7 @@ RGFW_mouse* RGFW_loadMouse(u8* icon, RGFW_area a, i32 channels) {
 	RGFW_MEMCPY(NSBitmapImageRep_bitmapData(representation), icon, a.w * a.h * (u32)channels);
 
 	/* Add ze representation. */
-	id cursor_image = ((id(*)(id, SEL, NSSize))objc_msgSend) (NSAlloc((id)objc_getClass("NSImage")), sel_registerName("initWithSize:"), ((NSSize){a.w, a.h}));
+	id cursor_image = ((id(*)(id, SEL, NSSize))objc_msgSend) (NSAlloc((id)objc_getClass("NSImage")), sel_registerName("initWithSize:"), ((NSSize){static_cast<CGFloat>(a.w), static_cast<CGFloat>(a.h)}));
 
 	objc_msgSend_void_id(cursor_image, sel_registerName("addRepresentation:"), representation);
 
@@ -6780,7 +6782,7 @@ void RGFW_releaseCursor(RGFW_window* win) {
 void RGFW_captureCursor(RGFW_window* win, RGFW_rect r) {
 	RGFW_UNUSED(win);
 
-	CGWarpMouseCursorPosition((CGPoint){r.x + (r.w / 2), r.y + (r.h / 2)});
+	CGWarpMouseCursorPosition((CGPoint){static_cast<CGFloat>(r.x + (r.w / 2)), static_cast<CGFloat>(r.y + (r.h / 2))});
 	CGAssociateMouseAndMouseCursorPosition(0);
 }
 
@@ -6788,7 +6790,7 @@ void RGFW_window_moveMouse(RGFW_window* win, RGFW_point v) {
 	RGFW_UNUSED(win);
 
 	win->_lastMousePoint = RGFW_POINT(v.x - win->r.x, v.y - win->r.y);
-	CGWarpMouseCursorPosition((CGPoint){v.x, v.y});
+	CGWarpMouseCursorPosition((CGPoint){static_cast<CGFloat>(v.x), static_cast<CGFloat>(v.y)});
 }
 
 
@@ -6915,7 +6917,7 @@ RGFW_monitor* RGFW_getMonitors(size_t* len) {
 }
 
 RGFW_bool RGFW_monitor_requestMode(RGFW_monitor mon, RGFW_monitorMode mode, RGFW_modeRequest request) {
-    CGPoint point = { mon.x, mon.y };
+    CGPoint point = {static_cast<CGFloat>(mon.x), static_cast<CGFloat>(mon.y)};
 
     CGDirectDisplayID display;
     uint32_t displayCount = 0;
