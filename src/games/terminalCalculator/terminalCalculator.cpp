@@ -1,7 +1,8 @@
 #include "terminalCalculator.hpp"
+#define BIG_INT_MATHPP
+#define BITSET_MATHPP
 #include "../../deps/ZDev/math.hpp"
 
-#include <thread>
 #include <string>
 #include <iostream>
 
@@ -14,17 +15,13 @@ std::string num2 = "0";
 std::string num3 = "0";
 std::string answer = "0";
 
-TerminalCalculator::TerminalCalculator() {
-    std::thread run(&TerminalCalculator::terminalCalculatorRun, this);
-    run.detach();
-}
-
-void TerminalCalculator::terminalCalculatorRun() {
+void TerminalCalculator() {
     std::cout << "\x1b[2J\x1b[H";
     std::cout << "\033[2J\033[H";
     std::cout.flush();
 
     while (true) {
+        
         std::cout << "Select operation type: (type help for all commands): ";
         std::cin >> operationType;
 
@@ -35,6 +32,12 @@ void TerminalCalculator::terminalCalculatorRun() {
         else if (operationType == "basic") { selectedOperation = 1; }
         else if (operationType == "advanced") { selectedOperation = 2; }
         else if (operationType == "binary") { selectedOperation = 3; }
+        else if (operationType == "clear") { 
+            std::cout << "\x1b[2J\x1b[H";
+            std::cout << "\033[2J\033[H";
+            std::cout.flush();
+            break;
+        }
 
         switch (selectedOperation) {
         case 1:
@@ -52,10 +55,41 @@ void TerminalCalculator::terminalCalculatorRun() {
             else if (operation == "*") { answer = std::to_string(std::stof(num1) * std::stof(num2)); }
             else if (operation == "&") { answer = std::to_string(std::stoi(num1) % std::stoi(num2)); }
             else if (operation == "^") { answer = std::to_string(pow(std::stof(num1), std::stof(num2))); }
-            else if (operation == "+d") {
-                bigDouble<128> dnum1 = std::stod(num1);
-                bigDouble<128> dnum2 = std::stod(num2);
-                answer = doubleToString<128>(dnum1 + dnum2);
+            else if (operation == "+b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 + std::stoi(num2));
+            }
+            else if (operation == "-b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 - std::stoi(num2));
+            }
+            else if (operation == "/b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 / std::stoi(num2));
+            }
+            else if (operation == "*b") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                answer = toString<128>(bnum1 * std::stoi(num2));
+            }
+            else if (operation == "+bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 + bnum2);
+            }
+            else if (operation == "-bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 - bnum2);
+            }
+            else if (operation == "/bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 / bnum2);
+            }
+            else if (operation == "*bb") {
+                bigInt<128> bnum1 = std::stoi(num1);
+                bigInt<128> bnum2 = std::stoi(num2);
+                answer = toString<128>(bnum1 * bnum2);
             }
 
             std::cout << std::endl << "Answer: " << answer << std::endl;
@@ -69,7 +103,8 @@ void TerminalCalculator::terminalCalculatorRun() {
 
             if (operationStr == "factorial") { answer = toString<8192>(factorial<8192>(std::stoi(num1))); }
             else if (operationStr == "superFactorial") { answer = toString<16384>(superFactorial<16384>(std::stoi(num1))); }
-            else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(std::sqrt(std::stof(num1))); }
+            else if (operationStr == "expoFactorial") { answer = toString<32768>(exponentFactorial<32768>(std::stoi(num1))); }
+            else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(sqrt(std::stof(num1))); }
             else if (operationStr == "lerp") {
                 std::cout << "\nsmoothStep\nsmootherStep\nlerp\neaseInSine\neaseOutSine\neaseInOutSine\neaseInExpo\neaseOutExpo\neaseInOutExpo\neaseInCirc\neaseOutCirc\neaseInOutCirc\neaseOutBounce\n\nChoose one: ";
                 std::cin >> operationStr;
@@ -107,6 +142,7 @@ void TerminalCalculator::terminalCalculatorRun() {
             }
             else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().toString(); }
             else if (operationStr == "fahrenheit") { answer = std::to_string(fahrenheit(std::stoi(num1))); }
+            else if (operationStr == "celsius") { answer = std::to_string(celsius(std::stoi(num1))); }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:

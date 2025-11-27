@@ -24,7 +24,7 @@ namespace small {
 //       MoveAssignable and MoveConstructable
 // NOTE: Unlike std::vector, iterators are invalidated by move assignment between small::vector objects effectively the
 //       "small string" allocation functions as an incompatible allocator.
-template <typename T, size_t N, typename SizeType = uint32_t>
+template <typename T, size_t N, typename SizeType = uint>
 class vector {
   public:
     using value_type = T;
@@ -332,7 +332,7 @@ class vector {
         BackingStore() {}
         ~BackingStore() {}
 
-        uint8_t data[sizeof(value_type)];
+        unsigned char data[sizeof(value_type)];
         value_type object;
     };
     size_type size_;

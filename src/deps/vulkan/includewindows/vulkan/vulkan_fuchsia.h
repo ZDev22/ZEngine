@@ -58,7 +58,7 @@ typedef struct VkImportMemoryZirconHandleInfoFUCHSIA {
 typedef struct VkMemoryZirconHandlePropertiesFUCHSIA {
     VkStructureType    sType;
     void*              pNext;
-    uint32_t           memoryTypeBits;
+    unsigned int           memoryTypeBits;
 } VkMemoryZirconHandlePropertiesFUCHSIA;
 
 typedef struct VkMemoryGetZirconHandleInfoFUCHSIA {
@@ -154,24 +154,24 @@ typedef struct VkImportMemoryBufferCollectionFUCHSIA {
     VkStructureType              sType;
     const void*                  pNext;
     VkBufferCollectionFUCHSIA    collection;
-    uint32_t                     index;
+    unsigned int                     index;
 } VkImportMemoryBufferCollectionFUCHSIA;
 
 typedef struct VkBufferCollectionImageCreateInfoFUCHSIA {
     VkStructureType              sType;
     const void*                  pNext;
     VkBufferCollectionFUCHSIA    collection;
-    uint32_t                     index;
+    unsigned int                     index;
 } VkBufferCollectionImageCreateInfoFUCHSIA;
 
 typedef struct VkBufferCollectionConstraintsInfoFUCHSIA {
     VkStructureType    sType;
     const void*        pNext;
-    uint32_t           minBufferCount;
-    uint32_t           maxBufferCount;
-    uint32_t           minBufferCountForCamping;
-    uint32_t           minBufferCountForDedicatedSlack;
-    uint32_t           minBufferCountForSharedSlack;
+    unsigned int           minBufferCount;
+    unsigned int           maxBufferCount;
+    unsigned int           minBufferCountForCamping;
+    unsigned int           minBufferCountForDedicatedSlack;
+    unsigned int           minBufferCountForSharedSlack;
 } VkBufferCollectionConstraintsInfoFUCHSIA;
 
 typedef struct VkBufferConstraintsInfoFUCHSIA {
@@ -186,22 +186,22 @@ typedef struct VkBufferCollectionBufferCreateInfoFUCHSIA {
     VkStructureType              sType;
     const void*                  pNext;
     VkBufferCollectionFUCHSIA    collection;
-    uint32_t                     index;
+    unsigned int                     index;
 } VkBufferCollectionBufferCreateInfoFUCHSIA;
 
 typedef struct VkSysmemColorSpaceFUCHSIA {
     VkStructureType    sType;
     const void*        pNext;
-    uint32_t           colorSpace;
+    unsigned int           colorSpace;
 } VkSysmemColorSpaceFUCHSIA;
 
 typedef struct VkBufferCollectionPropertiesFUCHSIA {
     VkStructureType                  sType;
     void*                            pNext;
-    uint32_t                         memoryTypeBits;
-    uint32_t                         bufferCount;
-    uint32_t                         createInfoIndex;
-    uint64_t                         sysmemPixelFormat;
+    unsigned int                         memoryTypeBits;
+    unsigned int                         bufferCount;
+    unsigned int                         createInfoIndex;
+    unsigned long long                         sysmemPixelFormat;
     VkFormatFeatureFlags             formatFeatures;
     VkSysmemColorSpaceFUCHSIA        sysmemColorSpaceIndex;
     VkComponentMapping               samplerYcbcrConversionComponents;
@@ -217,15 +217,15 @@ typedef struct VkImageFormatConstraintsInfoFUCHSIA {
     VkImageCreateInfo                       imageCreateInfo;
     VkFormatFeatureFlags                    requiredFormatFeatures;
     VkImageFormatConstraintsFlagsFUCHSIA    flags;
-    uint64_t                                sysmemPixelFormat;
-    uint32_t                                colorSpaceCount;
+    unsigned long long                                sysmemPixelFormat;
+    unsigned int                                colorSpaceCount;
     const VkSysmemColorSpaceFUCHSIA*        pColorSpaces;
 } VkImageFormatConstraintsInfoFUCHSIA;
 
 typedef struct VkImageConstraintsInfoFUCHSIA {
     VkStructureType                               sType;
     const void*                                   pNext;
-    uint32_t                                      formatConstraintsCount;
+    unsigned int                                      formatConstraintsCount;
     const VkImageFormatConstraintsInfoFUCHSIA*    pFormatConstraints;
     VkBufferCollectionConstraintsInfoFUCHSIA      bufferCollectionConstraints;
     VkImageConstraintsInfoFlagsFUCHSIA            flags;

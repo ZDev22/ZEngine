@@ -46,7 +46,7 @@ typedef struct VkPhysicalDevicePortabilitySubsetFeaturesKHR {
 typedef struct VkPhysicalDevicePortabilitySubsetPropertiesKHR {
     VkStructureType    sType;
     void*              pNext;
-    uint32_t           minVertexInputBindingStrideAlignment;
+    unsigned int           minVertexInputBindingStrideAlignment;
 } VkPhysicalDevicePortabilitySubsetPropertiesKHR;
 
 
@@ -66,13 +66,13 @@ typedef struct VkPhysicalDeviceShaderEnqueueFeaturesAMDX {
 typedef struct VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
     VkStructureType    sType;
     void*              pNext;
-    uint32_t           maxExecutionGraphDepth;
-    uint32_t           maxExecutionGraphShaderOutputNodes;
-    uint32_t           maxExecutionGraphShaderPayloadSize;
-    uint32_t           maxExecutionGraphShaderPayloadCount;
-    uint32_t           executionGraphDispatchAddressAlignment;
-    uint32_t           maxExecutionGraphWorkgroupCount[3];
-    uint32_t           maxExecutionGraphWorkgroups;
+    unsigned int           maxExecutionGraphDepth;
+    unsigned int           maxExecutionGraphShaderOutputNodes;
+    unsigned int           maxExecutionGraphShaderPayloadSize;
+    unsigned int           maxExecutionGraphShaderPayloadCount;
+    unsigned int           executionGraphDispatchAddressAlignment;
+    unsigned int           maxExecutionGraphWorkgroupCount[3];
+    unsigned int           maxExecutionGraphWorkgroups;
 } VkPhysicalDeviceShaderEnqueuePropertiesAMDX;
 
 typedef struct VkExecutionGraphPipelineScratchSizeAMDX {
@@ -87,12 +87,12 @@ typedef struct VkExecutionGraphPipelineCreateInfoAMDX {
     VkStructureType                           sType;
     const void*                               pNext;
     VkPipelineCreateFlags                     flags;
-    uint32_t                                  stageCount;
+    unsigned int                                  stageCount;
     const VkPipelineShaderStageCreateInfo*    pStages;
     const VkPipelineLibraryCreateInfoKHR*     pLibraryInfo;
     VkPipelineLayout                          layout;
     VkPipeline                                basePipelineHandle;
-    int32_t                                   basePipelineIndex;
+    int                                   basePipelineIndex;
 } VkExecutionGraphPipelineCreateInfoAMDX;
 
 typedef union VkDeviceOrHostAddressConstAMDX {
@@ -101,28 +101,28 @@ typedef union VkDeviceOrHostAddressConstAMDX {
 } VkDeviceOrHostAddressConstAMDX;
 
 typedef struct VkDispatchGraphInfoAMDX {
-    uint32_t                          nodeIndex;
-    uint32_t                          payloadCount;
+    unsigned int                          nodeIndex;
+    unsigned int                          payloadCount;
     VkDeviceOrHostAddressConstAMDX    payloads;
-    uint64_t                          payloadStride;
+    unsigned long long                          payloadStride;
 } VkDispatchGraphInfoAMDX;
 
 typedef struct VkDispatchGraphCountInfoAMDX {
-    uint32_t                          count;
+    unsigned int                          count;
     VkDeviceOrHostAddressConstAMDX    infos;
-    uint64_t                          stride;
+    unsigned long long                          stride;
 } VkDispatchGraphCountInfoAMDX;
 
 typedef struct VkPipelineShaderStageNodeCreateInfoAMDX {
       VkStructureType    sType;
     const void*          pNext;
     const char*          pName;
-    uint32_t             index;
+    unsigned int             index;
 } VkPipelineShaderStageNodeCreateInfoAMDX;
 
-typedef VkResult (VKAPI_PTR *PFN_vkCreateExecutionGraphPipelinesAMDX)(VkDevice                                        device, VkPipelineCache                 pipelineCache, uint32_t                                        createInfoCount, const VkExecutionGraphPipelineCreateInfoAMDX* pCreateInfos, const VkAllocationCallbacks*    pAllocator, VkPipeline*               pPipelines);
+typedef VkResult (VKAPI_PTR *PFN_vkCreateExecutionGraphPipelinesAMDX)(VkDevice                                        device, VkPipelineCache                 pipelineCache, unsigned int                                        createInfoCount, const VkExecutionGraphPipelineCreateInfoAMDX* pCreateInfos, const VkAllocationCallbacks*    pAllocator, VkPipeline*               pPipelines);
 typedef VkResult (VKAPI_PTR *PFN_vkGetExecutionGraphPipelineScratchSizeAMDX)(VkDevice                                        device, VkPipeline                                      executionGraph, VkExecutionGraphPipelineScratchSizeAMDX*        pSizeInfo);
-typedef VkResult (VKAPI_PTR *PFN_vkGetExecutionGraphPipelineNodeIndexAMDX)(VkDevice                                        device, VkPipeline                                      executionGraph, const VkPipelineShaderStageNodeCreateInfoAMDX*  pNodeInfo, uint32_t*                                       pNodeIndex);
+typedef VkResult (VKAPI_PTR *PFN_vkGetExecutionGraphPipelineNodeIndexAMDX)(VkDevice                                        device, VkPipeline                                      executionGraph, const VkPipelineShaderStageNodeCreateInfoAMDX*  pNodeInfo, unsigned int*                                       pNodeIndex);
 typedef void (VKAPI_PTR *PFN_vkCmdInitializeGraphScratchMemoryAMDX)(VkCommandBuffer                                 commandBuffer, VkPipeline                                      executionGraph, VkDeviceAddress                                 scratch, VkDeviceSize                                    scratchSize);
 typedef void (VKAPI_PTR *PFN_vkCmdDispatchGraphAMDX)(VkCommandBuffer                                 commandBuffer, VkDeviceAddress                                 scratch, VkDeviceSize                                    scratchSize, const VkDispatchGraphCountInfoAMDX*             pCountInfo);
 typedef void (VKAPI_PTR *PFN_vkCmdDispatchGraphIndirectAMDX)(VkCommandBuffer                                 commandBuffer, VkDeviceAddress                                 scratch, VkDeviceSize                                    scratchSize, const VkDispatchGraphCountInfoAMDX*             pCountInfo);
@@ -132,7 +132,7 @@ typedef void (VKAPI_PTR *PFN_vkCmdDispatchGraphIndirectCountAMDX)(VkCommandBuffe
 VKAPI_ATTR VkResult VKAPI_CALL vkCreateExecutionGraphPipelinesAMDX(
     VkDevice                                    device,
     VkPipelineCache                             pipelineCache,
-    uint32_t                                    createInfoCount,
+    unsigned int                                    createInfoCount,
     const VkExecutionGraphPipelineCreateInfoAMDX* pCreateInfos,
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines);
@@ -146,7 +146,7 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetExecutionGraphPipelineNodeIndexAMDX(
     VkDevice                                    device,
     VkPipeline                                  executionGraph,
     const VkPipelineShaderStageNodeCreateInfoAMDX* pNodeInfo,
-    uint32_t*                                   pNodeIndex);
+    unsigned int*                                   pNodeIndex);
 
 VKAPI_ATTR void VKAPI_CALL vkCmdInitializeGraphScratchMemoryAMDX(
     VkCommandBuffer                             commandBuffer,
@@ -194,7 +194,7 @@ typedef struct VkPhysicalDeviceDisplacementMicromapFeaturesNV {
 typedef struct VkPhysicalDeviceDisplacementMicromapPropertiesNV {
     VkStructureType    sType;
     void*              pNext;
-    uint32_t           maxDisplacementMicromapSubdivisionLevel;
+    unsigned int           maxDisplacementMicromapSubdivisionLevel;
 } VkPhysicalDeviceDisplacementMicromapPropertiesNV;
 
 typedef struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
@@ -211,8 +211,8 @@ typedef struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
     VkIndexType                         indexType;
     VkDeviceOrHostAddressConstKHR       indexBuffer;
     VkDeviceSize                        indexStride;
-    uint32_t                            baseTriangle;
-    uint32_t                            usageCountsCount;
+    unsigned int                            baseTriangle;
+    unsigned int                            usageCountsCount;
     const VkMicromapUsageEXT*           pUsageCounts;
     const VkMicromapUsageEXT* const*    ppUsageCounts;
     VkMicromapEXT                       micromap;

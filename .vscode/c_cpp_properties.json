@@ -11,6 +11,16 @@
             "intelliSenseMode": "linux-g++-x64"
         },
         {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "cStandard": "c23",
+            "cppStandard": "gnu++23",
+            "intelliSenseMode": "macos-clang-x64"
+        },
+        {
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**"

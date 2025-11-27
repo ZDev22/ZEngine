@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include <stdint.h>
-
 #include <array>
 #include <functional>
 #include <mutex>
@@ -60,14 +58,14 @@ class unordered_map {
   public:
     template <typename... Args>
     void insert_or_assign(const Key &key, Args &&...args) {
-        uint32_t h = ConcurrentMapHashObject(key);
+        unsigned int h = ConcurrentMapHashObject(key);
         WriteLockGuard lock(locks[h].lock);
         maps[h][key] = {std::forward<Args>(args)...};
     }
 
     template <typename... Args>
     bool insert(const Key &key, Args &&...args) {
-        uint32_t h = ConcurrentMapHashObject(key);
+        unsigned int h = ConcurrentMapHashObject(key);
         WriteLockGuard lock(locks[h].lock);
         auto ret = maps[h].emplace(key, std::forward<Args>(args)...);
         return ret.second;
@@ -75,13 +73,13 @@ class unordered_map {
 
     // returns size_type
     size_t erase(const Key &key) {
-        uint32_t h = ConcurrentMapHashObject(key);
+        unsigned int h = ConcurrentMapHashObject(key);
         WriteLockGuard lock(locks[h].lock);
         return maps[h].erase(key);
     }
 
     bool contains(const Key &key) const {
-        uint32_t h = ConcurrentMapHashObject(key);
+        unsigned int h = ConcurrentMapHashObject(key);
         ReadLockGuard lock(locks[h].lock);
         return maps[h].count(key) != 0;
     }
@@ -115,7 +113,7 @@ class unordered_map {
     FindResult cend() const { return end(); }
 
     FindResult find(const Key &key) const {
-        uint32_t h = ConcurrentMapHashObject(key);
+        unsigned int h = ConcurrentMapHashObject(key);
         ReadLockGuard lock(locks[h].lock);
 
         auto itr = maps[h].find(key);
@@ -129,7 +127,7 @@ class unordered_map {
     }
 
     FindResult pop(const Key &key) {
-        uint32_t h = ConcurrentMapHashObject(key);
+        unsigned int h = ConcurrentMapHashObject(key);
         WriteLockGuard lock(locks[h].lock);
 
         auto itr = maps[h].find(key);
@@ -191,9 +189,9 @@ class unordered_map {
     };
     mutable std::array<AlignedSharedMutex, BUCKETS> locks;
 
-    uint32_t ConcurrentMapHashObject(const Key &object) const {
-        uint64_t u64 = (uint64_t)(uintptr_t)object;
-        uint32_t hash = (uint32_t)(u64 >> 32) + (uint32_t)u64;
+    unsigned int ConcurrentMapHashObject(const Key &object) const {
+        unsigned long long u64 = (unsigned long long)(uintptr_t)object;
+        unsigned int hash = (unsigned int)(u64 >> 32) + (unsigned int)u64;
         hash ^= (hash >> BUCKETSLOG2) ^ (hash >> (2 * BUCKETSLOG2));
         hash &= (BUCKETS - 1);
         return hash;

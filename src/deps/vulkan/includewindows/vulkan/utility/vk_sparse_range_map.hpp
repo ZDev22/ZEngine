@@ -747,7 +747,7 @@ using const_correct_iterator = decltype(std::declval<Container>().begin());
 //
 // Assumes RangeKey::index_type is unsigned (TBD is it useful to generalize to unsigned?)
 // Assumes RangeKey implements begin, end, < and (TBD) from template range above
-template <typename Key, typename T, typename RangeKey = range<Key>, size_t N = 64, typename SmallIndex = uint8_t>
+template <typename Key, typename T, typename RangeKey = range<Key>, size_t N = 64, typename SmallIndex = unsigned char>
 class small_range_map {
     using SmallRange = range<SmallIndex>;
 
@@ -1412,7 +1412,7 @@ class small_range_map {
     //     inuse(begin, end) for all entries  on (begin, end]
     // Used for placement new of T for each range begin.
     struct alignas(alignof(value_type)) BackingStore {
-        uint8_t data[sizeof(value_type)];
+        unsigned char data[sizeof(value_type)];
     };
 
     SmallIndex size_;
@@ -2022,9 +2022,9 @@ void consolidate(RangeMap &map) {
 }
 
 // Returns the intersection of the ranges [x, x + x_size) and [y, y + y_size)
-static inline range<int64_t> GetRangeIntersection(int64_t x, uint64_t x_size, int64_t y, uint64_t y_size) {
-    int64_t intersection_min = std::max(x, y);
-    int64_t intersection_max = std::min(x + static_cast<int64_t>(x_size), y + static_cast<int64_t>(y_size));
+static inline range<long long> GetRangeIntersection(long long x, unsigned long long x_size, long long y, unsigned long long y_size) {
+    long long intersection_min = std::max(x, y);
+    long long intersection_max = std::min(x + static_cast<long long>(x_size), y + static_cast<long long>(y_size));
 
     return {intersection_min, intersection_max};
 }

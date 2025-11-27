@@ -18,7 +18,7 @@
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ],
+      ]
     },
     {
       "name": "Linux Release",
@@ -30,14 +30,28 @@
       "cwd": "${workspaceFolder}/src",
       "program": "${workspaceFolder}/build/linux/Release/main",
       "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ],
+      "miDebuggerPath": "gdb"
+    },
+    {
+      "name": "Mac Debug",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/mac/Debug/main",
+      "args": [],
+      "cwd": "${workspaceFolder}/src",
+      "stopOnEntry": false,
+      "initCommands": [
+        "settings set target.process.thread.step-avoid-regexp ''"
+      ]
+    },
+    {
+      "name": "Mac Release",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/mac/Release/main",
+      "args": [],
+      "cwd": "${workspaceFolder}/src",
+      "stopOnEntry": false
     },
     {
       "name": "Windows Debug",
@@ -56,7 +70,7 @@
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ],
+      ]
     },
     {
       "name": "Windows Release",
@@ -75,7 +89,7 @@
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ],
+      ]
     }
   ]
 }

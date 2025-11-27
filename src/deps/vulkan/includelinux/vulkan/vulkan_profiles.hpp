@@ -382,12 +382,12 @@
 
 typedef struct VpProfileProperties {
     char        profileName[VP_MAX_PROFILE_NAME_SIZE];
-    uint32_t    specVersion;
+    unsigned int    specVersion;
 } VpProfileProperties;
 
 typedef struct VpBlockProperties {
     VpProfileProperties profiles;
-    uint32_t apiVersion;
+    unsigned int apiVersion;
     char blockName[VP_MAX_PROFILE_NAME_SIZE];
 } VpBlockProperties;
 
@@ -403,9 +403,9 @@ typedef VkFlags VpInstanceCreateFlags;
 typedef struct VpInstanceCreateInfo {
     const VkInstanceCreateInfo* pCreateInfo;
     VpInstanceCreateFlags       flags;
-    uint32_t                    enabledFullProfileCount;
+    unsigned int                    enabledFullProfileCount;
     const VpProfileProperties*  pEnabledFullProfiles;
-    uint32_t                    enabledProfileBlockCount;
+    unsigned int                    enabledProfileBlockCount;
     const VpBlockProperties*    pEnabledProfileBlocks;
 } VpInstanceCreateInfo;
 
@@ -422,9 +422,9 @@ typedef VkFlags VpDeviceCreateFlags;
 typedef struct VpDeviceCreateInfo {
     const VkDeviceCreateInfo*   pCreateInfo;
     VpDeviceCreateFlags         flags;
-    uint32_t                    enabledFullProfileCount;
+    unsigned int                    enabledFullProfileCount;
     const VpProfileProperties*  pEnabledFullProfiles;
-    uint32_t                    enabledProfileBlockCount;
+    unsigned int                    enabledProfileBlockCount;
     const VpBlockProperties*    pEnabledProfileBlocks;
 } VpDeviceCreateInfo;
 
@@ -462,7 +462,7 @@ typedef struct VpCapabilitiesCreateInfo
 {
     /// Flags for created allocator. Use #VpInstanceCreateFlagBits enum.
     VpCapabilitiesCreateFlags       flags;
-    uint32_t                        apiVersion;
+    unsigned int                        apiVersion;
     const VpVulkanFunctions*        pVulkanFunctions;
 } VpCapabilitiesCreateInfo;
 
@@ -481,7 +481,7 @@ VPAPI_ATTR VkResult vpGetProfiles(
 #ifdef VP_USE_OBJECT
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpProfileProperties*                        pProperties);
 
 // List the required profiles of a profile
@@ -490,11 +490,11 @@ VPAPI_ATTR VkResult vpGetProfileRequiredProfiles(
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpProfileProperties*                        pProperties);
 
 // Query the profile required Vulkan API version
-VPAPI_ATTR uint32_t vpGetProfileAPIVersion(
+VPAPI_ATTR unsigned int vpGetProfileAPIVersion(
 #ifdef VP_USE_OBJECT
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
@@ -506,7 +506,7 @@ VPAPI_ATTR VkResult vpGetProfileFallbacks(
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpProfileProperties*                        pProperties);
 
 // Query whether the profile has multiple variants. Profiles with multiple variants can only use vpGetInstanceProfileSupport and vpGetPhysicalDeviceProfileSupport capabilities of the library. Other function will return a VK_ERROR_UNKNOWN error
@@ -534,7 +534,7 @@ VPAPI_ATTR VkResult vpGetInstanceProfileVariantsSupport(
     const char*                                 pLayerName,
     const VpProfileProperties*                  pProfile,
     VkBool32*                                   pSupported,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpBlockProperties*                          pProperties);
 
 // Create a VkInstance with the profile instance extensions enabled
@@ -565,7 +565,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
     VkPhysicalDevice                            physicalDevice,
     const VpProfileProperties*                  pProfile,
     VkBool32*                                   pSupported,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpBlockProperties*                          pProperties);
 
 // Create a VkDevice with the profile features and device extensions enabled
@@ -585,7 +585,7 @@ VPAPI_ATTR VkResult vpGetProfileInstanceExtensionProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkExtensionProperties*                      pProperties);
 
 // Query the list of device extensions of a profile
@@ -595,7 +595,7 @@ VPAPI_ATTR VkResult vpGetProfileDeviceExtensionProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkExtensionProperties*                      pProperties);
 
 // Fill the feature structures with the requirements of a profile
@@ -614,7 +614,7 @@ VPAPI_ATTR VkResult vpGetProfileFeatureStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 
 // Fill the property structures with the requirements of a profile
@@ -633,7 +633,7 @@ VPAPI_ATTR VkResult vpGetProfilePropertyStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 
 // Fill the queue family property structures with the requirements of a profile
@@ -643,7 +643,7 @@ VPAPI_ATTR VkResult vpGetProfileQueueFamilyProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkQueueFamilyProperties2KHR*                pProperties);
 
 // Query the list of queue family property structure types specified by the profile
@@ -653,7 +653,7 @@ VPAPI_ATTR VkResult vpGetProfileQueueFamilyStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 
 // Query the list of formats with specified requirements by a profile
@@ -663,7 +663,7 @@ VPAPI_ATTR VkResult vpGetProfileFormats(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pFormatCount,
+    unsigned int*                                   pFormatCount,
     VkFormat*                                   pFormats);
 
 // Query the requirements of a format for a profile
@@ -683,7 +683,7 @@ VPAPI_ATTR VkResult vpGetProfileFormatStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 
 #ifdef VK_KHR_video_queue
@@ -694,7 +694,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfiles(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pVideoProfileCount,
+    unsigned int*                                   pVideoProfileCount,
     VpVideoProfileProperties*                   pVideoProfiles);
 
 // Query the video profile info structures for a video profile defined by a profile
@@ -704,7 +704,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfileInfo(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
+    unsigned int                                    videoProfileIndex,
     VkVideoProfileInfoKHR*                      pVideoProfileInfo);
 
 // Query the list of video profile info structure types specified by the profile for a video profile
@@ -714,8 +714,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfileInfoStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 
 // Query the video capabilities requirements for a video profile defined by a profile
@@ -725,7 +725,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoCapabilities(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
+    unsigned int                                    videoProfileIndex,
     void*                                       pNext);
 
 // Query the list of video capability structure types specified by the profile for a video profile
@@ -735,8 +735,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoCapabilityStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 
 // Query the video format property requirements for a video profile defined by a profile
@@ -746,8 +746,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoFormatProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pPropertyCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pPropertyCount,
     VkVideoFormatPropertiesKHR*                 pProperties);
 
 // Query the list of video format property structure types specified by the profile for a video profile
@@ -757,8 +757,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoFormatStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes);
 #endif  // VK_KHR_video_queue
 
@@ -868,16 +868,16 @@ VPAPI_ATTR bool isPowerOfTwo(double source) {
     double mod = std::fmod(source, 1.0);
     if (std::abs(mod) >= 0.0001) return false;
 
-    std::uint64_t value = static_cast<std::uint64_t>(std::abs(source));
-    return !(value & (value - static_cast<std::uint64_t>(1)));
+    std::unsigned long long value = static_cast<std::unsigned long long>(std::abs(source));
+    return !(value & (value - static_cast<std::unsigned long long>(1)));
 }
 
 using PFN_vpStructFiller = void(*)(VkBaseOutStructure* p);
 using PFN_vpStructComparator = bool(*)(VkBaseOutStructure* p);
 using PFN_vpStructChainerCb = void(*)(VkBaseOutStructure* p, void* pUser);
 using PFN_vpStructChainer = void(*)(VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb);
-using PFN_vpStructArrayChainerCb = void(*)(uint32_t count, VkBaseOutStructure* p, void* pUser);
-using PFN_vpStructArrayChainer = void(*)(uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb);
+using PFN_vpStructArrayChainerCb = void(*)(unsigned int count, VkBaseOutStructure* p, void* pUser);
+using PFN_vpStructArrayChainer = void(*)(unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb);
 
 struct VpFeatureDesc {
     PFN_vpStructFiller              pfnFiller;
@@ -931,17 +931,17 @@ struct VpVideoProfileStructChainerDesc {
 struct VpVideoProfileDesc {
     VpVideoProfileProperties properties;
 
-    uint32_t infoStructTypeCount;
+    unsigned int infoStructTypeCount;
     const VkStructureType* pInfoStructTypes;
     VpVideoProfileInfoDesc info;
 
-    uint32_t capabilityStructTypeCount;
+    unsigned int capabilityStructTypeCount;
     const VkStructureType* pCapabilityStructTypes;
     VpVideoCapabilityDesc capability;
 
-    uint32_t formatStructTypeCount;
+    unsigned int formatStructTypeCount;
     const VkStructureType* pFormatStructTypes;
-    uint32_t formatCount;
+    unsigned int formatCount;
     const VpVideoFormatDesc* pFormats;
 
     VpVideoProfileStructChainerDesc chainers;
@@ -950,59 +950,59 @@ struct VpVideoProfileDesc {
 struct VpVariantDesc {
     char blockName[VP_MAX_PROFILE_NAME_SIZE];
 
-    uint32_t instanceExtensionCount;
+    unsigned int instanceExtensionCount;
     const VkExtensionProperties* pInstanceExtensions;
 
-    uint32_t deviceExtensionCount;
+    unsigned int deviceExtensionCount;
     const VkExtensionProperties* pDeviceExtensions;
 
-    uint32_t featureStructTypeCount;
+    unsigned int featureStructTypeCount;
     const VkStructureType* pFeatureStructTypes;
     VpFeatureDesc feature;
 
-    uint32_t propertyStructTypeCount;
+    unsigned int propertyStructTypeCount;
     const VkStructureType* pPropertyStructTypes;
     VpPropertyDesc property;
 
-    uint32_t queueFamilyStructTypeCount;
+    unsigned int queueFamilyStructTypeCount;
     const VkStructureType* pQueueFamilyStructTypes;
-    uint32_t queueFamilyCount;
+    unsigned int queueFamilyCount;
     const VpQueueFamilyDesc* pQueueFamilies;
 
-    uint32_t formatStructTypeCount;
+    unsigned int formatStructTypeCount;
     const VkStructureType* pFormatStructTypes;
-    uint32_t formatCount;
+    unsigned int formatCount;
     const VpFormatDesc* pFormats;
 
     VpStructChainerDesc chainers;
 
-    uint32_t videoProfileCount;
+    unsigned int videoProfileCount;
     const VpVideoProfileDesc* pVideoProfiles;
 };
 
 struct VpCapabilitiesDesc {
-    uint32_t variantCount;
+    unsigned int variantCount;
     const VpVariantDesc* pVariants;
 };
 
 struct VpProfileDesc {
     VpProfileProperties             props;
-    uint32_t                        minApiVersion;
+    unsigned int                        minApiVersion;
 
     const detail::VpVariantDesc*    pMergedCapabilities;
 
-    uint32_t                        requiredProfileCount;
+    unsigned int                        requiredProfileCount;
     const VpProfileProperties*      pRequiredProfiles;
 
-    uint32_t                        requiredCapabilityCount;
+    unsigned int                        requiredCapabilityCount;
     const VpCapabilitiesDesc*       pRequiredCapabilities;
 
-    uint32_t                        fallbackCount;
+    unsigned int                        fallbackCount;
     const VpProfileProperties*      pFallbacks;
 };
 
 template <typename T>
-VPAPI_ATTR bool vpCheckFlags(const T& actual, const uint64_t expected) {
+VPAPI_ATTR bool vpCheckFlags(const T& actual, const unsigned long long expected) {
     return (actual & expected) == expected;
 }
 
@@ -1449,7 +1449,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -1521,7 +1521,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -1589,7 +1589,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -1661,7 +1661,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -1733,7 +1733,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -1969,7 +1969,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -2018,7 +2018,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -2067,7 +2067,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan11Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -2186,7 +2186,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -4750,7 +4750,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -4926,7 +4926,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceMultiviewProperties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -7554,7 +7554,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceMultiviewProperties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -7774,7 +7774,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -7832,7 +7832,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -7984,7 +7984,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8057,7 +8057,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8133,7 +8133,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8216,7 +8216,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8357,7 +8357,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8474,7 +8474,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8535,7 +8535,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8781,7 +8781,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8860,7 +8860,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8918,7 +8918,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -8994,7 +8994,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -9036,7 +9036,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -9095,7 +9095,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -9454,7 +9454,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVertexAttributeDivisorPropertiesEXT));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -12346,7 +12346,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVertexAttributeDivisorPropertiesEXT));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -12651,7 +12651,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -15481,7 +15481,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -15865,7 +15865,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -19209,7 +19209,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -19275,7 +19275,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -19571,7 +19571,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -19651,7 +19651,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceMaintenance3Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -19951,7 +19951,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceMaintenance3Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -20045,7 +20045,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceMaintenance3Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -20145,7 +20145,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -20445,7 +20445,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -20527,7 +20527,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -20694,7 +20694,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan12Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -20834,7 +20834,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -21136,7 +21136,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -21220,7 +21220,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -21389,7 +21389,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -21568,7 +21568,7 @@ static const VpStructChainerDesc chainerDesc = {
         p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceVulkan13Properties));
         pfnCb(p, pUser);
     },
-    [](uint32_t count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
+    [](unsigned int count, VkBaseOutStructure* p, void* pUser, PFN_vpStructArrayChainerCb pfnCb) {
         pfnCb(count, p, pUser);
     },
     [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
@@ -21588,21 +21588,21 @@ namespace VP_ANDROID_15_MINIMUMS {
             static const VpVariantDesc variants[] = {
                 {
                     "MUST",
-                    static_cast<uint32_t>(std::size(blocks::MUST::instanceExtensions)), blocks::MUST::instanceExtensions,
-                    static_cast<uint32_t>(std::size(blocks::MUST::deviceExtensions)), blocks::MUST::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::MUST::instanceExtensions)), blocks::MUST::instanceExtensions,
+                    static_cast<unsigned int>(std::size(blocks::MUST::deviceExtensions)), blocks::MUST::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::MUST::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::MUST::propertyDesc,
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(formatStructTypes)), formatStructTypes,
-                    static_cast<uint32_t>(std::size(blocks::MUST::formatDesc)), blocks::MUST::formatDesc,
+                    static_cast<unsigned int>(std::size(formatStructTypes)), formatStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::MUST::formatDesc)), blocks::MUST::formatDesc,
                     blocks::MUST::chainerDesc,
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace MUST
 
         namespace primitivesGeneratedQuery_pipelineStatisticsQuery_ {
@@ -21610,8 +21610,8 @@ namespace VP_ANDROID_15_MINIMUMS {
                 {
                     "primitivesGeneratedQuery",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::primitivesGeneratedQuery::deviceExtensions)), blocks::primitivesGeneratedQuery::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::primitivesGeneratedQuery::deviceExtensions)), blocks::primitivesGeneratedQuery::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::primitivesGeneratedQuery::featureDesc,
                     0, nullptr,
                     blocks::primitivesGeneratedQuery::propertyDesc,
@@ -21626,7 +21626,7 @@ namespace VP_ANDROID_15_MINIMUMS {
                     "pipelineStatisticsQuery",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::pipelineStatisticsQuery::featureDesc,
                     0, nullptr,
                     blocks::pipelineStatisticsQuery::propertyDesc,
@@ -21638,7 +21638,7 @@ namespace VP_ANDROID_15_MINIMUMS {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace primitivesGeneratedQuery_pipelineStatisticsQuery_
 
         namespace swBresenhamLines_hwBresenhamLines_ {
@@ -21646,8 +21646,8 @@ namespace VP_ANDROID_15_MINIMUMS {
                 {
                     "swBresenhamLines",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::swBresenhamLines::deviceExtensions)), blocks::swBresenhamLines::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::swBresenhamLines::deviceExtensions)), blocks::swBresenhamLines::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::swBresenhamLines::featureDesc,
                     0, nullptr,
                     blocks::swBresenhamLines::propertyDesc,
@@ -21661,8 +21661,8 @@ namespace VP_ANDROID_15_MINIMUMS {
                 {
                     "hwBresenhamLines",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::hwBresenhamLines::deviceExtensions)), blocks::hwBresenhamLines::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::hwBresenhamLines::deviceExtensions)), blocks::hwBresenhamLines::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::hwBresenhamLines::featureDesc,
                     0, nullptr,
                     blocks::hwBresenhamLines::propertyDesc,
@@ -21674,7 +21674,7 @@ namespace VP_ANDROID_15_MINIMUMS {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace swBresenhamLines_hwBresenhamLines_
     } // namespace blocks
 
@@ -21683,12 +21683,12 @@ namespace VP_ANDROID_15_MINIMUMS {
         { blocks::primitivesGeneratedQuery_pipelineStatisticsQuery_::variantCount, blocks::primitivesGeneratedQuery_pipelineStatisticsQuery_::variants },
         { blocks::swBresenhamLines_hwBresenhamLines_::variantCount, blocks::swBresenhamLines_hwBresenhamLines_::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 
     static const VpProfileProperties profiles[] = {
         {VP_ANDROID_BASELINE_2022_NAME, VP_ANDROID_BASELINE_2022_SPEC_VERSION},
     };
-    static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
+    static const unsigned int profileCount = static_cast<unsigned int>(std::size(profiles));
 } // namespace VP_ANDROID_15_MINIMUMS
 #endif //VP_ANDROID_15_minimums
 
@@ -21700,10 +21700,10 @@ namespace VP_ANDROID_16_MINIMUMS {
                 {
                     "MUST",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::MUST::deviceExtensions)), blocks::MUST::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::MUST::deviceExtensions)), blocks::MUST::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::MUST::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::MUST::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -21713,7 +21713,7 @@ namespace VP_ANDROID_16_MINIMUMS {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace MUST
 
         namespace multisampledToSingleSampled_shaderStencilExport_ {
@@ -21721,7 +21721,7 @@ namespace VP_ANDROID_16_MINIMUMS {
                 {
                     "multisampledToSingleSampled",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::multisampledToSingleSampled::deviceExtensions)), blocks::multisampledToSingleSampled::deviceExtensions,
+                    static_cast<unsigned int>(std::size(blocks::multisampledToSingleSampled::deviceExtensions)), blocks::multisampledToSingleSampled::deviceExtensions,
                     0, nullptr,
                     blocks::multisampledToSingleSampled::featureDesc,
                     0, nullptr,
@@ -21736,7 +21736,7 @@ namespace VP_ANDROID_16_MINIMUMS {
                 {
                     "shaderStencilExport",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::shaderStencilExport::deviceExtensions)), blocks::shaderStencilExport::deviceExtensions,
+                    static_cast<unsigned int>(std::size(blocks::shaderStencilExport::deviceExtensions)), blocks::shaderStencilExport::deviceExtensions,
                     0, nullptr,
                     blocks::shaderStencilExport::featureDesc,
                     0, nullptr,
@@ -21749,7 +21749,7 @@ namespace VP_ANDROID_16_MINIMUMS {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace multisampledToSingleSampled_shaderStencilExport_
     } // namespace blocks
 
@@ -21757,13 +21757,13 @@ namespace VP_ANDROID_16_MINIMUMS {
         { blocks::MUST::variantCount, blocks::MUST::variants },
         { blocks::multisampledToSingleSampled_shaderStencilExport_::variantCount, blocks::multisampledToSingleSampled_shaderStencilExport_::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 
     static const VpProfileProperties profiles[] = {
         {VP_ANDROID_BASELINE_2022_NAME, VP_ANDROID_BASELINE_2022_SPEC_VERSION},
         {VP_ANDROID_15_MINIMUMS_NAME, VP_ANDROID_15_MINIMUMS_SPEC_VERSION},
     };
-    static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
+    static const unsigned int profileCount = static_cast<unsigned int>(std::size(profiles));
 } // namespace VP_ANDROID_16_MINIMUMS
 #endif //VP_ANDROID_16_minimums
 
@@ -21772,9 +21772,9 @@ namespace VP_ANDROID_BASELINE_2021 {
     static const VpVariantDesc mergedCapabilities[] = {
         {
         "MERGED",
-        static_cast<uint32_t>(std::size(instanceExtensions)), instanceExtensions,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(instanceExtensions)), instanceExtensions,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -21792,28 +21792,28 @@ namespace VP_ANDROID_BASELINE_2021 {
             static const VpVariantDesc variants[] = {
                 {
                     "baseline",
-                    static_cast<uint32_t>(std::size(blocks::baseline::instanceExtensions)), blocks::baseline::instanceExtensions,
-                    static_cast<uint32_t>(std::size(blocks::baseline::deviceExtensions)), blocks::baseline::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::baseline::instanceExtensions)), blocks::baseline::instanceExtensions,
+                    static_cast<unsigned int>(std::size(blocks::baseline::deviceExtensions)), blocks::baseline::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::baseline::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::baseline::propertyDesc,
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(formatStructTypes)), formatStructTypes,
-                    static_cast<uint32_t>(std::size(blocks::baseline::formatDesc)), blocks::baseline::formatDesc,
+                    static_cast<unsigned int>(std::size(formatStructTypes)), formatStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::baseline::formatDesc)), blocks::baseline::formatDesc,
                     blocks::baseline::chainerDesc,
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace baseline
     } // namespace blocks
 
     static const VpCapabilitiesDesc capabilities[] = {
         { blocks::baseline::variantCount, blocks::baseline::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_ANDROID_BASELINE_2021
 #endif //VP_ANDROID_baseline_2021
 
@@ -21822,9 +21822,9 @@ namespace VP_ANDROID_BASELINE_2022 {
     static const VpVariantDesc mergedCapabilities[] = {
         {
         "MERGED",
-        static_cast<uint32_t>(std::size(instanceExtensions)), instanceExtensions,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(instanceExtensions)), instanceExtensions,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -21842,28 +21842,28 @@ namespace VP_ANDROID_BASELINE_2022 {
             static const VpVariantDesc variants[] = {
                 {
                     "baseline",
-                    static_cast<uint32_t>(std::size(blocks::baseline::instanceExtensions)), blocks::baseline::instanceExtensions,
-                    static_cast<uint32_t>(std::size(blocks::baseline::deviceExtensions)), blocks::baseline::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::baseline::instanceExtensions)), blocks::baseline::instanceExtensions,
+                    static_cast<unsigned int>(std::size(blocks::baseline::deviceExtensions)), blocks::baseline::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::baseline::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::baseline::propertyDesc,
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(formatStructTypes)), formatStructTypes,
-                    static_cast<uint32_t>(std::size(blocks::baseline::formatDesc)), blocks::baseline::formatDesc,
+                    static_cast<unsigned int>(std::size(formatStructTypes)), formatStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::baseline::formatDesc)), blocks::baseline::formatDesc,
                     blocks::baseline::chainerDesc,
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace baseline
     } // namespace blocks
 
     static const VpCapabilitiesDesc capabilities[] = {
         { blocks::baseline::variantCount, blocks::baseline::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_ANDROID_BASELINE_2022
 #endif //VP_ANDROID_baseline_2022
 
@@ -21873,8 +21873,8 @@ namespace VP_KHR_ROADMAP_2022 {
         {
         "MERGED",
         0, nullptr,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -21894,7 +21894,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan10requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements::featureDesc,
                     0, nullptr,
                     blocks::vulkan10requirements::propertyDesc,
@@ -21906,7 +21906,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements
 
         namespace vulkan10requirements_roadmap2022 {
@@ -21915,9 +21915,9 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan10requirements_roadmap2022",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements_roadmap2022::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan10requirements_roadmap2022::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -21927,7 +21927,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements_roadmap2022
 
         namespace vulkan11requirements {
@@ -21936,9 +21936,9 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan11requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan11requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan11requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -21948,7 +21948,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan11requirements
 
         namespace vulkan11requirements_roadmap2022 {
@@ -21957,9 +21957,9 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan11requirements_roadmap2022",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan11requirements_roadmap2022::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan11requirements_roadmap2022::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -21969,7 +21969,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan11requirements_roadmap2022
 
         namespace vulkan12requirements {
@@ -21978,9 +21978,9 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan12requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan12requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan12requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -21990,7 +21990,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan12requirements
 
         namespace vulkan12requirements_roadmap2022 {
@@ -21999,9 +21999,9 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan12requirements_roadmap2022",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan12requirements_roadmap2022::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan12requirements_roadmap2022::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22011,7 +22011,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan12requirements_roadmap2022
 
         namespace vulkan13requirements {
@@ -22020,9 +22020,9 @@ namespace VP_KHR_ROADMAP_2022 {
                     "vulkan13requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan13requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan13requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22032,7 +22032,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan13requirements
 
         namespace vulkan13requirements_roadmap2022 {
@@ -22040,8 +22040,8 @@ namespace VP_KHR_ROADMAP_2022 {
                 {
                     "vulkan13requirements_roadmap2022",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::vulkan13requirements_roadmap2022::deviceExtensions)), blocks::vulkan13requirements_roadmap2022::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::vulkan13requirements_roadmap2022::deviceExtensions)), blocks::vulkan13requirements_roadmap2022::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan13requirements_roadmap2022::featureDesc,
                     0, nullptr,
                     blocks::vulkan13requirements_roadmap2022::propertyDesc,
@@ -22053,7 +22053,7 @@ namespace VP_KHR_ROADMAP_2022 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan13requirements_roadmap2022
     } // namespace blocks
 
@@ -22067,7 +22067,7 @@ namespace VP_KHR_ROADMAP_2022 {
         { blocks::vulkan13requirements::variantCount, blocks::vulkan13requirements::variants },
         { blocks::vulkan13requirements_roadmap2022::variantCount, blocks::vulkan13requirements_roadmap2022::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_KHR_ROADMAP_2022
 #endif //VP_KHR_roadmap_2022
 
@@ -22077,8 +22077,8 @@ namespace VP_KHR_ROADMAP_2024 {
         {
         "MERGED",
         0, nullptr,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22098,9 +22098,9 @@ namespace VP_KHR_ROADMAP_2024 {
                     "vulkan10requirements_roadmap2024",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements_roadmap2024::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan10requirements_roadmap2024::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22110,7 +22110,7 @@ namespace VP_KHR_ROADMAP_2024 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements_roadmap2024
 
         namespace vulkan11requirements_roadmap2024 {
@@ -22119,7 +22119,7 @@ namespace VP_KHR_ROADMAP_2024 {
                     "vulkan11requirements_roadmap2024",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan11requirements_roadmap2024::featureDesc,
                     0, nullptr,
                     blocks::vulkan11requirements_roadmap2024::propertyDesc,
@@ -22131,7 +22131,7 @@ namespace VP_KHR_ROADMAP_2024 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan11requirements_roadmap2024
 
         namespace vulkan12requirements_roadmap2024 {
@@ -22140,9 +22140,9 @@ namespace VP_KHR_ROADMAP_2024 {
                     "vulkan12requirements_roadmap2024",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan12requirements_roadmap2024::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan12requirements_roadmap2024::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22152,7 +22152,7 @@ namespace VP_KHR_ROADMAP_2024 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan12requirements_roadmap2024
 
         namespace vulkan13requirements_roadmap2024 {
@@ -22161,9 +22161,9 @@ namespace VP_KHR_ROADMAP_2024 {
                     "vulkan13requirements_roadmap2024",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan13requirements_roadmap2024::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan13requirements_roadmap2024::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22173,7 +22173,7 @@ namespace VP_KHR_ROADMAP_2024 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan13requirements_roadmap2024
 
         namespace vulkanextensionrequirements_roadmap2024 {
@@ -22181,7 +22181,7 @@ namespace VP_KHR_ROADMAP_2024 {
                 {
                     "vulkanextensionrequirements_roadmap2024",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::vulkanextensionrequirements_roadmap2024::deviceExtensions)), blocks::vulkanextensionrequirements_roadmap2024::deviceExtensions,
+                    static_cast<unsigned int>(std::size(blocks::vulkanextensionrequirements_roadmap2024::deviceExtensions)), blocks::vulkanextensionrequirements_roadmap2024::deviceExtensions,
                     0, nullptr,
                     blocks::vulkanextensionrequirements_roadmap2024::featureDesc,
                     0, nullptr,
@@ -22194,7 +22194,7 @@ namespace VP_KHR_ROADMAP_2024 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkanextensionrequirements_roadmap2024
     } // namespace blocks
 
@@ -22205,12 +22205,12 @@ namespace VP_KHR_ROADMAP_2024 {
         { blocks::vulkan13requirements_roadmap2024::variantCount, blocks::vulkan13requirements_roadmap2024::variants },
         { blocks::vulkanextensionrequirements_roadmap2024::variantCount, blocks::vulkanextensionrequirements_roadmap2024::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 
     static const VpProfileProperties profiles[] = {
         {VP_KHR_ROADMAP_2022_NAME, VP_KHR_ROADMAP_2022_SPEC_VERSION},
     };
-    static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
+    static const unsigned int profileCount = static_cast<unsigned int>(std::size(profiles));
 } // namespace VP_KHR_ROADMAP_2024
 #endif //VP_KHR_roadmap_2024
 
@@ -22220,8 +22220,8 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2022 {
         {
         "MERGED",
         0, nullptr,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22240,27 +22240,27 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2022 {
                 {
                     "VP_LUNARG_desktop_baseline_2022_block",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::VP_LUNARG_desktop_baseline_2022_block::deviceExtensions)), blocks::VP_LUNARG_desktop_baseline_2022_block::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::VP_LUNARG_desktop_baseline_2022_block::deviceExtensions)), blocks::VP_LUNARG_desktop_baseline_2022_block::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::VP_LUNARG_desktop_baseline_2022_block::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::VP_LUNARG_desktop_baseline_2022_block::propertyDesc,
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(formatStructTypes)), formatStructTypes,
-                    static_cast<uint32_t>(std::size(blocks::VP_LUNARG_desktop_baseline_2022_block::formatDesc)), blocks::VP_LUNARG_desktop_baseline_2022_block::formatDesc,
+                    static_cast<unsigned int>(std::size(formatStructTypes)), formatStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::VP_LUNARG_desktop_baseline_2022_block::formatDesc)), blocks::VP_LUNARG_desktop_baseline_2022_block::formatDesc,
                     blocks::VP_LUNARG_desktop_baseline_2022_block::chainerDesc,
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace VP_LUNARG_desktop_baseline_2022_block
     } // namespace blocks
 
     static const VpCapabilitiesDesc capabilities[] = {
         { blocks::VP_LUNARG_desktop_baseline_2022_block::variantCount, blocks::VP_LUNARG_desktop_baseline_2022_block::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2022
 #endif //VP_LUNARG_desktop_baseline_2022
 
@@ -22270,8 +22270,8 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2023 {
         {
         "MERGED",
         0, nullptr,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22290,27 +22290,27 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2023 {
                 {
                     "VP_LUNARG_desktop_baseline_2023_block",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::VP_LUNARG_desktop_baseline_2023_block::deviceExtensions)), blocks::VP_LUNARG_desktop_baseline_2023_block::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::VP_LUNARG_desktop_baseline_2023_block::deviceExtensions)), blocks::VP_LUNARG_desktop_baseline_2023_block::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::VP_LUNARG_desktop_baseline_2023_block::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::VP_LUNARG_desktop_baseline_2023_block::propertyDesc,
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(formatStructTypes)), formatStructTypes,
-                    static_cast<uint32_t>(std::size(blocks::VP_LUNARG_desktop_baseline_2023_block::formatDesc)), blocks::VP_LUNARG_desktop_baseline_2023_block::formatDesc,
+                    static_cast<unsigned int>(std::size(formatStructTypes)), formatStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::VP_LUNARG_desktop_baseline_2023_block::formatDesc)), blocks::VP_LUNARG_desktop_baseline_2023_block::formatDesc,
                     blocks::VP_LUNARG_desktop_baseline_2023_block::chainerDesc,
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace VP_LUNARG_desktop_baseline_2023_block
     } // namespace blocks
 
     static const VpCapabilitiesDesc capabilities[] = {
         { blocks::VP_LUNARG_desktop_baseline_2023_block::variantCount, blocks::VP_LUNARG_desktop_baseline_2023_block::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2023
 #endif //VP_LUNARG_desktop_baseline_2023
 
@@ -22320,8 +22320,8 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2024 {
         {
         "MERGED",
         0, nullptr,
-        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22340,27 +22340,27 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2024 {
                 {
                     "VP_LUNARG_desktop_baseline_2024_block",
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(blocks::VP_LUNARG_desktop_baseline_2024_block::deviceExtensions)), blocks::VP_LUNARG_desktop_baseline_2024_block::deviceExtensions,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::VP_LUNARG_desktop_baseline_2024_block::deviceExtensions)), blocks::VP_LUNARG_desktop_baseline_2024_block::deviceExtensions,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::VP_LUNARG_desktop_baseline_2024_block::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::VP_LUNARG_desktop_baseline_2024_block::propertyDesc,
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(formatStructTypes)), formatStructTypes,
-                    static_cast<uint32_t>(std::size(blocks::VP_LUNARG_desktop_baseline_2024_block::formatDesc)), blocks::VP_LUNARG_desktop_baseline_2024_block::formatDesc,
+                    static_cast<unsigned int>(std::size(formatStructTypes)), formatStructTypes,
+                    static_cast<unsigned int>(std::size(blocks::VP_LUNARG_desktop_baseline_2024_block::formatDesc)), blocks::VP_LUNARG_desktop_baseline_2024_block::formatDesc,
                     blocks::VP_LUNARG_desktop_baseline_2024_block::chainerDesc,
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace VP_LUNARG_desktop_baseline_2024_block
     } // namespace blocks
 
     static const VpCapabilitiesDesc capabilities[] = {
         { blocks::VP_LUNARG_desktop_baseline_2024_block::variantCount, blocks::VP_LUNARG_desktop_baseline_2024_block::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2024
 #endif //VP_LUNARG_desktop_baseline_2024
 
@@ -22371,7 +22371,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_0 {
         "MERGED",
         0, nullptr,
         0, nullptr,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22391,9 +22391,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_0 {
                     "vulkan10requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan10requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22403,14 +22403,14 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_0 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements
     } // namespace blocks
 
     static const VpCapabilitiesDesc capabilities[] = {
         { blocks::vulkan10requirements::variantCount, blocks::vulkan10requirements::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_0
 #endif //VP_LUNARG_minimum_requirements_1_0
 
@@ -22421,7 +22421,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1 {
         "MERGED",
         0, nullptr,
         0, nullptr,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22441,9 +22441,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1 {
                     "vulkan10requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan10requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22453,7 +22453,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements
 
         namespace vulkan11requirements_split {
@@ -22462,9 +22462,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1 {
                     "vulkan11requirements_split",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan11requirements_split::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan11requirements_split::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22474,7 +22474,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan11requirements_split
     } // namespace blocks
 
@@ -22482,7 +22482,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1 {
         { blocks::vulkan10requirements::variantCount, blocks::vulkan10requirements::variants },
         { blocks::vulkan11requirements_split::variantCount, blocks::vulkan11requirements_split::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_1
 #endif //VP_LUNARG_minimum_requirements_1_1
 
@@ -22493,7 +22493,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
         "MERGED",
         0, nullptr,
         0, nullptr,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22513,9 +22513,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
                     "vulkan10requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan10requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22525,7 +22525,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements
 
         namespace vulkan11requirements {
@@ -22534,9 +22534,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
                     "vulkan11requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan11requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan11requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22546,7 +22546,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan11requirements
 
         namespace vulkan12requirements {
@@ -22555,9 +22555,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
                     "vulkan12requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan12requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan12requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22567,7 +22567,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan12requirements
     } // namespace blocks
 
@@ -22576,7 +22576,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2 {
         { blocks::vulkan11requirements::variantCount, blocks::vulkan11requirements::variants },
         { blocks::vulkan12requirements::variantCount, blocks::vulkan12requirements::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_2
 #endif //VP_LUNARG_minimum_requirements_1_2
 
@@ -22587,7 +22587,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
         "MERGED",
         0, nullptr,
         0, nullptr,
-        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+        static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
             featureDesc,
         0, nullptr,
             propertyDesc,
@@ -22607,9 +22607,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     "vulkan10requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan10requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan10requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22619,7 +22619,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan10requirements
 
         namespace vulkan11requirements {
@@ -22628,9 +22628,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     "vulkan11requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan11requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan11requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22640,7 +22640,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan11requirements
 
         namespace vulkan12requirements {
@@ -22649,9 +22649,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     "vulkan12requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan12requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan12requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22661,7 +22661,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan12requirements
 
         namespace vulkan13requirements {
@@ -22670,9 +22670,9 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     "vulkan13requirements",
                     0, nullptr,
                     0, nullptr,
-                    static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                    static_cast<unsigned int>(std::size(featureStructTypes)), featureStructTypes,
                     blocks::vulkan13requirements::featureDesc,
-                    static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                    static_cast<unsigned int>(std::size(propertyStructTypes)), propertyStructTypes,
                     blocks::vulkan13requirements::propertyDesc,
                     0, nullptr,
                     0, nullptr,
@@ -22682,7 +22682,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
                     0, nullptr,
                 },
             };
-            static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+            static const unsigned int variantCount = static_cast<unsigned int>(std::size(variants));
         } // namespace vulkan13requirements
     } // namespace blocks
 
@@ -22692,7 +22692,7 @@ namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3 {
         { blocks::vulkan12requirements::variantCount, blocks::vulkan12requirements::variants },
         { blocks::vulkan13requirements::variantCount, blocks::vulkan13requirements::variants },
     };
-    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+    static const unsigned int capabilityCount = static_cast<unsigned int>(std::size(capabilities));
 } // namespace VP_LUNARG_MINIMUM_REQUIREMENTS_1_3
 #endif //VP_LUNARG_minimum_requirements_1_3
 
@@ -22828,7 +22828,7 @@ static const VpProfileDesc profiles[] = {
     },
 #endif // VP_LUNARG_MINIMUM_REQUIREMENTS_1_3
 };
-static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
+static const unsigned int profileCount = static_cast<unsigned int>(std::size(profiles));
 
 
 struct FeaturesChain {
@@ -23804,8 +23804,8 @@ struct FeaturesChain {
             for (std::size_t index = 0; index < count; ++index) {
                 const VkBaseOutStructure* pInputStruct = reinterpret_cast<const VkBaseOutStructure*>(q);
                 VkBaseOutStructure* pOutputStruct = reinterpret_cast<VkBaseOutStructure*>(detail::vpGetStructure(&this->requiredFeaturesChain, q->sType));
-                const uint8_t* pInputData = reinterpret_cast<const uint8_t*>(pInputStruct) + offset;
-                uint8_t* pOutputData = reinterpret_cast<uint8_t*>(pOutputStruct) + offset;
+                const unsigned char* pInputData = reinterpret_cast<const unsigned char*>(pInputStruct) + offset;
+                unsigned char* pOutputData = reinterpret_cast<unsigned char*>(pOutputStruct) + offset;
                 const VkBool32* input = reinterpret_cast<const VkBool32*>(pInputData);
                 VkBool32* output = reinterpret_cast<VkBool32*>(pOutputData);
 
@@ -23843,7 +23843,7 @@ struct FeaturesChain {
 }; // struct FeaturesChain
 
 VPAPI_ATTR const VpProfileDesc* vpGetProfileDesc(const char profileName[VP_MAX_PROFILE_NAME_SIZE]) {
-    for (uint32_t profileIndex = 0; profileIndex < profileCount; ++profileIndex) {
+    for (unsigned int profileIndex = 0; profileIndex < profileCount; ++profileIndex) {
         if (strncmp(profiles[profileIndex].props.profileName, profileName, VP_MAX_PROFILE_NAME_SIZE) == 0) {
             return &profiles[profileIndex];
         }
@@ -23857,7 +23857,7 @@ VPAPI_ATTR std::vector<VpProfileProperties> GatherProfiles(const VpProfileProper
     if (pBlockName == nullptr) {
         const detail::VpProfileDesc* profileDesc = detail::vpGetProfileDesc(profile.profileName);
         if (profileDesc != nullptr) {
-            for (uint32_t profileIndex = 0; profileIndex < profileDesc->requiredProfileCount; ++profileIndex) {
+            for (unsigned int profileIndex = 0; profileIndex < profileDesc->requiredProfileCount; ++profileIndex) {
                 gatheredProfiles.push_back(profileDesc->pRequiredProfiles[profileIndex]);
             }
         }
@@ -23868,11 +23868,11 @@ VPAPI_ATTR std::vector<VpProfileProperties> GatherProfiles(const VpProfileProper
     return gatheredProfiles;
 }
 
-VPAPI_ATTR bool vpCheckVersion(uint32_t actual, uint32_t expected) {
-    uint32_t actualMajor = VK_API_VERSION_MAJOR(actual);
-    uint32_t actualMinor = VK_API_VERSION_MINOR(actual);
-    uint32_t expectedMajor = VK_API_VERSION_MAJOR(expected);
-    uint32_t expectedMinor = VK_API_VERSION_MINOR(expected);
+VPAPI_ATTR bool vpCheckVersion(unsigned int actual, unsigned int expected) {
+    unsigned int actualMajor = VK_API_VERSION_MAJOR(actual);
+    unsigned int actualMinor = VK_API_VERSION_MINOR(actual);
+    unsigned int expectedMajor = VK_API_VERSION_MAJOR(expected);
+    unsigned int expectedMinor = VK_API_VERSION_MINOR(expected);
     return actualMajor > expectedMajor || (actualMajor == expectedMajor && actualMinor >= expectedMinor);
 }
 
@@ -23909,8 +23909,8 @@ VPAPI_ATTR bool CheckExtension(const std::vector<const char*>& extensions, const
     return false;
 }
 
-VPAPI_ATTR void GetExtensions(uint32_t extensionCount, const VkExtensionProperties *pExtensions, std::vector<const char *> &extensions) {
-    for (uint32_t ext_index = 0; ext_index < extensionCount; ++ext_index) {
+VPAPI_ATTR void GetExtensions(unsigned int extensionCount, const VkExtensionProperties *pExtensions, std::vector<const char *> &extensions) {
+    for (unsigned int ext_index = 0; ext_index < extensionCount; ++ext_index) {
         if (CheckExtension(extensions, pExtensions[ext_index].extensionName)) {
             continue;
         }
@@ -23919,8 +23919,8 @@ VPAPI_ATTR void GetExtensions(uint32_t extensionCount, const VkExtensionProperti
 }
 
 VPAPI_ATTR std::vector<VpBlockProperties> GatherBlocks(
-    uint32_t enabledFullProfileCount, const VpProfileProperties* pEnabledFullProfiles,
-    uint32_t enabledProfileBlockCount, const VpBlockProperties* pEnabledProfileBlocks) {
+    unsigned int enabledFullProfileCount, const VpProfileProperties* pEnabledFullProfiles,
+    unsigned int enabledProfileBlockCount, const VpBlockProperties* pEnabledProfileBlocks) {
     std::vector<VpBlockProperties> results;
 
     for (std::size_t profile_index = 0; profile_index < enabledFullProfileCount; ++profile_index) {
@@ -23940,7 +23940,7 @@ VPAPI_ATTR std::vector<VpBlockProperties> GatherBlocks(
 }
 
 VPAPI_ATTR VkResult vpGetInstanceProfileSupportSingleProfile(
-    uint32_t                                    api_version,
+    unsigned int                                    api_version,
     const std::vector<VkExtensionProperties>&   supported_extensions,
     const VpProfileProperties*                  pProfile,
     VkBool32*                                   pSupported,
@@ -23971,15 +23971,15 @@ VPAPI_ATTR VkResult vpGetInstanceProfileSupportSingleProfile(
         }
     }
 
-    for (uint32_t capability_index = 0; capability_index < pProfileDesc->requiredCapabilityCount; ++capability_index) {
+    for (unsigned int capability_index = 0; capability_index < pProfileDesc->requiredCapabilityCount; ++capability_index) {
         const VpCapabilitiesDesc& capabilities_desc = pProfileDesc->pRequiredCapabilities[capability_index];
 
         VkBool32 supported_capabilities = VK_FALSE;
-        for (uint32_t variant_index = 0; variant_index < capabilities_desc.variantCount; ++variant_index) {
+        for (unsigned int variant_index = 0; variant_index < capabilities_desc.variantCount; ++variant_index) {
             const VpVariantDesc& variant_desc = capabilities_desc.pVariants[variant_index];
 
             VkBool32 supported_variant = VK_TRUE;
-            for (uint32_t i = 0; i < variant_desc.instanceExtensionCount; ++i) {
+            for (unsigned int i = 0; i < variant_desc.instanceExtensionCount; ++i) {
                 if (!detail::CheckExtension(supported_extensions.data(), supported_extensions.size(),
                                               variant_desc.pInstanceExtensions[i].extensionName)) {
                     supported_variant = VK_FALSE;
@@ -24018,7 +24018,7 @@ VPAPI_ATTR VkResult vpGetProfileStructureTypes(
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
     structure_type                              type,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -24034,10 +24034,10 @@ VPAPI_ATTR VkResult vpGetProfileStructureTypes(
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -24046,7 +24046,7 @@ VPAPI_ATTR VkResult vpGetProfileStructureTypes(
                     result = VK_SUCCESS;
                 }
 
-                uint32_t count = 0;
+                unsigned int count = 0;
                 const VkStructureType* data = nullptr;
 
                 switch (type) {
@@ -24069,7 +24069,7 @@ VPAPI_ATTR VkResult vpGetProfileStructureTypes(
                         break;
                 }
 
-                for (uint32_t type_index = 0; type_index < count; ++type_index) {
+                for (unsigned int type_index = 0; type_index < count; ++type_index) {
                     const VkStructureType dataType = data[type_index];
                     if (std::find(results.begin(), results.end(), dataType) == std::end(results)) {
                         results.push_back(dataType);
@@ -24079,7 +24079,7 @@ VPAPI_ATTR VkResult vpGetProfileStructureTypes(
         }
     }
 
-    const uint32_t count = static_cast<uint32_t>(results.size());
+    const unsigned int count = static_cast<unsigned int>(results.size());
     std::sort(results.begin(), results.end());
 
     if (pStructureTypes == nullptr) {
@@ -24111,7 +24111,7 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
     ExtensionType                               type,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkExtensionProperties*                      pProperties) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -24129,10 +24129,10 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
             return VK_ERROR_UNKNOWN;
         }
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -24144,7 +24144,7 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
                 switch (type) {
                     default:
                     case EXTENSION_INSTANCE:
-                        for (uint32_t ext_index = 0; ext_index < variant.instanceExtensionCount; ++ext_index) {
+                        for (unsigned int ext_index = 0; ext_index < variant.instanceExtensionCount; ++ext_index) {
                             if (detail::HasExtension(results, variant.pInstanceExtensions[ext_index])) {
                                 continue;
                             }
@@ -24152,7 +24152,7 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
                         }
                         break;
                     case EXTENSION_DEVICE:
-                        for (uint32_t ext_index = 0; ext_index < variant.deviceExtensionCount; ++ext_index) {
+                        for (unsigned int ext_index = 0; ext_index < variant.deviceExtensionCount; ++ext_index) {
                             if (detail::HasExtension(results, variant.pDeviceExtensions[ext_index])) {
                                 continue;
                             }
@@ -24164,7 +24164,7 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
         }
     }
 
-    const uint32_t count = static_cast<uint32_t>(results.size());
+    const unsigned int count = static_cast<unsigned int>(results.size());
 
     if (pProperties == nullptr) {
         *pPropertyCount = count;
@@ -24185,11 +24185,11 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
 VPAPI_ATTR VkResult vpGetProfileVideoProfileDesc(
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
+    unsigned int                                    videoProfileIndex,
     const detail::VpVideoProfileDesc**          ppVideoProfileDesc) {
     VkResult result = pBlockName == nullptr ? VK_SUCCESS : VK_INCOMPLETE;
 
-    uint32_t curr_base_video_profile_index = 0;
+    unsigned int curr_base_video_profile_index = 0;
 
     const std::vector<VpProfileProperties>& gathered_profiles = detail::GatherProfiles(*pProfile);
 
@@ -24197,10 +24197,10 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfileDesc(
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -24227,7 +24227,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfileDesc(
 
 struct VpCapabilities_T : public VpVulkanFunctions {
     bool singleton = false;
-    uint32_t apiVersion = VK_API_VERSION_1_0;
+    unsigned int apiVersion = VK_API_VERSION_1_0;
 
     static VpCapabilities_T& Get() {
         static VpCapabilities_T instance;
@@ -24414,7 +24414,7 @@ VPAPI_ATTR VkResult vpGetProfiles(
 #ifdef VP_USE_OBJECT
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpProfileProperties*                        pProperties) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -24430,7 +24430,7 @@ VPAPI_ATTR VkResult vpGetProfiles(
         } else {
             *pPropertyCount = detail::profileCount;
         }
-        for (uint32_t property_index = 0; property_index < *pPropertyCount; ++property_index) {
+        for (unsigned int property_index = 0; property_index < *pPropertyCount; ++property_index) {
             pProperties[property_index] = detail::profiles[property_index].props;
         }
     }
@@ -24442,7 +24442,7 @@ VPAPI_ATTR VkResult vpGetProfileRequiredProfiles(
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpProfileProperties*                        pProperties) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -24463,14 +24463,14 @@ VPAPI_ATTR VkResult vpGetProfileRequiredProfiles(
         } else {
             *pPropertyCount = desc->requiredProfileCount;
         }
-        for (uint32_t property_index = 0; property_index < *pPropertyCount; ++property_index) {
+        for (unsigned int property_index = 0; property_index < *pPropertyCount; ++property_index) {
             pProperties[property_index] = desc->pRequiredProfiles[property_index];
         }
     }
     return result;
 }
 
-VPAPI_ATTR uint32_t vpGetProfileAPIVersion(
+VPAPI_ATTR unsigned int vpGetProfileAPIVersion(
 #ifdef VP_USE_OBJECT
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
@@ -24481,9 +24481,9 @@ VPAPI_ATTR uint32_t vpGetProfileAPIVersion(
 
     const std::vector<VpProfileProperties>& gathered_profiles = detail::GatherProfiles(*pProfile, nullptr);
 
-    uint32_t major = 0;
-    uint32_t minor = 0;
-    uint32_t patch = 0;
+    unsigned int major = 0;
+    unsigned int minor = 0;
+    unsigned int patch = 0;
 
     for (std::size_t profile_index = 0, profile_count = gathered_profiles.size(); profile_index < profile_count; ++profile_index) {
         const detail::VpProfileDesc* desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
@@ -24491,9 +24491,9 @@ VPAPI_ATTR uint32_t vpGetProfileAPIVersion(
             return 0;
         }
 
-        major = std::max<uint32_t>(major, VK_API_VERSION_MAJOR(desc->minApiVersion));
-        minor = std::max<uint32_t>(minor, VK_API_VERSION_MINOR(desc->minApiVersion));
-        patch = std::max<uint32_t>(patch, VK_API_VERSION_PATCH(desc->minApiVersion));
+        major = std::max<unsigned int>(major, VK_API_VERSION_MAJOR(desc->minApiVersion));
+        minor = std::max<unsigned int>(minor, VK_API_VERSION_MINOR(desc->minApiVersion));
+        patch = std::max<unsigned int>(patch, VK_API_VERSION_PATCH(desc->minApiVersion));
     }
 
     return VK_MAKE_API_VERSION(0, major, minor, patch);
@@ -24504,7 +24504,7 @@ VPAPI_ATTR VkResult vpGetProfileFallbacks(
     VpCapabilities                              capabilities,
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VpProfileProperties*                        pProperties) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -24525,7 +24525,7 @@ VPAPI_ATTR VkResult vpGetProfileFallbacks(
         } else {
             *pPropertyCount = desc->fallbackCount;
         }
-        for (uint32_t i = 0; i < *pPropertyCount; ++i) {
+        for (unsigned int i = 0; i < *pPropertyCount; ++i) {
             pProperties[i] = desc->pFallbacks[i];
         }
     }
@@ -24550,7 +24550,7 @@ VPAPI_ATTR VkResult vpHasMultipleVariantsProfile(
             return VK_ERROR_UNKNOWN;
         }
 
-        for (uint32_t caps_index = 0, caps_count = desc->requiredCapabilityCount; caps_index < caps_count; ++caps_index) {
+        for (unsigned int caps_index = 0, caps_count = desc->requiredCapabilityCount; caps_index < caps_count; ++caps_index) {
             if (desc->pRequiredCapabilities[caps_index].variantCount > 1) {
                 *pHasMultipleVariants = VK_TRUE;
                 return VK_SUCCESS;
@@ -24569,7 +24569,7 @@ VPAPI_ATTR VkResult vpGetInstanceProfileVariantsSupport(
     const char*                         pLayerName,
     const VpProfileProperties*          pProfile,
     VkBool32*                           pSupported,
-    uint32_t*                           pPropertyCount,
+    unsigned int*                           pPropertyCount,
     VpBlockProperties*                  pProperties) {
 #ifdef VP_USE_OBJECT
     const VpCapabilities_T& vp = capabilities == nullptr ? VpCapabilities_T::Get() : *capabilities;
@@ -24579,7 +24579,7 @@ VPAPI_ATTR VkResult vpGetInstanceProfileVariantsSupport(
 
     VkResult result = VK_SUCCESS;
 
-    uint32_t api_version = VK_API_VERSION_1_0;
+    unsigned int api_version = VK_API_VERSION_1_0;
     PFN_vkEnumerateInstanceVersion pfnEnumerateInstanceVersion = vp.singleton ?
         (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceVersion") : vp.EnumerateInstanceVersion;
     if (pfnEnumerateInstanceVersion != nullptr) {
@@ -24592,7 +24592,7 @@ VPAPI_ATTR VkResult vpGetInstanceProfileVariantsSupport(
         } */
     }
 
-    uint32_t supported_instance_extension_count = 0;
+    unsigned int supported_instance_extension_count = 0;
     result = vp.EnumerateInstanceExtensionProperties(pLayerName, &supported_instance_extension_count, nullptr);
     if (result != VK_SUCCESS) {
         *pSupported = VK_FALSE;
@@ -24648,14 +24648,14 @@ VPAPI_ATTR VkResult vpGetInstanceProfileVariantsSupport(
     const std::vector<VpBlockProperties>& blocks = supported ? supported_blocks : unsupported_blocks;
 
     if (pProperties == nullptr) {
-        *pPropertyCount = static_cast<uint32_t>(blocks.size());
+        *pPropertyCount = static_cast<unsigned int>(blocks.size());
     } else {
-        if (*pPropertyCount < static_cast<uint32_t>(blocks.size())) {
+        if (*pPropertyCount < static_cast<unsigned int>(blocks.size())) {
             result = VK_INCOMPLETE;
         } else {
-            *pPropertyCount = static_cast<uint32_t>(blocks.size());
+            *pPropertyCount = static_cast<unsigned int>(blocks.size());
         }
-        for (uint32_t block_index = 0, block_count = static_cast<uint32_t>(blocks.size()); block_index < block_count; ++block_index) {
+        for (unsigned int block_index = 0, block_count = static_cast<unsigned int>(blocks.size()); block_index < block_count; ++block_index) {
             pProperties[block_index] = blocks[block_index];
         }
     }
@@ -24671,7 +24671,7 @@ VPAPI_ATTR VkResult vpGetInstanceProfileSupport(
     const char*                                 pLayerName,
     const VpProfileProperties*                  pProfile,
     VkBool32*                                   pSupported) {
-    uint32_t count = 0;
+    unsigned int count = 0;
 
     return vpGetInstanceProfileVariantsSupport(
 #ifdef VP_USE_OBJECT
@@ -24702,7 +24702,7 @@ VPAPI_ATTR VkResult vpCreateInstance(
         pCreateInfo->enabledProfileBlockCount, pCreateInfo->pEnabledProfileBlocks);
 
     std::vector<const char*> extensions;
-    for (std::uint32_t ext_index = 0, ext_count = pCreateInfo->pCreateInfo->enabledExtensionCount; ext_index < ext_count; ++ext_index) {
+    for (std::unsigned int ext_index = 0, ext_count = pCreateInfo->pCreateInfo->enabledExtensionCount; ext_index < ext_count; ++ext_index) {
         extensions.push_back(pCreateInfo->pCreateInfo->ppEnabledExtensionNames[ext_index]);
     }
 
@@ -24774,7 +24774,7 @@ VPAPI_ATTR VkResult vpCreateInstance(
 #endif
 
     if (!extensions.empty()) {
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+        createInfo.enabledExtensionCount = static_cast<unsigned int>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
     }
 
@@ -24789,7 +24789,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
     VkPhysicalDevice physicalDevice,
     const VpProfileProperties *pProfile,
     VkBool32 *pSupported,
-    uint32_t *pPropertyCount,
+    unsigned int *pPropertyCount,
     VpBlockProperties* pProperties) {
 #ifdef VP_USE_OBJECT
     const VpCapabilities_T& vp = capabilities == nullptr ? VpCapabilities_T::Get() : *capabilities;
@@ -24799,7 +24799,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
 
     VkResult result = VK_SUCCESS;
 
-    uint32_t supported_device_extension_count = 0;
+    unsigned int supported_device_extension_count = 0;
     result = vp.EnumerateDeviceExtensionProperties(physicalDevice, nullptr, &supported_device_extension_count, nullptr);
     if (result != VK_SUCCESS) {
         return result;
@@ -24840,7 +24840,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
         VkVideoProfileInfoKHR                               profileInfo;
         VkPhysicalDeviceVideoFormatInfoKHR                  formatInfo;
         bool                                                supportedProfile;
-        uint32_t                                            matchingProfiles;
+        unsigned int                                            matchingProfiles;
     };
 #endif  // VK_KHR_video_queue
 
@@ -24856,7 +24856,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
 #ifdef VK_KHR_video_queue
         VideoInfo video;
 #endif  // VK_KHR_video_queue
-        uint32_t index;
+        unsigned int index;
         detail::PFN_vpStructChainerCb pfnCb;
         bool supported;
     } userData{physicalDevice, supported_blocks, unsupported_blocks};
@@ -24937,17 +24937,17 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
             }
         }
 
-        for (uint32_t required_capability_index = 0; required_capability_index < profile_desc->requiredCapabilityCount; ++required_capability_index) {
+        for (unsigned int required_capability_index = 0; required_capability_index < profile_desc->requiredCapabilityCount; ++required_capability_index) {
             const detail::VpCapabilitiesDesc* required_capabilities = &profile_desc->pRequiredCapabilities[required_capability_index];
 
             bool supported_block = false;
 
-            for (uint32_t variant_index = 0; variant_index < required_capabilities->variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < required_capabilities->variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant_desc = required_capabilities->pVariants[variant_index];
 
                 bool supported_variant = true;
 
-                for (uint32_t ext_index = 0; ext_index < variant_desc.deviceExtensionCount; ++ext_index) {
+                for (unsigned int ext_index = 0; ext_index < variant_desc.deviceExtensionCount; ++ext_index) {
                     const char *requested_extension = variant_desc.pDeviceExtensions[ext_index].extensionName;
                     if (!detail::CheckExtension(supported_device_extensions.data(), supported_device_extensions.size(), requested_extension)) {
                         supported_variant = false;
@@ -25001,19 +25001,19 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
                 }
 
                 if (userData.variant->queueFamilyCount > 0) {
-                    uint32_t queue_family_count = 0;
+                    unsigned int queue_family_count = 0;
                     userData.gpdp2.pfnGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queue_family_count, nullptr);
                     std::vector<VkQueueFamilyProperties2KHR> queueFamilyProps(queue_family_count, { VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR });
                     userData.variant->chainers.pfnQueueFamily(
                         queue_family_count, static_cast<VkBaseOutStructure*>(static_cast<void*>(queueFamilyProps.data())), &userData,
-                        [](uint32_t queue_family_count, VkBaseOutStructure* pBaseArray, void* pUser) {
+                        [](unsigned int queue_family_count, VkBaseOutStructure* pBaseArray, void* pUser) {
                             UserData* pUserData = static_cast<UserData*>(pUser);
                             VkQueueFamilyProperties2KHR* pArray = static_cast<VkQueueFamilyProperties2KHR*>(static_cast<void*>(pBaseArray));
                             pUserData->gpdp2.pfnGetPhysicalDeviceQueueFamilyProperties2(pUserData->physicalDevice, &queue_family_count, pArray);
                             pUserData->supported = true;
-                            for (uint32_t profile_qf_idx = 0; profile_qf_idx < pUserData->variant->queueFamilyCount; ++profile_qf_idx) {
+                            for (unsigned int profile_qf_idx = 0; profile_qf_idx < pUserData->variant->queueFamilyCount; ++profile_qf_idx) {
                                 bool found_matching = false;
-                                for (uint32_t queue_family_index = 0; queue_family_index < queue_family_count; ++queue_family_index) {
+                                for (unsigned int queue_family_index = 0; queue_family_index < queue_family_count; ++queue_family_index) {
                                     bool this_matches = true;
                                     VkBaseOutStructure* p = static_cast<VkBaseOutStructure*>(static_cast<void*>(&pArray[queue_family_index]));
                                     while (p != nullptr) {
@@ -25039,7 +25039,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
                     }
                 }
 
-                for (uint32_t format_index = 0; format_index < userData.variant->formatCount && supported_variant; ++format_index) {
+                for (unsigned int format_index = 0; format_index < userData.variant->formatCount && supported_variant; ++format_index) {
                     userData.index = format_index;
                     VkFormatProperties2KHR format_properties2{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR };
                     userData.variant->chainers.pfnFormat(
@@ -25074,7 +25074,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
 
                     if (userData.video.pfnGetPhysicalDeviceVideoCapabilitiesKHR != nullptr &&
                         userData.video.pfnGetPhysicalDeviceVideoFormatPropertiesKHR != nullptr) {
-                        for (uint32_t video_profile_index = 0; video_profile_index < userData.variant->videoProfileCount; ++video_profile_index) {
+                        for (unsigned int video_profile_index = 0; video_profile_index < userData.variant->videoProfileCount; ++video_profile_index) {
                             userData.video.profileInfo = VkVideoProfileInfoKHR{ VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR };
                             userData.video.pProfileDesc = &userData.variant->pVideoProfiles[video_profile_index];
                             userData.supported = true;
@@ -25121,7 +25121,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
                                     }
 
                                     std::vector<VkVideoFormatPropertiesKHR> format_props;
-                                    for (uint32_t format_index = 0; format_index < pUserData->video.pProfileDesc->formatCount; ++format_index) {
+                                    for (unsigned int format_index = 0; format_index < pUserData->video.pProfileDesc->formatCount; ++format_index) {
                                         pUserData->index = format_index;
                                         {
                                             VkVideoFormatPropertiesKHR tmp_props{ VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR };
@@ -25129,17 +25129,17 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
                                             pUserData->video.formatInfo.imageUsage = tmp_props.imageUsageFlags;
                                         }
 
-                                        uint32_t format_count = 0;
+                                        unsigned int format_count = 0;
                                         pUserData->video.pfnGetPhysicalDeviceVideoFormatPropertiesKHR(pUserData->physicalDevice, &pUserData->video.formatInfo, &format_count, nullptr);
                                         format_props.resize(format_count, { VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR });
                                         pUserData->video.pProfileDesc->chainers.pfnFormat(
                                             format_count, static_cast<VkBaseOutStructure*>(static_cast<void*>(format_props.data())), pUserData,
-                                            [](uint32_t format_count, VkBaseOutStructure* pBaseArray, void* pUser) {
+                                            [](unsigned int format_count, VkBaseOutStructure* pBaseArray, void* pUser) {
                                                 UserData* pUserData = static_cast<UserData*>(pUser);
                                                 VkVideoFormatPropertiesKHR* pArray = static_cast<VkVideoFormatPropertiesKHR*>(static_cast<void*>(pBaseArray));
                                                 pUserData->video.pfnGetPhysicalDeviceVideoFormatPropertiesKHR(pUserData->physicalDevice, &pUserData->video.formatInfo, &format_count, pArray);
                                                 bool found_matching = false;
-                                                for (uint32_t i = 0; i < format_count; ++i) {
+                                                for (unsigned int i = 0; i < format_count; ++i) {
                                                     bool this_matches = true;
                                                     VkBaseOutStructure* p = static_cast<VkBaseOutStructure*>(static_cast<void*>(&pArray[i]));
                                                     while (p != nullptr) {
@@ -25194,14 +25194,14 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileVariantsSupport(
     const std::vector<VpBlockProperties>& blocks = supported ? supported_blocks : unsupported_blocks;
 
     if (pProperties == nullptr) {
-        *pPropertyCount = static_cast<uint32_t>(blocks.size());
+        *pPropertyCount = static_cast<unsigned int>(blocks.size());
     } else {
-        if (*pPropertyCount < static_cast<uint32_t>(blocks.size())) {
+        if (*pPropertyCount < static_cast<unsigned int>(blocks.size())) {
             result = VK_INCOMPLETE;
         } else {
-            *pPropertyCount = static_cast<uint32_t>(blocks.size());
+            *pPropertyCount = static_cast<unsigned int>(blocks.size());
         }
-        for (uint32_t i = 0, n = static_cast<uint32_t>(blocks.size()); i < n; ++i) {
+        for (unsigned int i = 0, n = static_cast<unsigned int>(blocks.size()); i < n; ++i) {
             pProperties[i] = blocks[i];
         }
     }
@@ -25218,7 +25218,7 @@ VPAPI_ATTR VkResult vpGetPhysicalDeviceProfileSupport(
     VkPhysicalDevice                            physicalDevice,
     const VpProfileProperties*                  pProfile,
     VkBool32 *pSupported) {
-    uint32_t count = 0;
+    unsigned int count = 0;
 
     return vpGetPhysicalDeviceProfileVariantsSupport(
 #ifdef VP_USE_OBJECT
@@ -25253,7 +25253,7 @@ VPAPI_ATTR VkResult vpCreateDevice(
     std::vector<VkStructureType> structureTypes;
 
     std::vector<const char*> extensions;
-    for (std::uint32_t ext_index = 0, ext_count = pCreateInfo->pCreateInfo->enabledExtensionCount; ext_index < ext_count; ++ext_index) {
+    for (std::unsigned int ext_index = 0, ext_count = pCreateInfo->pCreateInfo->enabledExtensionCount; ext_index < ext_count; ++ext_index) {
         extensions.push_back(pCreateInfo->pCreateInfo->ppEnabledExtensionNames[ext_index]);
     }
 
@@ -25273,7 +25273,7 @@ VPAPI_ATTR VkResult vpCreateDevice(
                     }
                 }
 
-                for (uint32_t type_index = 0; type_index < variant->featureStructTypeCount; ++type_index) {
+                for (unsigned int type_index = 0; type_index < variant->featureStructTypeCount; ++type_index) {
                     const VkStructureType type = variant->pFeatureStructTypes[type_index];
                     if (std::find(structureTypes.begin(), structureTypes.end(), type) == std::end(structureTypes)) {
                         structureTypes.push_back(type);
@@ -25328,7 +25328,7 @@ VPAPI_ATTR VkResult vpCreateDevice(
     createInfo.pNext = &chain->requiredFeaturesChain;
     createInfo.queueCreateInfoCount = pCreateInfo->pCreateInfo->queueCreateInfoCount;
     createInfo.pQueueCreateInfos = pCreateInfo->pCreateInfo->pQueueCreateInfos;
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+    createInfo.enabledExtensionCount = static_cast<unsigned int>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     return vp.CreateDevice(physicalDevice, &createInfo, pAllocator, pDevice);
@@ -25340,7 +25340,7 @@ VPAPI_ATTR VkResult vpGetProfileInstanceExtensionProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkExtensionProperties*                      pProperties) {
     return detail::vpGetProfileExtensionProperties(
 #ifdef VP_USE_OBJECT
@@ -25355,7 +25355,7 @@ VPAPI_ATTR VkResult vpGetProfileDeviceExtensionProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkExtensionProperties*                      pProperties) {
     return detail::vpGetProfileExtensionProperties(
 #ifdef VP_USE_OBJECT
@@ -25383,10 +25383,10 @@ VPAPI_ATTR VkResult vpGetProfileFeatures(
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -25437,10 +25437,10 @@ VPAPI_ATTR VkResult vpGetProfileProperties(
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -25469,7 +25469,7 @@ VPAPI_ATTR VkResult vpGetProfileQueueFamilyProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pPropertyCount,
+    unsigned int*                                   pPropertyCount,
     VkQueueFamilyProperties2KHR*                pProperties) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25481,16 +25481,16 @@ VPAPI_ATTR VkResult vpGetProfileQueueFamilyProperties(
 
     const std::vector<VpProfileProperties>& gathered_profiles = detail::GatherProfiles(*pProfile);
 
-    uint32_t total_queue_family_count = 0;
+    unsigned int total_queue_family_count = 0;
 
     for (std::size_t profile_index = 0, profile_count = gathered_profiles.size(); profile_index < profile_count; ++profile_index) {
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -25500,7 +25500,7 @@ VPAPI_ATTR VkResult vpGetProfileQueueFamilyProperties(
                 }
 
                 if (pProperties != nullptr) {
-                    for (uint32_t i = 0; i < variant.queueFamilyCount; ++i) {
+                    for (unsigned int i = 0; i < variant.queueFamilyCount; ++i) {
                         if (total_queue_family_count < *pPropertyCount) {
                             if (variant.pQueueFamilies[i].pfnFiller == nullptr) continue;
 
@@ -25534,7 +25534,7 @@ VPAPI_ATTR VkResult vpGetProfileFormats(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pFormatCount,
+    unsigned int*                                   pFormatCount,
     VkFormat*                                   pFormats) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25550,10 +25550,10 @@ VPAPI_ATTR VkResult vpGetProfileFormats(
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -25562,7 +25562,7 @@ VPAPI_ATTR VkResult vpGetProfileFormats(
                     result = VK_SUCCESS;
                 }
 
-                for (uint32_t format_index = 0; format_index < variant.formatCount; ++format_index) {
+                for (unsigned int format_index = 0; format_index < variant.formatCount; ++format_index) {
                     if (std::find(results.begin(), results.end(), variant.pFormats[format_index].format) == std::end(results)) {
                         results.push_back(variant.pFormats[format_index].format);
                     }
@@ -25571,7 +25571,7 @@ VPAPI_ATTR VkResult vpGetProfileFormats(
         }
     }
 
-    const uint32_t count = static_cast<uint32_t>(results.size());
+    const unsigned int count = static_cast<unsigned int>(results.size());
 
     if (pFormats == nullptr) {
         *pFormatCount = count;
@@ -25611,11 +25611,11 @@ VPAPI_ATTR VkResult vpGetProfileFormatProperties(
         const detail::VpProfileDesc* pProfileDesc = detail::vpGetProfileDesc(profile_name);
         if (pProfileDesc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t required_capability_index = 0; required_capability_index < pProfileDesc->requiredCapabilityCount;
+        for (unsigned int required_capability_index = 0; required_capability_index < pProfileDesc->requiredCapabilityCount;
                 ++required_capability_index) {
             const detail::VpCapabilitiesDesc& required_capabilities = pProfileDesc->pRequiredCapabilities[required_capability_index];
 
-            for (uint32_t required_variant_index = 0; required_variant_index < required_capabilities.variantCount; ++required_variant_index) {
+            for (unsigned int required_variant_index = 0; required_variant_index < required_capabilities.variantCount; ++required_variant_index) {
                 const detail::VpVariantDesc& variant = required_capabilities.pVariants[required_variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -25624,7 +25624,7 @@ VPAPI_ATTR VkResult vpGetProfileFormatProperties(
                     result = VK_SUCCESS;
                 }
 
-                for (uint32_t format_index = 0; format_index < variant.formatCount; ++format_index) {
+                for (unsigned int format_index = 0; format_index < variant.formatCount; ++format_index) {
                     if (variant.pFormats[format_index].format != format) {
                         continue;
                     }
@@ -25668,7 +25668,7 @@ VPAPI_ATTR VkResult vpGetProfileFeatureStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
     return detail::vpGetProfileStructureTypes(
 #ifdef VP_USE_OBJECT
@@ -25683,7 +25683,7 @@ VPAPI_ATTR VkResult vpGetProfilePropertyStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
     return detail::vpGetProfileStructureTypes(
 #ifdef VP_USE_OBJECT
@@ -25698,7 +25698,7 @@ VPAPI_ATTR VkResult vpGetProfileQueueFamilyStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
     return detail::vpGetProfileStructureTypes(
 #ifdef VP_USE_OBJECT
@@ -25713,7 +25713,7 @@ VPAPI_ATTR VkResult vpGetProfileFormatStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
     return detail::vpGetProfileStructureTypes(
 #ifdef VP_USE_OBJECT
@@ -25730,7 +25730,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfiles(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t*                                   pVideoProfileCount,
+    unsigned int*                                   pVideoProfileCount,
     VpVideoProfileProperties*                   pVideoProfiles) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25739,7 +25739,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfiles(
 
     VkResult result = pBlockName == nullptr ? VK_SUCCESS : VK_INCOMPLETE;
 
-    uint32_t total_video_profile_count = 0;
+    unsigned int total_video_profile_count = 0;
 
     const std::vector<VpProfileProperties>& gathered_profiles = detail::GatherProfiles(*pProfile);
 
@@ -25747,10 +25747,10 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfiles(
         const detail::VpProfileDesc* profile_desc = detail::vpGetProfileDesc(gathered_profiles[profile_index].profileName);
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
-        for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
+        for (unsigned int capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
             const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+            for (unsigned int variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
                 const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
@@ -25760,7 +25760,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfiles(
                 }
 
                 if (pVideoProfiles != nullptr) {
-                    for (uint32_t i = 0; i < variant.videoProfileCount; ++i) {
+                    for (unsigned int i = 0; i < variant.videoProfileCount; ++i) {
                         if (total_video_profile_count < *pVideoProfileCount) {
                             *pVideoProfiles = variant.pVideoProfiles[i].properties;
                             total_video_profile_count++;
@@ -25787,7 +25787,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfileInfo(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
+    unsigned int                                    videoProfileIndex,
     VkVideoProfileInfoKHR*                      pVideoProfileInfo) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25813,7 +25813,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoCapabilities(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
+    unsigned int                                    videoProfileIndex,
     void*                                       pNext) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25839,8 +25839,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoFormatProperties(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pPropertyCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pPropertyCount,
     VkVideoFormatPropertiesKHR*                 pProperties) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25849,7 +25849,7 @@ VPAPI_ATTR VkResult vpGetProfileVideoFormatProperties(
     const detail::VpVideoProfileDesc* pVideoProfileDesc = nullptr;
     VkResult result = detail::vpGetProfileVideoProfileDesc(pProfile, pBlockName, videoProfileIndex, &pVideoProfileDesc);
 
-    uint32_t property_count = 0;
+    unsigned int property_count = 0;
     if (pVideoProfileDesc != nullptr) {
         if (pProperties != nullptr) {
             for (; property_count < pVideoProfileDesc->formatCount; ++property_count) {
@@ -25879,8 +25879,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoProfileInfoStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25913,8 +25913,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoCapabilityStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;
@@ -25947,8 +25947,8 @@ VPAPI_ATTR VkResult vpGetProfileVideoFormatStructureTypes(
 #endif//VP_USE_OBJECT
     const VpProfileProperties*                  pProfile,
     const char*                                 pBlockName,
-    uint32_t                                    videoProfileIndex,
-    uint32_t*                                   pStructureTypeCount,
+    unsigned int                                    videoProfileIndex,
+    unsigned int*                                   pStructureTypeCount,
     VkStructureType*                            pStructureTypes) {
 #ifdef VP_USE_OBJECT
     (void)capabilities;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <../../deps/ZDev/vector.hpp>
+#include <vector>
 #include "../../deps/ZDev/collision.hpp"
-#include <glm/glm.hpp>
+#include "../../deps/ZDev/math.hpp"
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
 #define SLIMEATTACK_ENEMY_TYPE_SLIME 4
@@ -26,14 +26,14 @@ private:
     Collision& collision;
     Pipeline& pipeline;
 
-    struct Enemy { 
+    struct Enemy {
         int health;
         float cooldown;
         float spawnCooldown;
-        glm::vec2 speed;
+        float speed[2];
         bool skip;
     };
-    vector<Enemy> enemies = {};
+    std::vector<Enemy> enemies = {};
 
     int wave = 1;
     int aliveEnemies = 0;

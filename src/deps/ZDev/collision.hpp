@@ -1,65 +1,73 @@
 #pragma once
 
-#include "../../vulkan/sprite.hpp"
-#include "math.hpp"
+#include "../../engine/sprite.hpp"
 
 class Collision {
 public:
     struct AABBS {
-        glm::vec2 min = glm::vec2(3.402823466e+38f, 3.402823466e+38f);
-        glm::vec2 max = glm::vec2(-3.402823466e+38f, -3.402823466e+38f);
+        float pos[4] = {3.402823466e+38f, 3.402823466e+38f, -3.402823466e+38f, -3.402823466e+38f};
         unsigned int ID;
     };
 
-    bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) { // Collision for square objects like textures
+    inline float absolute(const float i) { return i < 0 ? -i : i; }
+
+    bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
         dataA.setRotationMatrix();
         dataB.setRotationMatrix();
-
-        return absolute(dataA.position.x - dataB.position.x) <= (absolute(dataA.rotationMatrix[0][0]) * (dataA.scale.x * .5f) + absolute(dataA.rotationMatrix[0][1]) * (dataA.scale.y * .5f) + absolute(dataB.rotationMatrix[0][0]) * (dataB.scale.x * .5f) + absolute(dataB.rotationMatrix[0][1]) * (dataB.scale.y * .5f)) && absolute(dataA.position.y - dataB.position.y) <= (absolute(dataA.rotationMatrix[0][1]) * (dataA.scale.x * .5f) + absolute(dataA.rotationMatrix[0][0]) * (dataA.scale.y * .5f) + absolute(dataB.rotationMatrix[0][1]) * (dataB.scale.x * .5f) + absolute(dataB.rotationMatrix[0][0]) * (dataB.scale.y * .5f));
+        return absolute(dataA.position[0] - dataB.position[0]) <= (absolute(dataA.rotationMatrix[0]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[1]) * (dataA.scale[1] * 0.5f) + absolute(dataB.rotationMatrix[0]) * (dataB.scale[0] * 0.5f) + absolute(dataB.rotationMatrix[1]) * (dataB.scale[1] * 0.5f)) && absolute(dataA.position[1] - dataB.position[1]) <= (absolute(dataA.rotationMatrix[2]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[3]) * (dataA.scale[1] * 0.5f) + absolute(dataB.rotationMatrix[2]) * (dataB.scale[0] * 0.5f) + absolute(dataB.rotationMatrix[3]) * (dataB.scale[1] * 0.5f));
     }
 
-    bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const unsigned int spriteAID, const Sprite& spriteB, SpriteData& dataB, const unsigned int spriteBID) { // Calculate AABB for sprites with more than 4 verticies, save data to be used later the same frame
+    bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const unsigned int spriteAID, const Sprite& spriteB, SpriteData& dataB, const unsigned int spriteBID) {
         int usingAAABB = -1;
         int usingBAABB = -1;
+
         for (unsigned int i = 0; i < AABB.size(); i++) {
             if (AABB[i].ID == spriteAID) { usingAAABB = i; }
             else if (AABB[i].ID == spriteBID) { usingBAABB = i; }
         }
 
-        if (usingAAABB > -1 && usingBAABB > -1) { return (AABB[usingAAABB].min.x <= AABB[usingBAABB].max.x && AABB[usingAAABB].max.x >= AABB[usingBAABB].min.x) && (AABB[usingAAABB].min.y <= AABB[usingBAABB].max.y && AABB[usingAAABB].max.y >= AABB[usingBAABB].min.y); }
-        else if (usingAAABB > -1 && usingBAABB == -1) {
+        if (usingAAABB != -1 && usingBAABB != -1) { return (AABB[usingAAABB].pos[0] <= AABB[usingBAABB].pos[2] && AABB[usingAAABB].pos[2] >= AABB[usingBAABB].pos[0]) && (AABB[usingAAABB].pos[1] <= AABB[usingBAABB].pos[3] && AABB[usingAAABB].pos[3] >= AABB[usingBAABB].pos[1]); }
+        else if (usingAAABB != -1 && usingBAABB == -1) {
             AABBS b;
             b.ID = spriteBID;
-
             const auto& verticesB = spriteB.model->getVertices();
-            for (size_t i = 0; i < verticesB.size(); i++) {
-                glm::vec2 transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
-                if (transformed.x < b.min.x) { b.min.x = transformed.x; }
-                if (transformed.y < b.min.y) { b.min.y = transformed.y; }
-                if (transformed.x > b.max.x) { b.max.x = transformed.x; }
-                if (transformed.y > b.max.y) { b.max.y = transformed.y; }
+
+            for (unsigned int i = 0; i < verticesB.size(); i++) {
+                float pxB = verticesB[i].position[0] * dataB.scale[0];
+                float pyB = verticesB[i].position[1] * dataB.scale[1];
+                float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
+                transformedB[0] += dataB.position[0];
+                transformedB[1] += dataB.position[1];
+                if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
             }
 
             AABB.push_back(b);
-            return (AABB[usingAAABB].min.x <= b.max.x && AABB[usingAAABB].max.x >= b.min.x) && (AABB[usingAAABB].min.y <= b.max.y && AABB[usingAAABB].max.y >= b.min.y);
+            return (AABB[usingAAABB].pos[0] <= b.pos[2] && AABB[usingAAABB].pos[2] >= b.pos[0]) && (AABB[usingAAABB].pos[1] <= b.pos[3] && AABB[usingAAABB].pos[3] >= b.pos[1]);
         }
-        else if (usingAAABB == -1 && usingBAABB > -1) {
+        else if (usingAAABB == -1 && usingBAABB != -1) {
             AABBS a;
             a.ID = spriteAID;
-
             const auto& verticesA = spriteA.model->getVertices();
-            for (size_t i = 0; i < verticesA.size(); i++) {
-                glm::vec2 transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-                if (transformed.x < a.min.x) { a.min.x = transformed.x; }
-                if (transformed.y < a.min.y) { a.min.y = transformed.y; }
-                if (transformed.x > a.max.x) { a.max.x = transformed.x; }
-                if (transformed.y > a.max.y) { a.max.y = transformed.y; }
+
+            for (unsigned int i = 0; i < verticesA.size(); i++) {
+                float pxA = verticesA[i].position[0] * dataA.scale[0];
+                float pyA = verticesA[i].position[1] * dataA.scale[1];
+                float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                transformedA[0] += dataA.position[0];
+                transformedA[1] += dataA.position[1];
+                if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
             }
 
             AABB.push_back(a);
-            return (a.min.x <= AABB[usingBAABB].max.x && a.max.x >= AABB[usingBAABB].min.x) && (a.min.y <= AABB[usingBAABB].max.y && a.max.y >= AABB[usingBAABB].min.y);
+            return (a.pos[0] <= AABB[usingBAABB].pos[2] && a.pos[2] >= AABB[usingBAABB].pos[0]) && (a.pos[1] <= AABB[usingBAABB].pos[3] && a.pos[3] >= AABB[usingBAABB].pos[1]);
         }
-        else if (usingAAABB == -1 && usingBAABB == -1) {
+        else {
             dataA.setRotationMatrix();
             dataB.setRotationMatrix();
 
@@ -72,59 +80,92 @@ public:
             const auto& verticesB = spriteB.model->getVertices();
 
             if (verticesA.size() > verticesB.size()) {
-                for (size_t i = 0; i < verticesA.size(); i++) {
-                    glm::vec2 transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-                    if (transformed.x < a.min.x) { a.min.x = transformed.x; }
-                    if (transformed.y < a.min.y) { a.min.y = transformed.y; }
-                    if (transformed.x > a.max.x) { a.max.x = transformed.x; }
-                    if (transformed.y > a.max.y) { a.max.y = transformed.y; }
+                for (unsigned int i = 0; i < verticesA.size(); i++) {
+                    float pxA = verticesA[i].position[0] * dataA.scale[0];
+                    float pyA = verticesA[i].position[1] * dataA.scale[1];
+                    float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                    transformedA[0] += dataA.position[0];
+                    transformedA[1] += dataA.position[1];
+                    if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                    if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                    if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                    if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
                     if (i < verticesB.size()) {
-                        transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
-                        if (transformed.x < b.min.x) { b.min.x = transformed.x; }
-                        if (transformed.y < b.min.y) { b.min.y = transformed.y; }
-                        if (transformed.x > b.max.x) { b.max.x = transformed.x; }
-                        if (transformed.y > b.max.y) { b.max.y = transformed.y; }
+                        float pxB = verticesB[i].position[0] * dataB.scale[0];
+                        float pyB = verticesB[i].position[1] * dataB.scale[1];
+                        float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
+                        transformedB[0] += dataB.position[0];
+                        transformedB[1] += dataB.position[1];
+                        if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                        if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                        if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                        if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
                     }
                 }
-            } else if (verticesA.size() < verticesB.size()) {
-                for (size_t i = 0; i < verticesB.size(); i++) {
-                    glm::vec2 transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
-                    if (transformed.x < b.min.x) { b.min.x = transformed.x; }
-                    if (transformed.y < b.min.y) { b.min.y = transformed.y; }
-                    if (transformed.x > b.max.x) { b.max.x = transformed.x; }
-                    if (transformed.y > b.max.y) { b.max.y = transformed.y; }
+            }
+            else if (verticesA.size() < verticesB.size()) {
+                for (unsigned int i = 0; i < verticesB.size(); i++) {
+                    float pxB = verticesB[i].position[0] * dataB.scale[0];
+                    float pyB = verticesB[i].position[1] * dataB.scale[1];
+                    float transformedB[2] = {
+                        dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB,
+                        dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB
+                    };
+                    transformedB[0] += dataB.position[0];
+                    transformedB[1] += dataB.position[1];
+
+                    if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                    if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                    if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                    if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
 
                     if (i < verticesA.size()) {
-                        transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-                        if (transformed.x < a.min.x) { a.min.x = transformed.x; }
-                        if (transformed.y < a.min.y) { a.min.y = transformed.y; }
-                        if (transformed.x > a.max.x) { a.max.x = transformed.x; }
-                        if (transformed.y > a.max.y) { a.max.y = transformed.y; }
+                        float pxA = verticesA[i].position[0] * dataA.scale[0];
+                        float pyA = verticesA[i].position[1] * dataA.scale[1];
+                        float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                        transformedA[0] += dataA.position[0];
+                        transformedA[1] += dataA.position[1];
+                        if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                        if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                        if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                        if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
                     }
                 }
-            } else {
-                for (size_t i = 0; i < verticesA.size(); i++) {
-                    glm::vec2 transformed = (dataA.rotationMatrix * (verticesA[i].position * dataA.scale)) + dataA.position;
-                    if (transformed.x < a.min.x) { a.min.x = transformed.x; }
-                    if (transformed.y < a.min.y) { a.min.y = transformed.y; }
-                    if (transformed.x > a.max.x) { a.max.x = transformed.x; }
-                    if (transformed.y > a.max.y) { a.max.y = transformed.y; }
+            }
+            else {
+                for (unsigned int i = 0; i < verticesA.size(); i++) {
+                    float pxA = verticesA[i].position[0] * dataA.scale[0];
+                    float pyA = verticesA[i].position[1] * dataA.scale[1];
+                    float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
+                    transformedA[0] += dataA.position[0];
+                    transformedA[1] += dataA.position[1];
 
-                    transformed = (dataB.rotationMatrix * (verticesB[i].position * dataB.scale)) + dataB.position;
-                    if (transformed.x < b.min.x) { b.min.x = transformed.x; }
-                    if (transformed.y < b.min.y) { b.min.y = transformed.y; }
-                    if (transformed.x > b.max.x) { b.max.x = transformed.x; }
-                    if (transformed.y > b.max.y) { b.max.y = transformed.y; }
+                    if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
+                    if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
+                    if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
+                    if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
+
+                    float pxB = verticesB[i].position[0] * dataB.scale[0];
+                    float pyB = verticesB[i].position[1] * dataB.scale[1];
+                    float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
+                    transformedB[0] += dataB.position[0];
+                    transformedB[1] += dataB.position[1];
+
+                    if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
+                    if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
+                    if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
+                    if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
                 }
             }
             AABB.push_back(a);
             AABB.push_back(b);
-            return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.y <= b.max.y && a.max.y >= b.min.y);
+            return (a.pos[0] <= b.pos[2] && a.pos[2] >= b.pos[0]) && (a.pos[1] <= b.pos[3] && a.pos[3] >= b.pos[1]);
         }
     }
 
     void clearAABB() { AABB.clear(); }
+
 private:
-    vector<AABBS> AABB;
+    std::vector<AABBS> AABB;
 };
