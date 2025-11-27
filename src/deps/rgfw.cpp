@@ -902,7 +902,6 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area) {
 	win->buffer = (u8*)buffer;
 	win->bufferSize = area;
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoBuffer, RGFW_DEBUG_CTX(win, 0), "createing a 4 channel buffer");
 	#ifdef RGFW_X11
 
 		win->src.bitmap = XCreateImage(
@@ -1164,7 +1163,6 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
     XChangeProperty(win->src.display, win->src.window, _NET_WM_SYNC_REQUEST_COUNTER, XA_CARDINAL, 32, PropModeReplace, (uint8_t*)&win->src.counter, 1);
 #endif
 
-    RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new window was created");
 	RGFW_window_setMouseDefault(win);
 	RGFW_window_setFlags(win, flags);
 
@@ -2277,7 +2275,6 @@ void RGFW_writeClipboard(const char* text, u32 textLen) {
     /* request ownership of the clipboard section and request to convert it, this means its our job to convert it */
 	XSetSelectionOwner(_RGFW.display, RGFW_XCLIPBOARD, _RGFW.helperWindow, CurrentTime);
 	if (XGetSelectionOwner(_RGFW.display, RGFW_XCLIPBOARD) != _RGFW.helperWindow) {
-    	RGFW_sendDebugInfo(RGFW_typeError, RGFW_errClipboard, RGFW_DEBUG_CTX(_RGFW.root, 0), "X11 failed to become owner of clipboard selection");
 		return;
 	}
 
@@ -2439,7 +2436,6 @@ RGFW_monitor RGFW_XCreateMonitor(i32 screen) {
 
 		if (info == NULL || ci == NULL) {
 			XRRFreeScreenResources(sr);
-			RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
 			return monitor;
 		}
 
@@ -2468,7 +2464,6 @@ RGFW_monitor RGFW_XCreateMonitor(i32 screen) {
 		XRRFreeScreenResources(sr);
 	#endif
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
 	return monitor;
 }
 
@@ -2660,8 +2655,7 @@ void RGFW_window_close(RGFW_window* win) {
     win->src.window = 0;
     XCloseDisplay(win->src.display);
 
-    RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a window was freed");
-    _RGFW.windowCount--;
+	_RGFW.windowCount--;
     if (_RGFW.windowCount == 0) RGFW_deinit();
 
 	RGFW_clipboard_switch(NULL);
@@ -2920,11 +2914,6 @@ void RGFW_loadXInput(void) {
 		RGFW_PROC_DEF(RGFW_XInput_dll, XInputGetState);
 		RGFW_PROC_DEF(RGFW_XInput_dll, XInputGetKeystroke);
 	}
-
-	if (XInputGetStateSRC == NULL)
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errFailedFuncLoad, RGFW_DEBUG_CTX(.win = _RGFW.root, .srcError = 0), "Failed to load XInputGetState");
-	if (XInputGetKeystrokeSRC == NULL)
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errFailedFuncLoad, RGFW_DEBUG_CTX(.win = _RGFW.root, .srcError = 0), "Failed to load XInputGetKeystroke");
 }
 #endif
 
@@ -2995,7 +2984,6 @@ int RGFW_window_createDXSwapChain(RGFW_window* win, IDXGIFactory* pFactory, IUnk
 
     HRESULT hr = pFactory->lpVtbl->CreateSwapChain(pFactory, (IUnknown*)pDevice, &swapChainDesc, swapchain);
     if (FAILED(hr)) {
-        RGFW_sendDebugInfo(RGFW_typeError, RGFW_errDirectXContext, RGFW_DEBUG_CTX(.win = win, .srcError = hr), "Failed to create DirectX swap chain!");
         return -2;
     }
 
@@ -3113,7 +3101,6 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 
 	RGFW_window_setFlags(win, flags);
 	RGFW_win32_makeWindowTransparent(win);
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new window was created");
     RGFW_window_show(win);
 
     return win;
@@ -3705,7 +3692,6 @@ RGFW_monitor win32CreateMonitor(HMONITOR src) {
 		}
 	#endif
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
 	return monitor;
 }
 #endif /* RGFW_NO_MONITOR */
@@ -3934,7 +3920,6 @@ void RGFW_window_close(RGFW_window* win) {
 	if (win->src.hIconSmall) DestroyIcon(win->src.hIconSmall);
 	if (win->src.hIconBig) DestroyIcon(win->src.hIconBig);
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a window was freed");
     _RGFW.windowCount--;
 	if (_RGFW.windowCount == 0) RGFW_deinit();
 
@@ -4335,7 +4320,6 @@ bool performDragOperation(id self, SEL sel, id sender) {
 
 	/* Check if the pasteboard contains file URLs */
 	if (objc_msgSend_id_bool(types, sel_registerName("containsObject:"), fileURLsType) == 0) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errClipboard, RGFW_DEBUG_CTX(win, 0), "No files found on the pasteboard.");
 		return 0;
 	}
 
@@ -4519,7 +4503,6 @@ void RGFW__osxDeviceRemovedCallback(void *context, IOReturn result, void *sender
 void RGFW_osxInitIOKit(void) {
 	IOHIDManagerRef hidManager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
 	if (!hidManager) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errIOKit, RGFW_DEBUG_CTX(_RGFW.root, 0), "Failed to create IOHIDManager.");
 		return;
 	}
 
@@ -4530,7 +4513,6 @@ void RGFW_osxInitIOKit(void) {
 		&kCFTypeDictionaryValueCallBacks
 	);
 	if (!matchingDictionary) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errIOKit, RGFW_DEBUG_CTX(_RGFW.root, 0), "Failed to create matching dictionary for IOKit.");
 		CFRelease(hidManager);
 		return;
 	}
@@ -4856,7 +4838,6 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	NSRetain(win->src.window);
 	NSRetain(NSApp);
 
-  	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new  window was created");
     return win;
 }
 
@@ -5520,7 +5501,6 @@ RGFW_monitor RGFW_NSCreateMonitor(CGDirectDisplayID display, id screen) {
 	monitor.scaleX = ((i32)(((float) (ppi_width) / dpi) * 10.0f)) / 10.0f;
 	monitor.scaleY = ((i32)(((float) (ppi_height) / dpi) * 10.0f)) / 10.0f;
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
 	return monitor;
 }
 
@@ -6214,7 +6194,6 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
         RGFW_window_initBuffer(win);
     }
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new  window was created");
     return win;
 }
 
@@ -6390,7 +6369,6 @@ void RGFW_window_close(RGFW_window* win) {
 		RGFW_FREE(win->buffer);
 	#endif
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a window was freed");
     _RGFW.windowCount--;
     if (_RGFW.windowCount == 0) RGFW_deinit();
 
