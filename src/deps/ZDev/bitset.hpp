@@ -1,3 +1,5 @@
+#pragma once
+
 template <unsigned long long N>
 struct bitset {
     unsigned long long data[(N + 63) / 64] = {0};
