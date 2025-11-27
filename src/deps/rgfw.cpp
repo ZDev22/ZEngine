@@ -980,7 +980,6 @@ void RGFW_window_getVisual(RGFW_window* win, RGFW_bool software) {
 	win->src.visual.depth = DefaultDepth(win->src.display, DefaultScreen(win->src.display));
 	if (win->_flags & RGFW_windowTransparent) {
 		XMatchVisualInfo(win->src.display, DefaultScreen(win->src.display), 32, TrueColor, &win->src.visual); /*!< for RGBA backgrounds */
-		if (win->src.visual.depth != 32)
 	}
 }
 

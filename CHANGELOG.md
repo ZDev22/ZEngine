@@ -1,18 +1,18 @@
-## v1.9 - DEV
+## v0.10 - 11/27/25
+- **Added Mac Support**
 - **Switched from GLFW to RGFW**
-- Removed engine dependency on src/deps/ZDev
-- Added camera zoom (BROKEN ON LINUX)
-- FIX README DOWNLOAD INSTRUCTIONS ON ARCH LINUX (TODO, prob not gonna make the changelog tbh)
+- Removed src/deps/ZDev engine dependency
+- Added camera zoom
 - Bugfixes
 
-## v1.8 - 10/5/25
+## v0.9 - 10/5/25
 - More bigInts.hpp functionality
 - **Compile-time per-game settings**
 - HUGE terminal game optimizations
 - Removed a bunch of useless vulkan files
 - Optimizations
 
-# v1.7 - 9/9/25
+## v0.8 - 9/9/25
 - **Added font.hpp**
 - **Added bigInts.hpp**
 - MUCH more keyboard.hpp functionality
