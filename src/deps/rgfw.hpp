@@ -409,7 +409,6 @@ typedef RGFW_ENUM(u32, RGFW_windowFlags) {
 	RGFW_windowFullscreen = RGFW_BIT(5), /*!< the window is fullscreen by default */
 	RGFW_windowTransparent = RGFW_BIT(6), /*!< the window is transparent (only properly works on X11 and MacOS, although it's meant for for windows) */
 	RGFW_windowCenter = RGFW_BIT(7), /*! center the window on the screen */
-	RGFW_windowOpenglSoftware = RGFW_BIT(8), /*! use OpenGL software rendering */
 	RGFW_windowCocoaCHDirToRes = RGFW_BIT(9), /*! (cocoa only), change directory to resource folder */
 	RGFW_windowScaleToMonitor = RGFW_BIT(10), /*! scale the window to the screen */
 	RGFW_windowHide = RGFW_BIT(11), /*! the window is hidden */
@@ -563,15 +562,14 @@ typedef RGFW_ENUM(u8, RGFW_debugType) {
 
 typedef RGFW_ENUM(u8, RGFW_errorCode) {
 	RGFW_noError = 0, /*!< no error */
-	RGFW_errOpenglContext, RGFW_errEGLContext, /*!< error with the OpenGL context */
 	RGFW_errWayland,
 	RGFW_errDirectXContext,
 	RGFW_errIOKit,
 	RGFW_errClipboard,
 	RGFW_errFailedFuncLoad,
 	RGFW_errBuffer,
-	RGFW_infoMonitor, RGFW_infoWindow, RGFW_infoBuffer, RGFW_infoGlobal, RGFW_infoOpenGL,
-	RGFW_warningWayland, RGFW_warningOpenGL
+	RGFW_infoMonitor, RGFW_infoWindow, RGFW_infoBuffer, RGFW_infoGlobal,
+	RGFW_warningWayland
 };
 
 typedef struct RGFW_debugContext { RGFW_window* win; RGFW_monitor monitor; u32 srcError; } RGFW_debugContext;
@@ -1408,8 +1406,6 @@ void RGFW_captureCursor(RGFW_window* win, RGFW_rect r);
 int RGFW_window_createDXSwapChain(RGFW_window* win, IDXGIFactory* pFactory, IUnknown* pDevice, IDXGISwapChain** swapchain);
 #endif
 
-void RGFW_win32_loadOpenGLFuncs(HWND dummyWin);
-
 i32 RGFW_init(void);
 
 RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowFlags flags, RGFW_window* win);
@@ -1593,25 +1589,6 @@ typedef RGFW_ENUM(NSUInteger, NSBitmapFormat) {
 id NSBitmapImageRep_initWithBitmapData(unsigned char** planes, NSInteger width, NSInteger height, NSInteger bps, NSInteger spp, bool alpha, bool isPlanar, const char* colorSpaceName, NSBitmapFormat bitmapFormat, NSInteger rowBytes, NSInteger pixelBits);
 id NSColor_colorWithSRGB(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha);
 
-#define NS_OPENGL_ENUM_DEPRECATED(minVers, maxVers) API_AVAILABLE(macos(minVers))
-typedef RGFW_ENUM(NSInteger, NSOpenGLContextParameter) {
-	NSOpenGLContextParameterSwapInterval           NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 222, /* 1 param.  0 -> Don't sync, 1 -> Sync to vertical retrace     */
-		NSOpenGLContextParametectxaceOrder           NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 235, /* 1 param.  1 -> Above Window (default), -1 -> Below Window    */
-		NSOpenGLContextParametectxaceOpacity         NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 236, /* 1 param.  1-> Surface is opaque (default), 0 -> non-opaque   */
-		NSOpenGLContextParametectxaceBackingSize     NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 304, /* 2 params.  Width/height of surface backing size              */
-		NSOpenGLContextParameterReclaimResources       NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 308, /* 0 params.                                                    */
-		NSOpenGLContextParameterCurrentRendererID      NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 309, /* 1 param.   Retrieves the current renderer ID                 */
-		NSOpenGLContextParameterGPUVertexProcessing    NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 310, /* 1 param.   Currently processing vertices with GPU (get)      */
-		NSOpenGLContextParameterGPUFragmentProcessing  NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 311, /* 1 param.   Currently processing fragments with GPU (get)     */
-		NSOpenGLContextParameterHasDrawable            NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 314, /* 1 param.   Boolean returned if drawable is attached          */
-		NSOpenGLContextParameterMPSwapsInFlight        NS_OPENGL_ENUM_DEPRECATED(10.0, 10.14) = 315, /* 1 param.   Max number of swaps queued by the MP GL engine    */
-		NSOpenGLContextParameterSwapRectangle API_DEPRECATED("", macos(10.0, 10.14)) = 200, /* 4 params.  Set or get the swap rectangle {x, y, w, h} */
-		NSOpenGLContextParameterSwapRectangleEnable API_DEPRECATED("", macos(10.0, 10.14)) = 201, /* Enable or disable the swap rectangle */
-		NSOpenGLContextParameterRasterizationEnable API_DEPRECATED("", macos(10.0, 10.14)) = 221, /* Enable or disable all rasterization */
-		NSOpenGLContextParameterStateValidation API_DEPRECATED("", macos(10.0, 10.14)) = 301, /* Validate state for multi-screen functionality */
-		NSOpenGLContextParametectxaceSurfaceVolatile API_DEPRECATED("", macos(10.0, 10.14)) = 306, /* 1 param.   Surface volatile state */
-};
-
 typedef RGFW_ENUM(NSInteger, NSWindowButton) {
     NSWindowCloseButton            = 0,
     NSWindowMiniaturizeButton      = 1,
@@ -1622,8 +1599,6 @@ typedef RGFW_ENUM(NSInteger, NSWindowButton) {
     NSWindowFullScreenButton       = 7,
 };
 
-void NSOpenGLContext_setValues(id context, const int* vals, NSOpenGLContextParameter param);
-void* NSOpenGLPixelFormat_initWithAttributes(const uint32_t* attribs);
 id NSPasteboard_generalPasteboard(void);
 id* cstrToNSStringArray(char** strs, size_t len);
 const char* NSPasteboard_stringForType(id pasteboard, NSPasteboardType dataType, size_t* len);
@@ -1860,8 +1835,6 @@ void EMSCRIPTEN_KEEPALIVE RGFW_makeSetValue(size_t index, char* file);
 
 void EMSCRIPTEN_KEEPALIVE RGFW_mkdir(char* name) ;
 void EMSCRIPTEN_KEEPALIVE RGFW_writeFile(const char *path, const char *data, size_t len);
-void RGFW_window_initOpenGL(RGFW_window* win, RGFW_bool software);
-void RGFW_window_freeOpenGL(RGFW_window* win);
 
 i32 RGFW_init(void);
 
@@ -1880,14 +1853,7 @@ void RGFW_window_setMousePassthrough(RGFW_window* win, RGFW_bool passthrough);
 void RGFW_writeClipboard(const char* text, u32 textLen);
 RGFW_ssize_t RGFW_readClipboardPtr(char* str, size_t strCapacity);
 void RGFW_window_swapBuffers_software(RGFW_window* win);
-void RGFW_window_makeCurrent_OpenGL(RGFW_window* win);
-void RGFW_window_swapBuffers_OpenGL(RGFW_window* win);
-
-#ifndef RGFW_WEBGPU
-void* RGFW_getCurrent_OpenGL(void);
-#endif
 void RGFW_window_swapInterval(RGFW_window* win, i32 swapInterval);
-
 void RGFW_deinit(void);
 void RGFW_window_close(RGFW_window* win);
 int RGFW_innerWidth(void);

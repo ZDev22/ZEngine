@@ -703,6 +703,23 @@ VkResult RGFW_window_createVKSurface(RGFW_window* win, VkInstance instance, VkSu
 #ifdef RGFW_X11
     VkXlibSurfaceCreateInfoKHR x11 = { VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR, 0, 0, (Display*) win->src.display, (Window) win->src.window };
     return vkCreateXlibSurfaceKHR(instance, &x11, NULL, surface);
+#elif defined(RGFW_MACOS)
+    id nswindow = (id)win->src.window;
+    id contentView = ((id(*)(id, SEL))objc_msgSend)(nswindow, sel_getUid("contentView"));
+    id metalLayer = ((id(*)(id, SEL))objc_msgSend)((id)objc_getClass("CAMetalLayer"), sel_getUid("layer"));
+
+    ((void(*)(id, SEL, bool))objc_msgSend)(contentView, sel_getUid("setWantsLayer:"), true);
+    ((void(*)(id, SEL, id))objc_msgSend)(contentView, sel_getUid("setLayer:"), metalLayer);
+
+    VkMacOSSurfaceCreateInfoMVK surfaceInfo = {};
+    surfaceInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+    surfaceInfo.pView = (void*)contentView;
+
+    return vkCreateMacOSSurfaceMVK(instance, &surfaceInfo, NULL, surface);
+#elif defined(RGFW_WINDOWS)
+    VkWin32SurfaceCreateInfoKHR win32 = { VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, 0, 0, GetModuleHandle(NULL), (HWND)win->src.window };
+
+    return vkCreateWin32SurfaceKHR(instance, &win32, NULL, surface);
 #endif
 }
 
@@ -964,7 +981,6 @@ void RGFW_window_getVisual(RGFW_window* win, RGFW_bool software) {
 	if (win->_flags & RGFW_windowTransparent) {
 		XMatchVisualInfo(win->src.display, DefaultScreen(win->src.display), 32, TrueColor, &win->src.visual); /*!< for RGBA backgrounds */
 		if (win->src.visual.depth != 32)
-		RGFW_sendDebugInfo(RGFW_typeWarning, RGFW_warningOpenGL, RGFW_DEBUG_CTX(win, 0), "Failed to load a 32-bit depth");
 	}
 }
 
@@ -1066,7 +1082,7 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	i64 event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask | FocusChangeMask | LeaveWindowMask | EnterWindowMask | ExposureMask; /*!< X11 events accepted */
 
     win->src.display = XOpenDisplay(NULL);
-    RGFW_window_getVisual(win, RGFW_BOOL(flags & RGFW_windowOpenglSoftware));
+    RGFW_window_getVisual(win, RGFW_BOOL(flags));
 
     /* make X window attrubutes */
 	XSetWindowAttributes swa;
@@ -2988,10 +3004,6 @@ int RGFW_window_createDXSwapChain(RGFW_window* win, IDXGIFactory* pFactory, IUnk
 }
 #endif
 
-void RGFW_win32_loadOpenGLFuncs(HWND dummyWin) {
-	RGFW_UNUSED(dummyWin);
-}
-
 i32 RGFW_init(void) {
 	#ifndef RGFW_NO_XINPUT
 		if (RGFW_XInput_dll == NULL)
@@ -3015,7 +3027,6 @@ i32 RGFW_init(void) {
 	RGFW_LOAD_LIBRARY(RGFW_dwm_dll, "dwmapi.dll");
 	RGFW_PROC_DEF(RGFW_dwm_dll, DwmEnableBlurBehindWindow);
 	#endif
-
 	RGFW_LOAD_LIBRARY(RGFW_wgl_dll, "opengl32.dll");
 	#ifndef RGFW_NO_LOAD_WGL
 		RGFW_PROC_DEF(RGFW_wgl_dll, wglCreateContext);
@@ -3088,7 +3099,6 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	GetWindowRect(dummyWin, &windowRect);
 	GetClientRect(dummyWin, &clientRect);
 
-	RGFW_win32_loadOpenGLFuncs(dummyWin);
 	DestroyWindow(dummyWin);
 
 	win->src.hOffset = (u32)(windowRect.bottom - windowRect.top) - (u32)(clientRect.bottom - clientRect.top);
@@ -3918,7 +3928,6 @@ void RGFW_window_close(RGFW_window* win) {
 		DeleteObject(win->src.bitmap);
 	#endif
 
-	if ((win->_flags & RGFW_windowNoInitAPI) == 0) RGFW_window_freeOpenGL(win);
 	RemovePropW(win->src.window, L"RGFW");
 	ReleaseDC(win->src.window, win->src.hdc); /*!< delete device context */
 	DestroyWindow(win->src.window); /*!< delete window */
@@ -4185,15 +4194,6 @@ id NSColor_colorWithSRGB(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha
 	SEL func = sel_registerName("colorWithSRGBRed:green:blue:alpha:");
 	return ((id(*)(id, SEL, CGFloat, CGFloat, CGFloat, CGFloat))objc_msgSend)
 		((id)nsclass, func, red, green, blue, alpha);
-}
-
-void NSOpenGLContext_setValues(id context, const int* vals, NSOpenGLContextParameter param) {
-	((void (*)(id, SEL, const int*, NSOpenGLContextParameter))objc_msgSend)
-		(context, sel_registerName("setValues:forParameter:"), vals, param);
-}
-void* NSOpenGLPixelFormat_initWithAttributes(const uint32_t* attribs) {
-	return (void*) ((id(*)(id, SEL, const uint32_t*))objc_msgSend)
-		(NSAlloc((id)objc_getClass("NSOpenGLPixelFormat")), sel_registerName("initWithAttributes:"), attribs);
 }
 
 id NSPasteboard_generalPasteboard(void) {
@@ -5665,7 +5665,6 @@ void RGFW_deinit(void) {
 void RGFW_window_close(RGFW_window* win) {
 	RGFW_ASSERT(win != NULL);
 	NSRelease(win->src.view);
-	if ((win->_flags & RGFW_windowNoInitAPI) == 0) RGFW_window_freeOpenGL(win);
 
 	#if defined(RGFW_BUFFER)
 		if ((win->_flags & RGFW_BUFFER_ALLOC))
@@ -6193,7 +6192,6 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 				};
 
 				reader.readAsArrayBuffer(file);
-				/* This works weird on modern opengl */
 				var filename = stringToNewUTF8(path);
 
 				filenamesArray.push(filename);
@@ -6384,34 +6382,10 @@ void RGFW_window_swapBuffers_software(RGFW_window* win) {
 #endif
 }
 
-void RGFW_window_makeCurrent_OpenGL(RGFW_window* win) {
-#if !defined(RGFW_WEBGPU) && defined(RGFW_BUFFER))
-	if (win == NULL)
-	    emscripten_webgl_make_context_current(0);
-	else
-	    emscripten_webgl_make_context_current(win->src.ctx);
-#endif
-}
-
-
-void RGFW_window_swapBuffers_OpenGL(RGFW_window* win) {
-#ifndef RGFW_WEBGPU
-	emscripten_webgl_commit_frame();
-
-#endif
-    emscripten_sleep(0);
-}
-
-#ifndef RGFW_WEBGPU
-void* RGFW_getCurrent_OpenGL(void) { return (void*)emscripten_webgl_get_current_context(); }
-#endif
-
 void RGFW_window_swapInterval(RGFW_window* win, i32 swapInterval) { RGFW_UNUSED(win); RGFW_UNUSED(swapInterval); }
 void RGFW_deinit(void) { _RGFW.windowCount = -1; RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoGlobal, (RGFW_debugContext){0}, "global context deinitialized"); }
 
 void RGFW_window_close(RGFW_window* win) {
-	if ((win->_flags & RGFW_windowNoInitAPI) == 0) RGFW_window_freeOpenGL(win);
-
 	#if defined(RGFW_BUFFER)
 	if ((win->_flags & RGFW_BUFFER_ALLOC))
 		RGFW_FREE(win->buffer);
