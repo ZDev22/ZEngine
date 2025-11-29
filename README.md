@@ -1,29 +1,76 @@
-# A C++ Vulkan engine supporting windows and linux
-## About:
-My goal for this engine is to be **THE FASTEST** *2D game engine*. It is very simplistic and a little *hard to work with*, but if you use it properly it can achieve **thousands of FPS**. It has features like *sprite creation* and *texture loading* that run **REALTIME**. *As long as you have a GPU* (even an intigrated one), **it can run on your device**. There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *1.10GHz* on two cores, and it's intigrated GPU *(on ![FlappyBird](/src/assets/images/flappyBird.png)flappybird![FlappyBird](/src/assets/images/flappyBird.png)). Mac support is planned, but I currently don't have If you want one.* To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D**
+# **A C++ engine supporting Linux, Windows and Mac**
+# About:
+My goal for this engine is to be **THE FASTEST** *2D game engine*. It is very simplistic and a little *hard to work with*, but if you use it properly it can achieve **thousands of FPS**.
 
-## How to use:
-### LINUX:
-#### Ubuntu-based:
+It has features like *sprite creation* and *texture loading* that run **REALTIME**. *As long as you have a GPU* (even an intigrated one), **it can run on your device**.
+
+There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *1.10GHz* on two cores, and it's intigrated GPU *(on ![FlappyBird](/src/assets/images/flappyBird.png)flappybird![FlappyBird](/src/assets/images/flappyBird.png)).
+
+To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D**
+
+# How to use:
+## LINUX:
+#### Arch-based:
+```bash
+sudo pacman -Syu --noconfirm
+sudo pacman -S gcc cmake gdb --noconfirm #C/C++/Cmake/Cdbg
+sudo pacman -S libx11 libxrandr xkbcommon mesa --noconfirm #X11
+sudo pacman -S wayland wayland-protocols --noconfirm #Wayland
+sudo pacman -S vulkan-icd-loader vulkan-tools --noconfirm #Vulkan
+# Intel: sudo pacman -S vulkan-intel --noconfirm
+# AMD: sudo pacman -S vulkan-radeon --noconfirm
+```
+### Debian-based:
 ```bash
 sudo apt update
-sudo apt install build-essential cmake gdb -y #C/C++/Cmake/Cppdbg
+sudo apt install build-essential cmake gdb -y #C/C++/Cmake/Cdbg
 sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev -y libxi-dev #X11
 sudo apt install libwayland-dev wayland-protocols -y #Wayland
 sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
 ```
-#### Arch-based:
+#### Fedora-based:
 ```bash
-sudo pacman -Syu --noconfirm
-sudo pacman -S gcc cmake gdb --noconfirm #C/C++/Cmake/Cppdbg
-sudo pacman -S libx11 libxrandr xkbcommon mesa --noconfirm #X11
-sudo pacman -S wayland wayland-protocols --noconfirm #Wayland
-sudo pacman -S vulkan-icd-loader vulkan-tools --noconfirm #Vulkan
-# If you have an Intel or AMD GPU, install Vulkan drivers:
-# Intel: sudo pacman -S vulkan-intel --noconfirm
-# AMD: sudo pacman -S vulkan-radeon --noconfirm
+sudo dnf update -y
+sudo dnf groupinstall "Development Tools" -y #Dev-tools
+sudo dnf install cmake gdb -y #C/C++/CMake/Cdbg
+sudo dnf install libX11-devel libXrandr-devel libxkbcommon-devel mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
+sudo dnf install wayland-devel wayland-protocols-devel -y #Wayland
+sudo dnf install vulkan vulkan-tools vulkan-loader-devel -y #Vulkan
+# Intel: sudo dnf install vulkan-intel -y
+# AMD: sudo dnf install vulkan-radeon -y
 ```
-### MAC:
+#### Gentoo-based:
+```bash
+sudo emerge --sync
+sudo emerge --ask sys-devel/gcc sys-devel/cmake sys-devel/gdb -y #C/C++/CMake/Cdbg
+sudo emerge --ask x11-libs/libX11 x11-libs/libXrandr x11-libs/libXi x11-libs/libXcursor x11-libs/libxkbcommon mesa-libs/mesa -y #X11
+sudo emerge --ask x11-libs/wayland x11-libs/wayland-protocols -y #Wayland
+sudo emerge --ask media-libs/vulkan-loader media-libs/vulkan-tools -y #Vulkan
+# Intel: sudo emerge --ask media-libs/vulkan-intel
+# AMD: sudo emerge --ask media-libs/vulkan-radeon
+```
+#### Alpine-based:
+```bash
+sudo apk update
+sudo apk add build-base cmake gdb #C/C++/CMake/Cdbg
+sudo apk add libx11-dev libxrandr-dev libxkbcommon-dev libxi-dev libxcursor-dev mesa-egl-dev #X11
+sudo apk add wayland wayland-protocols-dev #Wayland
+sudo apk add vulkan-tools vulkan-headers vulkan-loader-dev #Vulkan
+# Intel: sudo apk add vulkan-intel
+# AMD: sudo apk add vulkan-radeon
+```
+#### Leap-based:
+```bash
+sudo zypper refresh
+sudo zypper update -y
+sudo zypper install -t pattern devel_C_C++ cmake gdb -y #C/C++/CMake/Cdbg
+sudo zypper install libX11-devel libXrandr-devel libxkbcommon-devel Mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
+sudo zypper install wayland-devel wayland-protocols-devel -y #Wayland
+sudo zypper install vulkan-loader-devel vulkan-tools -y #Vulkan
+# Intel: sudo zypper install vulkan-intel -y
+# AMD: sudo zypper install vulkan-radeon -y
+```
+## MAC:
 ```bash
 brew install gcc cmake lldb #C/C++/Cmake/Cppdbg
 brew install molten-vk vulkan-headers vulkan-tools #Vulkan
@@ -47,7 +94,7 @@ source ~/.zshrc
 sudo cp ~/VulkanSDK/1.4.328.1/macOS/lib/libMoltenVK.dylib /usr/local/lib/
 ```
 **THIS PROJECT CANNOT RUN ON ZED WITH MACOS**
-### WINDOWS:
+## WINDOWS:
 - Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
 - Launch MSYS2 MSYS (the purple one)
 - Run the following commands to download a C++ compiler:
@@ -60,12 +107,12 @@ pacman -S --needed base-devel mingw-w64-x86_64-toolchain
 - Add C:\msys64\ucrt64\bin to your user PATH
 - Add C:\msys64\mingw64\bin to your user PATH
 - Download the **Windows x64 Installer** from [https://cmake.org/download/](https://cmake.org/download/)
-### Extensions:
+## Extensions:
 - Install **@category:debuggers cppdbg** to run the program in VSCode (Windows/Linux)
 - Install the cppdbg extension to run the program in VSCodium (Windows/Linux)
 - Include the Vulkan bin folder in your environmental variables to edit shaders (Windows/Linux)
 
-## How do make your own games:
+# How do make your own games:
 
 - Make a new folder in src/games named whatever you want to name your game
 - Duplicate program.cpp and .hpp from games/flappyBird into your new folder
@@ -75,27 +122,27 @@ pacman -S --needed base-devel mingw-w64-x86_64-toolchain
 - Navigate to src/vulkan/app.cpp and update the include path to the path of your file
 - In app.cpp, update the load, constructor and the tick() functions to your game's
 
-## Third party dependencies:
+# Third party dependencies:
 [VULKAN (Graphics) {Modified}](https://vulkan.lunarg.com/sdk/home)
 [RGFW (Window) {Modified}](https://github.com/ColleagueRiley/RGFW)
 [MINIAUDIO (Audio) {Modified}](https://miniaud.io/)
 [STB-LIBRARIES (Image loader, font text rasterizer) {Modified}](https://github.com/nothings/stb)
-## Build commands:
-### Linux:
+# Build commands:
+## Linux:
 ```bash
 cmake --preset linux
 cmake --build --preset linux -- -j8
 ```
 *or use **linuxrelease** for release builds*
 
-### Mac:
+## Mac:
 ```bash
 cmake --preset mac
 cmake --build --preset mac -- -j8
 ```
 *or use **macrelease** for release builds*
 
-### Windows:
+## Windows:
 ```bash
 cmake --preset windows
 cmake --build --preset windows -- -j8
