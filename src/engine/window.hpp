@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../deps/rgfw.hpp"
+#define RGFW_IMPLEMENTATION
+#include "RGFW.h"
 
 struct AppWindow {
 public:
