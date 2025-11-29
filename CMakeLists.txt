@@ -79,7 +79,6 @@ if(UNIX)
       find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
       find_library(COREVIDEO_FRAMEWORK CoreVideo)
       target_link_libraries(main PRIVATE
-         Vulkan
          ${COCOA_FRAMEWORK}
          ${FOUNDATION_FRAMEWORK}
          ${IOKIT_FRAMEWORK}

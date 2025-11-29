@@ -4,7 +4,7 @@
 
 Device::Device(AppWindow& window) : window{ window } {
     std::cout << "Creating instance...\n"; createInstance();
-    std::cout << "Creating surface...\n"; RGFW_window_createVKSurface(window.get(), instance, &surface_);
+    std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(window.get(), instance, &surface_);
     std::cout << "Creating physical device...\n"; pickPhysicalDevice();
     std::cout << "Creating logical device...\n"; createLogicalDevice();
     std::cout << "Creating command pool...\n"; createCommandPool();
@@ -135,7 +135,7 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
 
 std::vector<const char*> Device::getRequiredExtensions() {
     size_t rgfWExtensionCount = 0;
-    const char** rgfWExtensions = RGFW_getVKRequiredInstanceExtensions(&rgfWExtensionCount);
+    const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
     if (!rgfWExtensions || rgfWExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
 
     std::vector<const char*> extensions(rgfWExtensions, rgfWExtensions + rgfWExtensionCount);
