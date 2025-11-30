@@ -49,7 +49,8 @@ file(GLOB_RECURSE ALL_CPP_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
 file(GLOB_RECURSE ALL_C_SOURCES   RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c")
 
 set(SOURCES "")
-list(APPEND SOURCES "src/deps/rgfw.cpp")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    if(NOT F MATCHES "^src/deps/")
@@ -57,47 +58,57 @@ foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    endif()
 endforeach()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
 add_executable(main ${SOURCES})
 
 target_include_directories(main PRIVATE
    "${VULKAN_INCLUDE_DIR}"
    "${CMAKE_SOURCE_DIR}/src"
    "${CMAKE_SOURCE_DIR}/src/include"
+   "${CMAKE_SOURCE_DIR}/src/deps"
 )
 
 target_link_libraries(main PRIVATE Vulkan)
 
-if(UNIX AND NOT APPLE)
-   find_package(X11 REQUIRED)
+if(UNIX)
+   if(APPLE)
+      find_package(Vulkan REQUIRED)
+      find_library(COCOA_FRAMEWORK Cocoa)
+      find_library(FOUNDATION_FRAMEWORK Foundation)
+      find_library(IOKIT_FRAMEWORK IOKit)
+      find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
+      find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
+      find_library(COREVIDEO_FRAMEWORK CoreVideo)
+      target_link_libraries(main PRIVATE
+         ${COCOA_FRAMEWORK}
+         ${FOUNDATION_FRAMEWORK}
+         ${IOKIT_FRAMEWORK}
+         ${COREFOUNDATION_FRAMEWORK}
+         ${COREGRAPHICS_FRAMEWORK}
+         ${COREVIDEO_FRAMEWORK}
+         objc
+      )
+   elseif(WAYLAND_ENABLED)
+      target_link_libraries(main PRIVATE
+         wayland-cursor
+         wayland-client
+         wayland-egl
+         xkbcommon
+         EGL
+      )
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRGFW_WAYLAND")
+   else()
+      find_package(X11 REQUIRED)
+      target_link_libraries(main PRIVATE
+         ${X11_LIBRARIES}
+         dl
+         Xrandr
+         xkbcommon
+         pthread
+      )
+   endif()
+else()
    target_link_libraries(main PRIVATE
-      ${X11_LIBRARIES}
-      dl
-      Xrandr
-      wayland-client
-      wayland-egl
-      wayland-cursor
-      xkbcommon
-      EGL
-   )
-elseif(APPLE)
-   find_library(COCOA_FRAMEWORK Cocoa)
-   find_library(FOUNDATION_FRAMEWORK Foundation)
-   find_library(IOKIT_FRAMEWORK IOKit)
-   find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
-   find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
-   find_library(COREVIDEO_FRAMEWORK CoreVideo)
-
-   target_link_libraries(main PRIVATE
-      Vulkan
-      ${COCOA_FRAMEWORK}
-      ${FOUNDATION_FRAMEWORK}
-      ${IOKIT_FRAMEWORK}
-      ${COREFOUNDATION_FRAMEWORK}
-      ${COREGRAPHICS_FRAMEWORK}
-      ${COREVIDEO_FRAMEWORK}
-      objc
+	  gdi32
    )
 endif()
 
