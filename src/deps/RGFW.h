@@ -4653,24 +4653,23 @@ VkResult RGFW_window_createSurface_Vulkan(RGFW_window* win, VkInstance instance,
 
     *surface = VK_NULL_HANDLE;
 
-#ifdef RGFW_X11
+    #ifdef RGFW_X11
 
-    VkXlibSurfaceCreateInfoKHR x11 = { VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR, 0, 0, (Display*) _RGFW->display, (Window) win->src.window };
-    return vkCreateXlibSurfaceKHR(instance, &x11, NULL, surface);
+        VkXlibSurfaceCreateInfoKHR x11 = { VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR, 0, 0, (Display*) _RGFW->display, (Window) win->src.window };
+    	return vkCreateXlibSurfaceKHR(instance, &x11, NULL, surface);
 #endif
 #if defined(RGFW_WAYLAND)
 
     VkWaylandSurfaceCreateInfoKHR wayland = { VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR, 0, 0, (struct wl_display*) _RGFW->wl_display, (struct wl_surface*) win->src.surface };
     return vkCreateWaylandSurfaceKHR(instance, &wayland, NULL, surface);
-#elif defined(RGFW_WINDOWS)
-    VkWin32SurfaceCreateInfoKHR win32 = { VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, 0, 0, GetModuleHandle(NULL), (HWND)win->src.window };
+    #elif defined(RGFW_WINDOWS)
+        VkWin32SurfaceCreateInfoKHR win32 = { VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, 0, 0, GetModuleHandle(NULL), (HWND)win->src.window };
 
-    return vkCreateWin32SurfaceKHR(instance, &win32, NULL, surface);
-#elif defined(RGFW_MACOS) && !defined(RGFW_MACOS_X11)
-    void* contentView = ((void* (*)(id, SEL))objc_msgSend)((id)win->src.window, sel_getUid("contentView"));
-    VkMacOSSurfaceCreateSurfaceMVK macos = { VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK, 0, 0, 0, (void*)contentView };
-    return vkCreateMacOSSurfaceMVK(instance, &macos, NULL, surface);
-#endif
+    	return vkCreateWin32SurfaceKHR(instance, &win32, NULL, surface);
+    #elif defined(RGFW_MACOS) && !defined(RGFW_MACOS_X11)
+		VkResult RGFW_CreateVulkanSurface(RGFW_window* win, VkInstance instance, VkSurfaceKHR* surface, void* view);
+        return RGFW_CreateVulkanSurface(win, instance, surface, win->src.view);
+    #endif
 }
 
 

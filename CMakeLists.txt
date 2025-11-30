@@ -52,6 +52,10 @@ set(SOURCES "")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
+if(APPLE)
+   list(APPEND SOURCES "src/deps/macRGFW.mm")
+endif()
+
 foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    if(NOT F MATCHES "^src/deps/")
       list(APPEND SOURCES "${F}")
@@ -78,6 +82,8 @@ if(UNIX)
       find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
       find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
       find_library(COREVIDEO_FRAMEWORK CoreVideo)
+      find_library(METAL_FRAMEWORK Metal)
+      find_library(QUARTZCORE_FRAMEWORK QuartzCore)
       target_link_libraries(main PRIVATE
          ${COCOA_FRAMEWORK}
          ${FOUNDATION_FRAMEWORK}
@@ -85,6 +91,8 @@ if(UNIX)
          ${COREFOUNDATION_FRAMEWORK}
          ${COREGRAPHICS_FRAMEWORK}
          ${COREVIDEO_FRAMEWORK}
+         ${METAL_FRAMEWORK}
+         ${QUARTZCORE_FRAMEWORK}
          objc
       )
    elseif(WAYLAND_ENABLED)

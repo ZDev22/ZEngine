@@ -3,8 +3,8 @@
 #define RGFW_VULKAN
 #define RGFW_NO_API
 #include "RGFW.h"
+
 #include <vulkan/vulkan.h>
-#include <cstdint>
 
 struct AppWindow {
 public:
@@ -18,7 +18,7 @@ public:
 		RGFW_event e;
         while (RGFW_window_checkEvent(window, &e)) {
             if (e.type == RGFW_windowResized) {
-				std::int32_t new_width, new_height;
+				unsigned int new_width, new_height;
 				RGFW_window_getSize(window, &width, &height);
 				if (new_width != width || new_height != height) {
 					width = new_width;
