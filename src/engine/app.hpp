@@ -5,13 +5,17 @@
 #include "renderer.hpp"
 #include "renderSystem.hpp"
 
+#define USE_MULTITHREADING
+
 struct App {
 public:
     App();
     void run();
 
 private:
-    void render();
+    #ifdef USE_MULTITHREADING
+        void render();
+    #endif
 
     AppWindow window{720, 480};
     Push vertex{};
