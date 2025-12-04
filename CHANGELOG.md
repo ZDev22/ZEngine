@@ -1,3 +1,8 @@
+## v0.11 - DEV
+- More bigInts.hpp functionality
+- More math.hpp functionality
+- Added Fedora, Gentoo, Alpine and Leap installation instructions
+
 ## v0.10 - 11/27/25
 - **Added Mac Support**
 - **Switched from GLFW to RGFW**

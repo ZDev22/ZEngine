@@ -1,16 +1,16 @@
+// Current rival (and inspiration) https://github.com/SamHerts/BigInt/blob/main/bigint.h
+
 #pragma once
 
 #include <string.h>
 
-// Use unsigned long long for precise, large numbers
 template<unsigned long long bitCount>
 struct bigInt {
     static constexpr unsigned int bytes = bitCount / 64;
     unsigned long long limbs[bytes] = {0};
 
     constexpr bigInt() = default;
-    template<typename T>
-    constexpr bigInt(const T v) { limbs[0] = v; }
+    template<typename T> constexpr bigInt(const T num) { limbs[0] = num; }
     constexpr bigInt(const unsigned long long* init, unsigned int count) {
         unsigned int limit = count < bytes ? count : bytes;
         unsigned int i = 0;
@@ -18,49 +18,46 @@ struct bigInt {
         memset(&limbs[i], 0, (bytes - i) * 8);
     }
 
-    inline bool isZero() const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != 0) return false; } return true; }
     inline void setZero() { memset(limbs, 0, bytes); }
-    unsigned long long mod(unsigned long long m) {
-        if (m == 0) { return 0; }
-        __uint128_t rem = 0;
+    inline bool isZero() const {
+        static constexpr unsigned long long nothing[bytes] = {0};
+        return memcmp(limbs, nothing, bytes * 8) == 0;
+    }
+    unsigned long long mod(unsigned long long num) {
+        if (num == 0) { return 0; }
+        __uint128_t remainder = 0;
         for (int i = bytes - 1; i >= 0; i--) {
-            __uint128_t cur = (rem << 64) | limbs[i];
-            limbs[i] = cur / m;
-            rem = cur % m;
+            __uint128_t current = (remainder << 64) | limbs[i];
+            limbs[i] = current / num;
+            remainder = current % num;
         }
-        return static_cast<unsigned long long>(rem);
+        return (unsigned long long)remainder;
     }
     int bitWidth() const {
-        for (int i = bytes - 1; i >= 0; i--) {
-            if (limbs[i] != 0) {
-                int width = 0;
-                unsigned long long val = limbs[i];
-                while (val) { ++width; val >>= 1; }
-                return i * 64 + width;
-            }
+        for (int i = bytes - 1; i >= 0; --i) {
+            if (limbs[i] != 0) { return i * 64 + std::bit_width(limbs[i]); }
         }
         return 0;
     }
 
-    void operator=(const bigInt& rhs) { memcpy(limbs, rhs.limbs, bytes); }
-    template<typename T>
-    void operator=(const T rhs) {
+    void operator=(const bigInt& num) { memcpy(limbs, num.limbs, bytes); }
+    template<typename T> void operator=(const T num) {
         setZero();
-        limbs[0] = rhs;
+        limbs[0] = num;
     }
 
-    bigInt operator+(const bigInt& rhs) const {
+    bigInt operator+(const bigInt& num) const {
         bigInt result;
         __uint128_t carry = 0;
         for (unsigned int i = 0; i < bytes; i++) {
-            __uint128_t sum = static_cast<__uint128_t>(limbs[i]) + rhs.limbs[i] + carry;
+            __uint128_t sum = (__uint128_t)limbs[i] + num.limbs[i] + carry;
             result.limbs[i] = sum;
             carry = sum >> 64;
         }
         return result;
     }
-    template<typename T> bigInt operator+(const T rhs) const { 
-        __uint128_t sum = static_cast<__uint128_t>(limbs[0] + rhs);
+    template<typename T> bigInt operator+(const T num) const { 
+        __uint128_t sum = (__uint128_t)(limbs[0] + num);
         bigInt result = (unsigned long long)sum;
 
         __uint128_t carry = sum >> 64;
@@ -73,22 +70,22 @@ struct bigInt {
         }
         return result;
     }
-    void operator+=(const bigInt& rhs) { *this = *this + rhs; }
-    template<typename T> void operator+=(const T rhs) { *this = *this + rhs; }
+    void operator+=(const bigInt& num) { *this = *this + num; }
+    template<typename T> void operator+=(const T num) { *this = *this + num; }
 
-    bigInt operator-(const bigInt& rhs) const {
+    bigInt operator-(const bigInt& num) const {
         bigInt result;
         __uint128_t borrow;
         for (unsigned int i = 0; i < bytes; i++) {
-            unsigned long long tmp = limbs[i] - rhs.limbs[i] - borrow;
-            borrow = static_cast<__uint128_t>(limbs[i]) < static_cast<__uint128_t>(rhs.limbs[i]) + borrow ? 1 : 0;
+            unsigned long long tmp = limbs[i] - num.limbs[i] - borrow;
+            borrow = (__uint128_t)limbs[i] < (__uint128_t)num.limbs[i] + borrow ? 1 : 0;
             result.limbs[i] = tmp;
         }
         return result;
     }
-    template<typename T> bigInt operator-(const T rhs) const {
+    template<typename T> bigInt operator-(const T num) const {
         bigInt result = *this;
-        unsigned long long borrow = rhs;
+        unsigned long long borrow = num;
         for (unsigned int i = 0; i < bytes; ++i) {
             unsigned long long old = result.limbs[i];
             if (old >= borrow) {
@@ -103,14 +100,14 @@ struct bigInt {
         }
         return result;
     }
-    void operator-=(const bigInt& rhs) { *this = *this - rhs; }
-    template<typename T> void operator-=(const T rhs) { *this = *this - rhs; }
+    void operator-=(const bigInt& num) { *this = *this - num; }
+    template<typename T> void operator-=(const T num) { *this = *this - num; }
 
-    bigInt operator*(const bigInt& rhs) const {
+    bigInt operator*(const bigInt& num) const {
         unsigned long long result[bytes] = {0};
         __uint128_t tmp[bytes * 2] = {0};
         __uint128_t carry = 0;
-        for (unsigned int i = 0; i < bytes; i++) { for (unsigned int j = 0; j < bytes; ++j) { if (i + j < bytes * 2) { tmp[i + j] += static_cast<__uint128_t>(limbs[i]) * rhs.limbs[j]; }}}
+        for (unsigned int i = 0; i < bytes; i++) { for (unsigned int j = 0; j < bytes; ++j) { if (i + j < bytes * 2) { tmp[i + j] += (__uint128_t)limbs[i] * num.limbs[j]; }}}
         for (unsigned int i = 0; i < bytes; i++) {
             tmp[i] += carry;
             result[i] = tmp[i];
@@ -118,9 +115,9 @@ struct bigInt {
         }
         return bigInt(result, bytes);
     }
-    template<typename T> bigInt operator*(const T rhs) const { return *this * bigInt(rhs); }
-    void operator*=(const bigInt& rhs) { *this = *this * rhs; }
-    template<typename T> void operator*=(const T rhs) { *this = *this * bigInt(rhs); }
+    template<typename T> bigInt operator*(const T num) const { return *this * bigInt(num); }
+    void operator*=(const bigInt& num) { *this = *this * num; }
+    template<typename T> void operator*=(const T num) { *this = *this * bigInt(num); }
 
     bigInt operator/(const bigInt& divisor) const {
         if (divisor.isZero()) { return 0; }
@@ -139,133 +136,142 @@ struct bigInt {
         }
         return quotient;
     }
-    template<typename T> bigInt operator/(const T rhs) const { return *this / bigInt(rhs); }
-    void operator/=(const bigInt& rhs) { *this = *this / rhs; }
-    template<typename T> void operator/=(const T rhs) { *this = *this / bigInt(rhs); }
+    template<typename T> bigInt operator/(const T num) const { return *this / bigInt(num); }
+    void operator/=(const bigInt& num) { *this = *this / num; }
+    template<typename T> void operator/=(const T num) { *this = *this / bigInt(num); }
 
-    bigInt operator%(const bigInt& rhs) const {
-        if (rhs.isZero()) { return *this; }
-        int bw = bitWidth();
-        if (bw == 0) { return 0; }
+    bigInt operator%(const bigInt& num) const {
+        if (num.isZero()) { return *this; }
+        int bitwidth = bitWidth();
+        if (bitwidth == 0) { return 0; }
         bigInt remainder;
-        for (int i = bw - 1; i >= 0; i--) {
+        for (int i = bitwidth - 1; i >= 0; i--) {
             remainder <<= 1;
-            unsigned long long bit = (limbs[i / 64] >> (i % 64)) & 1;
-            remainder.limbs[0] |= bit;
-            if (remainder >= rhs) remainder -= rhs;
+            remainder.limbs[0] |= ((limbs[i / 64] >> (i % 64)) & 1);
+            if (remainder >= num) { remainder -= num; }
         }
         return remainder;
     }
-    template<typename T> bigInt operator%(const T rhs) const { return *this % bigInt(rhs); }
-    void operator&=(const bigInt& rhs) const { *this = *this % rhs; }
-    template<typename T> void operator%=(const T rhs) const { *this = *this % bigInt(rhs); }
-    bigInt operator&(const bigInt& rhs) const {
+    template<typename T> bigInt operator%(const T num) const { return *this % bigInt(num); }
+    void operator&=(const bigInt& num) const { *this = *this % num; }
+    template<typename T> void operator%=(const T num) const { *this = *this % bigInt(num); }
+    bigInt operator&(const bigInt& num) const {
         bigInt result;
-        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = limbs[i] & rhs.limbs[i];
+        for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = limbs[i] & num.limbs[i]; }
         return result;
     }
-    template<typename T> bigInt operator&(const T rhs) const { return *this & bigInt(rhs); }
-    void operator&=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; i++) limbs[i] &= rhs.limbs[i]; }
-    template<typename T> void operator&=(const T rhs) { *this &= bigInt(rhs); }
+    template<typename T> bigInt operator&(const T num) const { return *this & bigInt(num); }
+    void operator&=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] &= num.limbs[i]; }
+    template<typename T> void operator&=(const T num) { *this &= bigInt(num); }
 
-    bigInt operator|(const bigInt& rhs) const {
+    bigInt operator|(const bigInt& num) const {
         bigInt result;
-        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = limbs[i] | rhs.limbs[i];
+        for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = limbs[i] | num.limbs[i]; }
         return result;
     }
-    template<typename T> bigInt operator|(const T rhs) const { return *this | bigInt(rhs); }
-    void operator|=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; i++) limbs[i] |= rhs.limbs[i]; }
-    template<typename T> void operator|=(const T rhs) { *this |= bigInt(rhs); }
+    template<typename T> bigInt operator|(const T num) const { return *this | bigInt(num); }
+    void operator|=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] |= num.limbs[i]; }
+    template<typename T> void operator|=(const T num) { *this |= bigInt(num); }
 
-    bigInt operator^(const bigInt& rhs) const {
+    bigInt operator^(const bigInt& num) const {
         bigInt result;
-        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = limbs[i] ^ rhs.limbs[i];
+        for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = limbs[i] ^ num.limbs[i]; }
         return result;
     }
-    template<typename T> bigInt operator^(const T rhs) const { return *this ^ bigInt(rhs); }
-    void operator^=(const bigInt& rhs) { for (unsigned int i = 0; i < bytes; i++) limbs[i] ^= rhs.limbs[i]; }
-    template<typename T> void operator^=(const T rhs) { *this ^= bigInt(rhs); }
+    template<typename T> bigInt operator^(const T num) const { return *this ^ bigInt(num); }
+    void operator^=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] ^= num.limbs[i]; }
+    template<typename T> void operator^=(const T num) { *this ^= bigInt(num); }
 
     bigInt operator~() const {
         bigInt result;
-        for (unsigned int i = 0; i < bytes; i++) result.limbs[i] = ~limbs[i];
+        for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = ~limbs[i]; }
         return result;
     }
 
-    bool operator==(const bigInt& rhs) const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != rhs.limbs[i]) return false; } return true; }
-    template<typename T> bool operator==(const T rhs) const { return *this == bigInt(rhs); }
-    bool operator!=(const bigInt& rhs) const { return !(*this == rhs); }
-    template<typename T> bool operator!=(const T rhs) const { return *this != bigInt(rhs); }
-    bool operator>(const bigInt& rhs) const {
+    bool operator==(const bigInt& num) const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != num.limbs[i]) return false; } return true; }
+    template<typename T> bool operator==(const T num) const { return *this == bigInt(num); }
+    bool operator!=(const bigInt& num) const { return !(*this == num); }
+    template<typename T> bool operator!=(const T num) const { return *this != bigInt(num); }
+    bool operator>(const bigInt& num) const {
         for (int i = bytes - 1; i >= 0; i--) {
-            if (limbs[i] > rhs.limbs[i]) { return true; }
-            if (limbs[i] < rhs.limbs[i]) { return false; }
+            if (limbs[i] > num.limbs[i]) { return true; }
+            if (limbs[i] < num.limbs[i]) { return false; }
         }
         return false;
     }
-    template<typename T> bool operator>(const T rhs) const { return *this > bigInt(rhs); }
-    bool operator>=(const bigInt& rhs) const { return (*this > rhs) || (*this == rhs); }
-    template<typename T> bool operator>=(const T rhs) const { return *this >= bigInt(rhs); }
-    bool operator<(const bigInt& rhs) const { return rhs > *this; }
-    template<typename T> bool operator<(const T rhs) const { return *this < bigInt(rhs); }
-    bool operator<=(const bigInt& rhs) const { return !(*this > rhs); }
-    template<typename T> bool operator<=(const T rhs) const { return *this <= bigInt(rhs); }
+    template<typename T> bool operator>(const T num) const { return *this > bigInt(num); }
+    bool operator>=(const bigInt& num) const { return (*this > num) || (*this == num); }
+    template<typename T> bool operator>=(const T num) const { return *this >= bigInt(num); }
+    bool operator<(const bigInt& num) const { return num > *this; }
+    template<typename T> bool operator<(const T num) const { return *this < bigInt(num); }
+    bool operator<=(const bigInt& num) const { return !(*this > num); }
+    template<typename T> bool operator<=(const T num) const { return *this <= bigInt(num); }
 
-    bigInt& operator<<=(int n) {
-        if (n <= 0) return *this;
+    bigInt operator<<=(unsigned int n) {
         if (n >= bitCount) { setZero(); return *this; }
-        int word_shift = n / 64;
-        int bit_shift = n % 64;
+        
+        int limbshift = n / 64;
+        int bitshift = n % 64;
         unsigned long long nw[bytes] = {0};
+
         for (int i = bytes - 1; i >= 0; i--) {
-            int ni = i + word_shift;
+            int ni = i + limbshift;
             if (ni >= bytes) { continue; }
             unsigned long long part = limbs[i];
-            nw[ni] |= bit_shift == 0 ? part : part << bit_shift;
-            if (ni + 1 < bytes && bit_shift != 0)
-                nw[ni + 1] |= part >> (64 - bit_shift);
+
+            nw[ni] |= bitshift == 0 ? part : part << bitshift;
+            if (ni + 1 < bytes && bitshift != 0) { nw[ni + 1] |= part >> (64 - bitshift); }
         }
-        for (unsigned int i = 0; i < bytes; i++) limbs[i] = nw[i];
+        memcpy(limbs, nw, bytes);
         return *this;
     }
     bigInt operator<<(int n) const { bigInt result = *this; result <<= n; return result; }
 
-    bigInt& operator>>=(int n) {
+    bigInt operator>>=(int n) {
         if (n <= 0) { return *this; }
         if (n >= bitCount) { setZero(); return *this; }
-        int word_shift = n / 64;
-        int bit_shift = n % 64;
+        int limbshift = n / 64;
+        int bitshift = n % 64;
         unsigned long long nw[bytes] = {0};
         for (unsigned int i = 0; i < bytes; i++) {
-            int ni = i - word_shift;
+            int ni = i - limbshift;
             if (ni < 0) { continue; }
             unsigned long long part = limbs[i];
-            nw[ni] |= bit_shift == 0 ? part : part >> bit_shift;
-            if (ni - 1 >= 0 && bit_shift != 0) { nw[ni - 1] |= part << (64 - bit_shift); }
+            nw[ni] |= bitshift == 0 ? part : part >> bitshift;
+            if (ni - 1 >= 0 && bitshift != 0) { nw[ni - 1] |= part << (64 - bitshift); }
         }
         for (unsigned int i = 0; i < bytes; i++) limbs[i] = nw[i];
         return *this;
     }
     bigInt operator>>(int n) const { bigInt result = *this; result >>= n; return result; }
     unsigned long long operator[](unsigned long long index) const { return limbs[index]; }
-};
 
-template<unsigned long long bitCount>
-inline const char* toString(const bigInt<bitCount>& v) {
-    static char buf[(bitCount * 2) + 2];
-    bigInt<bitCount> temp = v;
-    int pos = 0;
-    if (v.isZero()) {
-        buf[0] = '0';
-        buf[1] = '\0';
-        return buf;
+
+    const char* toString() {
+        static char buffer[(bitCount * 2) + 2];
+        bigInt<bitCount> temp = *this;
+        int pos = 0;
+        if (isZero()) {
+            buffer[0] = '0';
+            buffer[1] = '\0';
+            return buffer;
+        }
+        while (!temp.isZero()) { buffer[pos++] = '0' + (char)temp.mod(10); }
+        for (int i = 0, j = pos - 1; i < j; i++, --j) {
+            char t = buffer[i];
+            buffer[i] = buffer[j];
+            buffer[j] = t;
+        }
+        buffer[pos] = '\0';
+        return buffer;
     }
-    while (!temp.isZero()) { buf[pos++] = '0' + static_cast<char>(temp.mod(10)); }
-    for (int i = 0, j = pos - 1; i < j; i++, --j) {
-        char t = buf[i];
-        buf[i] = buf[j];
-        buf[j] = t;
+
+    void swap(bigInt& num) {
+        bigInt temp = *this;
+        *this = num;
+        num = temp;
     }
-    buf[pos] = '\0';
-    return buf;
-}
+
+    inline bool even() { return !(limbs[0] % 1); }
+    inline bool odd() { return limbs[0] % 2; }
+};

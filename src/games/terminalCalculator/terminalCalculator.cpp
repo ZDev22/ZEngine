@@ -57,39 +57,39 @@ void TerminalCalculator() {
             else if (operation == "^") { answer = std::to_string(pow(std::stof(num1), std::stof(num2))); }
             else if (operation == "+b") {
                 bigInt<128> bnum1 = std::stoi(num1);
-                answer = toString<128>(bnum1 + std::stoi(num2));
+                answer = (bnum1 + std::stoi(num2)).toString();
             }
             else if (operation == "-b") {
                 bigInt<128> bnum1 = std::stoi(num1);
-                answer = toString<128>(bnum1 - std::stoi(num2));
+                answer = (bnum1 - std::stoi(num2)).toString();
             }
             else if (operation == "/b") {
                 bigInt<128> bnum1 = std::stoi(num1);
-                answer = toString<128>(bnum1 / std::stoi(num2));
+                answer = (bnum1 / std::stoi(num2)).toString();
             }
             else if (operation == "*b") {
                 bigInt<128> bnum1 = std::stoi(num1);
-                answer = toString<128>(bnum1 * std::stoi(num2));
+                answer = (bnum1 * std::stoi(num2)).toString();
             }
             else if (operation == "+bb") {
                 bigInt<128> bnum1 = std::stoi(num1);
                 bigInt<128> bnum2 = std::stoi(num2);
-                answer = toString<128>(bnum1 + bnum2);
+                answer = (bnum1 + bnum2).toString();
             }
             else if (operation == "-bb") {
                 bigInt<128> bnum1 = std::stoi(num1);
                 bigInt<128> bnum2 = std::stoi(num2);
-                answer = toString<128>(bnum1 - bnum2);
+                answer = (bnum1 - bnum2).toString();
             }
             else if (operation == "/bb") {
                 bigInt<128> bnum1 = std::stoi(num1);
                 bigInt<128> bnum2 = std::stoi(num2);
-                answer = toString<128>(bnum1 / bnum2);
+                answer = (bnum1 / bnum2).toString();
             }
             else if (operation == "*bb") {
                 bigInt<128> bnum1 = std::stoi(num1);
                 bigInt<128> bnum2 = std::stoi(num2);
-                answer = toString<128>(bnum1 * bnum2);
+                answer = (bnum1 * bnum2).toString();
             }
 
             std::cout << std::endl << "Answer: " << answer << std::endl;
@@ -101,9 +101,9 @@ void TerminalCalculator() {
             std::cout << std::endl << "Operation: ";
             std::cin >> operationStr;
 
-            if (operationStr == "factorial") { answer = toString<8192>(factorial<8192>(std::stoi(num1))); }
-            else if (operationStr == "superFactorial") { answer = toString<16384>(superFactorial<16384>(std::stoi(num1))); }
-            else if (operationStr == "expoFactorial") { answer = toString<32768>(exponentFactorial<32768>(std::stoi(num1))); }
+            if (operationStr == "factorial") { answer = factorial<8192>(std::stoi(num1)).toString(); }
+            else if (operationStr == "superFactorial") { answer = superFactorial<16384>(std::stoi(num1)).toString(); }
+            else if (operationStr == "expoFactorial") { answer = exponentFactorial<32768>(std::stoi(num1)).toString(); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(sqrt(std::stof(num1))); }
             else if (operationStr == "lerp") {
                 std::cout << "\nsmoothStep\nsmootherStep\nlerp\neaseInSine\neaseOutSine\neaseInOutSine\neaseInExpo\neaseOutExpo\neaseInOutExpo\neaseInCirc\neaseOutCirc\neaseInOutCirc\neaseOutBounce\n\nChoose one: ";
@@ -143,6 +143,9 @@ void TerminalCalculator() {
             else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().toString(); }
             else if (operationStr == "fahrenheit") { answer = std::to_string(fahrenheit(std::stoi(num1))); }
             else if (operationStr == "celsius") { answer = std::to_string(celsius(std::stoi(num1))); }
+            else if (operationStr == "prime") {
+                answer = prime(std::stoi(num1)) ? "Prime" : "Not prime";
+            }
             std::cout << "Answer: " << answer << std::endl;
             break;
         case 3:

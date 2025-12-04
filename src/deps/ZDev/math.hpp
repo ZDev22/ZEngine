@@ -21,8 +21,8 @@
 #define BERNOUILLI .0787456776f
 
 #include <math.h>
-#include <vector>
 #include <string.h>
+#include <vector>
 
 #ifdef BIG_INT_MATHPP
     #include "bigInts.hpp"
@@ -81,8 +81,7 @@ inline unsigned long long xorshift32() {
     state ^= state << 5;
     return state;
 }
-template<typename T>
-inline T Random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
+template<typename T> inline T Random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
 inline float Random(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
 inline bool Random() { return (xorshift32() & 1ULL) == 0ULL; }
 
@@ -129,8 +128,7 @@ private:
 };
 
 // Averages
-template<typename T>
-inline T average(const std::vector<T>& items) {
+template<typename T> inline T average(const std::vector<T>& items) {
     T sum = 0;
     for (unsigned int i = 0; i < items.size(); ++i) sum += items[i];
     return sum / items.size();
@@ -146,8 +144,7 @@ inline bool average(const std::vector<bool>& bools) {
     if (averageFalse > averageTrue) { return false; }
     return Random();
 }
-template<typename T>
-inline T averageMinMax(const std::vector<T>& items) {
+template<typename T> inline T averageMinMax(const std::vector<T>& items) {
     T minVal = items[0], maxVal = items[0];
     unsigned long long sum = 0;
 
@@ -178,22 +175,18 @@ inline float averageMinMax(const std::vector<float>& floats) {
 }
 
 // Values
-template<typename T>
-void setValuesInRange(std::vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-template<typename T>
-void setZero(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
+template<typename T> void setValuesInRange(std::vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
+template<typename T> void setZero(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
 inline void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
 inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
 
 // Cmath debloated functions
-template<typename T>
-inline T absolute(const T i) { return i < 0 ? -i : i; }
+template<typename T> inline T absolute(const T i) { return i < 0 ? -i : i; }
 inline bool absolute(bool i) { return true; }
 
 // Exponents
 #ifdef BIG_INT_MATHPP
-template<unsigned long long bitCount>
-inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
+template<unsigned long long bitCount> inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     bigInt<bitCount> result = 1;
     while (exp > 0) {
         if (exp & 1) { result *= base; }
@@ -203,15 +196,13 @@ inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     return result;
 }
 
-template<unsigned long long bitCount>
-inline bigInt<bitCount> factorial(unsigned int n) {
+template<unsigned long long bitCount> inline bigInt<bitCount> factorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     return result;
 }
 
-template<unsigned long long bitCount>
-inline bigInt<bitCount> superFactorial(unsigned int n) {
+template<unsigned long long bitCount> inline bigInt<bitCount> superFactorial(unsigned int n) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
 
@@ -226,8 +217,7 @@ inline bigInt<bitCount> superFactorial(unsigned int n) {
     return result;
 }
 
-template<unsigned long long bitCount>
-inline bigInt<bitCount> exponentFactorial(unsigned int n) {
+template<unsigned long long bitCount> inline bigInt<bitCount> exponentFactorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     bigInt<bitCount> base = result;
@@ -235,6 +225,17 @@ inline bigInt<bitCount> exponentFactorial(unsigned int n) {
     return result;
 }
 #endif
+
+// Advanced
+template<typename T> inline bool prime(T num) {
+    unsigned char divisors = 0;
+    for (T i = 1; i <= num; i++) {
+        if (num % i == 0) {
+            if (++divisors == 3) { return false; }
+        }
+    }
+    return true;
+}
 
 // Conversions
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
