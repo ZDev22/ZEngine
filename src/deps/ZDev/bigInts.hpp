@@ -75,18 +75,17 @@ struct bigInt {
 
     bigInt operator-(const bigInt& num) const {
         bigInt result;
-        __uint128_t borrow;
+        __uint128_t borrow = 0;
         for (unsigned int i = 0; i < bytes; i++) {
-            unsigned long long tmp = limbs[i] - num.limbs[i] - borrow;
-            borrow = (__uint128_t)limbs[i] < (__uint128_t)num.limbs[i] + borrow ? 1 : 0;
-            result.limbs[i] = tmp;
+            result.limbs[i] = limbs[i] - num.limbs[i] + borrow;
+            borrow = (limbs[i] < num.limbs[i]) ? 1 : 0;
         }
         return result;
     }
     template<typename T> bigInt operator-(const T num) const {
         bigInt result = *this;
         unsigned long long borrow = num;
-        for (unsigned int i = 0; i < bytes; ++i) {
+        for (unsigned int i = 0; i < bytes; i++) {
             unsigned long long old = result.limbs[i];
             if (old >= borrow) {
                 result.limbs[i] = old - borrow;
@@ -104,20 +103,32 @@ struct bigInt {
     template<typename T> void operator-=(const T num) { *this = *this - num; }
 
     bigInt operator*(const bigInt& num) const {
-        unsigned long long result[bytes] = {0};
-        __uint128_t tmp[bytes * 2] = {0};
+        bigInt result;
         __uint128_t carry = 0;
-        for (unsigned int i = 0; i < bytes; i++) { for (unsigned int j = 0; j < bytes; ++j) { if (i + j < bytes * 2) { tmp[i + j] += (__uint128_t)limbs[i] * num.limbs[j]; }}}
+        __uint128_t current = 0;
         for (unsigned int i = 0; i < bytes; i++) {
-            tmp[i] += carry;
-            result[i] = tmp[i];
-            carry = tmp[i] >> 64;
+            for (unsigned j = 0; j + i < bytes; j++) {
+                current = (__uint128_t)result.limbs[i + j] + (__uint128_t)limbs[i] * num.limbs[j] + carry;
+                result.limbs[i + j] = (unsigned long long)current;
+                carry = current >> 64;
+            }
+            carry = 0;
         }
-        return bigInt(result, bytes);
+        return result;
     }
-    template<typename T> bigInt operator*(const T num) const { return *this * bigInt(num); }
+    template<typename T> bigInt operator*(const T num) const {
+        bigInt result;
+        __uint128_t carry = 0;
+        __uint128_t current = 0;
+        for (unsigned int i = 0; i < bytes; i++) {
+            current = (__uint128_t)result.limbs[i] + (__uint128_t)limbs[i] * num + carry;
+            result.limbs[i] = (unsigned long long)current;
+            carry = current >> 64;
+        }
+        return result;
+    }
     void operator*=(const bigInt& num) { *this = *this * num; }
-    template<typename T> void operator*=(const T num) { *this = *this * bigInt(num); }
+    template<typename T> void operator*=(const T num) { *this = *this * num; }
 
     bigInt operator/(const bigInt& divisor) const {
         if (divisor.isZero()) { return 0; }

@@ -2,6 +2,8 @@
 - More bigInts.hpp functionality
 - More math.hpp functionality
 - Added Fedora, Gentoo, Alpine and Leap installation instructions
+- HUGE BIGINT OPTIMIZATIONS & other optimizations
+- Bugfixes
 
 ## v0.10 - 11/27/25
 - **Added Mac Support**

@@ -101,7 +101,7 @@ void TerminalCalculator() {
             std::cout << std::endl << "Operation: ";
             std::cin >> operationStr;
 
-            if (operationStr == "factorial") { answer = factorial<8192>(std::stoi(num1)).toString(); }
+            if (operationStr == "factorial") { answer = factorial<32768>(std::stoi(num1)).toString(); }
             else if (operationStr == "superFactorial") { answer = superFactorial<16384>(std::stoi(num1)).toString(); }
             else if (operationStr == "expoFactorial") { answer = exponentFactorial<32768>(std::stoi(num1)).toString(); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(sqrt(std::stof(num1))); }
