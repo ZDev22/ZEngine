@@ -1,3 +1,5 @@
+// A smaller 
+
 #ifndef STBI_INCLUDE_STBIMAGE_H
 #define STBI_INCLUDE_STBIMAGE_H
 #ifndef STBI_NO_STDIO

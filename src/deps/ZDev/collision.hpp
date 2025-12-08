@@ -1,3 +1,5 @@
+// licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+
 #pragma once
 
 #include "../../engine/sprite.hpp"

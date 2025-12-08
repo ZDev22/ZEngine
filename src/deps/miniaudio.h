@@ -1,3 +1,7 @@
+// A lighter miniaudio.h edited by ZDev. See original here: https://github.com/mackron/miniaudio
+
+// licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+
 #ifndef miniaudio_h
 #define miniaudio_h
 #ifdef __cplusplus
