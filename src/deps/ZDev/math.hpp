@@ -22,16 +22,17 @@
 #define LAPLACE 1.3862943611f
 #define BERNOUILLI .0787456776f
 
-#include <math.h>
-#include <string.h>
-#include <vector>
-
 #ifdef BIG_INT_MATHPP
     #include "bigInts.hpp"
 #endif
 #ifdef BITSET_MATHPP
     #include "bitset.hpp"
 #endif
+
+#include <math.h>
+#include <string.h>
+
+#include <vector>
 
 // Global
 inline float clamp(const float value, const float minValue, const float maxValue) {
@@ -188,7 +189,7 @@ inline bool absolute(bool i) { return true; }
 
 // Exponents
 #ifdef BIG_INT_MATHPP
-template<unsigned long long bitCount> inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
+template<unsigned int bitCount> inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
     bigInt<bitCount> result = 1;
     while (exp > 0) {
         if (exp & 1) { result *= base; }
@@ -198,13 +199,13 @@ template<unsigned long long bitCount> inline bigInt<bitCount> exponent(bigInt<bi
     return result;
 }
 
-template<unsigned long long bitCount> inline bigInt<bitCount> factorial(unsigned int n) {
+template<unsigned int bitCount> inline bigInt<bitCount> factorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     return result;
 }
 
-template<unsigned long long bitCount> inline bigInt<bitCount> superFactorial(unsigned int n) {
+template<unsigned int bitCount> inline bigInt<bitCount> superFactorial(unsigned int n) {
     std::vector<bigInt<bitCount>> legs;
     bigInt<bitCount> result = 1;
 
@@ -219,7 +220,7 @@ template<unsigned long long bitCount> inline bigInt<bitCount> superFactorial(uns
     return result;
 }
 
-template<unsigned long long bitCount> inline bigInt<bitCount> exponentFactorial(unsigned int n) {
+template<unsigned int bitCount> inline bigInt<bitCount> exponentFactorial(unsigned int n) {
     bigInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     bigInt<bitCount> base = result;
@@ -247,7 +248,7 @@ inline constexpr float fahrenheit(const float celsius) { return (celsius / .5555
 
 // Bitset
 #ifdef BITSET_MATHPP
-template<unsigned long long range>
+template<unsigned int range>
 inline bitset<range> createRandomBitset() {
     bitset<range> bits;
     for (unsigned long long i = 0; i < range; i++) { if (Random()) bits.set(i); }

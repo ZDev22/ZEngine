@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-template<unsigned long long bitCount>
+template<unsigned int bitCount>
 struct bigInt {
     static constexpr unsigned int bytes = bitCount / 64;
     unsigned long long limbs[bytes] = {0};
@@ -37,7 +37,7 @@ struct bigInt {
     }
     int bitWidth() const {
         for (int i = bytes - 1; i >= 0; --i) {
-            if (limbs[i] != 0) { return i * 64 + std::bit_width(limbs[i]); }
+            if (limbs[i] != 0) { return i * 64 + __builtin_clzll(limbs[i]); }
         }
         return 0;
     }
@@ -132,22 +132,22 @@ struct bigInt {
     void operator*=(const bigInt& num) { *this = *this * num; }
     template<typename T> void operator*=(const T num) { *this = *this * num; }
 
-    bigInt operator/(const bigInt& divisor) const {
-        if (divisor.isZero()) { return 0; }
-        int bw = bitWidth();
+    bigInt operator/(const bigInt& num) const {
+        if (num.isZero()) { return 0; }
+        unsigned int bw = bitWidth();
         if (bw == 0) { return 0; }
-        bigInt quotient = 0;
+        bigInt result = 0;
         bigInt remainder = 0;
-        for (int i = bw - 1; i >= 0; i--) {
+        for (unsigned int i = bw - 1; i >= 0; i--) {
             remainder <<= 1;
             unsigned long long bit = (limbs[i / 64] >> (i % 64)) & 1;
             remainder.limbs[0] |= bit;
-            if (remainder >= divisor) {
-                remainder -= divisor;
-                quotient.limbs[i / 64] |= 1ULL << (i % 64);
+            if (remainder >= num) {
+                remainder -= num;
+                result.limbs[i / 64] |= 1ULL << (i % 64);
             }
         }
-        return quotient;
+        return result;
     }
     template<typename T> bigInt operator/(const T num) const { return *this / bigInt(num); }
     void operator/=(const bigInt& num) { *this = *this / num; }
