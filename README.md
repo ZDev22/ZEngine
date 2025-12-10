@@ -6,7 +6,7 @@ It has features like *sprite creation* and *texture loading* that run **REALTIME
 
 There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *1.10GHz* on two cores, and it's intigrated GPU *(on ![FlappyBird](/src/assets/images/flappyBird.png)flappybird![FlappyBird](/src/assets/images/flappyBird.png)).
 
-To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D**
+To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D** - update logs are stored in CHANGELOG.md
 
 # How to use:
 ## LINUX:

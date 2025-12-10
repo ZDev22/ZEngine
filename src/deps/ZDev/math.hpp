@@ -1,26 +1,30 @@
-// licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+/* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+
+math.hpp is a single-header lightweight cpp library for high-preformance math functions!
+Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
+Works with bigInts.hpp and bitset.hpp if you want, but not required! */
 
 #pragma once
 
-#define PI 3.1415926535f
-#define PIR .0174532925f
-#define PID 57.2957795131f
-#define E 2.7182818284f
-#define GOLDENRATIO 1.6180339887f
-#define SQRT2 1.4142135624f
-#define SQRT3 1.7320508076f
-#define SQRT5 2.2360679775f
-#define LN2 .6931471806f
-#define LN10 2.3025850929f
-#define APERY 1.2020569032f
-#define FEIGENBAUM 4.6692016091f
-#define PHI 1.6180339887f
-#define EULERMASCHERONI .5772156649f
-#define CATALAN .9159655941f
-#define GLAISHER 1.2824271291f
-#define Khinchin 2.6854520010f
-#define LAPLACE 1.3862943611f
-#define BERNOUILLI .0787456776f
+#define MATHPP_PI              3.1415926535f
+#define MATHPP_PIR              .0174532925f
+#define MATHPP_PID            57.2957795131f
+#define MATHPP_E               2.7182818284f
+#define MATHPP_GOLDENRATIO     1.6180339887f
+#define MATHPP_SQRT2           1.4142135624f
+#define MATHPP_SQRT3           1.7320508076f
+#define MATHPP_SQRT5           2.2360679775f
+#define MATHPP_LN2              .6931471806f
+#define MATHPP_LN10            2.3025850929f
+#define MATHPP_APERY           1.2020569032f
+#define MATHPP_FEIGENBAUM      4.6692016091f
+#define MATHPP_PHI             1.6180339887f
+#define MATHPP_EULERMASCHERONI  .5772156649f
+#define MATHPP_CATALAN          .9159655941f
+#define MATHPP_GLAISHER        1.2824271291f
+#define MATHPP_Khinchin        2.6854520010f
+#define MATHPP_LAPLACE         1.3862943611f
+#define MATHPP_BERNOUILLI       .0787456776f
 
 #ifdef BIG_INT_MATHPP
     #include "bigInts.hpp"
@@ -31,50 +35,9 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <vector>
-
-// Global
-inline float clamp(const float value, const float minValue, const float maxValue) {
-    if (value < minValue) { return minValue; }
-    if (value > maxValue) { return maxValue; }
-    return value;
-}
-
-// Interpolation
-inline float smoothStep(const float edge0, const float edge1, const float x) {
-    if (edge0 == edge1) { return edge0; }
-    float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
-    return t * t * (3 - 2 * t);
-}
-inline float smootherStep(const float edge0, const float edge1, const float x) {
-    if (edge0 == edge1) { return edge0; }
-    float t = clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
-    return t * t * t * (t * (t * 6 - 15) + 10);
-}
-inline float linearInterpolate(const float a, const float b, const float t) { return a + (b - a) * t; }
-inline float easeInSine(const float t) { return 1 - cos((t * PI) / 2); }
-inline float easeOutSine(const float t) { return sin((t * PI) / 2); }
-inline float easeInOutSine(const float t) { return -(cos(PI * t) - 1) / 2; }
-inline float easeInExpo(const float t) { return (t == 0) ? 0 : pow(2, 10 * (t - 1)); }
-inline float easeOutExpo(const float t) { return (t == 1) ? 1 : 1 - pow(2, -10 * t); }
-inline float easeInOutExpo(const float t) {
-    if (t == 0 || t == 1) { return t; }
-    if (t < .5f) { return pow(2, 20 * t - 10) / 2; }
-    return (2 - pow(2, -20 * t + 10)) / 2;
-}
-inline float easeInCirc(const float t) { return 1 - sqrt(1 - t * t); }
-inline float easeOutCirc(const float t) { return sqrt(1 - (t - 1) * (t - 1)); }
-inline float easeInOutCirc(const float t) {
-    if (t < .5f) { return (1 - sqrt(1 - 4 * t * t)) / 2; }
-    return (sqrt(1 - pow(-2 * t + 2, 2)) + 1) / 2;
-}
-inline float easeOutBounce(const float t) {
-    if (t < 4.f / 11.f) { return (121.f * t * t) / 16.f; }
-    else if (t < 8.f / 11.f) { return (363.f / 40.f * t * t) - (99.f / 10.f * t) + 17.f / 5.f; }
-    else if (t < 9.f / 10.f) { return (4356.f / 361.f * t * t) - (35442 / 1805.f * t) + 16061.f / 1805.f; }
-    return (54.f / 5.f * t * t) - (513.f / 25.f * t) + 268.f / 25.f;
-}
 
 // Random
 static unsigned long long state = 381195919421132ULL;
@@ -84,8 +47,8 @@ inline unsigned long long xorshift32() {
     state ^= state << 5;
     return state;
 }
-template<typename T> inline T Random(const T min, const T max) { return static_cast<T>(min + (xorshift32() % (max - min + 1))); }
-inline float Random(const float min, const float max) { return min + (max - min) * (static_cast<float>(xorshift32()) / 4294967295.0f); }
+template<typename T> inline T Random(const T min, const T max) { return (T)(min + (xorshift32() % (max - min + 1))); }
+inline float Random(const float min, const float max) { return min + (max - min) * ((float)(xorshift32()) / 4294967295.0f); }
 inline bool Random() { return (xorshift32() & 1ULL) == 0ULL; }
 
 // Weight table
@@ -160,7 +123,7 @@ template<typename T> inline T averageMinMax(const std::vector<T>& items) {
         unsigned long long a = items[i];
         if (a != minVal && a != maxVal) sum += a;
     }
-    return static_cast<short>(sum / items.size());
+    return (short)(sum / items.size());
 }
 inline float averageMinMax(const std::vector<float>& floats) {
     float minVal = floats[0], maxVal = floats[0], sum = 0.f;
@@ -240,6 +203,30 @@ template<typename T> inline bool prime(T num) {
     return true;
 }
 
+inline const char* findFactor(signed char add, signed char multiply) {
+    std::vector<signed char> factors;
+    if (add > 0) {
+        for (signed char i = add; i >= -add * 3; i--) {
+            factors.push_back(i);
+            factors.push_back(add - i);
+        }
+    }
+    else {
+        for (signed char i = add; i <= -add * 3; i++) {
+            factors.push_back(i);
+            factors.push_back(add - i);
+        }
+    }
+    for (unsigned char i = 0; i < factors.size(); i += 2) {
+        if (factors[i] * factors[i + 1] == multiply) {
+            char* result = (char*)malloc(20);
+            snprintf(result, 20, "x = %d | x = %d", -factors[i], -factors[i + 1]);
+            return (const char*)result;
+        }
+    }
+    return "none";
+}
+
 // Conversions
 inline constexpr float radians(const float degrees) { return degrees * PIR; }
 inline constexpr float degrees(const float radians) { return radians * PID; }
@@ -248,10 +235,10 @@ inline constexpr float fahrenheit(const float celsius) { return (celsius / .5555
 
 // Bitset
 #ifdef BITSET_MATHPP
-template<unsigned int range>
-inline bitset<range> createRandomBitset() {
-    bitset<range> bits;
-    for (unsigned long long i = 0; i < range; i++) { if (Random()) bits.set(i); }
+template<BITSET_VARIABLE_TYPE T>
+inline Bitset createRandomBitset() {
+    Bitset bits(T);
+    for (unsigned long long i = 0; i < T * sizeof(T); i++) { if (Random()) bits.set(i); }
     return bits;
 }
 #endif

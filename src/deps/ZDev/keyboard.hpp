@@ -1,4 +1,10 @@
-// licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+/* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+
+keyboard.hpp is a single-header lightweight cpp keyboard abstraction library focused on HIGH-PREFORMANCE KEY DETECTION
+Built around GLFW, but now only runs of RGFW so it's currently missing RGFW-specific-optimizations (sigh).
+
+HOW-TO-USE: Keyboard keyboard;
+keyboard.keyHit(RGFW_a); */
 
 #pragma once
 
@@ -8,15 +14,15 @@
 #define KEY_PRESSED 3
 
 #include "../../engine/window.hpp"
+
 #include <string.h>
 #include <vector>
-#include <cstdint>
 
 class Keyboard {
 public:
     // KEYBOARD
 
-    Keyboard(RGFW_window* window) : window(window) { }
+    Keyboard(RGFW_window* window) : window(window) {}
 
     // Utility
     unsigned char getKeyIndex(const unsigned short key) const { for (unsigned char i = 0; i < 97; ++i) { if (rgfwKeys[i] == key) return i; } return 0; }
@@ -130,12 +136,12 @@ public:
 
     // Reset
     void resetKeys() { memset(keys + 97, 0, 97); }
-    void resetKeyStates() { memset(keys, 0, 97); }
-    void fullResetKeys() { memset(keys, 0, 194); }
-    void hitAllKeys() { memset(keys, 2, 97); }
-    void pressAllKeys() { memset(keys, 3, 97); }
-    void releaseAllKeys() { memset(keys, 1, 97); }
-    void lockAllKeys() { memset(keys + 97, 1, 97); }
+    void resetKeyStates() { memset(&keys, 0, 97); }
+    void fullResetKeys() { memset(&keys, 0, 194); }
+    void hitAllKeys() { memset(&keys, 2, 97); }
+    void pressAllKeys() { memset(&keys, 3, 97); }
+    void releaseAllKeys() { memset(&keys, 1, 97); }
+    void lockAllKeys() { memset(&keys + 97, 1, 97); }
 
     // MOUSE
 
@@ -163,12 +169,10 @@ public:
         }
     }
 
-    void updateMousePosition() {
-		RGFW_window_getMouse(window, &mousePosition.x, &mousePosition.y);
-	}
-    void setMousePosition(std::int32_t x, std::int32_t y) { RGFW_window_moveMouse(window, x, y); }
-    float getMouseX() { return mousePosition.x; }
-    float getMouseY() { return mousePosition.y; }
+    void updateMousePosition() { RGFW_window_getMouse(window, &mousePosition[0], &mousePosition[1]); }
+    void setMousePosition(i32 x,i32 y) { RGFW_window_moveMouse(window, x, y); }
+    float getMouseX() { return mousePosition[0]; }
+    float getMouseY() { return mousePosition[1]; }
     bool LMBPressed() { return mouseState[0]; }
     bool RMBPressed() { return mouseState[2]; }
     bool LMBHit() { return mouseState[1] == KEY_HIT; }
@@ -187,8 +191,6 @@ private:
     };
     std::vector<KeyBind> keyBinds;
     bool modifiers[2] = {false};
-	struct {
-		std::int32_t x, y;
-	} mousePosition;
+	i32 mousePosition[2];
     unsigned char mouseState[4] = {0};
 };

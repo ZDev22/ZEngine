@@ -1,10 +1,18 @@
-// licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+/* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+
+collision.hpp is a sigle-header lightweight cpp library for checking if two 2D objects are colliding!
+Uses the AABB method to create a square around your object, more precise methods are planned.
+Requires some sprite data from sprite.hpp, a not project-specific system is planned.
+
+HOW TO USE: Collision collision;
+collision.checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]);
+collision.checkCollision requires sprite IDs which are currently not implemented yet. */
 
 #pragma once
 
 #include "../../engine/sprite.hpp"
 
-class Collision {
+struct Collision {
 public:
     struct AABBS {
         float pos[4] = {3.402823466e+38f, 3.402823466e+38f, -3.402823466e+38f, -3.402823466e+38f};

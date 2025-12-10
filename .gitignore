@@ -1,3 +1,5 @@
+# I dont really like to remove stuff, but these are so annoying
+
 /build/linux/*
 !build/linux/Debug/
 !build/linux/Release/
