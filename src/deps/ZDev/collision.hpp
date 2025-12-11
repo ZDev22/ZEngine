@@ -1,8 +1,8 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.2.1
+v1.2.2
 
-collision.hpp is a sigle-header lightweight cpp library for checking if two 2D objects are colliding!
+collision.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
 Uses the AABB method to create a square around your object, more precise methods are planned.
 Requires some sprite data from sprite.hpp, a not project-specific system is planned.
 

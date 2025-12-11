@@ -1,8 +1,8 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.6.7
+v1.6.8
 
-math.hpp is a single-header lightweight cpp library for high-preformance math functions!
+math.hpp is a lightweight cross-platform single-header cpp library for high-preformance math functions!
 Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
 Works with bigInts.hpp and bitset.hpp if you want, but not required! */
 

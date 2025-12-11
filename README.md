@@ -1,14 +1,16 @@
 # **A C++ engine supporting Linux, Windows and Mac**
 # About:
-My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics.
+My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics with Vulkan and SPIR-V.
 
-It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDeps libraries** which are super usefull for creating 2D games!
+It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDeps libraries** which are lightweight and super usefull for creating 2D games!
 
-There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *2.70GHz*.
+There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *2.70GHz*. And **10k FPS** on modern hardware.
 
-To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D**
+To see the progress on the engine, **check out my YouTube channel: [youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can see the engine **:D**
 
-*Version handling in this engine is ZIVH (ZDev's Incremental Version Handling) which is a non-destructive version counting system that keeps track of an unlimited amount of values.* ```ex: 1.4.7 -> 2.4.7``` ```ex: 9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
+*Version handling is ZIVH (ZDev's Incremental Version Handling) - a non-destructive version counting system* ```ex: 1.4.7 -> 2.4.7 || 9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
+
+*If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*
 
 # How to use:
 ## LINUX:
@@ -22,7 +24,7 @@ sudo pacman -S vulkan-icd-loader vulkan-tools --noconfirm #Vulkan
 # Intel: sudo pacman -S vulkan-intel --noconfirm
 # AMD: sudo pacman -S vulkan-radeon --noconfirm
 ```
-### Debian:
+#### Debian:
 ```bash
 sudo apt update
 sudo apt install build-essential cmake gdb -y #C/C++/Cmake/Cdbg

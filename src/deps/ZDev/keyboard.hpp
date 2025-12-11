@@ -1,8 +1,8 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.8.0
+v1.8.1
 
-keyboard.hpp is a single-header lightweight cpp keyboard abstraction library focused on HIGH-PREFORMANCE KEY DETECTION
+keyboard.hpp is a lightweight cross-platform single-header cpp keyboard abstraction library focused on HIGH-PREFORMANCE KEY DETECTION
 Built around GLFW, but now only runs of RGFW so it's currently missing RGFW-specific-optimizations (sigh).
 
 HOW-TO-USE: Keyboard keyboard;
@@ -20,7 +20,7 @@ keyboard.keyHit(RGFW_a); */
 #include <string.h>
 #include <vector>
 
-class Keyboard {
+struct Keyboard {
 public:
     // KEYBOARD
 
