@@ -1,5 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
+v1.8.0
+
 keyboard.hpp is a single-header lightweight cpp keyboard abstraction library focused on HIGH-PREFORMANCE KEY DETECTION
 Built around GLFW, but now only runs of RGFW so it's currently missing RGFW-specific-optimizations (sigh).
 

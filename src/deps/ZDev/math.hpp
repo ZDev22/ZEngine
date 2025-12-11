@@ -1,5 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
+v1.6.7
+
 math.hpp is a single-header lightweight cpp library for high-preformance math functions!
 Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
 Works with bigInts.hpp and bitset.hpp if you want, but not required! */
@@ -228,8 +230,8 @@ inline const char* findFactor(signed char add, signed char multiply) {
 }
 
 // Conversions
-inline constexpr float radians(const float degrees) { return degrees * PIR; }
-inline constexpr float degrees(const float radians) { return radians * PID; }
+inline constexpr float radians(const float degrees) { return degrees * MATHPP_PIR; }
+inline constexpr float degrees(const float radians) { return radians * MATHPP_PID; }
 inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32.f) * .5555555555f; }
 inline constexpr float fahrenheit(const float celsius) { return (celsius / .5555555555f) + 32.f; }
 

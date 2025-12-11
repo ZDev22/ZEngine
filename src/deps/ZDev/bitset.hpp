@@ -1,5 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
+v2.1.0
+
 bitset.hpp is a lightweight single-header cpp library for creating large vectors of 1's and 0's!
 Aims to be an alternative to <bitset> with more features and customizability to come!
 

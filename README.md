@@ -1,16 +1,18 @@
 # **A C++ engine supporting Linux, Windows and Mac**
 # About:
-My goal for this engine is to be **THE FASTEST** *2D game engine*. It is very simplistic and a little *hard to work with*, but if you use it properly it can achieve **thousands of FPS**.
+My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics.
 
-It has features like *sprite creation* and *texture loading* that run **REALTIME**. *As long as you have a GPU* (even an intigrated one), **it can run on your device**.
+It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDeps libraries** which are super usefull for creating 2D games!
 
-There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *1.10GHz* on two cores, and it's intigrated GPU *(on ![FlappyBird](/src/assets/images/flappyBird.png)flappybird![FlappyBird](/src/assets/images/flappyBird.png)).
+There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *2.70GHz*.
 
-To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D** - update logs are stored in CHANGELOG.md
+To see the progress on the engine, **check out my YouTube channel: [https://www.youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can view the engine **:D**
+
+*Version handling in this engine is ZIVH (ZDev's Incremental Version Handling) which is a non-destructive version counting system that keeps track of an unlimited amount of values.* ```ex: 1.4.7 -> 2.4.7``` ```ex: 9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
 
 # How to use:
 ## LINUX:
-#### Arch-based:
+#### Arch:
 ```bash
 sudo pacman -Syu --noconfirm
 sudo pacman -S gcc cmake gdb --noconfirm #C/C++/Cmake/Cdbg
@@ -20,26 +22,25 @@ sudo pacman -S vulkan-icd-loader vulkan-tools --noconfirm #Vulkan
 # Intel: sudo pacman -S vulkan-intel --noconfirm
 # AMD: sudo pacman -S vulkan-radeon --noconfirm
 ```
-### Debian-based:
+### Debian:
 ```bash
 sudo apt update
 sudo apt install build-essential cmake gdb -y #C/C++/Cmake/Cdbg
-sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev -y libxi-dev #X11
+sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev libxi-dev -y #X11
 sudo apt install libwayland-dev wayland-protocols -y #Wayland
 sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
 ```
-#### Fedora-based:
+#### Fedora:
 ```bash
 sudo dnf update -y
-sudo dnf groupinstall "Development Tools" -y #Dev-tools
-sudo dnf install cmake gdb -y #C/C++/CMake/Cdbg
+sudo dnf install gcc gcc-c++ cmake gdb -y #C/C++/CMake/Cdbg
 sudo dnf install libX11-devel libXrandr-devel libxkbcommon-devel mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
 sudo dnf install wayland-devel wayland-protocols-devel -y #Wayland
 sudo dnf install vulkan vulkan-tools vulkan-loader-devel -y #Vulkan
 # Intel: sudo dnf install vulkan-intel -y
 # AMD: sudo dnf install vulkan-radeon -y
 ```
-#### Gentoo-based:
+#### Gentoo:
 ```bash
 sudo emerge --sync
 sudo emerge --ask sys-devel/gcc sys-devel/cmake sys-devel/gdb -y #C/C++/CMake/Cdbg
@@ -49,7 +50,7 @@ sudo emerge --ask media-libs/vulkan-loader media-libs/vulkan-tools -y #Vulkan
 # Intel: sudo emerge --ask media-libs/vulkan-intel
 # AMD: sudo emerge --ask media-libs/vulkan-radeon
 ```
-#### Alpine-based:
+#### Alpine:
 ```bash
 sudo apk update
 sudo apk add build-base cmake gdb #C/C++/CMake/Cdbg
@@ -59,7 +60,7 @@ sudo apk add vulkan-tools vulkan-headers vulkan-loader-dev #Vulkan
 # Intel: sudo apk add vulkan-intel
 # AMD: sudo apk add vulkan-radeon
 ```
-#### Leap-based:
+#### Leap:
 ```bash
 sudo zypper refresh
 sudo zypper update -y

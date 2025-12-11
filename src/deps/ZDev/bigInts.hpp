@@ -1,6 +1,8 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/ for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
+v2.12.2
+
 bigInts.hpp is a lightweight single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
 See current preformance benchmarks: https://github.com/ZDev22/Vulkan-Engine/issues/4
