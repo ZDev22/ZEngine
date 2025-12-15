@@ -1,24 +1,25 @@
-#include "terminalCalculator.hpp"
+#pragma once
+
 #define BIG_INT_MATHPP
 #define BITSET_MATHPP
-#include "../../deps/ZDev/math.hpp"
+#include "deps/ZDev/math.hpp"
 
 #include <string>
 #include <iostream>
 
-std::string operationType;
-unsigned char selectedOperation = 0;
-std::string num1 = "0";
-std::string operation = "+";
-std::string operationStr;
-std::string num2 = "0";
-std::string num3 = "0";
-std::string answer = "0";
-
-void TerminalCalculator() {
+inline void start() {
     std::cout << "\x1b[2J\x1b[H";
     std::cout << "\033[2J\033[H";
     std::cout.flush();
+
+    unsigned char selectedOperation = 0;
+    std::string operationType;
+    std::string num1 = "0";
+    std::string operation = "+";
+    std::string operationStr;
+    std::string num2 = "0";
+    std::string num3 = "0";
+    std::string answer = "0";
 
     while (true) {
         
@@ -26,7 +27,7 @@ void TerminalCalculator() {
         std::cin >> operationType;
 
         if (operationType == "help") {
-            std::cout << "basic (+-/*%^)\n" << "advanced (sqrt, lerp, factorial)\n" << "binary (&)\n";
+            std::cout << "basic (+-/*%^)\n" << "advanced (sqrt, bitset, prime, factorial)\n" << "binary (&)\n";
             selectedOperation = 0;
         }
         else if (operationType == "basic") { selectedOperation = 1; }

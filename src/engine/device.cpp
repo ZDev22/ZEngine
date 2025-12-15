@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <vulkan/vulkan_core.h>
+
 Device::Device(AppWindow& window) : window{ window } {
     std::cout << "Creating instance...\n"; createInstance();
     std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(window.get(), instance, &surface_);
@@ -21,25 +23,35 @@ Device::~Device() {
 void Device::createInstance() {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "ZDev";
     appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
-    appInfo.pEngineName = "Z";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 1, 0);
+    appInfo.engineVersion = VK_MAKE_VERSION(0, 11, 0);
     appInfo.apiVersion = VK_API_VERSION_1_4;
+    appInfo.pApplicationName = "ZDev";
+    #ifdef __linux__
+        appInfo.pEngineName = "ZDev-linux";
+    #elif defined(_APPLE_)
+        appInfo.pEngineName = "ZDev-mac";
+    #elif defined(_WIN32)
+        appInfo.pEngineName = "ZDev-windows";
+    #else
+        appInfo.pEngineName = "ZDev-uknown";
+    #endif
 
-    auto extensions = getRequiredExtensions();
     std::cout << "Enabling extensions:\n";
-    for (const auto* ext : extensions) { std::cout << "  - " << (ext ? ext : "<nullptr>") << std::endl; }
+    std::vector<const char*> extensions = getRequiredExtensions();
+    for (unsigned int i = 0; i < extensions.size(); i++) { std::cout << "     - " << extensions[i] << std::endl; }
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    #ifdef __APPLE__
+        createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    #endif
     createInfo.pApplicationInfo = &appInfo;
-    createInfo.enabledExtensionCount = static_cast<unsigned int>(extensions.size());
+    createInfo.enabledExtensionCount = (unsigned int)extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     vkCreateInstance(&createInfo, nullptr, &instance);
-    hasGflwRequiredInstanceExtensions();
 }
 
 void Device::pickPhysicalDevice() {
@@ -86,18 +98,26 @@ void Device::createLogicalDevice() {
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.samplerAnisotropy = VK_TRUE;
+    #ifdef __APPLE__
+        VkPhysicalDeviceVulkan12Features VKFeatures{};
+        VKFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+        VKFeatures.bufferDeviceAddress = VK_FALSE;
+        VKFeatures.bufferDeviceAddressCaptureReplay = VK_FALSE;
+        VKFeatures.bufferDeviceAddressMultiDevice = VK_FALSE;
+    #endif
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.queueCreateInfoCount = static_cast<unsigned int>(queueCreateInfos.size());
-    createInfo.pEnabledFeatures = &deviceFeatures;
+    #ifdef __APPLE__
+        createInfo.pNext = &VKFeatures;
+    #endif
+
+    std::vector<const char*> extension = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
     createInfo.enabledExtensionCount = 1;
-    std::vector<const char*> extensionNames = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-    createInfo.ppEnabledExtensionNames = extensionNames.data();
+    createInfo.ppEnabledExtensionNames = extension.data();
     createInfo.enabledLayerCount = 0;
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }
@@ -125,6 +145,10 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
+        for (unsigned char i = 0; i < swapChainSupport.presentModes.size(); i++) {
+            if (swapChainSupport.presentModes[i] == 0) { std::cout << "    - GPU supports VSync\n"; }
+            else if (swapChainSupport.presentModes[i] == 2) { std::cout << "    - GPU can disable VSync\n"; }
+        }
         points += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
     }
     VkPhysicalDeviceFeatures supportedFeatures;
@@ -139,23 +163,10 @@ std::vector<const char*> Device::getRequiredExtensions() {
     if (!rgfWExtensions || rgfWExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
 
     std::vector<const char*> extensions(rgfWExtensions, rgfWExtensions + rgfWExtensionCount);
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    #ifdef __APPLE__
+        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    #endif
     return extensions;
-}
-
-void Device::hasGflwRequiredInstanceExtensions() {
-    unsigned int extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-    std::vector<VkExtensionProperties> extensions(extensionCount);
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-    std::vector<const char*> requiredExtensions = getRequiredExtensions();
-
-    for (const char* required : requiredExtensions) {
-        bool found = false;
-        for (const auto& ext : extensions) { if (std::string(ext.extensionName) == required) { found = true; break; }}
-        if (!found) { std::cerr << "Warning: Missing required RGFW extension: " << required << std::endl; }
-    }
 }
 
 bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {

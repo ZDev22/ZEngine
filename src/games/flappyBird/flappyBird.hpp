@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../deps/miniaudio.h"
-#include "../../deps/ZDev/keyboard.hpp"
-#include "../../deps/ZDev/collision.hpp"
-#include "../../engine/pipeline.hpp"
-#include "../../engine/global.hpp"
+#include "deps/miniaudio.h"
+#include "deps/ZDev/keyboard.hpp"
+#include "deps/ZDev/collision.hpp"
+#include "engine/pipeline.hpp"
+#include "engine/global.hpp"
 
 #define NO_DECOR false // if your computer can't render window titles, enable this
 #define NO_FPS false // if you don't want to display FPS, endable this

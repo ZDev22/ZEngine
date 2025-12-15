@@ -2,7 +2,7 @@
 
 #define RGFW_VULKAN
 #define RGFW_NO_API
-#include "RGFW.h"
+#include "deps/RGFW.h"
 
 #include <vulkan/vulkan.h>
 
@@ -15,18 +15,18 @@ public:
     }
 
     void pollEvents() {
-		RGFW_event e;
-        while (RGFW_window_checkEvent(window, &e)) {
-            if (e.type == RGFW_windowResized) {
-				unsigned int new_width, new_height;
+		RGFW_event event;
+        while (RGFW_window_checkEvent(window, &event)) {
+            if (event.type == RGFW_windowResized) {
+				unsigned int newWidth, newHeight;
 				RGFW_window_getSize(window, &width, &height);
-				if (new_width != width || new_height != height) {
-					width = new_width;
-					height = new_height;
+				if (newWidth != width || newHeight != height) {
+					width = newWidth;
+					height = newHeight;
 				}
                 framebufferResized = true;
             }
-            else if (e.type == RGFW_quit) {
+            else if (vent.type == RGFW_quit) {
                 RGFW_window_close(window);
                 window = nullptr;
             }

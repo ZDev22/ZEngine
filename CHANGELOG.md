@@ -9,7 +9,7 @@
 - Bugfixes
 
 ## v0.10 - 11/27/25
-- **Added (beta) Mac Support**
+- **Added (terminal) Mac Support**
 - **Switched from GLFW to RGFW**
 - Removed src/deps/ZDev engine dependency
 - Added camera zoom

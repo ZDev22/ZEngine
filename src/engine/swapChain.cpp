@@ -83,8 +83,7 @@ void SwapChain::createSwapChain() {
     VkSurfaceFormatKHR surfaceFormat; {
         surfaceFormat = swapChainSupport.formats[0];
         for (unsigned int i = 0; i < swapChainSupport.formats.size(); i++) {
-            if (swapChainSupport.formats[i].format == VK_FORMAT_B8G8R8A8_SRGB &&
-                swapChainSupport.formats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            if (swapChainSupport.formats[i].format == VK_FORMAT_B8G8R8A8_SRGB && swapChainSupport.formats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
                 surfaceFormat = swapChainSupport.formats[i];
                 break;
             }
@@ -93,9 +92,9 @@ void SwapChain::createSwapChain() {
 
     VkPresentModeKHR presentMode; {
         #if DISABLE_VSYNC
-        presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+            presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
         #else
-        presentMode = VK_PRESENT_MODE_FIFO_KHR;
+            presentMode = VK_PRESENT_MODE_FIFO_KHR;
         #endif
         for (unsigned int i = 0; i < swapChainSupport.presentModes.size(); i++) { if (swapChainSupport.presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) { presentMode = swapChainSupport.presentModes[i]; break; }}
     }

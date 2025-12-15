@@ -8,11 +8,12 @@ Requires some sprite data from sprite.hpp, a not project-specific system is plan
 
 HOW TO USE: Collision collision;
 collision.checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]);
-collision.checkCollision requires sprite IDs which are currently not implemented yet. */
+collision.checkCollision requires sprite IDs which are currently not implemented yet.
+*/
 
 #pragma once
 
-#include "../../engine/sprite.hpp"
+#include "engine/sprite.hpp"
 
 struct Collision {
 public:

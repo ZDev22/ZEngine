@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../deps/ZDev/keyboard.hpp"
-#include "../../deps/ZDev/collision.hpp"
-#include "../../engine/pipeline.hpp"
-#include "../../engine/global.hpp"
+#include "deps/ZDev/keyboard.hpp"
+#include "deps/ZDev/collision.hpp"
+#include "engine/pipeline.hpp"
+#include "engine/global.hpp"
 
 #include "slimeAttackEnemies.hpp"
 

@@ -3,12 +3,12 @@
 #include <thread>
 
 #define MINIAUDIO_IMPLEMENTATION
-#include "../deps/miniaudio.h"
+#include "deps/miniaudio.h"
 
-#include "../games/flappyBird/flappyBird.hpp"
-//#include "../games/slimeAttack/slimeAttack.hpp"
+#include "games/flappyBird/flappyBird.hpp"
+//#include "games/slimeAttack/slimeAttack.hpp"
 
-#include "../games/terminalCalculator/terminalCalculator.hpp"
+#include "games/terminalCalculator.hpp"
 
 #if NO_DECOR && !NO_FPS
     #include <iostream>
@@ -172,5 +172,5 @@ void App::render() {
 #endif
 
 void Terminal() {
-    TerminalCalculator();
+    start();
 }

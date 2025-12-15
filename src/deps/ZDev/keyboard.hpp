@@ -6,7 +6,8 @@ keyboard.hpp is a lightweight cross-platform single-header cpp keyboard abstract
 Built around GLFW, but now only runs of RGFW so it's currently missing RGFW-specific-optimizations (sigh).
 
 HOW-TO-USE: Keyboard keyboard;
-keyboard.keyHit(RGFW_a); */
+keyboard.keyHit(RGFW_a);
+*/
 
 #pragma once
 
@@ -15,7 +16,7 @@ keyboard.keyHit(RGFW_a); */
 #define KEY_HIT 2
 #define KEY_PRESSED 3
 
-#include "../../engine/window.hpp"
+#include "engine/window.hpp"
 
 #include <string.h>
 #include <vector>

@@ -1,10 +1,11 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.6.8
+v1.6.9
 
 math.hpp is a lightweight cross-platform single-header cpp library for high-preformance math functions!
 Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
-Works with bigInts.hpp and bitset.hpp if you want, but not required! */
+Works with bigInts.hpp and bitset.hpp if you want, but not required!
+*/
 
 #pragma once
 
@@ -43,15 +44,15 @@ Works with bigInts.hpp and bitset.hpp if you want, but not required! */
 
 // Random
 static unsigned long long state = 381195919421132ULL;
-inline unsigned long long xorshift32() {
+inline unsigned long long xorshift() {
     state ^= state << 13;
-    state ^= state >> 17;
-    state ^= state << 5;
+    state ^= state >> 7;
+    state ^= state << 17;
     return state;
 }
-template<typename T> inline T Random(const T min, const T max) { return (T)(min + (xorshift32() % (max - min + 1))); }
-inline float Random(const float min, const float max) { return min + (max - min) * ((float)(xorshift32()) / 4294967295.0f); }
-inline bool Random() { return (xorshift32() & 1ULL) == 0ULL; }
+template<typename T> inline T Random(const T min, const T max) { return (T)(min + (xorshift() % (max - min + 1))); }
+inline float Random(const float min, const float max) { return min + (max - min) * ((float)(xorshift()) / 4294967295.0f); }
+inline bool Random() { return (xorshift() & 1ULL) == 0ULL; }
 
 // Weight table
 struct WeightTable {
@@ -144,9 +145,8 @@ inline float averageMinMax(const std::vector<float>& floats) {
 
 // Values
 template<typename T> void setValuesInRange(std::vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
-template<typename T> void setZero(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
-inline void setTrue(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = true; }
-inline void setFalse(std::vector<bool>& vec, int minIndex, int maxIndex) { for (int i = minIndex; i < maxIndex; ++i) vec[i] = false; }
+template<typename T> void setFalse(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
+template<typename T> void setTrue(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 1, count); }
 
 // Cmath debloated functions
 template<typename T> inline T absolute(const T i) { return i < 0 ? -i : i; }

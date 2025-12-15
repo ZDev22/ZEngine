@@ -4,7 +4,7 @@
 #include "font.hpp"
 
 #define STB_TRUETYPE_IMPLEMENTATION
-#include "../deps/stb_truetype.h"
+#include "deps/stb_truetype.h"
 
 #include <filesystem>
 #include <fstream>

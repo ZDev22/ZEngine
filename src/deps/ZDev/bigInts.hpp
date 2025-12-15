@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/ for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
-v2.12.3
+v2.12.4
 
 bigInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
@@ -11,7 +11,8 @@ Requires the GCC compiler and support for __uint128_t
 HOW TO USE: bigInt<128> name;
 MATH: name *= 5;
 CONVERT TO STRING: name.toSting();
-PRINT OUT THE VARIABLE: std::cout << name.toSting() << std::endl; */
+PRINT OUT THE VARIABLE: std::cout << name.toSting() << std::endl;
+*/
 
 #pragma once
 
@@ -25,9 +26,8 @@ struct bigInt {
     constexpr bigInt() = default;
     constexpr bigInt(const unsigned long long num) { limbs[0] = num; }
     constexpr bigInt(const unsigned long long* init, unsigned int count) {
-        unsigned int limit = count < bytes ? count : bytes;
         unsigned int i = 0;
-        for (; i < limit; i++) { limbs[i] = init[i]; }
+        for (; i < count < bytes ? count : bytes; i++) { limbs[i] = init[i]; }
         memset(&limbs[i], 0, (bytes - i) * 8);
     }
 
@@ -134,7 +134,7 @@ struct bigInt {
         __uint128_t carry = 0;
         __uint128_t current = 0;
         for (unsigned int i = 0; i < bytes; i++) {
-            current = (__uint128_t)result.limbs[i] + (__uint128_t)limbs[i] * num + carry;
+            current = (__uint128_t)result.limbs[i] + ((__uint128_t)limbs[i] * num) + carry;
             result.limbs[i] = (unsigned long long)current;
             carry = current >> 64;
         }
@@ -147,6 +147,7 @@ struct bigInt {
         if (num.isZero()) { return 0; }
         unsigned int bw = bitWidth();
         if (bw == 0) { return 0; }
+
         bigInt result = 0;
         bigInt remainder = 0;
         for (unsigned int i = bw - 1; i >= 0; i--) {
@@ -273,20 +274,20 @@ struct bigInt {
 
     const char* toString() {
         static char buffer[(bitCount * 2) + 2];
-        bigInt<bitCount> temp = *this;
-        int pos = 0;
+        bigInt temp = *this;
+        int position = 0;
         if (isZero()) {
             buffer[0] = '0';
             buffer[1] = '\0';
             return buffer;
         }
-        while (!temp.isZero()) { buffer[pos++] = '0' + (char)temp.mod(10); }
-        for (int i = 0, j = pos - 1; i < j; i++, --j) {
+        while (!temp.isZero()) { buffer[position++] = '0' + (char)temp.mod(10); }
+        for (int i = 0, j = position - 1; i < j; i++, --j) {
             char t = buffer[i];
             buffer[i] = buffer[j];
             buffer[j] = t;
         }
-        buffer[pos] = '\0';
+        buffer[position] = '\0';
         return buffer;
     }
 
