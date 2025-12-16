@@ -7,7 +7,7 @@
 #define MAX_FRAMES_IN_FLIGHT 2
 #define DISABLE_VSYNC true
 
-class SwapChain {
+struct SwapChain {
 public:
 
     SwapChain(Device& deviceRef, VkExtent2D windowExtent);

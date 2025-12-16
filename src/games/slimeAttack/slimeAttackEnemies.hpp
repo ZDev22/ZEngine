@@ -10,9 +10,9 @@
 #define SLIMEATTACK_ENEMY_TYPE_OGRE 6
 #define SLIMEATTACK_ENEMY_TYPE_BOSS 7
 
-class Pipeline;
-class SlimeAttack;
-class SlimeAttackEnemies {
+struct Pipeline;
+struct SlimeAttack;
+struct SlimeAttackEnemies {
 public:
     SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision, Pipeline& pipeline);
 

@@ -145,7 +145,7 @@ void SlimeAttackEnemies::simulateEnemies() {
                 sprites[i].position[0] += enemies[i].speed[0] * deltaTime;
                 sprites[i].position[1] += enemies[i].speed[1] * deltaTime;
 
-                if (collision.checkSquareCollision(spriteCPU[1], sprites[1], spriteCPU[i], sprites[i])) { 
+                if (collision.checkSquareCollision(sprites[1], sprites[i])) { 
                     sprites[i].position[0] -= enemies[i].speed[0] * deltaTime;
                     sprites[i].position[1] -= enemies[i].speed[1] * deltaTime;
                     enemies[i].speed[0] = 0.f; 
@@ -181,7 +181,7 @@ void SlimeAttackEnemies::simulateEnemies() {
 bool SlimeAttackEnemies::isTouchingEnemies() {
     for (unsigned int i = 0; i < sprites.size(); i++) {
         if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
-            if (collision.checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) { return true; }
+            if (collision.checkSquareCollision(sprites[i], sprites[0])) { return true; }
         }
     }
     return false;
@@ -189,7 +189,7 @@ bool SlimeAttackEnemies::isTouchingEnemies() {
 
 void SlimeAttackEnemies::damageEnemies() {
     for (unsigned int i = 0; i < sprites.size(); i++) {
-        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && collision.checkSquareCollision(spriteCPU[i], sprites[i], spriteCPU[0], sprites[0])) {
+        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && collision.checkSquareCollision(sprites[i], sprites[0])) {
             enemies[i].health--;
             if (enemies[i].health <= 0) { 
                 enemies[i].skip = true;

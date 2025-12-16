@@ -2,30 +2,21 @@
     "configurations": [
         {
             "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
+            "includePath": ["${workspaceFolder}/**"],
             "cStandard": "c23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "linux-g++-x64"
         },
         {
             "name": "Mac",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
+            "includePath": ["${workspaceFolder}/**"],
             "cStandard": "c23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "macos-clang-x64"
         },
         {
             "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
+            "includePath": ["${workspaceFolder}/**"],
             "cStandard": "c23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "windows-g++-x64"

@@ -5,7 +5,7 @@
 
 #include <memory>
 
-class Model {
+struct Model {
 public:
     struct Vertex {
         float position[2];

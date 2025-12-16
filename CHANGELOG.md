@@ -2,58 +2,58 @@
 - More bigInts.hpp functionality
 - More bitset.hpp functionality
 - More math.hpp functionality
-- **GNU GPL LICENSE**
 - **HUGE BIGINT OPTIMIZATIONS & misc optimizations**
+- **BETTER & MORE COMPILER FLAGS**
 - Fedora, Gentoo, Alpine and Leap installation instructions
+- **GNU GPL LICENSE**
 - ZDep documentation
 - Bugfixes
 
 ## v0.10 - 11/27/25
-- **Added (terminal) Mac Support**
-- **Switched from GLFW to RGFW**
+- **ADDED (TERMINAL) MAC SUPPORT**
+- **SWITCHED FROM GLFW TO RGFW**
 - Removed src/deps/ZDev engine dependency
 - Added camera zoom
 - Bugfixes
 
 ## v0.9 - 10/5/25
 - More bigInts.hpp functionality
-- **Compile-time per-game settings**
+- **COMPILE-TIME PER-GAME SETTINGS**
 - HUGE terminal game optimizations
 - Optimizations
 
 ## v0.8 - 9/9/25
-- **Added font.hpp**
-- **Added bigInts.hpp**
+- **ADDED FONT.HPP**
+- **ADDED BIGINTS.HPP**
 - MUCH more keyboard.hpp functionality
 - Removed projection matrix
 - Removed some std dependencies
-- **Removed GLM dependency**
+- **REMOVED GLM**
 - Removed vulkan debug messenger
 - Optimizations
 
 ## v0.7 - 8/20/25
-- **Re-added dynamically creatable sprites**
-- **Added dynamically loadable textures**
+- **(RE-ADDED) DYNAMICALLY CREATABLE SPRITESs**
+- **DYNAMICALLY LOADING TEXTURES**
 - Made shaders easier to add & maintain
 - Made GPU selection better on multi-GPU PCs
 - HUGE optimizations
 
 ## v0.6 - 7/20/25
-- **Added audio.hpp**
+- **ADDED STRING.HPP**
 - Added string.hpp
 - Removed validation layers
 - Removed a bunch of unused vulkan files
-- Improved startup speed
 - Added camera
 - Optimizations
 
 ## v0.5 - 7/13/25
-- **Added collision.hpp**
+- **ADDED COLLISION.HPP**
+- **MULTITHREADING**
 - More math.hpp functionality
 - Optimized textures
 - Fixed texture blur
 - Fixed .gitignore
-- **Multithreading**
 
 ## v0.4 - 6/27/25
 - More math.hpp functionality
@@ -63,18 +63,18 @@
 - Optimizations
 
 ## v0.3 - 6/24/25
-- **Added keyboard.hpp**
+- **ADDED KEYBOARD.HPP**
 - Added math.hpp
 - Bugfixes
 
 ## v0.2 - 6/17/25
-- **Added Linux support**
+- **LINUX SUPPORT**
 - HUGE optimizations
 
 # v0.1 - 6/4/25
-- **Vulkan support**
+- **VULKAN SUPPORT**
 - **GLFW SUPPORT**
-- **Sprite creation**
-- **Texture loading**
-- **Texture mapping**
+- **SPRITE CREATION**
+- **TEXTURE LOADING**
+- **TEXTURE MAPPING**
 - Changable sprite transform

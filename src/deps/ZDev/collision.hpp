@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.2.2
+v1.2.3
 
 collision.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
 Uses the AABB method to create a square around your object, more precise methods are planned.
@@ -24,7 +24,7 @@ public:
 
     inline float absolute(const float i) { return i < 0 ? -i : i; }
 
-    bool checkSquareCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+    bool checkSquareCollision(SpriteData& dataA, SpriteData& dataB) {
         dataA.setRotationMatrix();
         dataB.setRotationMatrix();
         return absolute(dataA.position[0] - dataB.position[0]) <= (absolute(dataA.rotationMatrix[0]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[1]) * (dataA.scale[1] * 0.5f) + absolute(dataB.rotationMatrix[0]) * (dataB.scale[0] * 0.5f) + absolute(dataB.rotationMatrix[1]) * (dataB.scale[1] * 0.5f)) && absolute(dataA.position[1] - dataB.position[1]) <= (absolute(dataA.rotationMatrix[2]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[3]) * (dataA.scale[1] * 0.5f) + absolute(dataB.rotationMatrix[2]) * (dataB.scale[0] * 0.5f) + absolute(dataB.rotationMatrix[3]) * (dataB.scale[1] * 0.5f));

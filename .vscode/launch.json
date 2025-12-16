@@ -33,6 +33,18 @@
       "miDebuggerPath": "gdb"
     },
     {
+      "name": "Linux Smol",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "${workspaceFolder}/src",
+      "program": "${workspaceFolder}/build/linux/Smol/main",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb"
+    },
+    {
       "name": "Mac Debug",
       "type": "lldb",
       "request": "launch",
@@ -49,6 +61,15 @@
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/build/mac/Release/main",
+      "args": [],
+      "cwd": "${workspaceFolder}/src",
+      "stopOnEntry": false
+    },
+    {
+      "name": "Mac Smol",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/mac/Smol/main",
       "args": [],
       "cwd": "${workspaceFolder}/src",
       "stopOnEntry": false
@@ -81,6 +102,25 @@
       "externalConsole": false,
       "cwd": "${workspaceFolder}/src",
       "program": "${workspaceFolder}/build/windows/Release/main.exe",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "Windows Smol",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "${workspaceFolder}/src",
+      "program": "${workspaceFolder}/build/windows/Smol/main.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

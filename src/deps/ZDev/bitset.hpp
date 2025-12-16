@@ -1,16 +1,17 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v2.2.1
+v2.2.2
 
 bitset.hpp is a lightweight cross-platform single-header cpp library for creating large vectors of 1's and 0's!
 Aims to be an alternative to <bitset> with more features and customizability to come!
 
-HOW TO USE: Bitset bits(25) - creates a bitset with 25 integers
+HOW TO USE: Bitset bits(16) - creates a bitset with 16 BITSET_VARIABLE_TYPE variables
 
 #define BITSET_NO_INCLUDE - Decreases compile times but enables less features and slower alternatives
-#define BITSET_SET_SIZE - Controls the size of the bitset if BITSET_NO_INCLUDE is enabled
+#define BITSET_SET_SIZE - Controls the size of the bitset if BITSET_NO_INCLUDE is enabled (default: 32)
 #define BITSET_DYNAMIC_SIZE - Gives the bitset the ability to dynamically allocate more memory
 #define BITSET_VARIABLE_TYPE - Stores the bits in whatever variable type you want
+#define BITSET_USE_UINT - Apparently people prefer this, so it's here.
 */
 
 #pragma once
@@ -21,14 +22,21 @@ HOW TO USE: Bitset bits(25) - creates a bitset with 25 integers
     #ifdef BITSET_DYNAMIC_SIZE
         #include <vector>
     #endif
+    #ifdef BITSET_USE_UINT
+        #include <stdint.h>
+    #endif
 #endif
 
 #ifndef BITSET_SET_SIZE
-    #define BITSET_SET_SIZE 64
+    #define BITSET_SET_SIZE 32
 #endif
 
 #ifndef BITSET_VARIABLE_TYPE
-    #define BITSET_VARIABLE_TYPE unsigned int
+    #if defined(BITSET_USE_UINT) && !defined(BITSET_NO_INCLUDE)
+        #define BITSET_VARIABLE_TYPE uint32_t
+    #else
+        #define BITSET_VARIABLE_TYPE unsigned int
+    #endif
 #endif
 
 struct Bitset {
@@ -72,7 +80,7 @@ struct Bitset {
         const char* toString() const {
             static char buffer[BITSET_SET_SIZE];
             for (BITSET_VARIABLE_TYPE i = 0; i < BITSET_SET_SIZE; i++) { buffer[i] = check(BITSET_SET_SIZE - i - 1) ? '1' : '0'; }
-            buffer[BITSET_SET_SIZE] = '\0';
+            buffer[BITSET_SET_SIZE - 1] = '\0';
             return buffer;
         }
     #endif

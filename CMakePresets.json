@@ -3,72 +3,114 @@
   "cmakeMinimumRequired": {"major": 3, "minor": 21},
   "configurePresets": [
     {
-      "name": "linux",
+      "name": "linuxdebug",
       "displayName": "Linux Debug",
       "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/linux/gcc-debug",
+      "binaryDir": "${sourceDir}/build/linux/dbgcache",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS_DEBUG": "-Og -Wall -Wextra",
+        "CMAKE_CXX_FLAGS_DEBUG": "-Og -Wall -Wextra"
       }
     },
     {
       "name": "linuxrelease",
       "displayName": "Linux Release",
       "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/linux/gcc-release",
+      "binaryDir": "${sourceDir}/build/linux/relcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto"
       }
     },
     {
-      "name": "mac",
+      "name": "linuxsmol",
+      "displayName": "Linux Smol",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/linux/smolcache",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Smol",
+        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG"
+      }
+    },
+    {
+      "name": "macdebug",
       "displayName": "Mac Debug",
       "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/mac/gcc-debug",
+      "binaryDir": "${sourceDir}/build/mac/dbgcache",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS_DEBUG": "-Og -Wall -Wextra",
+        "CMAKE_CXX_FLAGS_DEBUG": "-Og -Wall -Wextra"
       }
     },
     {
       "name": "macrelease",
       "displayName": "Mac Release",
       "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/mac/gcc-release",
+      "binaryDir": "${sourceDir}/build/mac/relcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto"
       }
     },
     {
-      "name": "windows",
-      "displayName": "Windows MinGW Debug",
-      "generator": "MinGW Makefiles",
-      "binaryDir": "${sourceDir}/build/windows/mingw-debug",
+      "name": "macsmol",
+      "displayName": "Mac Smol",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/mac/smolcache",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Smol",
+        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG"
+      }
+    },
+    {
+      "name": "windowsdebug",
+      "displayName": "Windows Debug",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build/windows/dbgcache",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS_DEBUG": "-Og -Wall -Wextra",
+        "CMAKE_CXX_FLAGS_DEBUG": "-Og -Wall -Wextra"
       }
     },
     {
       "name": "windowsrelease",
-      "displayName": "Windows MinGW Release",
+      "displayName": "Windows Release",
       "generator": "MinGW Makefiles",
-      "binaryDir": "${sourceDir}/build/windows/mingw-release",
+      "binaryDir": "${sourceDir}/build/windows/relcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto"
+      }
+    },
+    {
+      "name": "windowssmol",
+      "displayName": "Windows Smol",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build/windows/smolcache",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Smol",
+        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG"
       }
     }
   ],
   "buildPresets": [
-    {"name": "linux","configurePreset": "linux"},
+    {"name": "linuxdebug","configurePreset": "linuxdebug"},
     {"name": "linuxrelease","configurePreset": "linuxrelease"},
-    {"name": "mac","configurePreset": "mac"},
+    {"name": "linuxsmol","configurePreset": "linuxsmol"},
+    {"name": "macdebug","configurePreset": "macdebug"},
     {"name": "macrelease","configurePreset": "macrelease"},
-    {"name": "windows","configurePreset": "windows"},
-    {"name": "windowsrelease","configurePreset": "windowsrelease"}
+    {"name": "macsmol","configurePreset": "macsmol"},
+    {"name": "windowsdebug","configurePreset": "windowsdebug"},
+    {"name": "windowsrelease","configurePreset": "windowsrelease"},
+    {"name": "windowssmol","configurePreset": "windowssmol"}
   ]
 }

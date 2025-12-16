@@ -10,7 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-VkResult RGFW_CreateVulkanSurface(RGFW_window* win, VkInstance instance, VkSurfaceKHR* surface, void* view /*Take this in because all we have access to is forward declarations*/) {
+VkResult RGFW_CreateVulkanSurface(VkInstance instance, VkSurfaceKHR* surface, void* view) {
     NSView* nsview = (NSView*)view;
     CAMetalLayer* metalLayer = [CAMetalLayer layer];
     metalLayer.device = MTLCreateSystemDefaultDevice();

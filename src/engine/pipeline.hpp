@@ -4,9 +4,9 @@
 #include "model.hpp"
 #include "global.hpp"
 
-class Renderer;
-class Sprite;
-class Pipeline {
+struct Renderer;
+struct Sprite;
+struct Pipeline {
 public:
     Pipeline(Device& device, Renderer& renderer, const std::string& shader);
     ~Pipeline();

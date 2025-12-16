@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 
-class Device;
-class Pipeline;
+struct Device;
+struct Pipeline;
 struct Texture {
 public:
     Texture(Device& device, const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, Pipeline& pipeline);

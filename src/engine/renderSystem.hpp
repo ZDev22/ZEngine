@@ -3,7 +3,7 @@
 #include "pipeline.hpp"
 #include "buffer.hpp"
 
-class RenderSystem {
+struct RenderSystem {
 public:
     RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout);
     ~RenderSystem();

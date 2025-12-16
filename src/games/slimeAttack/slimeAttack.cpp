@@ -59,7 +59,7 @@ void SlimeAttack::tick() {
         sprites[0].position[0] += slimeAttackSpeed[0] * deltaTime;
         sprites[0].position[1] += slimeAttackSpeed[1] * deltaTime;
 
-        if (collision.checkSquareCollision(spriteCPU[0], sprites[0], spriteCPU[1], sprites[1])) {
+        if (collision.checkSquareCollision(sprites[0], sprites[1])) {
             slimeAttackTouchingGround = true;
             sprites[0].position[1] -= slimeAttackSpeed[1] * deltaTime;
             slimeAttackSpeed[1] = 0;

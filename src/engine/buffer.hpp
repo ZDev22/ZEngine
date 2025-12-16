@@ -2,7 +2,7 @@
 
 #include "device.hpp"
 
-class Buffer {
+struct Buffer {
 public:
     Buffer(Device& device, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
     ~Buffer() = default;

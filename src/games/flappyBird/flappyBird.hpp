@@ -12,8 +12,7 @@
 #define FPS_CAP .5f / 60.f // set the framerate
 #define USE_MOUSE false // if your program uses the mouse, set this to true
 
-class AudioPlayer;
-class FlappyBird {
+struct FlappyBird {
 public:
     FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision, Push& vertex);
 

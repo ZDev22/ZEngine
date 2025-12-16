@@ -186,6 +186,10 @@ int main() {
     #endif
 #endif
 
+#if defined(__GNUC__)
+	#pragma GCC diagnostic ignored "-Wundefined-inline"
+#endif
+
 #if defined(RGFW_EGL) && !defined(RGFW_OPENGL)
 	#define RGFW_OPENGL
 #endif
@@ -4679,8 +4683,8 @@ VkResult RGFW_window_createSurface_Vulkan(RGFW_window* win, VkInstance instance,
    return vkCreateWin32SurfaceKHR(instance, &win32, NULL, surface);
 
 #elif defined(RGFW_MACOS) && !defined(RGFW_MACOS_X11)
-   VkResult RGFW_CreateVulkanSurface(RGFW_window* win, VkInstance instance, VkSurfaceKHR* surface, void* views);
-   return RGFW_CreateVulkanSurface(win, instance, surface, _RGFW->customViewClasses);
+   VkResult RGFW_CreateVulkanSurface(VkInstance instance, VkSurfaceKHR* surface, void* views);
+   return RGFW_CreateVulkanSurface(instance, surface, _RGFW->customViewClasses);
 
 #endif
 }

@@ -5,7 +5,7 @@
 
 #include <vector>
 
-class Device {
+struct Device {
 public:
     Device(AppWindow& window);
     ~Device();

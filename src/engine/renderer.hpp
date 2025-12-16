@@ -4,7 +4,7 @@
 #include "model.hpp"
 #include "swapChain.hpp"
 
-class Renderer {
+struct Renderer {
 public:
     Renderer(AppWindow& window, Device& device);
     ~Renderer();

@@ -13,8 +13,7 @@
 #define FPS_CAP .5f / 60.f // set the framerate
 #define USE_MOUSE false // if your program uses the mouse, set this to true
 
-class AudioPlayer;
-class SlimeAttack {
+struct SlimeAttack {
 public:
     SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Collision& collision);
 

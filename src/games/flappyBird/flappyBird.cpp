@@ -53,7 +53,7 @@ void FlappyBird::tick() {
         sprites[index + 1].position[0] = sprites[index].position[0];
         sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;
 
-        if (flappyBirdStarted && !flappyBirdDead && (collision.checkSquareCollision(spriteCPU[index], sprites[index], spriteCPU[0], sprites[0]) || collision.checkSquareCollision(spriteCPU[index + 1], sprites[index + 1], spriteCPU[0], sprites[0]))) {
+        if (flappyBirdStarted && !flappyBirdDead && (collision.checkSquareCollision(sprites[index], sprites[0]) || collision.checkSquareCollision(sprites[index + 1], sprites[0]))) {
             flappyBirdDead = true;
             flappyBirdSpeedY = -1.5f;
             sprites[0].rotation = 60.f;

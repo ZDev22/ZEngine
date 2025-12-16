@@ -8,7 +8,7 @@ There are many planned optimizations on the way, (mainly on linux because it's b
 
 To see the progress on the engine, **check out my YouTube channel: [youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can see the engine **:D**
 
-*Version handling is ZIVH (ZDev's Incremental Version Handling) - a non-destructive version counting system* ```ex: 1.4.7 -> 2.4.7 || 9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
+*Version handling is ZIVH (ZDev's Incremental Version Handling) - a non-destructive version counting system* ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
 
 *If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*
 
@@ -125,29 +125,30 @@ pacman -S --needed base-devel mingw-w64-x86_64-toolchain
 - Navigate to src/vulkan/app.cpp and update the include path to the path of your file
 - In app.cpp, update the load, constructor and the tick() functions to your game's
 
-# Third party dependencies:
-[VULKAN (Graphics) {Modified}](https://vulkan.lunarg.com/sdk/home)
-[RGFW (Window) {Modified}](https://github.com/ColleagueRiley/RGFW)
-[MINIAUDIO (Audio) {Modified}](https://miniaud.io/)
+# Dependencies:
+[VULKAN (Graphics) {Modified}](https://vulkan.lunarg.com/sdk/home)</br>
+[RGFW (Window) {Modified}](https://github.com/ColleagueRiley/RGFW)</br>
+[MINIAUDIO (Audio) {Modified}](https://miniaud.io/)</br>
 [STB-LIBRARIES (Image loader, font text rasterizer) {Modified}](https://github.com/nothings/stb)
 # Build commands:
 ## Linux:
 ```bash
-cmake --preset linux
-cmake --build --preset linux -- -j8
+cmake --preset linuxdebug
+cmake --build --preset linuxdebug -- -j8
 ```
-*or use **linuxrelease** for release builds*
-
 ## Mac:
 ```bash
-cmake --preset mac
-cmake --build --preset mac -- -j8
+cmake --preset macdebug
+cmake --build --preset macdebug -- -j8
 ```
-*or use **macrelease** for release builds*
-
 ## Windows:
 ```bash
-cmake --preset windows
-cmake --build --preset windows -- -j8
+cmake --preset windowsdebug
+cmake --build --preset windowsdebug -- -j8
 ```
-*or use **windowsrelease** for release builds*
+### Availiable presets:
+```,
+linuxdebug    linuxrelease    linuxsmol
+macdebug      macrelease      macsmol
+windowsdebug  windowsrelease  windowssmol
+```

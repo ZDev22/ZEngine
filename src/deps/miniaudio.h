@@ -65678,7 +65678,6 @@ static ma_result ma_sound_preinit(ma_engine* pEngine, ma_sound* pSound)
 }
 
 static ma_result ma_sound_init_from_data_source_internal(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound) {
-    ma_result result;
     ma_engine_node_config engineNodeConfig;
     ma_engine_node_type type;
 
@@ -65696,16 +65695,16 @@ static ma_result ma_sound_init_from_data_source_internal(ma_engine* pEngine, con
 
     
     if (pConfig->pDataSource != NULL) {
-        result = ma_data_source_get_data_format(pConfig->pDataSource, NULL, &engineNodeConfig.channelsIn, &engineNodeConfig.sampleRate, NULL, 0);
+        ma_data_source_get_data_format(pConfig->pDataSource, NULL, &engineNodeConfig.channelsIn, &engineNodeConfig.sampleRate, NULL, 0);
         if (engineNodeConfig.channelsOut == MA_SOUND_SOURCE_CHANNEL_COUNT) {
             engineNodeConfig.channelsOut = engineNodeConfig.channelsIn;
         }
     }
     
-    result = ma_engine_node_init(&engineNodeConfig, &pEngine->allocationCallbacks, &pSound->engineNode);
+    ma_engine_node_init(&engineNodeConfig, &pEngine->allocationCallbacks, &pSound->engineNode);
     
-    if (pConfig->pInitialAttachment == NULL) { if ((pConfig->flags & MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT) == 0) { result = ma_node_attach_output_bus(pSound, 0, ma_node_graph_get_endpoint(&pEngine->nodeGraph), 0); }}
-    else { result = ma_node_attach_output_bus(pSound, 0, pConfig->pInitialAttachment, pConfig->initialAttachmentInputBusIndex); }
+    if (pConfig->pInitialAttachment == NULL) { if ((pConfig->flags & MA_SOUND_FLAG_NO_DEFAULT_ATTACHMENT) == 0) { ma_node_attach_output_bus(pSound, 0, ma_node_graph_get_endpoint(&pEngine->nodeGraph), 0); }}
+    else { ma_node_attach_output_bus(pSound, 0, pConfig->pInitialAttachment, pConfig->initialAttachmentInputBusIndex); }
 
 
     
@@ -65848,9 +65847,7 @@ MA_API ma_result ma_sound_init_from_data_source(ma_engine* pEngine, ma_data_sour
 }
 
 MA_API ma_result ma_sound_init_ex(ma_engine* pEngine, const ma_sound_config* pConfig, ma_sound* pSound) {
-    ma_result result;
-
-    result = ma_sound_preinit(pEngine, pSound);
+    ma_sound_preinit(pEngine, pSound);
     pSound->endCallback = pConfig->endCallback;
     pSound->pEndCallbackUserData = pConfig->pEndCallbackUserData;
 
@@ -65907,7 +65904,7 @@ MA_API ma_data_source* ma_sound_get_data_source(const ma_sound* pSound)
 
 MA_API void ma_sound_start(ma_sound* pSound) {
     if (ma_sound_get_at_end(pSound)) {
-        ma_result result = ma_data_source_seek_to_pcm_frame(pSound->pDataSource, 0);
+        ma_data_source_seek_to_pcm_frame(pSound->pDataSource, 0);
         ma_atomic_exchange_32(&pSound->atEnd, MA_FALSE);
     }
     ma_node_set_state(pSound, ma_node_state_started);
