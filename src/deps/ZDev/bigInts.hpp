@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/ for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
-v2.12.4
+v2.12.5
 
 bigInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
@@ -39,7 +39,7 @@ struct bigInt {
     unsigned long long mod(unsigned long long num) {
         if (num == 0) { return 0; }
         __uint128_t remainder = 0;
-        for (int i = bytes - 1; i >= 0; i--) {
+        for (unsigned int i = bytes - 1; i >= 0; i--) {
             __uint128_t current = (remainder << 64) | limbs[i];
             limbs[i] = current / num;
             remainder = current % num;
@@ -273,17 +273,19 @@ struct bigInt {
 
 
     const char* toString() {
-        static char buffer[(bitCount * 2) + 2];
-        bigInt temp = *this;
-        int position = 0;
         if (isZero()) {
+            char buffer[2];
             buffer[0] = '0';
             buffer[1] = '\0';
             return buffer;
         }
+        static char buffer[(bitCount * 2) + 2];
+        bigInt temp = *this;
+        int position = 0;
         while (!temp.isZero()) { buffer[position++] = '0' + (char)temp.mod(10); }
+        char t = '0';
         for (int i = 0, j = position - 1; i < j; i++, --j) {
-            char t = buffer[i];
+            t = buffer[i];
             buffer[i] = buffer[j];
             buffer[j] = t;
         }

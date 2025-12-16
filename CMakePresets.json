@@ -9,8 +9,8 @@
       "binaryDir": "${sourceDir}/build/linux/dbgcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-Og -Wall -Wextra",
-        "CMAKE_CXX_FLAGS_DEBUG": "-Og -Wall -Wextra"
+        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wno-inline -fdiagnostics-show-option -D_DEBUG",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wno-inline -fdiagnostics-show-option -D_DEBUG"
       }
     },
     {
@@ -20,8 +20,8 @@
       "binaryDir": "${sourceDir}/build/linux/relcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto",
-        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto"
+        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto -fdiagnostics-show-option",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto -fdiagnostics-show-option"
       }
     },
     {
@@ -31,8 +31,8 @@
       "binaryDir": "${sourceDir}/build/linux/smolcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Smol",
-        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG -fno-exceptions -fdiagnostics-show-option",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG -fno-exceptions -fdiagnostics-show-option"
       }
     },
     {
@@ -42,8 +42,8 @@
       "binaryDir": "${sourceDir}/build/mac/dbgcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-Og -Wall -Wextra",
-        "CMAKE_CXX_FLAGS_DEBUG": "-Og -Wall -Wextra"
+        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -fdiagnostics-show-option -D_DEBUG",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -fdiagnostics-show-option -D_DEBUG"
       }
     },
     {
@@ -53,8 +53,8 @@
       "binaryDir": "${sourceDir}/build/mac/relcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto",
-        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto"
+        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto -fdiagnostics-show-option",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto -fdiagnostics-show-option"
       }
     },
     {
@@ -64,8 +64,8 @@
       "binaryDir": "${sourceDir}/build/mac/smolcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Smol",
-        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG -fno-exceptions -fdiagnostics-show-option",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG -fno-exceptions -fdiagnostics-show-option"
       }
     },
     {
@@ -75,8 +75,8 @@
       "binaryDir": "${sourceDir}/build/windows/dbgcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-Og -Wall -Wextra",
-        "CMAKE_CXX_FLAGS_DEBUG": "-Og -Wall -Wextra"
+        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -fdiagnostics-show-option -D_DEBUG",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -fdiagnostics-show-option -D_DEBUG"
       }
     },
     {
@@ -86,8 +86,8 @@
       "binaryDir": "${sourceDir}/build/windows/relcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto",
-        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto"
+        "CMAKE_C_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto -fdiagnostics-show-option",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Ofast -DNDEBUG -flto -fdiagnostics-show-option"
       }
     },
     {
@@ -97,8 +97,8 @@
       "binaryDir": "${sourceDir}/build/windows/smolcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Smol",
-        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG"
+        "CMAKE_C_FLAGS_RELEASE": "-Oz -DNDEBUG -fno-exceptions -fdiagnostics-show-option",
+        "CMAKE_CXX_FLAGS_RELEASE": "-Oz -DNDEBUG -fno-exceptions -fdiagnostics-show-option"
       }
     }
   ],

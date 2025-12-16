@@ -186,7 +186,7 @@ int main() {
     #endif
 #endif
 
-#if defined(__GNUC__)
+#if defined(__clang__)
 	#pragma GCC diagnostic ignored "-Wundefined-inline"
 #endif
 
