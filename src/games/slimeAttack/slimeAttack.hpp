@@ -1,7 +1,7 @@
 #pragma once
 
-#include "deps/ZDev/keyboard.hpp"
-#include "deps/ZDev/collision.hpp"
+#include "deps/ZDeps/keyboard.hpp"
+#include "deps/ZDeps/collision.hpp"
 #include "engine/pipeline.hpp"
 #include "engine/global.hpp"
 

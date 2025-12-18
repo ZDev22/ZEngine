@@ -1,6 +1,6 @@
 #include "flappyBird.hpp"
-#include "deps/ZDev/math.hpp"
-#include "deps/ZDev/collision.hpp"
+#include "deps/ZDeps/zmath.hpp"
+#include "deps/ZDeps/collision.hpp"
 
 FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision, Push& vertex) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), vertex(vertex) {}
 

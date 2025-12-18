@@ -1,6 +1,6 @@
 #include "slimeAttack.hpp"
-#include "deps/ZDev/math.hpp"
-#include "deps/ZDev/collision.hpp"
+#include "deps/ZDeps/zmath.hpp"
+#include "deps/ZDeps/collision.hpp"
 
 SlimeAttack::SlimeAttack(Keyboard& keyboard, Pipeline& pipeline, Collision& collision) : keyboard(keyboard), pipeline(pipeline), collision(collision), slimeAttackEnemies(*this, collision, pipeline) {}
 

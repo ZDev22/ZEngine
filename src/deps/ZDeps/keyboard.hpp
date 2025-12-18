@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.8.1
+v1.8.2
 
 keyboard.hpp is a lightweight cross-platform single-header cpp keyboard abstraction library focused on HIGH-PREFORMANCE KEY DETECTION
 Built around GLFW, but now only runs of RGFW so it's currently missing RGFW-specific-optimizations (sigh).
@@ -24,11 +24,10 @@ keyboard.keyHit(RGFW_a);
 struct Keyboard {
 public:
     // KEYBOARD
-
     Keyboard(RGFW_window* window) : window(window) {}
 
     // Utility
-    unsigned char getKeyIndex(const unsigned short key) const { for (unsigned char i = 0; i < 97; ++i) { if (rgfwKeys[i] == key) return i; } return 0; }
+    unsigned char getKeyIndex(const unsigned short key) const { for (unsigned int i = 0; i < 97; i++) { if (rgfwKeys[i] == key) return i; } return 0; }
     unsigned char updateKeyState(const unsigned short key) {
         unsigned char index = getKeyIndex(key);
         unsigned char &cache = keys[index];
@@ -55,32 +54,32 @@ public:
     bool keysHit(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) != KEY_HIT) return false; } return true; }
     bool keysReleased(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (updateKeyState(keysArray[i]) != KEY_RELEASED) return false; } return true; }
     bool keysIdle(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (RGFW_window_isKeyPressed(window, keysArray[i])) return false; } return true; }
-    bool anyKeyPressed() { for (unsigned char i = 0; i < 97; i++) { if (RGFW_window_isKeyPressed(window, rgfwKeys[i])) return true; } return false; }
-    bool anyKeyHit() { for (unsigned char i = 0; i < 97; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_HIT) return true; } return false; }
-    bool anyKeyReleased() { for (unsigned char i = 0; i < 97; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_RELEASED) return true; } return false; }
-    bool anyKeyIdle() { for (unsigned char i = 0; i < 97; i++) { if (!RGFW_window_isKeyPressed(window, rgfwKeys[i])) return true; } return false; }
-    short whatKeyPressed() { for (unsigned char i = 0; i < 97; i++) { if (RGFW_window_isKeyPressed(window, rgfwKeys[i])) return rgfwKeys[i]; } return -1; }
-    short whatKeyHit() { for (unsigned char i = 0; i < 97; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_HIT) return rgfwKeys[i]; } return -1; }
-    short whatKeyReleased() { for (unsigned char i = 0; i < 97; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_RELEASED) return rgfwKeys[i]; } return -1; }
-    short whatKeyIdle() { for (unsigned char i = 0; i < 97; i++) { if (!RGFW_window_isKeyPressed(window, rgfwKeys[i])) return rgfwKeys[i]; } return -1; }
+    bool anyKeyPressed() { for (auto Keys : rgfwKeys) { if (RGFW_window_isKeyPressed(window, Keys)) return true; } return false; }
+    bool anyKeyHit() { for (auto Keys : rgfwKeys) { if (updateKeyState(Keys) == KEY_HIT) return true; } return false; }
+    bool anyKeyReleased() { for (auto Keys : rgfwKeys) { if (updateKeyState(Keys) == KEY_RELEASED) return true; } return false; }
+    bool anyKeyIdle() { for (auto Keys : rgfwKeys) { if (!RGFW_window_isKeyPressed(window, Keys)) return true; } return false; }
+    short whatKeyPressed() { for (auto Keys : rgfwKeys) { if (RGFW_window_isKeyPressed(window, Keys)) return Keys; } return -1; }
+    short whatKeyHit() { for (auto Keys : rgfwKeys) { if (updateKeyState(Keys) == KEY_HIT) return Keys; } return -1; }
+    short whatKeyReleased() { for (auto Keys : rgfwKeys) { if (updateKeyState(Keys) == KEY_RELEASED) return Keys; } return -1; }
+    short whatKeyIdle() { for (auto Keys : rgfwKeys) { if (!RGFW_window_isKeyPressed(window, Keys)) return Keys; } return -1; }
     std::vector<short> whatKeysPressed() {
         std::vector<short> keysPressed;
-        for (unsigned char i = 0; i < 97; i++) { if (RGFW_window_isKeyPressed(window, rgfwKeys[i])) keysPressed.push_back(rgfwKeys[i]); }
+        for (auto Keys : rgfwKeys) { if (RGFW_window_isKeyPressed(window, Keys)) keysPressed.push_back(Keys); }
         return keysPressed;
     }
     std::vector<short> whatKeysHit() {
         std::vector<short> keysHit;
-        for (unsigned char i = 0; i < 97; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_HIT) keysHit.push_back(rgfwKeys[i]); }
+        for (auto Keys : rgfwKeys) { if (updateKeyState(Keys) == KEY_HIT) keysHit.push_back(Keys); }
         return keysHit;
     }
     std::vector<short> whatKeysReleased() {
         std::vector<short> keysReleased;
-        for (unsigned char i = 0; i < 97; i++) { if (updateKeyState(rgfwKeys[i]) == KEY_RELEASED) keysReleased.push_back(rgfwKeys[i]);}
+        for (auto Keys : rgfwKeys) { if (updateKeyState(Keys) == KEY_RELEASED) keysReleased.push_back(Keys);}
         return keysReleased;
     }
     std::vector<short> whatKeysIdle() {
         std::vector<short> keysIdle;
-        for (unsigned char i = 0; i < 97; i++) { if (!RGFW_window_isKeyPressed(window, rgfwKeys[i])) keysIdle.push_back(rgfwKeys[i]); }
+        for (auto Keys : rgfwKeys) { if (!RGFW_window_isKeyPressed(window, Keys)) keysIdle.push_back(Keys); }
         return keysIdle;
     }
 
@@ -127,7 +126,7 @@ public:
     }
     bool keyPressedSimulated(const unsigned short key) { return keys[getKeyIndex(key)] == KEY_PRESSED; }
     bool keysPressedSimulated(const unsigned short* keysArray, const unsigned char numKeys) { for (unsigned char i = 0; i < numKeys; i++) { if (keys[getKeyIndex(keysArray[i])] == KEY_PRESSED) return true; } return false; }
-    bool anyKeyPressedSimulated() { for (unsigned char i = 0; i < 97; i++) { if (keys[getKeyIndex(keys[i])] == KEY_PRESSED) return true; } return false; }
+    bool anyKeyPressedSimulated() { for (auto Keys : rgfwKeys) { if (keys[getKeyIndex(Keys)] == KEY_PRESSED) return true; } return false; }
 
     // Modifiers
     void updateModifiers() {

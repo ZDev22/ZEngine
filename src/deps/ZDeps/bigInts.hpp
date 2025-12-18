@@ -1,17 +1,16 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/ for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
-v2.12.5
+v2.12.6
 
 bigInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
 See current preformance benchmarks: https://github.com/ZDev22/Vulkan-Engine/issues/4
 
 Requires the GCC compiler and support for __uint128_t
-HOW TO USE: bigInt<128> name;
-MATH: name *= 5;
-CONVERT TO STRING: name.toSting();
-PRINT OUT THE VARIABLE: std::cout << name.toSting() << std::endl;
+HOW TO USE: bigInt<128> var;
+MATH: var *= 5;
+PRINT OUT THE VARIABLE: printf(name.toSting());
 */
 
 #pragma once
@@ -39,15 +38,15 @@ struct bigInt {
     unsigned long long mod(unsigned long long num) {
         if (num == 0) { return 0; }
         __uint128_t remainder = 0;
-        for (unsigned int i = bytes - 1; i >= 0; i--) {
-            __uint128_t current = (remainder << 64) | limbs[i];
-            limbs[i] = current / num;
+        for (auto limb : limbs) {
+            __uint128_t current = (remainder << 64) | limb;
+            limb = current / num;
             remainder = current % num;
         }
         return (unsigned long long)remainder;
     }
     unsigned int bitWidth() const {
-        for (unsigned int i = bytes - 1; i >= 0; --i) {
+        for (unsigned int i = 0; i < bytes; i++) {
             if (limbs[i] != 0) { return i * 64 + __builtin_clzll(limbs[i]); }
         }
         return 0;
@@ -72,8 +71,8 @@ struct bigInt {
     bigInt operator+(const unsigned long long num) const { 
         __uint128_t sum = (__uint128_t)(limbs[0] + num);
         bigInt result = (unsigned long long)sum;
-
         __uint128_t carry = sum >> 64;
+
         if (carry == 0) { return result; }
         for (unsigned int i = 1; i < bytes; i++) {
             sum = limbs[i] + carry;
@@ -195,7 +194,7 @@ struct bigInt {
         return result;
     }
     bigInt operator|(const unsigned long long num) const { return *this | bigInt(num); }
-    void operator|=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] |= num.limbs[i]; }
+    void operator|=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) { limbs[i] |= num.limbs[i]; } }
     void operator|=(const unsigned long long num) { *this |= bigInt(num); }
 
     bigInt operator^(const bigInt& num) const {
@@ -204,7 +203,7 @@ struct bigInt {
         return result;
     }
     bigInt operator^(const unsigned long long num) const { return *this ^ bigInt(num); }
-    void operator^=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] ^= num.limbs[i]; }
+    void operator^=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) { limbs[i] ^= num.limbs[i]; }}
     void operator^=(const unsigned long long num) { *this ^= bigInt(num); }
 
     bigInt operator~() const {
@@ -232,11 +231,11 @@ struct bigInt {
     bool operator<=(const bigInt& num) const { return !(*this > num); }
     bool operator<=(const unsigned long long num) const { return *this <= bigInt(num); }
 
-    bigInt operator<<=(unsigned int n) {
-        if (n >= bitCount) { setZero(); return *this; }
+    bigInt operator<<=(unsigned int num) {
+        if (num >= bitCount) { setZero(); return *this; }
         
-        int limbshift = n / 64;
-        int bitshift = n % 64;
+        int limbshift = num / 64;
+        int bitshift = num % 64;
         unsigned long long nw[bytes] = {0};
 
         for (int i = bytes - 1; i >= 0; i--) {
@@ -250,13 +249,13 @@ struct bigInt {
         memcpy(&limbs, &nw, bytes);
         return *this;
     }
-    bigInt operator<<(int n) const { bigInt result = *this; result <<= n; return result; }
+    bigInt operator<<(int num) const { bigInt result = *this; result <<= num; return result; }
 
-    bigInt operator>>=(int n) {
-        if (n <= 0) { return *this; }
-        if (n >= bitCount) { setZero(); return *this; }
-        int limbshift = n / 64;
-        int bitshift = n % 64;
+    bigInt operator>>=(int num) {
+        if (num <= 0) { return *this; }
+        if (num >= bitCount) { setZero(); return *this; }
+        int limbshift = num / 64;
+        int bitshift = num % 64;
         unsigned long long nw[bytes] = {0};
         for (unsigned int i = 0; i < bytes; i++) {
             int ni = i - limbshift;
@@ -265,10 +264,10 @@ struct bigInt {
             nw[ni] |= bitshift == 0 ? part : part >> bitshift;
             if (ni - 1 >= 0 && bitshift != 0) { nw[ni - 1] |= part << (64 - bitshift); }
         }
-        for (unsigned int i = 0; i < bytes; i++) limbs[i] = nw[i];
+        for (unsigned int i = 0; i < bytes; i++) { limbs[i] = nw[i]; }
         return *this;
     }
-    bigInt operator>>(int n) const { bigInt result = *this; result >>= n; return result; }
+    bigInt operator>>(int num) const { bigInt result = *this; result >>= num; return result; }
     unsigned long long operator[](unsigned long long index) const { return limbs[index]; }
 
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "deps/ZDev/collision.hpp"
-#include "deps/ZDev/math.hpp"
+#include "deps/ZDeps/collision.hpp"
+#include "deps/ZDeps/zmath.hpp"
 
 #define SLIMEATTACK_ENEMY_TYPE_DEATH 3
 #define SLIMEATTACK_ENEMY_TYPE_SLIME 4

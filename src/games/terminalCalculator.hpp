@@ -1,8 +1,8 @@
 #pragma once
 
-#define BIG_INT_MATHPP
-#define BITSET_MATHPP
-#include "deps/ZDev/math.hpp"
+#define ZMATH_BIG_INT
+#define ZMATH_BITSET
+#include "deps/ZDeps/zmath.hpp"
 
 #include <string>
 #include <iostream>

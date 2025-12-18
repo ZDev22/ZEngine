@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
 
-v1.2.3
+v1.2.4
 
 collision.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
 Uses the AABB method to create a square around your object, more precise methods are planned.
@@ -27,7 +27,7 @@ public:
     bool checkSquareCollision(SpriteData& dataA, SpriteData& dataB) {
         dataA.setRotationMatrix();
         dataB.setRotationMatrix();
-        return absolute(dataA.position[0] - dataB.position[0]) <= (absolute(dataA.rotationMatrix[0]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[1]) * (dataA.scale[1] * 0.5f) + absolute(dataB.rotationMatrix[0]) * (dataB.scale[0] * 0.5f) + absolute(dataB.rotationMatrix[1]) * (dataB.scale[1] * 0.5f)) && absolute(dataA.position[1] - dataB.position[1]) <= (absolute(dataA.rotationMatrix[2]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[3]) * (dataA.scale[1] * 0.5f) + absolute(dataB.rotationMatrix[2]) * (dataB.scale[0] * 0.5f) + absolute(dataB.rotationMatrix[3]) * (dataB.scale[1] * 0.5f));
+        return absolute(dataA.position[0] - dataB.position[0]) <= (absolute(dataA.rotationMatrix[0]) * (dataA.scale[0] * .5f) + absolute(dataA.rotationMatrix[1]) * (dataA.scale[1] * .5f) + absolute(dataB.rotationMatrix[0]) * (dataB.scale[0] * .5f) + absolute(dataB.rotationMatrix[1]) * (dataB.scale[1] * .5f)) && absolute(dataA.position[1] - dataB.position[1]) <= (absolute(dataA.rotationMatrix[2]) * (dataA.scale[0] * 0.5f) + absolute(dataA.rotationMatrix[3]) * (dataA.scale[1] * .5f) + absolute(dataB.rotationMatrix[2]) * (dataB.scale[0] * .5f) + absolute(dataB.rotationMatrix[3]) * (dataB.scale[1] * .5f));
     }
 
     bool checkCollision(const Sprite& spriteA, SpriteData& dataA, const unsigned int spriteAID, const Sprite& spriteB, SpriteData& dataB, const unsigned int spriteBID) {
@@ -45,9 +45,9 @@ public:
             b.ID = spriteBID;
             const auto& verticesB = spriteB.model->getVertices();
 
-            for (unsigned int i = 0; i < verticesB.size(); i++) {
-                float pxB = verticesB[i].position[0] * dataB.scale[0];
-                float pyB = verticesB[i].position[1] * dataB.scale[1];
+            for (auto verticy : verticesB) {
+                float pxB = verticy.position[0] * dataB.scale[0];
+                float pyB = verticy.position[1] * dataB.scale[1];
                 float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
                 transformedB[0] += dataB.position[0];
                 transformedB[1] += dataB.position[1];
@@ -65,9 +65,9 @@ public:
             a.ID = spriteAID;
             const auto& verticesA = spriteA.model->getVertices();
 
-            for (unsigned int i = 0; i < verticesA.size(); i++) {
-                float pxA = verticesA[i].position[0] * dataA.scale[0];
-                float pyA = verticesA[i].position[1] * dataA.scale[1];
+            for (auto verticy : verticesA) {
+                float pxA = verticy.position[0] * dataA.scale[0];
+                float pyA = verticy.position[1] * dataA.scale[1];
                 float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                 transformedA[0] += dataA.position[0];
                 transformedA[1] += dataA.position[1];
