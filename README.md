@@ -134,17 +134,17 @@ pacman -S --needed base-devel mingw-w64-x86_64-toolchain
 ## Linux:
 ```bash
 cmake --preset linuxdebug
-cmake --build --preset linuxdebug -- -j8
+cmake --build --preset linuxdebug -j8
 ```
 ## Mac:
 ```bash
 cmake --preset macdebug
-cmake --build --preset macdebug -- -j8
+cmake --build --preset macdebug -j8
 ```
 ## Windows:
 ```bash
 cmake --preset windowsdebug
-cmake --build --preset windowsdebug -- -j8
+cmake --build --preset windowsdebug -j8
 ```
 ### Availiable presets:
 ```,
