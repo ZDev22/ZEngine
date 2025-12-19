@@ -6,8 +6,7 @@
 
 int main() {
     compileShaders();
-    App app{};
-    app.run();
+    startEngine();
 }
 
 #else
