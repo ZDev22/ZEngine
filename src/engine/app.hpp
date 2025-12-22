@@ -42,8 +42,11 @@ std::unique_ptr<RenderSystem> renderSystem;
 
 inline void render();
 inline void startEngine() {
+    #ifndef FPS_CAP
+        #define FPS_CAP 60.f
+    #endif
     #ifdef FPS_CAP_SET
-        deltaTime = .5f / FPS_CAP;
+        deltaTime = 1.f / FPS_CAP;
     #endif
     pipeline.loadFlappyBird();
     //pipeline.loadSlimeAttack();
@@ -65,9 +68,9 @@ inline void startEngine() {
 
     while (!window.shouldClose()) {
         #ifdef FPS_CAP_SET
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(((.5f / FPS_CAP) * 1000) - appWait)));
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appWait)));
             cpsTime = std::chrono::high_resolution_clock::now();
-            appTimer += .5f / FPS_CAP;
+            appTimer += 1.f / FPS_CAP;
         #else
             cpsTime = std::chrono::high_resolution_clock::now();
             deltaTime = std::chrono::duration<float>(cpsTime - cpsLastTime).count();
@@ -112,7 +115,7 @@ inline void render() {
     while (!window.shouldClose()) {
 #endif
         #if defined(FPS_CAP_SET) && defined(USE_MULTITHREADING)
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(((.5f / FPS_CAP) * 1000) - appFrameWait)));
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appFrameWait)));
             fpsTime = std::chrono::high_resolution_clock::now();
         #endif
         if (auto commandBuffer = renderer.beginFrame()) {

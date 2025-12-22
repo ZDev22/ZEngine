@@ -1,4 +1,4 @@
-﻿#include "pipeline.hpp"
+#include "pipeline.hpp"
 #include "renderer.hpp"
 #include "sprite.hpp"
 #include "font.hpp"

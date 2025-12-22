@@ -1,19 +1,15 @@
 ## v0.11 - DEV
-- More bigInts.hpp functionality
-- More bitset.hpp functionality
-- More math.hpp functionality
-- **HUGE BIGINT OPTIMIZATIONS & misc optimizations**
+- **ZDEP DOCUMENTATION & INDEPENDENCE FROM ENGINE**
 - **BETTER & MORE COMPILER FLAGS**
-- Fedora, Gentoo, Alpine and Leap installation instructions
 - **GNU GPL LICENSE**
-- ZDep documentation
+- Fedora, Gentoo, Alpine and Leap installation instructions
+- Optimizations
 - Bugfixes
 
 ## v0.10 - 11/27/25
 - **ADDED (TERMINAL) MAC SUPPORT**
 - **SWITCHED FROM GLFW TO RGFW**
 - Removed src/deps/ZDev engine dependency
-- Added camera zoom
 - Bugfixes
 
 ## v0.9 - 10/5/25

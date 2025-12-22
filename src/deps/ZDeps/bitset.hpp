@@ -1,4 +1,4 @@
-/* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+/* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
 v2.3.2
 
@@ -38,7 +38,7 @@ HOW TO USE: Bitset bits(16) - creates a bitset with 16 variables
 #endif
 
 #ifdef __clang__ /* clang dosen't like constexpr for some reason */
-    #define BITSET_CONSTEXPR 
+    #define BITSET_CONSTEXPR
 #else
     #define BITSET_CONSTEXPR constexpr
 #endif

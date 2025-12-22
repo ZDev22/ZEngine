@@ -186,7 +186,8 @@ int main() {
     #endif
 #endif
 
-#if defined(__clang__)
+#pragma GCC diagnostic ignored "-Wunused-function"
+#if defined(__clang__) || (defined(__GNUC__) && defined(RGFW_MACOS))
 	#pragma GCC diagnostic ignored "-Wundefined-inline"
 #endif
 

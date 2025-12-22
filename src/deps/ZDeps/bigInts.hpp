@@ -1,4 +1,4 @@
-/* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/ for current license
+/* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
 v2.12.6
@@ -68,7 +68,7 @@ struct bigInt {
         }
         return result;
     }
-    bigInt operator+(const unsigned long long num) const { 
+    bigInt operator+(const unsigned long long num) const {
         __uint128_t sum = (__uint128_t)(limbs[0] + num);
         bigInt result = (unsigned long long)sum;
         __uint128_t carry = sum >> 64;
@@ -233,7 +233,7 @@ struct bigInt {
 
     bigInt operator<<=(unsigned int num) {
         if (num >= bitCount) { setZero(); return *this; }
-        
+
         int limbshift = num / 64;
         int bitshift = num % 64;
         unsigned long long nw[bytes] = {0};
