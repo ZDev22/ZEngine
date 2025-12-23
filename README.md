@@ -103,17 +103,17 @@ sudo cp ~/VulkanSDK/1.4.328.1/macOS/lib/libMoltenVK.dylib /usr/local/lib/
 - Run the following commands to download a C++ compiler:
 ```bash
 pacman -Syu
-pacman -S --needed base-devel mingw-w64-x86_64-toolchain
+pacman -S base-devel mingw-w64-x86_64-toolchain
 ```
 - In the windows search bar, look up "Edit environment variables"
 - Go to "advanced"
-- Add C:\msys64\ucrt64\bin to your user PATH
-- Add C:\msys64\mingw64\bin to your user PATH
+- Add C:\msys64\ucrt64\bin to your user (or system) PATH
+- Add C:\msys64\mingw64\bin to your user (or system) PATH
 - Download the **Windows x64 Installer** from [https://cmake.org/download/](https://cmake.org/download/)
-## Extensions:
-- Install **@category:debuggers cppdbg** to run the program in VSCode (Windows/Linux)
-- Install the cppdbg extension to run the program in VSCodium (Windows/Linux)
-- Include the Vulkan bin folder in your environmental variables to edit shaders (Windows/Linux)
+## Extensions (Linux/Windows):
+- Install **@category:debuggers cppdbg** to run the program in VSCode
+- Install the **cppdbg** extension to run the program in VSCodium
+- Include the Vulkan bin folder in your environmental variables to edit shaders
 
 # How do make your own games:
 
@@ -147,7 +147,7 @@ cmake --preset windowsdebug
 cmake --build --preset windowsdebug -j8
 ```
 ### Availiable presets:
-```,
+```
 linuxdebug    linuxrelease    linuxsmol
 macdebug      macrelease      macsmol
 windowsdebug  windowsrelease  windowssmol

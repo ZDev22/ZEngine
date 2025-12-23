@@ -1,13 +1,14 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
-v2.12.6
+v2.13.6
 
 bigInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
 See current preformance benchmarks: https://github.com/ZDev22/Vulkan-Engine/issues/4
 
 Requires the GCC compiler and support for __uint128_t
+
 HOW TO USE: bigInt<128> var;
 MATH: var *= 5;
 PRINT OUT THE VARIABLE: printf(name.toSting());
@@ -84,6 +85,7 @@ struct bigInt {
     }
     void operator+=(const bigInt& num) { *this = *this + num; }
     void operator+=(const unsigned long long num) { *this = *this + num; }
+    void operator++() { *this = *this + 1; }
 
     bigInt operator-(const bigInt& num) const {
         bigInt result;
@@ -113,6 +115,7 @@ struct bigInt {
     }
     void operator-=(const bigInt& num) { *this = *this - num; }
     void operator-=(const unsigned long long num) { *this = *this - num; }
+    void operator--() { *this = *this - 1; }
 
     bigInt operator*(const bigInt& num) const {
         bigInt result;
@@ -268,28 +271,36 @@ struct bigInt {
         return *this;
     }
     bigInt operator>>(int num) const { bigInt result = *this; result >>= num; return result; }
-    unsigned long long operator[](unsigned long long index) const { return limbs[index]; }
+    unsigned long long operator[](unsigned int index) const { return limbs[index]; }
 
 
-    const char* toString() {
+    const char* toString() const {
         if (isZero()) {
             char buffer[2];
             buffer[0] = '0';
             buffer[1] = '\0';
             return buffer;
         }
+
         static char buffer[(bitCount * 2) + 2];
         bigInt temp = *this;
         int position = 0;
-        while (!temp.isZero()) { buffer[position++] = '0' + (char)temp.mod(10); }
         char t = '0';
-        for (int i = 0, j = position - 1; i < j; i++, --j) {
+
+        while (!temp.isZero()) { buffer[position++] = '0' + (char)temp.mod(10); }
+        for (unsigned int i = 0, j = position - 1; i < j; i++, --j) {
             t = buffer[i];
             buffer[i] = buffer[j];
             buffer[j] = t;
         }
+
         buffer[position] = '\0';
         return buffer;
+    }
+
+    unsigned long long at(unsigned int pos) {
+        if (pos < bytes) { return limbs[pos]; }
+        return 0;
     }
 
     void swap(bigInt& num) {
@@ -298,6 +309,5 @@ struct bigInt {
         num = temp;
     }
 
-    inline bool even() { return !(limbs[0] % 1); }
-    inline bool odd() { return limbs[0] % 2; }
+    inline bool odd() const { return limbs[0] % 2; }
 };
