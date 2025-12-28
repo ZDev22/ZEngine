@@ -6,9 +6,10 @@
 #include "engine/pipeline.hpp"
 #include "engine/global.hpp"
 
-#define FPS_CAP_SET
+//#define FPS_CAP_SET
 #define FPS_CAP 60.f
 #define USE_MOUSE
+#define USE_MULTITHREADING
 
 struct FlappyBird {
 public:

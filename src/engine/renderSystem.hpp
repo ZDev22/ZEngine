@@ -7,7 +7,11 @@
 struct RenderSystem {
 public:
 
-    inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(descriptorSetLayout) {
+    #ifdef __linux__
+        inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, Pipeline& pipeline) : pipeline(pipeline), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
+    #else
+        inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(descriptorSetLayout) {
+    #endif
         createPipelineLayout();
         initializeSpriteData();
         createTextureArrayDescriptorSet();
@@ -164,7 +168,6 @@ public:
     }
 
     inline void updateSprites() { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }float position[2];
-    inline Pipeline& getPipeline() { return pipeline; }
 
 private:
 
@@ -172,7 +175,11 @@ private:
     AppWindow& window;
     Renderer& renderer;
     Push& vertex;
-    Pipeline pipeline;
+    #ifdef __linux__
+        Pipeline& pipeline;
+    #else
+        Pipeline pipeline;
+    #endif
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;

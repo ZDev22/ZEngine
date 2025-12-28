@@ -10,6 +10,7 @@
 #define FPS_CAP_SET
 #define FPS_CAP 60.f
 #define USE_MOUSE
+#define USE_MULTITHREADING
 
 struct SlimeAttack {
 public:

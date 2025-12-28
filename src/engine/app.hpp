@@ -50,7 +50,11 @@ inline void startEngine() {
     #endif
     pipeline.loadFlappyBird();
     //pipeline.loadSlimeAttack();
-    renderSystem = std::make_unique<RenderSystem>(device, window, renderer, vertex, pipeline.getDescriptorSetLayout());
+    #ifdef __linux__
+        renderSystem = std::make_unique<RenderSystem>(device, window, renderer, vertex, pipeline);
+    #else
+        renderSystem = std::make_unique<RenderSystem>(device, window, renderer, vertex, pipeline.getDescriptorSetLayout());
+    #endif
 
     Collision collision;
     Keyboard keyboard{window.get()};
