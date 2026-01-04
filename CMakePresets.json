@@ -9,8 +9,8 @@
       "binaryDir": "${sourceDir}/build/linux/dbgcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wconversion -fdiagnostics-show-option -D_DEBUG",
-        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wconversion -fdiagnostics-show-option -D_DEBUG"
+        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wconversion -fdiagnostics-show-option -D_DEBUG",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wconversion -fdiagnostics-show-option -D_DEBUG"
       }
     },
     {
@@ -42,8 +42,8 @@
       "binaryDir": "${sourceDir}/build/mac/dbgcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wconversion -fdiagnostics-show-option -D_DEBUG",
-        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wconversion -fdiagnostics-show-option -D_DEBUG"
+        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wconversion -fdiagnostics-show-option -D_DEBUG",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wconversion -fdiagnostics-show-option -D_DEBUG"
       }
     },
     {
@@ -75,8 +75,8 @@
       "binaryDir": "${sourceDir}/build/windows/dbgcache",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wconversion -fdiagnostics-show-option -D_DEBUG",
-        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wextra -Wpedantic -Wconversion -fdiagnostics-show-option -D_DEBUG"
+        "CMAKE_C_FLAGS_DEBUG": "-O1 -g2 -Wall -Wconversion -fdiagnostics-show-option -D_DEBUG",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g2 -Wall -Wconversion -fdiagnostics-show-option -D_DEBUG"
       }
     },
     {

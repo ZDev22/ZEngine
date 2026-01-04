@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.6.9
+v2.6.10
 
 zmath.hpp is a lightweight cross-platform single-header cpp library for high-preformance math functions!
 Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
@@ -192,7 +192,7 @@ inline const char* findFactor(signed char add, signed char multiply) {
         for (signed char i = add; i >= -add * 3; i--) {
             x = i;
             y = add - i;
-            goto factor;
+            if (x + y == add && x * y == multiply) { goto factor; }
         }
         return "none";
     }
@@ -200,7 +200,7 @@ inline const char* findFactor(signed char add, signed char multiply) {
         for (signed char i = add; i <= -add * 3; i++) {
             x = i;
             y = add - i;
-            goto factor;
+            if (x + y == add && x * y == multiply) { goto factor; }
         }
         return "none";
     }

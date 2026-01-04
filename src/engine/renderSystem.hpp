@@ -7,11 +7,7 @@
 struct RenderSystem {
 public:
 
-    #ifdef __linux__
-        inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, Pipeline& pipeline) : pipeline(pipeline), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
-    #else
-        inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, VkDescriptorSetLayout descriptorSetLayout) : pipeline(device, renderer, "texture"), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(descriptorSetLayout) {
-    #endif
+    inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, Pipeline& pipeline) : pipeline(pipeline), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
         createPipelineLayout();
         initializeSpriteData();
         createTextureArrayDescriptorSet();
@@ -175,11 +171,8 @@ private:
     AppWindow& window;
     Renderer& renderer;
     Push& vertex;
-    #ifdef __linux__
-        Pipeline& pipeline;
-    #else
-        Pipeline pipeline;
-    #endif
+    Pipeline& pipeline;
+
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;

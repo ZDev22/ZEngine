@@ -52,10 +52,6 @@ file(GLOB_RECURSE ALL_C_SOURCES   RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c")
 
 set(SOURCES "")
 
-if(APPLE)
-   list(APPEND SOURCES "src/deps/macRGFW.m")
-endif()
-
 foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
    if(NOT F MATCHES "^src/deps/")
       list(APPEND SOURCES "${F}")
