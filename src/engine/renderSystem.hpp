@@ -7,7 +7,7 @@
 struct RenderSystem {
 public:
 
-    inline RenderSystem(Device& device, AppWindow& window, Renderer& renderer, Push& vertex, Pipeline& pipeline) : pipeline(pipeline), renderer(renderer), device(device), window(window), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
+    inline RenderSystem(Device& device, Push& vertex, Pipeline& pipeline) : pipeline(pipeline), device(device), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
         createPipelineLayout();
         initializeSpriteData();
         createTextureArrayDescriptorSet();
@@ -168,8 +168,6 @@ public:
 private:
 
     Device& device;
-    AppWindow& window;
-    Renderer& renderer;
     Push& vertex;
     Pipeline& pipeline;
 
@@ -177,5 +175,4 @@ private:
     VkDescriptorSetLayout descriptorSetLayout;
     std::unique_ptr<Buffer> spriteDataBuffer;
     VkDescriptorSet spriteDataDescriptorSet;
-    VkDescriptorSet textureArrayDescriptorSet;
 };

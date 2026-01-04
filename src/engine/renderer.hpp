@@ -71,7 +71,7 @@ public:
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = swapChain->getRenderPass();
-        renderPassInfo.framebuffer = swapChain->getFrameBuffer(currentImageIndex);
+        renderPassInfo.framebuffer = (unsigned int)swapChain->getFrameBuffer(currentImageIndex);
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = swapChain->getSwapChainExtent();
 
@@ -108,5 +108,4 @@ private:
     std::vector<VkCommandBuffer> commandBuffers;
 
     unsigned int currentImageIndex;
-    bool isFrameStarted;
 };

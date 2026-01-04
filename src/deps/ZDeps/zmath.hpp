@@ -261,7 +261,7 @@ template<unsigned int bitCount> inline bigInt<bitCount> exponentFactorial(unsign
 #ifdef ZMATH_BITSET
 template<BITSET_VARIABLE_TYPE T> inline Bitset createRandomBitset() {
     Bitset bits(T);
-    for (unsigned long long i = 0; i < T * sizeof(T); i++) { if (Random()) { bits.set(i); } }
+    for (BITSET_VARIABLE_TYPE i = 0; i < T * sizeof(T); i++) { if (Random()) { bits.set(i); } }
     return bits;
 }
 #endif

@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
-v2.13.6
+v2.13.7
 
 bigInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
@@ -41,14 +41,14 @@ struct bigInt {
         __uint128_t remainder = 0;
         for (auto limb : limbs) {
             __uint128_t current = (remainder << 64) | limb;
-            limb = current / num;
+            limb = (unsigned int)(current / num);
             remainder = current % num;
         }
         return (unsigned long long)remainder;
     }
     unsigned int bitWidth() const {
         for (unsigned int i = 0; i < bytes; i++) {
-            if (limbs[i] != 0) { return i * 64 + __builtin_clzll(limbs[i]); }
+            if (limbs[i] != 0) { return i * 64ULL + __builtin_clzll(limbs[i]); }
         }
         return 0;
     }
@@ -91,7 +91,7 @@ struct bigInt {
         bigInt result;
         __uint128_t borrow = 0;
         for (unsigned int i = 0; i < bytes; i++) {
-            result.limbs[i] = limbs[i] - num.limbs[i] + borrow;
+            result.limbs[i] = (unsigned long long)(limbs[i] - num.limbs[i] + borrow);
             borrow = (limbs[i] < num.limbs[i]) ? 1 : 0;
         }
         return result;
@@ -279,7 +279,7 @@ struct bigInt {
             char buffer[2];
             buffer[0] = '0';
             buffer[1] = '\0';
-            return buffer;
+            return (const char*)buffer;
         }
 
         static char buffer[(bitCount * 2) + 2];
@@ -288,14 +288,14 @@ struct bigInt {
         char t = '0';
 
         while (!temp.isZero()) { buffer[position++] = '0' + (char)temp.mod(10); }
-        for (unsigned int i = 0, j = position - 1; i < j; i++, --j) {
+        for (int i = 0, j = position - 1; i < j; i++, --j) {
             t = buffer[i];
             buffer[i] = buffer[j];
             buffer[j] = t;
         }
 
         buffer[position] = '\0';
-        return buffer;
+        return (const char*)buffer;
     }
 
     unsigned long long at(unsigned int pos) {

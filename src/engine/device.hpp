@@ -24,7 +24,7 @@ public:
         bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
     };
 
-    inline Device(AppWindow& window) : window{ window } {
+    inline Device(AppWindow& window) {
         std::cout << "Creating instance...\n"; createInstance();
         std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(window.get(), instance, &surface_);
         std::cout << "Creating physical device...\n"; pickPhysicalDevice();
@@ -70,7 +70,6 @@ public:
         createInfo.enabledExtensionCount = (unsigned int)extensions.size();
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         vkCreateInstance(&createInfo, nullptr, &instance);
     }
 
@@ -214,7 +213,7 @@ public:
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-        int i = 0;
+        unsigned int i = 0;
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
@@ -373,7 +372,6 @@ public:
 private:
     VkInstance instance;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    AppWindow& window;
     VkCommandPool commandPool;
 
     VkDevice device_;

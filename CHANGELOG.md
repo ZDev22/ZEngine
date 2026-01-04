@@ -1,3 +1,8 @@
+## v0.12 - DEV
+- Mac improvements
+- Optimizations
+- Bugfixes
+
 ## v0.11 - 12/28/25
 - **ZDEP DOCUMENTATION & INDEPENDENCE FROM ENGINE**
 - **BETTER & MORE COMPILER FLAGS**
