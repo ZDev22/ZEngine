@@ -128,7 +128,7 @@ public:
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
-        createInfo.queueCreateInfoCount = static_cast<unsigned int>(queueCreateInfos.size());
+        createInfo.queueCreateInfoCount = (unsigned int)queueCreateInfos.size();
         #ifdef __APPLE__
             createInfo.pNext = &VKFeatures;
         #endif

@@ -35,13 +35,13 @@ public:
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandPool = device.getCommandPool();
-        allocInfo.commandBufferCount = static_cast<unsigned int>(commandBuffers.size());
+        allocInfo.commandBufferCount = (unsigned int)commandBuffers.size();
 
         if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) { throw("failed to allocate command buffers!"); }
     }
 
     inline void freeCommandBuffers() {
-        vkFreeCommandBuffers(device.device(), device.getCommandPool(), static_cast<unsigned int>(commandBuffers.size()), commandBuffers.data());
+        vkFreeCommandBuffers(device.device(), device.getCommandPool(), (unsigned int)commandBuffers.size(), commandBuffers.data());
         commandBuffers.clear();
     }
 
@@ -71,7 +71,7 @@ public:
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = swapChain->getRenderPass();
-        renderPassInfo.framebuffer = (unsigned int)swapChain->getFrameBuffer(currentImageIndex);
+        renderPassInfo.framebuffer = swapChain->getFrameBuffer(currentImageIndex);
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = swapChain->getSwapChainExtent();
 
@@ -86,8 +86,8 @@ public:
         VkViewport viewport{};
         viewport.x = 0.f;
         viewport.y = 0.f;
-        viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
-        viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
+        viewport.width = (float)swapChain->getSwapChainExtent().width;
+        viewport.height = (float)swapChain->getSwapChainExtent().height;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);

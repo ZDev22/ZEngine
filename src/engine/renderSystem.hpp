@@ -7,7 +7,7 @@
 struct RenderSystem {
 public:
 
-    inline RenderSystem(Device& device, Push& vertex, Pipeline& pipeline) : pipeline(pipeline), device(device), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
+    inline RenderSystem(Pipeline& pipeline, Device& device, Push& vertex) : pipeline(pipeline), device(device), vertex(vertex), descriptorSetLayout(pipeline.getDescriptorSetLayout()) {
         createPipelineLayout();
         initializeSpriteData();
         createTextureArrayDescriptorSet();

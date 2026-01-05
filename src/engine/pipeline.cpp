@@ -27,7 +27,7 @@ void Pipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBu
 std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
     if (!file.is_open()) { throw("failed to open file: " + filepath); }
-    unsigned int fileSize = static_cast<unsigned int>(file.tellg());
+    unsigned int fileSize = (unsigned int)file.tellg();
     std::vector<char> buffer(fileSize);
     file.seekg(0);
     file.read(buffer.data(), fileSize);
@@ -52,7 +52,7 @@ void Pipeline::createGraphicsPipeline(const std::string& shader) {
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<unsigned int>(attributeDescriptions.size());
+    vertexInputInfo.vertexAttributeDescriptionCount = (unsigned int)attributeDescriptions.size();
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -233,7 +233,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         fontCharDatas.resize(font + 1);
         fontSizes.resize(font + 1);
 
-        unsigned int atlasSize = static_cast<unsigned int>(fontSize * 8.0f);
+        unsigned int atlasSize = (unsigned int)(fontSize * 8.0f);
         fontAtlases[font].resize(atlasSize * atlasSize);
         fontCharDatas[font].resize(96);
 
@@ -245,7 +245,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
 
     auto& grayscale = fontAtlases[font];
     auto& charData = fontCharDatas[font];
-    unsigned int atlasSize = static_cast<unsigned int>(sqrt(grayscale.size()));
+    unsigned int atlasSize = (unsigned int)sqrt(grayscale.size());
 
     float min_y = 0.0f;
     float max_y = 0.0f;
@@ -258,7 +258,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         current_x += cd.xadvance;
     }
 
-    int texsize = (static_cast<int>(current_x) + 1 > static_cast<int>(max_y - min_y) + 1 ? static_cast<int>(current_x) : static_cast<int>(max_y - min_y)) + 1;
+    int texsize = (unsigned int)current_x + 1 > (unsigned int)(max_y - min_y) + 1 ? (unsigned int)current_x : (int)(max_y - min_y) + 1;
     std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
 
     current_x = 0.0f;
@@ -266,8 +266,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
 
-        int dst_x = static_cast<int>(current_x + cd.xoff);
-        int dst_y = static_cast<int>(cd.yoff - min_y);
+        int dst_x = (int)(current_x + cd.xoff);
+        int dst_y = (int)(cd.yoff - min_y);
 
         int width = cd.x1 - cd.x0;
         int height = cd.y1 - cd.y0;
@@ -300,7 +300,7 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         current_x += cd.xadvance;
     }
 
-    int texsize = (static_cast<int>(current_x) + 1 > static_cast<int>(max_y - min_y) + 1 ? static_cast<int>(current_x) : static_cast<int>(max_y - min_y)) + 1;
+    int texsize = ((int)current_x + 1 > (int)(max_y - min_y) + 1 ? (int)current_x : (int)(max_y - min_y)) + 1;
     std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
 
     current_x = 0.0f;
@@ -308,8 +308,8 @@ void Pipeline::createText(unsigned int font, const std::string& text, float font
         if (c < 32 || c > 127) continue;
         stbtt_bakedchar cd = charData[c - 32];
 
-        int dst_x = static_cast<int>(current_x + cd.xoff);
-        int dst_y = static_cast<int>(cd.yoff - min_y);
+        int dst_x = (int)(current_x + cd.xoff);
+        int dst_y = (int)(cd.yoff - min_y);
 
         for (int py = 0; py < cd.y1 - cd.y0; ++py) {
             for (int px = 0; px < cd.x1 - cd.x0; ++px) {

@@ -20,9 +20,9 @@ public:
             swapChain = nullptr;
         }
         for (int i = 0; i < depthImages.size(); i++) {
-            vkDestroyImageView(device.device(), (unsigned long)depthImageViews[i], nullptr);
-            vkDestroyImage(device.device(), (unsigned long)depthImages[i], nullptr);
-            vkFreeMemory(device.device(), (unsigned long)depthImageMemorys[i], nullptr);
+            vkDestroyImageView(device.device(), depthImageViews[i], nullptr);
+            vkDestroyImage(device.device(), depthImages[i], nullptr);
+            vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
         }
 
         for (auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
@@ -287,11 +287,11 @@ public:
             imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
             imageInfo.flags = 0;
 
-            device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, (unsigned long)depthImages[i], (unsigned long)depthImageMemorys[i]);
+            device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[i], depthImageMemorys[i]);
 
             VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            viewInfo.image = (unsigned long)depthImages[i];
+            viewInfo.image = depthImages[i];
             viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
             viewInfo.format = depthFormat;
             viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
@@ -300,7 +300,7 @@ public:
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(device.device(), &viewInfo, nullptr, &(unsigned long)depthImageViews[i]) != VK_SUCCESS) { throw("failed to create texture image view!"); }
+            if (vkCreateImageView(device.device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) { throw("failed to create texture image view!"); }
         }
     }
 
@@ -328,7 +328,7 @@ public:
     inline VkExtent2D getSwapChainExtent() const { return swapChainExtent; }
     inline unsigned int width() const { return swapChainExtent.width; }
     inline unsigned int height() const { return swapChainExtent.height; }
-    inline float extentAspectRatio() const { return (float)(swapChainExtent.width) / static_cast<float>(swapChainExtent.height); }
+    inline float extentAspectRatio() const { return (float)(swapChainExtent.width) / (float)swapChainExtent.height; }
     inline bool compareSwapFormats(const SwapChain& swapChain) const { return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat == swapChainImageFormat; }
     inline VkSwapchainKHR getSwapChain() const { return swapChain; }
 

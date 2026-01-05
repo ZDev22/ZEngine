@@ -8,7 +8,7 @@ inline unsigned char* loadTTF(const std::string& filepath) {
     if (!file) { throw("Failed to open font file"); }
 
     std::fseek(file, 0, SEEK_END);
-    unsigned int fileSize = static_cast<unsigned int>(std::ftell(file));
+    unsigned int fileSize = (unsigned int)std::ftell(file);
     std::rewind(file);
 
     unsigned char* buffer = new unsigned char[fileSize];

@@ -51,7 +51,7 @@ inline void startEngine() {
     pipeline.loadFlappyBird();
     //pipeline.loadSlimeAttack();
 
-    renderSystem = std::make_unique<RenderSystem>(device, vertex, pipeline);
+    renderSystem = std::make_unique<RenderSystem>(pipeline, device, vertex);
 
     Collision collision;
     Keyboard keyboard{window.get()};
