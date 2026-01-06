@@ -27,7 +27,7 @@ inline bool compileShaders() {
         if (!file.is_regular_file()) { continue; }
         for (int i = 0; i < 4; ++i) {
             if (file.path().extension().string() == extensions[i]) {
-                success &= compileShader(file.path().c_str(), (file.path().string() + ".spv").c_str(), stages[i]);
+                success &= compileShader(file.path().string().c_str(), (file.path().string() + ".spv").c_str(), stages[i]);
                 break;
             }
         }
