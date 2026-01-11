@@ -5,11 +5,6 @@
 #include "deps/ZDeps/collision.hpp"
 #include "zengine.hpp"
 
-//#define FPS_CAP_SET
-#define FPS_CAP 60.f
-#define USE_MOUSE
-#define USE_MULTITHREADING
-
 struct FlappyBird {
 public:
     FlappyBird(Keyboard& keyboard, ma_engine& audio, Collision& collision, Push& vertex);

@@ -8,14 +8,9 @@
 
 #if true // render the screen and tick the game (disable if it's a terminal game)
 
-#define FPS_CAP_SET
-#define FPS_CAP 60.f
-#define USE_MOUSE
-#define USE_MULTITHREADING
-
 #define ZENGINE_IMPLEMENTATION
+#define ZENGINE_DISABLE_VSYNC
 #include "zengine.hpp"
-#undef ZENGINE_IMPLEMENTATION
 
 /* graphical applications */
 #include "games/flappyBird/flappyBird.hpp"
@@ -29,6 +24,11 @@
 #include "deps/ZDeps/keyboard.hpp"
 
 #include <thread>
+
+//#define FPS_CAP_SET
+#define FPS_CAP 180.f
+#define USE_MOUSE
+//#define USE_MULTITHREADING
 
 void render();
 int main() {

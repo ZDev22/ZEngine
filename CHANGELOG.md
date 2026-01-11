@@ -1,4 +1,6 @@
-## v0.12 - DEV
+# v1.11 - DEV
+- **MADE ENGINE SINGLE-HEADER**
+- **FIXED WAYLAND SUPPORT**
 - Mac improvements
 - Optimizations
 - Bugfixes

@@ -21,6 +21,12 @@
     #define ZENGINE_MAX_TEXTURES 66
 #endif
 
+#ifdef ZENGINE_DISABLE_VSYNC
+    #define ZENGINE_PRESENT_MODE VK_PRESENT_MODE_IMMEDIATE_KHR
+#else
+    #define ZENGINE_PRESENT_MODE VK_PRESENT_MODE_FIFO_KHR
+#endif
+
 /* define these for dependencies */
 #define RGFW_VULKAN
 #define RGFW_NO_API
@@ -37,7 +43,7 @@
     #define STBI_ASSERT
 
     #define STB_TRUETYPE_IMPLEMENTATION
-    #define STBTT_assert
+    #define STBTT_ASSERT
 #endif
 
 /* dependencies */
@@ -722,15 +728,6 @@ public:
             }
         }
 
-        VkPresentModeKHR presentMode; {
-            #if ZENGINE_DISABLE_VSYNC
-                presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-            #else
-                presentMode = VK_PRESENT_MODE_FIFO_KHR;
-            #endif
-            for (unsigned int i = 0; i < swapChainSupport.presentModes.size(); i++) { if (swapChainSupport.presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) { presentMode = swapChainSupport.presentModes[i]; break; }}
-        }
-
         if (swapChainSupport.capabilities.currentExtent.width == 4294967295U) {
             if (windowExtent.width < swapChainSupport.capabilities.minImageExtent.width) { windowExtent.width = swapChainSupport.capabilities.minImageExtent.width; }
             if (windowExtent.width > swapChainSupport.capabilities.maxImageExtent.width) { windowExtent.width = swapChainSupport.capabilities.maxImageExtent.width; }
@@ -769,7 +766,7 @@ public:
 
         createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        createInfo.presentMode = presentMode;
+        createInfo.presentMode = ZENGINE_PRESENT_MODE;
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
@@ -1845,4 +1842,5 @@ void updateSprites() { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(Sp
 inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model) { return model->getVertices(); }
 
 #endif // ZENGINE_IMPLEMENTATION
+#undef ZENGINE_IMPLEMENTATION
 #endif // ZENGINE_HPP
