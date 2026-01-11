@@ -2,7 +2,7 @@
 #include "deps/ZDeps/zmath.hpp"
 #include "deps/ZDeps/collision.hpp"
 
-FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision, Push& vertex) : keyboard(keyboard), audio(audio), pipeline(pipeline), collision(collision), vertex(vertex) {}
+FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Collision& collision, Push& vertex) : keyboard(keyboard), audio(audio), collision(collision), vertex(vertex) {}
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -21,8 +21,8 @@ void FlappyBird::tick() {
                 sprites[0].textureIndex = 0;
 
                 playSound(&audio, "assets/sounds/chirp.mp3");
-                pipeline.createSprite(pipeline.getSquareModel(), 3, 0.f, 0.f, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
-                //sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f, pipeline);
+                createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f, 1.f, 1.f, 1.f, 1.f);
+                //sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f);
                 vertex.cameraZoom[0] -= .025f;
                 vertex.cameraZoom[1] -= .025f;
             }
@@ -30,7 +30,7 @@ void FlappyBird::tick() {
             if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
                 flappyBirdDead = true;
                 playSound(&audio, "assets/sounds/hit.mp3");
-                sprites[sprites.size() - 1].setText("Something", 0, 32.f, pipeline);
+                sprites[sprites.size() - 1].setText("Something", 0, 32.f);
             }
         }
         else if (sprites[0].position[1] > 2.5f) {

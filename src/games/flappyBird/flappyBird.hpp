@@ -3,8 +3,7 @@
 #include "deps/miniaudio.h"
 #include "deps/ZDeps/keyboard.hpp"
 #include "deps/ZDeps/collision.hpp"
-#include "engine/pipeline.hpp"
-#include "engine/global.hpp"
+#include "zengine.hpp"
 
 //#define FPS_CAP_SET
 #define FPS_CAP 60.f
@@ -13,13 +12,12 @@
 
 struct FlappyBird {
 public:
-    FlappyBird(Keyboard& keyboard, ma_engine& audio, Pipeline& pipeline, Collision& collision, Push& vertex);
+    FlappyBird(Keyboard& keyboard, ma_engine& audio, Collision& collision, Push& vertex);
 
     void tick();
 private:
     Keyboard& keyboard;
     Collision& collision;
-    Pipeline& pipeline;
     ma_engine& audio;
     Push& vertex;
 };

@@ -3,7 +3,7 @@
 
 #include "deps/ZDeps/collision.hpp"
 
-SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision, Pipeline& pipeline) : slimeAttack(slimeAttack), collision(collision), pipeline(pipeline) {
+SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision) : slimeAttack(slimeAttack), collision(collision) {
     while (enemies.size() < sprites.size()) {
         Enemy enemy;
         enemy.skip = true;
@@ -68,7 +68,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_SLIME:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
         Enemy slime;
         slime.health = 2;
@@ -83,8 +83,8 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_BAT:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
-        
+        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+
         Enemy bat;
         bat.health = 3;
         bat.cooldown = 1.f;
@@ -98,7 +98,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_OGRE:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
         Enemy ogre;
         ogre.health = 6;
@@ -110,10 +110,10 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
         enemies.push_back(ogre);
         break;
-    
+
     case SLIMEATTACK_ENEMY_TYPE_BOSS:
 
-        pipeline.createSprite(pipeline.getSquareModel(), type, 0.f, 1.5f, 1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, 0.f, 1.5f, 1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
         Enemy boss;
         boss.health = 25;
@@ -145,10 +145,10 @@ void SlimeAttackEnemies::simulateEnemies() {
                 sprites[i].position[0] += enemies[i].speed[0] * deltaTime;
                 sprites[i].position[1] += enemies[i].speed[1] * deltaTime;
 
-                if (collision.checkSquareCollision(sprites[1], sprites[i])) { 
+                if (collision.checkSquareCollision(sprites[1], sprites[i])) {
                     sprites[i].position[0] -= enemies[i].speed[0] * deltaTime;
                     sprites[i].position[1] -= enemies[i].speed[1] * deltaTime;
-                    enemies[i].speed[0] = 0.f; 
+                    enemies[i].speed[0] = 0.f;
                     enemies[i].speed[1] = 0.f;
                 }
                 break;
@@ -191,7 +191,7 @@ void SlimeAttackEnemies::damageEnemies() {
     for (unsigned int i = 0; i < sprites.size(); i++) {
         if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && collision.checkSquareCollision(sprites[i], sprites[0])) {
             enemies[i].health--;
-            if (enemies[i].health <= 0) { 
+            if (enemies[i].health <= 0) {
                 enemies[i].skip = true;
                 sprites[i].textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
                 spriteCPU[i].visible = false;

@@ -13,7 +13,7 @@ collision.checkCollision requires sprite IDs which are currently not implemented
 
 #pragma once
 
-#include "engine/sprite.hpp"
+#include "zengine.hpp"
 
 struct Collision {
 public:
@@ -43,7 +43,7 @@ public:
         else if (usingAAABB != -1 && usingBAABB == -1) {
             AABBS b;
             b.ID = spriteBID;
-            const auto& verticesB = spriteB.model->getVertices();
+            const auto& verticesB = getVertices(spriteB.model);
 
             for (auto verticy : verticesB) {
                 float pxB = verticy.position[0] * dataB.scale[0];
@@ -63,7 +63,7 @@ public:
         else if (usingAAABB == -1 && usingBAABB != -1) {
             AABBS a;
             a.ID = spriteAID;
-            const auto& verticesA = spriteA.model->getVertices();
+            const auto& verticesA = getVertices(spriteA.model);
 
             for (auto verticy : verticesA) {
                 float pxA = verticy.position[0] * dataA.scale[0];
@@ -89,8 +89,8 @@ public:
             AABBS b;
             b.ID = spriteBID;
 
-            const auto& verticesA = spriteA.model->getVertices();
-            const auto& verticesB = spriteB.model->getVertices();
+            const auto& verticesA = getVertices(spriteA.model);
+            const auto& verticesB = getVertices(spriteB.model);
 
             if (verticesA.size() > verticesB.size()) {
                 for (unsigned int i = 0; i < verticesA.size(); i++) {

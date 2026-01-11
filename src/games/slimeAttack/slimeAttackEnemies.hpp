@@ -14,7 +14,7 @@ struct Pipeline;
 struct SlimeAttack;
 struct SlimeAttackEnemies {
 public:
-    SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision, Pipeline& pipeline);
+    SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision);
 
     void spawnNewWave();
     void spawnEnemy(const int type);
@@ -24,7 +24,6 @@ public:
 private:
     SlimeAttack& slimeAttack;
     Collision& collision;
-    Pipeline& pipeline;
 
     struct Enemy {
         int health;

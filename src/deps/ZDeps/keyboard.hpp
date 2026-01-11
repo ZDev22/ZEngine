@@ -16,7 +16,9 @@ keyboard.keyHit(RGFW_a);
 #define KEY_HIT 2
 #define KEY_PRESSED 3
 
-#include "engine/window.hpp"
+#define RGFW_VULKAN
+#define RGFW_NO_API
+#include "deps/RGFW.h"
 
 #include <string.h>
 #include <vector>
