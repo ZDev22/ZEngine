@@ -1,8 +1,7 @@
 #include "flappyBird.hpp"
-#include "deps/ZDeps/zmath.hpp"
-#include "deps/ZDeps/collision.hpp"
+#include "zmath.hpp"
 
-FlappyBird::FlappyBird(Keyboard& keyboard, ma_engine& audio, Collision& collision, Push& vertex) : keyboard(keyboard), audio(audio), collision(collision), vertex(vertex) {}
+FlappyBird::FlappyBird(ZWindow& zwindow, ma_engine& audio, Collision& collision, Push& vertex) : zwindow(zwindow), audio(audio), collision(collision), vertex(vertex) {}
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -15,7 +14,7 @@ void FlappyBird::tick() {
         sprites[0].position[1] += flappyBirdSpeedY * deltaTime;
         sprites[0].rotation -= 90.f * deltaTime;
         if (!flappyBirdDead) {
-            if (keyboard.keyHit(RGFW_space)) {
+            if (zwindow.keyHit(RGFW_space)) {
                 flappyBirdSpeedY = -1.3f;
                 sprites[0].rotation = 60.f;
                 sprites[0].textureIndex = 0;
@@ -41,7 +40,7 @@ void FlappyBird::tick() {
             flappyBirdDead = false;
         }
     }
-    else { if (keyboard.keyPressed(RGFW_space)) { flappyBirdStarted = true; }}
+    else { if (zwindow.keyPressed(RGFW_space)) { flappyBirdStarted = true; }}
 
     for (unsigned int i = 1; i < sprites.size() / 2; i++) {
         unsigned int index = ((i - 1) * 2) + 1;

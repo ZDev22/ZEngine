@@ -1,8 +1,8 @@
 #include "slimeAttack.hpp"
-#include "deps/ZDeps/zmath.hpp"
-#include "deps/ZDeps/collision.hpp"
 
-SlimeAttack::SlimeAttack(Keyboard& keyboard, Collision& collision) : keyboard(keyboard), collision(collision), slimeAttackEnemies(*this, collision) {}
+#include "zmath.hpp"
+
+SlimeAttack::SlimeAttack(ZWindow& zwindow, Collision& collision) : zwindow(zwindow), collision(collision), slimeAttackEnemies(*this, collision) {}
 
 float slimeAttackSpeed[2] = {0.f};
 bool slimeAttackTouchingGround = false;
@@ -29,7 +29,7 @@ void SlimeAttack::tick() {
     }
     else {
         slimeAttackHitTimer += deltaTime;
-        if (keyboard.keyPressed(RGFW_space)) { slimeAttackAttackTimer += deltaTime; }
+        if (zwindow.keyPressed(RGFW_space)) { slimeAttackAttackTimer += deltaTime; }
         else { slimeAttackAttackTimer = 0.f; }
         if (slimeAttackAttackTimer > 0.f && slimeAttackAttackTimer < .5f) { slimeAttackEnemies.damageEnemies(); }
         else if (slimeAttackEnemies.isTouchingEnemies()) { health--; }
@@ -44,15 +44,15 @@ void SlimeAttack::tick() {
         }
 
         if(slimeAttackTouchingGround) {
-            if (keyboard.keyPressed(RGFW_w)) {
+            if (zwindow.keyPressed(RGFW_w)) {
                 slimeAttackSpeed[1] = -4.f;
                 slimeAttackTouchingGround = false;
             }
         }
 
-        if (keyboard.keyHit(RGFW_q)) { slimeAttackEnemies.spawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME); }
-        if(keyboard.keyPressed(RGFW_a)) { slimeAttackSpeed[0] = -1.f; }
-        else if(keyboard.keyPressed(RGFW_d)) { slimeAttackSpeed[0] = 1.f; }
+        if (zwindow.keyHit(RGFW_q)) { slimeAttackEnemies.spawnEnemy(SLIMEATTACK_ENEMY_TYPE_SLIME); }
+        if(zwindow.keyPressed(RGFW_a)) { slimeAttackSpeed[0] = -1.f; }
+        else if(zwindow.keyPressed(RGFW_d)) { slimeAttackSpeed[0] = 1.f; }
         else { slimeAttackSpeed[0] = 0.f; }
 
         slimeAttackSpeed[1] += 15.f * deltaTime;

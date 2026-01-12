@@ -2,7 +2,7 @@
 
 #define ZMATH_BIG_INT
 #define ZMATH_BITSET
-#include "deps/ZDeps/zmath.hpp"
+#include "zmath.hpp"
 
 #include <string>
 #include <iostream>
@@ -22,7 +22,7 @@ inline void start() {
     std::string answer = "0";
 
     while (true) {
-        
+
         std::cout << "Select operation type: (type help for all commands): ";
         std::cin >> operationType;
 
@@ -33,7 +33,7 @@ inline void start() {
         else if (operationType == "basic") { selectedOperation = 1; }
         else if (operationType == "advanced") { selectedOperation = 2; }
         else if (operationType == "binary") { selectedOperation = 3; }
-        else if (operationType == "clear") { 
+        else if (operationType == "clear") {
             std::cout << "\x1b[2J\x1b[H";
             std::cout << "\033[2J\033[H";
             std::cout.flush();

@@ -1,7 +1,7 @@
 #include "slimeAttackEnemies.hpp"
 #include "slimeAttack.hpp"
 
-#include "deps/ZDeps/collision.hpp"
+#include "collision.hpp"
 
 SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision) : slimeAttack(slimeAttack), collision(collision) {
     while (enemies.size() < sprites.size()) {

@@ -1,14 +1,12 @@
-# **A C++ engine supporting Linux, Windows and Mac**
+# **ZENGINE - A SINGLE-HEADER C++ VULKAN ENGINE**
 # About:
-My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics with Vulkan and SPIR-V.
+My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics with Vulkan and SPIR-V shaders.
 
-It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDeps libraries** which are lightweight and super usefull for creating 2D games!
-
-There are many planned optimizations on the way, (mainly on linux because it's better) *with the goal of **4K FPS** on an **Intel(R) Celeron(R) N4500*** with *2.70GHz*. And **10k FPS** on modern hardware.
+It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDep modules** which are lightweight and super usefull for creating 2D games!
 
 To see the progress on the engine, **check out my YouTube channel: [youtube.com/@ZDev12345](https://www.youtube.com/@ZDev12345)** and consider leaving a star so more people can see the engine **:D**
 
-*Version handling is ZIVH (ZDev's Incremental Version Handling) - a non-destructive version counting system* ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
+Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
 
 *If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*
 
@@ -52,16 +50,6 @@ sudo emerge --ask media-libs/vulkan-loader media-libs/vulkan-tools -y #Vulkan
 # Intel: sudo emerge --ask media-libs/vulkan-intel
 # AMD: sudo emerge --ask media-libs/vulkan-radeon
 ```
-#### Alpine:
-```bash
-sudo apk update
-sudo apk add build-base cmake gdb #C/C++/CMake/Cdbg
-sudo apk add libx11-dev libxrandr-dev libxkbcommon-dev libxi-dev libxcursor-dev mesa-egl-dev #X11
-sudo apk add wayland wayland-protocols-dev #Wayland
-sudo apk add vulkan-tools vulkan-headers vulkan-loader-dev #Vulkan
-# Intel: sudo apk add vulkan-intel
-# AMD: sudo apk add vulkan-radeon
-```
 #### Leap:
 ```bash
 sudo zypper refresh
@@ -72,6 +60,16 @@ sudo zypper install wayland-devel wayland-protocols-devel -y #Wayland
 sudo zypper install vulkan-loader-devel vulkan-tools -y #Vulkan
 # Intel: sudo zypper install vulkan-intel -y
 # AMD: sudo zypper install vulkan-radeon -y
+```
+#### Alpine:
+```bash
+sudo apk update
+sudo apk add build-base cmake gdb #C/C++/CMake/Cdbg
+sudo apk add libx11-dev libxrandr-dev libxkbcommon-dev libxi-dev libxcursor-dev mesa-egl-dev #X11
+sudo apk add wayland wayland-protocols-dev #Wayland
+sudo apk add vulkan-tools vulkan-headers vulkan-loader-dev #Vulkan
+# Intel: sudo apk add vulkan-intel
+# AMD: sudo apk add vulkan-radeon
 ```
 ## MAC:
 ```bash
@@ -118,7 +116,7 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 # How do make your own games:
 
 - Make a new folder in src/games named whatever you want to name your game
-- Duplicate program.cpp and .hpp from games/flappyBird into your new folder
+- Duplicate flappybird as a good base for your game
 - Delete the tick() implementation and replace it with your own
 - Navigate to src/vulkan/pipeline.hpp and create a new function to load your game
 - Navigate to src/vulkan/pipeline.cpp and implement your new function at the bottom of the file

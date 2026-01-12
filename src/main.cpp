@@ -20,15 +20,15 @@
 #include "games/terminalCalculator.hpp"
 
 /* ZDEPS */
-#include "deps/ZDeps/collision.hpp"
-#include "deps/ZDeps/keyboard.hpp"
+#include "collision.hpp"
+#include "zwindow.hpp"
 
 #include <thread>
 
 //#define FPS_CAP_SET
 #define FPS_CAP 180.f
 #define USE_MOUSE
-//#define USE_MULTITHREADING
+#define USE_MULTITHREADING
 
 void render();
 int main() {
@@ -52,13 +52,13 @@ int main() {
     initRenderSystem();
 
     Collision collision;
-    Keyboard keyboard{windowdata};
+    ZWindow zwindow{windowdata};
 
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
 
-    FlappyBird flappyBird{keyboard, audio, collision, vertex};
-    //SlimeAttack slimeAttack{keyboard, collision};
+    FlappyBird flappyBird{zwindow, audio, collision, vertex};
+    //SlimeAttack slimeAttack{zwindow, collision};
 
     #ifdef USE_MULTITHREADING
         std::thread renderthread(render);
@@ -90,13 +90,13 @@ int main() {
 
         pollEvents();
         #ifdef USE_MOUSE
-            keyboard.updateMouse();
+            zwindow.updateMouse();
         #endif
 
         flappyBird.tick();
         //slimeAttack.tick();
 
-        keyboard.resetKeys();
+        zwindow.resetKeys();
         collision.clearAABB();
         updateSprites();
 

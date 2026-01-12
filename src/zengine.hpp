@@ -1448,12 +1448,12 @@ void createText(unsigned int font, const std::string& text, float fontSize, unsi
 #endif
 
     QueuedTexture texture;
-    texture.texture = std::make_unique<Texture>(text_grayscale.data(), texsize, descriptorSetLayout, descriptorPool);
+    texture.texture = std::make_unique<Texture>(text_grayscale.data(), texsize);
     texture.ID = textureIndex;
     queuedTextures.push_back(std::move(texture));
 }
 
-void loadSprites() {
+void initSprites() {
     spriteTextures.reserve(ZENGINE_MAX_TEXTURES);
 #ifdef _WIN32
     lastTexts.resize(ZENGINE_MAX_TEXTURES, "");
@@ -1469,13 +1469,13 @@ void loadSprites() {
     });
 
     while (texturePaths.size() < ZENGINE_MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
-    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.push_back(std::make_unique<Texture>(texturePaths[i], descriptorSetLayout, descriptorPool)); }
+    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.push_back(std::make_unique<Texture>(texturePaths[i])); }
 }
 
 void loadFlappyBird() {
     texturePaths = { "flappyBird.png", "pipe.png" };
     fonts = { "assets/fonts/Bullpen3D.ttf" };
-    loadSprites();
+    initSprites();
 
     createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
@@ -1488,7 +1488,7 @@ void loadFlappyBird() {
 void loadSlimeAttack() {
     texturePaths = { "flappyBird.png", "pipe.png" };
     fonts = {};
-    loadSprites();
+    initSprites();
 
     createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
     createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
@@ -1513,7 +1513,7 @@ public:
         vkCreateSampler(device_, &samplerInfo, nullptr, &sampler);
     }
 
-    Texture(const std::string& filepath, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
+    Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         if (!pixels) { throw("failed to load texture"); }
 
@@ -1566,7 +1566,7 @@ public:
         createTextureSampler(sampler);
     }
 
-    Texture(const unsigned char* pixelData, unsigned int size, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+    Texture(const unsigned char* pixelData, unsigned int size) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
         texWidth = size;
         texHeight = size;
         VkDeviceSize imageSize = size * size * 4;
