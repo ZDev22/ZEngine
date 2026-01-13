@@ -41,15 +41,7 @@ int main() {
         deltaTime = 1.f / FPS_CAP;
     #endif
 
-    initWindow(720, 480);
-    initDevice();
-    initRenderer();
-    initPipeline("texture");
-
-    loadFlappyBird();
-    //loadSlimeAttack();
-
-    initRenderSystem();
+    ZEngineInit(720, 480, "texture");
 
     Collision collision;
     ZWindow zwindow{windowdata};
@@ -107,11 +99,7 @@ int main() {
 #ifdef USE_MULTITHREADING
     }
     ma_engine_uninit(&audio);
-    spriteTextures.clear();
-    destroyDevice();
-    destroyRenderer();
-    destroyPipeline();
-    destroyRenderSystem();
+    ZEngineDeinit();
 }
 
 void render() {
@@ -137,11 +125,7 @@ void render() {
     }
 #ifndef USE_MULTITHREADING
     ma_engine_uninit(&audio);
-    spriteTextures.clear();
-    destroyDevice();
-    destroyRenderer();
-    destroyPipeline();
-    destroyRenderSystem();
+    ZEngineDeinit();
 #endif
 }
 
