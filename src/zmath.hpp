@@ -45,7 +45,7 @@ Works with bigInts.hpp and bitset.hpp if you want, but not required!
     #include "bigInts.hpp"
 #endif
 #ifdef ZMATH_BITSET
-    #include "bitset.hpp"
+    #include "zbit.hpp"
 #endif
 
 #include <math.h>
@@ -259,9 +259,13 @@ template<unsigned int bitCount> inline bigInt<bitCount> exponentFactorial(unsign
 
 // Bitset
 #ifdef ZMATH_BITSET
-template<BITSET_VARIABLE_TYPE T> inline Bitset createRandomBitset() {
-    Bitset bits(T);
-    for (BITSET_VARIABLE_TYPE i = 0; i < T * sizeof(T); i++) { if (Random()) { bits.set(i); } }
+template<ZBIT_VARIABLE_TYPE T> inline ZBitset createRandomBitset() {
+    ZBitset bits;
+    for (unsigned int i = 0; i < ZBIT_SET_SIZE; i++) {
+        for (unsigned int j = 0; j < ZBIT_SIZE_OF(ZBIT_VARIABLE_TYPE); j++) {
+            if (Random()) { bits.data[i].set(j); }
+        }
+    }
     return bits;
 }
 #endif

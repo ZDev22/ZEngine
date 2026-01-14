@@ -1,5 +1,7 @@
 #pragma once
 
+#define ZBIT_SET_SIZE 1000000
+
 #define ZMATH_BIG_INT
 #define ZMATH_BITSET
 #include "zmath.hpp"
@@ -106,7 +108,7 @@ inline void Terminal() {
             else if (operationStr == "superFactorial") { answer = superFactorial<16384>(std::stoi(num1)).toString(); }
             else if (operationStr == "expoFactorial") { answer = exponentFactorial<32768>(std::stoi(num1)).toString(); }
             else if (operationStr == "square root" || operationStr == "sqrt" || operationStr == "Square root" || operationStr == "squareroot") { answer = std::to_string(sqrt(std::stof(num1))); }
-            else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().toString(); }
+            else if (operationStr == "bitset") { answer = createRandomBitset<8000000>().string(); }
             else if (operationStr == "fahrenheit") { answer = std::to_string(fahrenheit(std::stoi(num1))); }
             else if (operationStr == "celsius") { answer = std::to_string(celsius(std::stoi(num1))); }
             else if (operationStr == "prime") {
