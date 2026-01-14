@@ -1,14 +1,16 @@
 # v1.11 - DEV
 - **MADE ENGINE SINGLE-HEADER**
 - **FIXED WAYLAND SUPPORT**
+- MUCH more ZWindow functionality
 - Mac improvements
 - Optimizations
 - Bugfixes
 
 ## v0.11 - 12/28/25
-- **ZDEP DOCUMENTATION & INDEPENDENCE FROM ENGINE**
+- **ZDEP DOCUMENTATION & MODULARIZATION**
 - **BETTER & MORE COMPILER FLAGS**
 - **GNU GPL LICENSE**
+- ALL-AROUND ZDep functionality
 - Fedora, Gentoo, Alpine and Leap installation instructions
 - Optimizations
 - Bugfixes

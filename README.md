@@ -16,7 +16,7 @@ Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destruct
 ```bash
 sudo pacman -Syu --noconfirm
 sudo pacman -S gcc cmake gdb --noconfirm #C/C++/Cmake/Cdbg
-sudo pacman -S libx11 libxrandr xkbcommon mesa --noconfirm #X11
+sudo pacman -S libx11 libxrandr libxcursor xkbcommon mesa --noconfirm #X11
 sudo pacman -S wayland wayland-protocols --noconfirm #Wayland
 sudo pacman -S vulkan-icd-loader vulkan-tools --noconfirm #Vulkan
 # Intel: sudo pacman -S vulkan-intel --noconfirm

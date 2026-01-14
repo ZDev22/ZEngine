@@ -3,14 +3,13 @@
 #define FPS_CAP_SET // set if the program will use the FPS cap
 #define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP)
 #define USE_MULTITHREADING - multithread logic and rendering
-#define USE_MOUSE // if your program uses the mouse, set this to true
 */
-
-#if true // render the screen and tick the game (disable if it's a terminal game)
 
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DISABLE_VSYNC
 #include "zengine.hpp"
+
+#if true // render the screen and tick the game (disable if it's a terminal game)
 
 /* graphical applications */
 #include "games/flappyBird/flappyBird.hpp"
@@ -27,7 +26,6 @@
 
 //#define FPS_CAP_SET
 #define FPS_CAP 180.f
-#define USE_MOUSE
 #define USE_MULTITHREADING
 
 void render();
@@ -81,14 +79,10 @@ int main() {
         appcps++;
 
         pollEvents();
-        #ifdef USE_MOUSE
-            zwindow.updateMouse();
-        #endif
 
         flappyBird.tick();
         //slimeAttack.tick();
 
-        zwindow.resetKeys();
         collision.clearAABB();
         updateSprites();
 

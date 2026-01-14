@@ -29,7 +29,6 @@
 
 /* define these for dependencies */
 #define RGFW_VULKAN
-#define RGFW_NO_API
 
 #ifdef ZENGINE_IMPLEMENTATION
     #define MINIAUDIO_IMPLEMENTATION

@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 
-inline void start() {
+inline void Terminal() {
     std::cout << "\x1b[2J\x1b[H";
     std::cout << "\033[2J\033[H";
     std::cout.flush();
