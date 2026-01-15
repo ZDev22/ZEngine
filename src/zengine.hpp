@@ -208,10 +208,8 @@ std::vector<std::unique_ptr<Texture>> spriteTextures;
 std::vector<QueuedTexture> queuedTextures;
 
 /* window vars */
-int windowWidth = 0, windowHeight = 0;
 bool framebufferResized = false;
 RGFW_window* windowdata;
-RGFW_event event;
 VkExtent2D windowExtent;
 
 /* device vars */
@@ -281,19 +279,6 @@ inline bool compileShaders() {
         }
     }
     return success;
-}
-
-void pollEvents() {
-    while (RGFW_window_checkEvent(windowdata, &event)) {
-        if (event.type == RGFW_windowResized) {
-            RGFW_window_getSize(windowdata, &windowWidth, &windowHeight);
-            framebufferResized = true;
-        }
-        else if (event.type == RGFW_quit) {
-            RGFW_window_close(windowdata);
-            windowdata = nullptr;
-        }
-    }
 }
 
 void createInstance() {
@@ -1514,11 +1499,7 @@ private:
     std::vector<void*> pixelsArray;
 };
 
-void ZEngineInit(i32 windowWidth, i32 windowHeight, std::string shader) {
-    windowdata = RGFW_createWindow("loading...", 100, 100, windowWidth, windowHeight, (u64)0);
-    u8 icon[4 * 3 * 3] = {0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF};
-    RGFW_window_setIcon(windowdata, icon, 3, 3, 4);
-
+void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
     std::cout << "Creating instance...\n"; createInstance();
     std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_);
     std::cout << "Creating physical device...\n"; pickPhysicalDevice();

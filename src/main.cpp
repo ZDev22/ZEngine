@@ -39,10 +39,10 @@ int main() {
         deltaTime = 1.f / FPS_CAP;
     #endif
 
-    ZEngineInit(720, 480, "texture");
-
     Collision collision;
-    ZWindow zwindow{windowdata};
+    ZWindow zwindow{windowdata, 720, 480};
+
+    ZEngineInit("texture");
 
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
@@ -55,7 +55,7 @@ int main() {
         renderthread.detach();
     #endif
 
-    while (!RGFW_window_shouldClose(windowdata) == RGFW_TRUE) {
+    while (true) {
         #ifdef FPS_CAP_SET
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appWait)));
             cpsTime = std::chrono::high_resolution_clock::now();
@@ -78,7 +78,13 @@ int main() {
         }
         appcps++;
 
-        pollEvents();
+        switch(zwindow.pollEvents()) {
+        case 0:
+            goto deinit;
+        case 1:
+            framebufferResized = true;
+            break;
+        }
 
         flappyBird.tick();
         //slimeAttack.tick();
@@ -92,6 +98,7 @@ int main() {
         #endif
 #ifdef USE_MULTITHREADING
     }
+    deinit:
     ma_engine_uninit(&audio);
     ZEngineDeinit();
 }
@@ -118,6 +125,7 @@ void render() {
         #endif
     }
 #ifndef USE_MULTITHREADING
+    deinit:
     ma_engine_uninit(&audio);
     ZEngineDeinit();
 #endif
