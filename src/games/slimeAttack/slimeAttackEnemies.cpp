@@ -1,9 +1,9 @@
 #include "slimeAttackEnemies.hpp"
 #include "slimeAttack.hpp"
 
-#include "collision.hpp"
+#include "zcollide.hpp"
 
-SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision) : slimeAttack(slimeAttack), collision(collision) {
+SlimeAttackEnemies::SlimeAttackEnemies(SlimeAttack& slimeAttack) : slimeAttack(slimeAttack) {
     while (enemies.size() < sprites.size()) {
         Enemy enemy;
         enemy.skip = true;
@@ -68,7 +68,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_SLIME:
 
-        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f);
 
         Enemy slime;
         slime.health = 2;
@@ -83,7 +83,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_BAT:
 
-        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f);
 
         Enemy bat;
         bat.health = 3;
@@ -98,7 +98,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_OGRE:
 
-        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, x, -.5f, .15f, .15f, 0.f);
 
         Enemy ogre;
         ogre.health = 6;
@@ -113,7 +113,7 @@ void SlimeAttackEnemies::spawnEnemy(const int type) {
 
     case SLIMEATTACK_ENEMY_TYPE_BOSS:
 
-        createSprite(squareModel, type, 0.f, 1.5f, 1.f, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, type, 0.f, 1.5f, 1.f, 1.f, 0.f);
 
         Enemy boss;
         boss.health = 25;
@@ -145,7 +145,7 @@ void SlimeAttackEnemies::simulateEnemies() {
                 sprites[i].position[0] += enemies[i].speed[0] * deltaTime;
                 sprites[i].position[1] += enemies[i].speed[1] * deltaTime;
 
-                if (collision.checkSquareCollision(sprites[1], sprites[i])) {
+                if (zcollide_checkSquareCollision(sprites[1], sprites[i])) {
                     sprites[i].position[0] -= enemies[i].speed[0] * deltaTime;
                     sprites[i].position[1] -= enemies[i].speed[1] * deltaTime;
                     enemies[i].speed[0] = 0.f;
@@ -159,13 +159,13 @@ void SlimeAttackEnemies::simulateEnemies() {
                     enemies[i].speed[0] = sprites[0].position[0] >= sprites[i].position[0] ? .5f : -.5f;
                     enemies[i].speed[1] = 1.5f;
                     enemies[i].speed[1] -=  1.f * deltaTime;
-                    if (absolute(sprites[i].position[0]) >= .9f) { enemies[i].speed[0] = 0.f; }
+                    if (abs(sprites[i].position[0]) >= .9f) { enemies[i].speed[0] = 0.f; }
                 }
                 break;
 
             case SLIMEATTACK_ENEMY_TYPE_OGRE:
                 enemies[i].cooldown += deltaTime;
-                if (enemies[i].cooldown > 2.5f) { if (absolute(sprites[0].position[0] - sprites[i].position[0]) <= .2f) { slimeAttack.knockback(sprites[i].position[0]); }}
+                if (enemies[i].cooldown > 2.5f) { if (abs(sprites[0].position[0] - sprites[i].position[0]) <= .2f) { slimeAttack.knockback(sprites[i].position[0]); }}
                 enemies[i].speed[0] += (sprites[0].position[0] >= sprites[i].position[0] ? -.1f : .1f) * deltaTime;
                 break;
 
@@ -181,7 +181,7 @@ void SlimeAttackEnemies::simulateEnemies() {
 bool SlimeAttackEnemies::isTouchingEnemies() {
     for (unsigned int i = 0; i < sprites.size(); i++) {
         if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
-            if (collision.checkSquareCollision(sprites[i], sprites[0])) { return true; }
+            if (zcollide_checkSquareCollision(sprites[i], sprites[0])) { return true; }
         }
     }
     return false;
@@ -189,7 +189,7 @@ bool SlimeAttackEnemies::isTouchingEnemies() {
 
 void SlimeAttackEnemies::damageEnemies() {
     for (unsigned int i = 0; i < sprites.size(); i++) {
-        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && collision.checkSquareCollision(sprites[i], sprites[0])) {
+        if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && zcollide_checkSquareCollision(sprites[i], sprites[0])) {
             enemies[i].health--;
             if (enemies[i].health <= 0) {
                 enemies[i].skip = true;

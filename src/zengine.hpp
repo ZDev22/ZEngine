@@ -154,9 +154,9 @@ struct alignas(16) SpriteData {
     float position[2];
     float scale[2];
     float rotationMatrix[4];
-    float color[4];
 
     unsigned int textureIndex;
+    unsigned int ID;
     float rotation;
 
     constexpr void setRotationMatrix() {
@@ -181,7 +181,7 @@ extern std::vector<Sprite> spriteCPU;
 extern std::shared_ptr<Model> squareModel;
 
 /* extern funcs */
-void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a);
+void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
 inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model);
 
 #ifdef ZENGINE_IMPLEMENTATION
@@ -203,6 +203,7 @@ std::chrono::high_resolution_clock::time_point cpsLastTime;
 /* sprite vecs */
 std::vector<SpriteData> sprites;
 std::vector<Sprite> spriteCPU;
+unsigned int spriteID = 0;
 /* texture vecs */
 std::vector<std::unique_ptr<Texture>> spriteTextures;
 std::vector<QueuedTexture> queuedTextures;
@@ -261,8 +262,8 @@ inline bool compileShaders() {
         for (int i = 0; i < 4; ++i) {
             if (file.path().extension().string() == extensions[i]) {
 
-                const char* inputFile = file.path().string().c_str();
-                const char* outputFile = (file.path().string() + ".spv").c_str();
+                std::string inputFile = file.path().string().c_str();
+                std::string outputFile = (file.path().string() + ".spv").c_str();
 
                 if (std::filesystem::exists(outputFile)  && std::filesystem::last_write_time(outputFile) >= std::filesystem::last_write_time(inputFile)) { std::cout << "Shader " << inputFile << " is up to date.\n"; }
                 else {
@@ -1110,7 +1111,7 @@ std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
     return std::make_shared<Model>(vertices);
 }
 
-void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float r, float g, float b, float a) {
+void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
     Sprite sprite;
     SpriteData spriteData;
@@ -1124,11 +1125,8 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
     spriteData.scale[0] = scalex;
     spriteData.scale[1] = scaley;
     spriteData.rotation = rotation;
-    spriteData.color[0] = r;
-    spriteData.color[1] = g;
-    spriteData.color[2] = b;
-    spriteData.color[3] = a;
     spriteData.textureIndex = textureIndex;
+    spriteData.ID = spriteID++;
 
     sprites.push_back(spriteData);
     spriteCPU.push_back(sprite);
@@ -1288,11 +1286,11 @@ void loadFlappyBird() {
     fonts = { "assets/fonts/Bullpen3D.ttf" };
     initSprites();
 
-    createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
+    createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f);
 
     for (float i = 1.f; i < 5.f; i += 1.f) {
-        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
-        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
+        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
     }
 }
 
@@ -1301,8 +1299,8 @@ void loadSlimeAttack() {
     fonts = {};
     initSprites();
 
-    createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
-    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f, 1.f, 1.f, 1.f, 1.f);
+    createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f);
+    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
 }
 
 struct Texture {
@@ -1500,6 +1498,7 @@ private:
 };
 
 void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
+    compileShaders();
     std::cout << "Creating instance...\n"; createInstance();
     std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_);
     std::cout << "Creating physical device...\n"; pickPhysicalDevice();

@@ -1,8 +1,9 @@
 #include "slimeAttack.hpp"
 
+#include "zcollide.hpp"
 #include "zmath.hpp"
 
-SlimeAttack::SlimeAttack(ZWindow& zwindow, Collision& collision) : zwindow(zwindow), collision(collision), slimeAttackEnemies(*this, collision) {}
+SlimeAttack::SlimeAttack(ZWindow& zwindow) : zwindow(zwindow), slimeAttackEnemies(*this) {}
 
 float slimeAttackSpeed[2] = {0.f};
 bool slimeAttackTouchingGround = false;
@@ -59,7 +60,7 @@ void SlimeAttack::tick() {
         sprites[0].position[0] += slimeAttackSpeed[0] * deltaTime;
         sprites[0].position[1] += slimeAttackSpeed[1] * deltaTime;
 
-        if (collision.checkSquareCollision(sprites[0], sprites[1])) {
+        if (zcollide_checkSquareCollision(sprites[0], sprites[1])) {
             slimeAttackTouchingGround = true;
             sprites[0].position[1] -= slimeAttackSpeed[1] * deltaTime;
             slimeAttackSpeed[1] = 0;

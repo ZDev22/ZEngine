@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.6.10
+v2.6.11
 
 zmath.hpp is a lightweight cross-platform single-header cpp library for high-preformance math functions!
 Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
@@ -169,10 +169,6 @@ inline float averageMinMax(const std::vector<float>& floats) {
 template<typename T> inline void setValuesInRange(std::vector<T>& vec, const T value, unsigned int minIndex, unsigned int maxIndex) { for (unsigned int i = minIndex; i < maxIndex; ++i) vec[i] = value; }
 template<typename T> inline void setFalse(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 0, count); }
 template<typename T> inline void setTrue(std::vector<T>& vec, unsigned int startIndex, unsigned int count) { memset(vec.data() + startIndex, 1, count); }
-
-// Cmath debloated functions
-template<typename T> inline T absolute(const T i) { return i < 0 ? -i : i; }
-inline bool absolute(bool i) { return true; }
 
 // Advanced
 template<typename T> bool prime(T num) {

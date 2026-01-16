@@ -2,6 +2,7 @@
 - **MADE ENGINE SINGLE-HEADER**
 - **FIXED WAYLAND SUPPORT**
 - MUCH more ZWindow functionality
+- Improved API and efficiency of zcollide & zbit
 - Mac improvements
 - Optimizations
 - Bugfixes

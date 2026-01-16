@@ -19,7 +19,8 @@
 #include "games/terminalCalculator.hpp"
 
 /* ZDEPS */
-#include "collision.hpp"
+#define ZCOLLIDE_IMPLEMENTATION
+#include "zcollide.hpp"
 #include "zwindow.hpp"
 
 #include <thread>
@@ -30,7 +31,6 @@
 
 void render();
 int main() {
-
     /* sanity check */
     #ifndef FPS_CAP
         #define FPS_CAP 60.f
@@ -39,7 +39,6 @@ int main() {
         deltaTime = 1.f / FPS_CAP;
     #endif
 
-    Collision collision;
     ZWindow zwindow{windowdata, 720, 480};
 
     ZEngineInit("texture");
@@ -47,8 +46,8 @@ int main() {
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
 
-    FlappyBird flappyBird{zwindow, audio, collision, vertex};
-    //SlimeAttack slimeAttack{zwindow, collision};
+    FlappyBird flappyBird{zwindow, audio, vertex};
+    //SlimeAttack slimeAttack{zwindow};
 
     #ifdef USE_MULTITHREADING
         std::thread renderthread(render);
@@ -89,7 +88,7 @@ int main() {
         flappyBird.tick();
         //slimeAttack.tick();
 
-        collision.clearAABB();
+        zcollide_clearAABB();
         updateSprites();
 
         #ifdef FPS_CAP_SET

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "zmath.hpp"
-#include "collision.hpp"
 
 #include <vector>
 
@@ -15,7 +14,7 @@ struct Pipeline;
 struct SlimeAttack;
 struct SlimeAttackEnemies {
 public:
-    SlimeAttackEnemies(SlimeAttack& slimeAttack, Collision& collision);
+    SlimeAttackEnemies(SlimeAttack& slimeAttack);
 
     void spawnNewWave();
     void spawnEnemy(const int type);
@@ -24,7 +23,6 @@ public:
     void damageEnemies();
 private:
     SlimeAttack& slimeAttack;
-    Collision& collision;
 
     struct Enemy {
         int health;
