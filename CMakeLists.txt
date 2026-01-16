@@ -4,22 +4,18 @@ project(VulkanProject)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(VULKAN_BASE_DIR ${CMAKE_SOURCE_DIR}/src/deps/vulkan)
+find_package(Vulkan REQUIRED)
 
 if(WIN32)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_SMOL ${CMAKE_SOURCE_DIR}/build/windows/Smol)
 
-   set(VULKAN_INCLUDE_DIR ${VULKAN_BASE_DIR}/includewindows)
-   set(VULKAN_LIBRARY_PATH ${VULKAN_BASE_DIR}/includewindows/vulkan-1.lib)
 elseif(UNIX AND NOT APPLE)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/linux/Debug)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/linux/Release)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_SMOL ${CMAKE_SOURCE_DIR}/build/linux/Smol)
 
-   set(VULKAN_INCLUDE_DIR ${VULKAN_BASE_DIR}/includelinux)
-   set(VULKAN_LIBRARY_PATH ${VULKAN_BASE_DIR}/includelinux/libvulkan.so.1.4.321)
 elseif(APPLE)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/mac/Debug)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/mac/Release)
@@ -39,29 +35,15 @@ else()
    message(FATAL_ERROR "Unsupported platform!")
 endif()
 
-if(NOT APPLE)
-   add_library(Vulkan STATIC IMPORTED GLOBAL)
-   set_target_properties(Vulkan PROPERTIES
-      IMPORTED_LOCATION "${VULKAN_LIBRARY_PATH}"
-      INTERFACE_INCLUDE_DIRECTORIES "${VULKAN_INCLUDE_DIR}"
-   )
-endif()
-
 file(GLOB_RECURSE ALL_CPP_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp")
 file(GLOB_RECURSE ALL_C_SOURCES   RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c")
 
 set(SOURCES "")
-
-foreach(F ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
-   if(NOT F MATCHES "^src/deps/")
-      list(APPEND SOURCES "${F}")
-   endif()
-endforeach()
+list(APPEND SOURCES ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
 
 add_executable(main ${SOURCES})
 
 target_include_directories(main PRIVATE
-   "${VULKAN_INCLUDE_DIR}"
    "${CMAKE_SOURCE_DIR}/src"
 )
 
@@ -80,15 +62,6 @@ if(UNIX)
          "-framework CoreVideo"
          objc
       )
-   elseif(WAYLAND_ENABLED)
-      target_link_libraries(main PRIVATE
-         wayland-cursor
-         wayland-client
-         wayland-egl
-         xkbcommon
-         EGL
-      )
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRGFW_WAYLAND")
    else()
       find_package(X11 REQUIRED)
       target_link_libraries(main PRIVATE
@@ -97,13 +70,13 @@ if(UNIX)
          Xrandr
          xkbcommon
          pthread
-         Vulkan
+         Vulkan::Vulkan
       )
    endif()
 else()
    target_link_libraries(main PRIVATE
-	  gdi32
-     Vulkan
+	 gdi32
+     Vulkan::Vulkan
    )
 endif()
 
