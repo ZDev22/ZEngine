@@ -5,23 +5,22 @@
 #define USE_MULTITHREADING - multithread logic and rendering
 */
 
+#if true // render the screen and tick the game (disable if it's a terminal game)
+
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DISABLE_VSYNC
 #include "zengine.hpp"
-
-#if true // render the screen and tick the game (disable if it's a terminal game)
-
-/* graphical applications */
-#include "games/flappyBird/flappyBird.hpp"
-//#include "games/slimeAttack/slimeAttack.hpp"
-
-/* terminal applications */
-#include "games/terminalCalculator.hpp"
 
 /* ZDEPS */
 #define ZCOLLIDE_IMPLEMENTATION
 #include "zcollide.hpp"
 #include "zwindow.hpp"
+
+#undef ZCOLLIDE_IMPLEMENTATION
+
+/* graphical applications */
+#include "games/flappyBird.hpp"
+//#include "games/slimeAttack.hpp"
 
 #include <thread>
 
@@ -46,8 +45,7 @@ int main() {
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
 
-    FlappyBird flappyBird{zwindow, audio, vertex};
-    //SlimeAttack slimeAttack{zwindow};
+    Game game{zwindow, audio, vertex};
 
     #ifdef USE_MULTITHREADING
         std::thread renderthread(render);
@@ -85,8 +83,7 @@ int main() {
             break;
         }
 
-        flappyBird.tick();
-        //slimeAttack.tick();
+        game.tick();
 
         zcollide_clearAABB();
         updateSprites();
@@ -131,6 +128,9 @@ void render() {
 }
 
 #else
+
+/* terminal applications */
+#include "games/terminalCalculator.hpp"
 
 int main() { Terminal(); }
 

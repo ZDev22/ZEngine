@@ -28,7 +28,7 @@ sudo apt update
 sudo apt install build-essential cmake gdb -y #C/C++/Cmake/Cdbg
 sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev libxi-dev -y #X11
 sudo apt install libwayland-dev wayland-protocols -y #Wayland
-sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
+sudo apt install libvulkan-dev libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
 ```
 #### Fedora:
 ```bash
@@ -36,17 +36,17 @@ sudo dnf update -y
 sudo dnf install gcc gcc-c++ cmake gdb -y #C/C++/CMake/Cdbg
 sudo dnf install libX11-devel libXrandr-devel libxkbcommon-devel mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
 sudo dnf install wayland-devel wayland-protocols-devel -y #Wayland
-sudo dnf install vulkan vulkan-tools vulkan-loader-devel -y #Vulkan
+sudo dnf install vulkan vulkan-headers vulkan-tools vulkan-loader-devel -y #Vulkan
 # Intel: sudo dnf install vulkan-intel -y
 # AMD: sudo dnf install vulkan-radeon -y
 ```
 #### Gentoo:
 ```bash
-sudo emerge --sync
+root # emerge --sync
 sudo emerge --ask sys-devel/gcc sys-devel/cmake sys-devel/gdb -y #C/C++/CMake/Cdbg
 sudo emerge --ask x11-libs/libX11 x11-libs/libXrandr x11-libs/libXi x11-libs/libXcursor x11-libs/libxkbcommon mesa-libs/mesa -y #X11
 sudo emerge --ask x11-libs/wayland x11-libs/wayland-protocols -y #Wayland
-sudo emerge --ask media-libs/vulkan-loader media-libs/vulkan-tools -y #Vulkan
+sudo emerge --ask media-libs/vulkan-loader dev-util/vulkan-headers media-libs/vulkan-tools -y #Vulkan
 # Intel: sudo emerge --ask media-libs/vulkan-intel
 # AMD: sudo emerge --ask media-libs/vulkan-radeon
 ```
@@ -57,7 +57,7 @@ sudo zypper update -y
 sudo zypper install -t pattern devel_C_C++ cmake gdb -y #C/C++/CMake/Cdbg
 sudo zypper install libX11-devel libXrandr-devel libxkbcommon-devel Mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
 sudo zypper install wayland-devel wayland-protocols-devel -y #Wayland
-sudo zypper install vulkan-loader-devel vulkan-tools -y #Vulkan
+sudo zypper install vulkan-headers vulkan-loader-devel vulkan-tools -y #Vulkan
 # Intel: sudo zypper install vulkan-intel -y
 # AMD: sudo zypper install vulkan-radeon -y
 ```
@@ -67,7 +67,7 @@ sudo apk update
 sudo apk add build-base cmake gdb #C/C++/CMake/Cdbg
 sudo apk add libx11-dev libxrandr-dev libxkbcommon-dev libxi-dev libxcursor-dev mesa-egl-dev #X11
 sudo apk add wayland wayland-protocols-dev #Wayland
-sudo apk add vulkan-tools vulkan-headers vulkan-loader-dev #Vulkan
+sudo apk add vulkan-headers vulkan-tools vulkan-headers vulkan-loader-dev #Vulkan
 # Intel: sudo apk add vulkan-intel
 # AMD: sudo apk add vulkan-radeon
 ```
