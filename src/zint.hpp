@@ -1,17 +1,17 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 Current rival (and inspiration) - https://github.com/SamHerts/BigInt/blob/main/bigint.h
 
-v2.13.7
+v2.13.8
 
-bigInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
+ZInts.hpp is a lightweight cross-platform single-header cpp library for creating INTENSELY LARGE NUMBERS!
 Currently still in development with many more features and optimizations to come!
 See current preformance benchmarks: https://github.com/ZDev22/Vulkan-Engine/issues/4
 
 Requires the GCC compiler and support for __uint128_t
 
-HOW TO USE: bigInt<128> var;
+HOW TO USE: ZInt<128> var;
 MATH: var *= 5;
-PRINT OUT THE VARIABLE: printf(name.toSting());
+PRINT OUT THE VARIABLE: printf(var.toSting());
 */
 
 #pragma once
@@ -19,15 +19,15 @@ PRINT OUT THE VARIABLE: printf(name.toSting());
 #include <string.h>
 
 template<unsigned int bitCount>
-struct bigInt {
+struct ZInt {
     static constexpr unsigned int bytes = bitCount / 64;
     unsigned long long limbs[bytes] = {0};
 
-    constexpr bigInt() = default;
-    constexpr bigInt(const unsigned long long num) { limbs[0] = num; }
-    constexpr bigInt(const unsigned long long* init, unsigned int count) {
+    constexpr ZInt() = default;
+    constexpr ZInt(const unsigned long long num) { limbs[0] = num; }
+    constexpr ZInt(const unsigned long long* init, unsigned int count) {
         unsigned int i = 0;
-        for (; i < count < bytes ? count : bytes; i++) { limbs[i] = init[i]; }
+        for (; i < (count < bytes ? count : bytes); i++) { limbs[i] = init[i]; }
         memset(&limbs[i], 0, (bytes - i) * 8);
     }
 
@@ -47,20 +47,20 @@ struct bigInt {
         return (unsigned long long)remainder;
     }
     unsigned int bitWidth() const {
-        for (unsigned int i = 0; i < bytes; i++) {
+        for (long long i = bytes; i < 0; i--) {
             if (limbs[i] != 0) { return i * 64ULL + __builtin_clzll(limbs[i]); }
         }
         return 0;
     }
 
-    void operator=(const bigInt& num) { memcpy(&limbs, &num.limbs, bytes); }
+    void operator=(const ZInt& num) { memcpy(&limbs, &num.limbs, bytes); }
     void operator=(const unsigned long long num) {
         setZero();
         limbs[0] = num;
     }
 
-    bigInt operator+(const bigInt& num) const {
-        bigInt result;
+    ZInt operator+(const ZInt& num) const {
+        ZInt result;
         __uint128_t carry = 0;
         for (unsigned int i = 0; i < bytes; i++) {
             __uint128_t sum = (__uint128_t)limbs[i] + num.limbs[i] + carry;
@@ -69,9 +69,9 @@ struct bigInt {
         }
         return result;
     }
-    bigInt operator+(const unsigned long long num) const {
+    ZInt operator+(const unsigned long long num) const {
         __uint128_t sum = (__uint128_t)(limbs[0] + num);
-        bigInt result = (unsigned long long)sum;
+        ZInt result = (unsigned long long)sum;
         __uint128_t carry = sum >> 64;
 
         if (carry == 0) { return result; }
@@ -83,12 +83,12 @@ struct bigInt {
         }
         return result;
     }
-    void operator+=(const bigInt& num) { *this = *this + num; }
+    void operator+=(const ZInt& num) { *this = *this + num; }
     void operator+=(const unsigned long long num) { *this = *this + num; }
     void operator++() { *this = *this + 1; }
 
-    bigInt operator-(const bigInt& num) const {
-        bigInt result;
+    ZInt operator-(const ZInt& num) const {
+        ZInt result;
         __uint128_t borrow = 0;
         for (unsigned int i = 0; i < bytes; i++) {
             result.limbs[i] = (unsigned long long)(limbs[i] - num.limbs[i] + borrow);
@@ -96,8 +96,8 @@ struct bigInt {
         }
         return result;
     }
-    bigInt operator-(const unsigned long long num) const {
-        bigInt result = *this;
+    ZInt operator-(const unsigned long long num) const {
+        ZInt result = *this;
         unsigned long long borrow = num;
         for (unsigned int i = 0; i < bytes; i++) {
             unsigned long long old = result.limbs[i];
@@ -113,12 +113,12 @@ struct bigInt {
         }
         return result;
     }
-    void operator-=(const bigInt& num) { *this = *this - num; }
+    void operator-=(const ZInt& num) { *this = *this - num; }
     void operator-=(const unsigned long long num) { *this = *this - num; }
     void operator--() { *this = *this - 1; }
 
-    bigInt operator*(const bigInt& num) const {
-        bigInt result;
+    ZInt operator*(const ZInt& num) const {
+        ZInt result;
         __uint128_t carry = 0;
         __uint128_t current = 0;
         for (unsigned int i = 0; i < bytes; i++) {
@@ -131,8 +131,8 @@ struct bigInt {
         }
         return result;
     }
-    bigInt operator*(const unsigned long long num) const {
-        bigInt result;
+    ZInt operator*(const unsigned long long num) const {
+        ZInt result;
         __uint128_t carry = 0;
         __uint128_t current = 0;
         for (unsigned int i = 0; i < bytes; i++) {
@@ -142,16 +142,16 @@ struct bigInt {
         }
         return result;
     }
-    void operator*=(const bigInt& num) { *this = *this * num; }
+    void operator*=(const ZInt& num) { *this = *this * num; }
     void operator*=(const unsigned long long num) { *this = *this * num; }
 
-    bigInt operator/(const bigInt& num) const {
+    ZInt operator/(const ZInt& num) const {
         if (num.isZero()) { return 0; }
         unsigned int bw = bitWidth();
         if (bw == 0) { return 0; }
 
-        bigInt result = 0;
-        bigInt remainder = 0;
+        ZInt result = 0;
+        ZInt remainder = 0;
         for (unsigned int i = bw - 1; i >= 0; i--) {
             remainder <<= 1;
             unsigned long long bit = (limbs[i / 64] >> (i % 64)) & 1;
@@ -163,15 +163,15 @@ struct bigInt {
         }
         return result;
     }
-    bigInt operator/(const unsigned long long num) const { return *this / bigInt(num); }
-    void operator/=(const bigInt& num) { *this = *this / num; }
-    void operator/=(const unsigned long long num) { *this = *this / bigInt(num); }
+    ZInt operator/(const unsigned long long num) const { return *this / ZInt(num); }
+    void operator/=(const ZInt& num) { *this = *this / num; }
+    void operator/=(const unsigned long long num) { *this = *this / ZInt(num); }
 
-    bigInt operator%(const bigInt& num) const {
+    ZInt operator%(const ZInt& num) const {
         if (num.isZero()) { return *this; }
         int bitwidth = bitWidth();
         if (bitwidth == 0) { return 0; }
-        bigInt remainder;
+        ZInt remainder;
         for (int i = bitwidth - 1; i >= 0; i--) {
             remainder <<= 1;
             remainder.limbs[0] |= ((limbs[i / 64] >> (i % 64)) & 1);
@@ -179,62 +179,62 @@ struct bigInt {
         }
         return remainder;
     }
-    bigInt operator%(const unsigned long long num) const { return *this % bigInt(num); }
-    void operator&=(const bigInt& num) const { *this = *this % num; }
-    void operator%=(const unsigned long long num) const { *this = *this % bigInt(num); }
-    bigInt operator&(const bigInt& num) const {
-        bigInt result;
+    ZInt operator%(const unsigned long long num) const { return *this % ZInt(num); }
+    void operator&=(const ZInt& num) const { *this = *this % num; }
+    void operator%=(const unsigned long long num) const { *this = *this % ZInt(num); }
+    ZInt operator&(const ZInt& num) const {
+        ZInt result;
         for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = limbs[i] & num.limbs[i]; }
         return result;
     }
-    bigInt operator&(const unsigned long long num) const { return *this & bigInt(num); }
-    void operator&=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] &= num.limbs[i]; }
-    void operator&=(const unsigned long long num) { *this &= bigInt(num); }
+    ZInt operator&(const unsigned long long num) const { return *this & ZInt(num); }
+    void operator&=(const ZInt& num) { for (unsigned int i = 0; i < bytes; i++) limbs[i] &= num.limbs[i]; }
+    void operator&=(const unsigned long long num) { *this &= ZInt(num); }
 
-    bigInt operator|(const bigInt& num) const {
-        bigInt result;
+    ZInt operator|(const ZInt& num) const {
+        ZInt result;
         for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = limbs[i] | num.limbs[i]; }
         return result;
     }
-    bigInt operator|(const unsigned long long num) const { return *this | bigInt(num); }
-    void operator|=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) { limbs[i] |= num.limbs[i]; } }
-    void operator|=(const unsigned long long num) { *this |= bigInt(num); }
+    ZInt operator|(const unsigned long long num) const { return *this | ZInt(num); }
+    void operator|=(const ZInt& num) { for (unsigned int i = 0; i < bytes; i++) { limbs[i] |= num.limbs[i]; } }
+    void operator|=(const unsigned long long num) { *this |= ZInt(num); }
 
-    bigInt operator^(const bigInt& num) const {
-        bigInt result;
+    ZInt operator^(const ZInt& num) const {
+        ZInt result;
         for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = limbs[i] ^ num.limbs[i]; }
         return result;
     }
-    bigInt operator^(const unsigned long long num) const { return *this ^ bigInt(num); }
-    void operator^=(const bigInt& num) { for (unsigned int i = 0; i < bytes; i++) { limbs[i] ^= num.limbs[i]; }}
-    void operator^=(const unsigned long long num) { *this ^= bigInt(num); }
+    ZInt operator^(const unsigned long long num) const { return *this ^ ZInt(num); }
+    void operator^=(const ZInt& num) { for (unsigned int i = 0; i < bytes; i++) { limbs[i] ^= num.limbs[i]; }}
+    void operator^=(const unsigned long long num) { *this ^= ZInt(num); }
 
-    bigInt operator~() const {
-        bigInt result;
+    ZInt operator~() const {
+        ZInt result;
         for (unsigned int i = 0; i < bytes; i++) { result.limbs[i] = ~limbs[i]; }
         return result;
     }
 
-    bool operator==(const bigInt& num) const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != num.limbs[i]) return false; } return true; }
-    bool operator==(const unsigned long long num) const { return *this == bigInt(num); }
-    bool operator!=(const bigInt& num) const { return !(*this == num); }
-    bool operator!=(const unsigned long long num) const { return *this != bigInt(num); }
-    bool operator>(const bigInt& num) const {
+    bool operator==(const ZInt& num) const { for (unsigned int i = 0; i < bytes; i++) { if (limbs[i] != num.limbs[i]) return false; } return true; }
+    bool operator==(const unsigned long long num) const { return *this == ZInt(num); }
+    bool operator!=(const ZInt& num) const { return !(*this == num); }
+    bool operator!=(const unsigned long long num) const { return *this != ZInt(num); }
+    bool operator>(const ZInt& num) const {
         for (int i = bytes - 1; i >= 0; i--) {
             if (limbs[i] > num.limbs[i]) { return true; }
             if (limbs[i] < num.limbs[i]) { return false; }
         }
         return false;
     }
-    bool operator>(const unsigned long long num) const { return *this > bigInt(num); }
-    bool operator>=(const bigInt& num) const { return (*this > num) || (*this == num); }
-    bool operator>=(const unsigned long long num) const { return *this >= bigInt(num); }
-    bool operator<(const bigInt& num) const { return num > *this; }
-    bool operator<(const unsigned long long num) const { return *this < bigInt(num); }
-    bool operator<=(const bigInt& num) const { return !(*this > num); }
-    bool operator<=(const unsigned long long num) const { return *this <= bigInt(num); }
+    bool operator>(const unsigned long long num) const { return *this > ZInt(num); }
+    bool operator>=(const ZInt& num) const { return (*this > num) || (*this == num); }
+    bool operator>=(const unsigned long long num) const { return *this >= ZInt(num); }
+    bool operator<(const ZInt& num) const { return num > *this; }
+    bool operator<(const unsigned long long num) const { return *this < ZInt(num); }
+    bool operator<=(const ZInt& num) const { return !(*this > num); }
+    bool operator<=(const unsigned long long num) const { return *this <= ZInt(num); }
 
-    bigInt operator<<=(unsigned int num) {
+    ZInt operator<<=(unsigned int num) {
         if (num >= bitCount) { setZero(); return *this; }
 
         int limbshift = num / 64;
@@ -252,9 +252,9 @@ struct bigInt {
         memcpy(&limbs, &nw, bytes);
         return *this;
     }
-    bigInt operator<<(int num) const { bigInt result = *this; result <<= num; return result; }
+    ZInt operator<<(int num) const { ZInt result = *this; result <<= num; return result; }
 
-    bigInt operator>>=(int num) {
+    ZInt operator>>=(int num) {
         if (num <= 0) { return *this; }
         if (num >= bitCount) { setZero(); return *this; }
         int limbshift = num / 64;
@@ -270,7 +270,7 @@ struct bigInt {
         for (unsigned int i = 0; i < bytes; i++) { limbs[i] = nw[i]; }
         return *this;
     }
-    bigInt operator>>(int num) const { bigInt result = *this; result >>= num; return result; }
+    ZInt operator>>(int num) const { ZInt result = *this; result >>= num; return result; }
     unsigned long long operator[](unsigned int index) const { return limbs[index]; }
 
 
@@ -283,7 +283,7 @@ struct bigInt {
         }
 
         static char buffer[(bitCount * 2) + 2];
-        bigInt temp = *this;
+        ZInt temp = *this;
         int position = 0;
         char t = '0';
 
@@ -303,8 +303,8 @@ struct bigInt {
         return 0;
     }
 
-    void swap(bigInt& num) {
-        bigInt temp = *this;
+    void swap(ZInt& num) {
+        ZInt temp = *this;
         *this = num;
         num = temp;
     }

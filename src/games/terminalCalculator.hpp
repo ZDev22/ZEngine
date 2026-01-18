@@ -2,8 +2,8 @@
 
 #define ZBIT_SET_SIZE 1000000
 
-#define ZMATH_BIG_INT
-#define ZMATH_BITSET
+#define ZMATH_ZINT
+#define ZMATH_ZBIT
 #include "zmath.hpp"
 
 #include <string>
@@ -59,39 +59,39 @@ inline void Terminal() {
             else if (operation == "&") { answer = std::to_string(std::stoi(num1) % std::stoi(num2)); }
             else if (operation == "^") { answer = std::to_string(pow(std::stof(num1), std::stof(num2))); }
             else if (operation == "+b") {
-                bigInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum1 = std::stoi(num1);
                 answer = (bnum1 + std::stoi(num2)).toString();
             }
             else if (operation == "-b") {
-                bigInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum1 = std::stoi(num1);
                 answer = (bnum1 - std::stoi(num2)).toString();
             }
             else if (operation == "/b") {
-                bigInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum1 = std::stoi(num1);
                 answer = (bnum1 / std::stoi(num2)).toString();
             }
             else if (operation == "*b") {
-                bigInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum1 = std::stoi(num1);
                 answer = (bnum1 * std::stoi(num2)).toString();
             }
             else if (operation == "+bb") {
-                bigInt<128> bnum1 = std::stoi(num1);
-                bigInt<128> bnum2 = std::stoi(num2);
+                ZInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum2 = std::stoi(num2);
                 answer = (bnum1 + bnum2).toString();
             }
             else if (operation == "-bb") {
-                bigInt<128> bnum1 = std::stoi(num1);
-                bigInt<128> bnum2 = std::stoi(num2);
+                ZInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum2 = std::stoi(num2);
                 answer = (bnum1 - bnum2).toString();
             }
             else if (operation == "/bb") {
-                bigInt<128> bnum1 = std::stoi(num1);
-                bigInt<128> bnum2 = std::stoi(num2);
+                ZInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum2 = std::stoi(num2);
                 answer = (bnum1 / bnum2).toString();
             }
             else if (operation == "*bb") {
-                bigInt<128> bnum1 = std::stoi(num1);
-                bigInt<128> bnum2 = std::stoi(num2);
+                ZInt<128> bnum1 = std::stoi(num1);
+                ZInt<128> bnum2 = std::stoi(num2);
                 answer = (bnum1 * bnum2).toString();
             }
 

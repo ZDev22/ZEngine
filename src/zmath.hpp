@@ -1,13 +1,13 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.6.11
+v2.6.12
 
 zmath.hpp is a lightweight cross-platform single-header cpp library for high-preformance math functions!
 Made for the purpose of gaming, like RNG and weight-table functions, as well as doing my homework.
-Works with bigInts.hpp and bitset.hpp if you want, but not required!
+Works with ZInts.hpp and bitset.hpp if you want, but not required!
 
-#define ZMATH_BIG_INT - Use bigInt.hpp along with zmath, enables bigInt functions
-#define ZMATH_BITSET - Use bitset.hpp along with zmath, enable bitset functions
+#define ZMATH_ZINT - Use zint.hpp along with zmath, enables ZInt functions
+#define ZMATH_ZBIT - Use zbit.hpp along with zmath, enable zbit functions
 */
 
 #pragma once
@@ -41,10 +41,10 @@ Works with bigInts.hpp and bitset.hpp if you want, but not required!
 #define ZMATH_1THIRD           .3333333333f
 #define ZMATH_2THIRDS          .6666666666f
 
-#ifdef ZMATH_BIG_INT
-    #include "bigInts.hpp"
+#ifdef ZMATH_ZINT
+    #include "zint.hpp"
 #endif
-#ifdef ZMATH_BITSET
+#ifdef ZMATH_ZBIT
     #include "zbit.hpp"
 #endif
 
@@ -212,10 +212,10 @@ inline constexpr float degrees(const float radians) { return radians * ZMATH_PID
 inline constexpr float celsius(const float fahrenheit) { return (fahrenheit - 32.f) * .5555555555f; }
 inline constexpr float fahrenheit(const float celsius) { return (celsius / .5555555555f) + 32.f; }
 
-// BigInts
-#ifdef ZMATH_BIG_INT
-template<unsigned int bitCount> inline bigInt<bitCount> exponent(bigInt<bitCount> base, unsigned int exp) {
-    bigInt<bitCount> result = 1;
+// ZInts
+#ifdef ZMATH_ZINT
+template<unsigned int bitCount> inline ZInt<bitCount> exponent(ZInt<bitCount> base, unsigned int exp) {
+    ZInt<bitCount> result = 1;
     while (exp > 0) {
         if (exp & 1) { result *= base; }
         base *= base;
@@ -224,15 +224,15 @@ template<unsigned int bitCount> inline bigInt<bitCount> exponent(bigInt<bitCount
     return result;
 }
 
-template<unsigned int bitCount> inline bigInt<bitCount> factorial(unsigned int n) {
-    bigInt<bitCount> result = 1;
+template<unsigned int bitCount> inline ZInt<bitCount> factorial(unsigned int n) {
+    ZInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
     return result;
 }
 
-template<unsigned int bitCount> inline bigInt<bitCount> superFactorial(unsigned int n) {
-    std::vector<bigInt<bitCount>> legs;
-    bigInt<bitCount> result = 1;
+template<unsigned int bitCount> inline ZInt<bitCount> superFactorial(unsigned int n) {
+    std::vector<ZInt<bitCount>> legs;
+    ZInt<bitCount> result = 1;
 
     for (unsigned int q = n; q > 0; q--) {
         for (unsigned int i = 1; i <= q; i++) { result *= i; }
@@ -244,17 +244,17 @@ template<unsigned int bitCount> inline bigInt<bitCount> superFactorial(unsigned 
     for (auto leggs : legs) { result *= leggs; }
     return result;
 }
-template<unsigned int bitCount> inline bigInt<bitCount> exponentFactorial(unsigned int n) {
-    bigInt<bitCount> result = 1;
+template<unsigned int bitCount> inline ZInt<bitCount> exponentFactorial(unsigned int n) {
+    ZInt<bitCount> result = 1;
     for (unsigned int i = 1; i <= n; i++) { result *= i; }
-    bigInt<bitCount> base = result;
+    ZInt<bitCount> base = result;
     for (unsigned int i = 1; i < n; i++) { result *= base; }
     return result;
 }
 #endif
 
 // Bitset
-#ifdef ZMATH_BITSET
+#ifdef ZMATH_ZBIT
 template<ZBIT_VARIABLE_TYPE T> inline ZBitset createRandomBitset() {
     ZBitset bits;
     for (unsigned int i = 0; i < ZBIT_SET_SIZE; i++) {
