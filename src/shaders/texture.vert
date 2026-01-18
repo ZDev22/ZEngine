@@ -20,7 +20,7 @@ layout(push_constant) uniform PushConstants {
     vec2 cameraZoom;
 } push;
 
-layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[100000]; };
+layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[]; };
 
 void main() {
     float rotation = radians(sprites[gl_InstanceIndex].rotation);

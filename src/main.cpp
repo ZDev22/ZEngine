@@ -1,5 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
+An example implementation on how to init and use zengine, as well as a few zdeps!
+
 #define FPS_CAP_SET // set if the program will use the FPS cap
 #define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP)
 #define USE_MULTITHREADING - multithread logic and rendering
@@ -9,6 +11,8 @@
 
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DISABLE_VSYNC
+#define ZENGINE_MAX_SPRITES 1000
+#define ZENGINE_MAX_TEXTURES 10
 #include "zengine.hpp"
 
 /* ZDEPS */
@@ -111,10 +115,10 @@ void render() {
             renderSprites(commandBuffer);
             vkCmdEndRenderPass(commandBuffer);
             endFrame();
-            #ifdef USE_MULTITHREADING
-                appfps++;
-            #endif
         }
+        #ifdef USE_MULTITHREADING
+            appfps++;
+        #endif
         #if defined(FPS_CAP_SET) && defined(USE_MULTITHREADING)
             fpsLastTime = std::chrono::high_resolution_clock::now();
             appFrameWait = std::chrono::duration<float>(fpsLastTime - fpsTime).count();

@@ -3,8 +3,8 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
-#define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (the more, the more memory usage)
-#define ZENGINE_MAX_TEXTURES 66 - the maximum amount of texture the engine can load at once (66 is max chromeos can take)
+#define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
+#define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
 */
 
 #ifndef ZENGINE_HPP
@@ -18,13 +18,7 @@
     #define ZENGINE_MAX_SPRITES 100000
 #endif
 #ifndef ZENGINE_MAX_TEXTURES
-    #define ZENGINE_MAX_TEXTURES 66
-#endif
-
-#ifdef ZENGINE_DISABLE_VSYNC
-    #define ZENGINE_PRESENT_MODE VK_PRESENT_MODE_IMMEDIATE_KHR
-#else
-    #define ZENGINE_PRESENT_MODE VK_PRESENT_MODE_FIFO_KHR
+    #define ZENGINE_MAX_TEXTURES 50
 #endif
 
 /* define these for dependencies */
@@ -229,8 +223,6 @@ unsigned int currentImageIndex;
 
 /* pipeline vars */
 VkPipeline graphicsPipeline;
-VkShaderModule vertShaderModule;
-VkShaderModule fragShaderModule;
 VkPipelineLayout pipelineLayout;
 VkDescriptorSetLayout descriptorSetLayout;
 VkDescriptorPool descriptorPool;
@@ -248,8 +240,9 @@ std::vector<std::string> fonts;
 VkDescriptorSet spriteDataDescriptorSet;
 std::unique_ptr<Buffer> spriteDataBuffer;
 
-/* swapchain */
+/* swapchain vars */
 std::unique_ptr<SwapChain> swapChain;
+VkSwapchainKHR oldSwapChain;
 
 /* compile shaders */
 inline bool compileShaders() {
@@ -602,15 +595,6 @@ public:
         createFramebuffers();
         createSyncObjects();
     }
-    SwapChain(std::shared_ptr<SwapChain> oldSwapChain) : oldSwapChain(oldSwapChain) {
-        createSwapChain();
-        createImageViews();
-        createRenderPass();
-        createDepthResources();
-        createFramebuffers();
-        createSyncObjects();
-        oldSwapChain = nullptr;
-    }
     ~SwapChain() {
         for (auto imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
         swapChainImageViews.clear();
@@ -726,11 +710,15 @@ public:
             createInfo.pQueueFamilyIndices = nullptr;
         }
 
+        createInfo.clipped = VK_TRUE;
         createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        createInfo.presentMode = ZENGINE_PRESENT_MODE;
-        createInfo.clipped = VK_TRUE;
-        createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
+        createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain;
+        #ifdef ZENGINE_DISABLE_VSYNC
+            createInfo.presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+        #else
+            createInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+        #endif
 
         if (vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain) != VK_SUCCESS) { throw("failed to create swapchain!"); }
         vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr);
@@ -899,15 +887,15 @@ public:
 
     inline VkFramebuffer getFrameBuffer(unsigned long index) const { return swapChainFramebuffers[index]; }
     inline VkImageView getImageView(int index) const { return swapChainImageViews[index]; }
-    VkRenderPass getRenderPass() const { return renderPass; }
-    std::vector<VkImage> getSwapChainImages() const { return swapChainImages; }
+    inline VkRenderPass getRenderPass() const { return renderPass; }
+    inline std::vector<VkImage> getSwapChainImages() const { return swapChainImages; }
+    inline VkSwapchainKHR getSwapChain() const { return swapChain; }
 
 private:
+    VkSwapchainKHR swapChain;
     VkFormat swapChainImageFormat;
     VkFormat swapChainDepthFormat;
     VkRenderPass renderPass;
-    VkSwapchainKHR swapChain;
-    std::shared_ptr<SwapChain> oldSwapChain;
     std::vector<VkFramebuffer> swapChainFramebuffers;
     std::vector<VkImage> depthImages;
     std::vector<VkDeviceMemory> depthImageMemorys;
@@ -940,8 +928,8 @@ void freeCommandBuffers() {
 
 void recreateSwapChain() {
     vkDeviceWaitIdle(device_);
-    std::shared_ptr<SwapChain> oldSwapChain = std::move(swapChain);
-    swapChain = std::make_unique<SwapChain>(std::move(oldSwapChain));
+    oldSwapChain = swapChain->getSwapChain();
+    swapChain = std::make_unique<SwapChain>();
     if (swapChain->getSwapChainImages().size() != commandBuffers.size()) {
         freeCommandBuffers();
         createCommandBuffers();
