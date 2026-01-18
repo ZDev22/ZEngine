@@ -936,58 +936,6 @@ void recreateSwapChain() {
     }
 }
 
-VkCommandBuffer beginFrame() {
-    if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {
-        recreateSwapChain();
-        framebufferResized = false;
-        return nullptr;
-    }
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-    auto commandBuffer = commandBuffers[currentImageIndex];
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    return commandBuffer;
-}
-
-void beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = swapChain->getRenderPass();
-    renderPassInfo.framebuffer = swapChain->getFrameBuffer(currentImageIndex);
-    renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = windowExtent;
-
-    VkClearValue clearValues[2] = {};
-    clearValues[0].color = VkClearColorValue{ .float32 = {.1f, .1f, .1f, 1.f} };
-    clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0 };
-    renderPassInfo.clearValueCount = 2;
-    renderPassInfo.pClearValues = clearValues;
-
-    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    VkViewport viewport{};
-    viewport.x = 0.f;
-    viewport.y = 0.f;
-    viewport.width = (float)windowExtent.width;
-    viewport.height = (float)windowExtent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-    VkRect2D scissor{};
-    scissor.offset = { 0, 0 };
-    scissor.extent = windowExtent;
-    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-}
-
-void endFrame() {
-    auto commandBuffer = commandBuffers[currentImageIndex];
-    vkEndCommandBuffer(commandBuffer);
-    swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-}
-
 struct Buffer {
 public:
     Buffer(VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : bufferSize(instanceSize * instanceCount) {
@@ -1080,8 +1028,6 @@ std::vector<char> readFile(const std::string& filepath) {
     file.close();
     return buffer;
 }
-
-void bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 
 std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
     std::vector<Vertex> vertices;
@@ -1762,24 +1708,71 @@ void updateTexture(unsigned char index) {
     vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
 }
 
-void renderSprites(VkCommandBuffer commandBuffer) {
-    if (queuedTextures.size() != 0) {
-        if (queuedTextures.size() == 1) {
-            spriteTextures[queuedTextures[0].ID] = std::move(queuedTextures[0].texture);
-            updateTexture(queuedTextures[0].ID);
-            queuedTextures.clear();
-        }
-        else {
-            while (queuedTextures.size() != 0) {
-                spriteTextures[queuedTextures[0].ID] = std::move(queuedTextures[0].texture);
-                queuedTextures.erase(queuedTextures.begin());
-            }
-            updateAllTextures();
-        }
+inline void updateSprites() { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
+
+void ZEngineRender() {
+    /* create command buffer */
+    if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {
+        recreateSwapChain();
+        framebufferResized = false;
+        return;
     }
 
-    bind(commandBuffer);
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
+    VkCommandBuffer commandBuffer = commandBuffers[currentImageIndex];
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    /* begine render pass */
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = swapChain->getRenderPass();
+    renderPassInfo.framebuffer = swapChain->getFrameBuffer(currentImageIndex);
+    renderPassInfo.renderArea.offset = { 0, 0 };
+    renderPassInfo.renderArea.extent = windowExtent;
+
+    VkClearValue clearValues[2] = {};
+    clearValues[0].color = VkClearColorValue{ .float32 = {.1f, .1f, .1f, 1.f} };
+    clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0 };
+    renderPassInfo.clearValueCount = 2;
+    renderPassInfo.pClearValues = clearValues;
+
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    VkViewport viewport{};
+    viewport.x = 0.f;
+    viewport.y = 0.f;
+    viewport.width = (float)windowExtent.width;
+    viewport.height = (float)windowExtent.height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+    VkRect2D scissor{};
+    scissor.offset = { 0, 0 };
+    scissor.extent = windowExtent;
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    /* render sprites  */
+    switch(queuedTextures.size()) {
+    case 0:
+        break;
+    case 1:
+        spriteTextures[queuedTextures[0].ID] = std::move(queuedTextures[0].texture);
+        updateTexture(queuedTextures[0].ID);
+        queuedTextures.clear();
+        break;
+    default:
+        while (queuedTextures.size() != 0) {
+            spriteTextures[queuedTextures[0].ID] = std::move(queuedTextures[0].texture);
+            queuedTextures.erase(queuedTextures.begin());
+        }
+        updateAllTextures();
+        break;
+    }
+
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &vertex);
 
@@ -1789,9 +1782,13 @@ void renderSprites(VkCommandBuffer commandBuffer) {
             spriteCPU[i].model->draw(commandBuffer, 1, i);
         }
     }
-}
 
-void updateSprites() { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }float position[2];
+    /* end frame */
+    vkCmdEndRenderPass(commandBuffer);
+    commandBuffer = commandBuffers[currentImageIndex];
+    vkEndCommandBuffer(commandBuffer);
+    swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+}
 
 inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model) { return model->getVertices(); }
 

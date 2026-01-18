@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.2.4
+v2.2.5
 
 zcollide.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
 Uses the zcollide_AABB method to create a square around your object, more precise methods are planned.
@@ -187,4 +187,5 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
 
 void zcollide_clearAABB() { zcollide_AABB.clear(); }
 
+#undef ZCOLLIDE_IMPLEMENTATION
 #endif // ZCOLLIDE_IMPLEMENTATION

@@ -20,8 +20,6 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "zcollide.hpp"
 #include "zwindow.hpp"
 
-#undef ZCOLLIDE_IMPLEMENTATION
-
 /* graphical applications */
 #include "games/flappyBird.hpp"
 //#include "games/slimeAttack.hpp"
@@ -110,12 +108,7 @@ void render() {
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appFrameWait)));
             fpsTime = std::chrono::high_resolution_clock::now();
         #endif
-        if (auto commandBuffer = beginFrame()) {
-            beginSwapChainRenderPass(commandBuffer);
-            renderSprites(commandBuffer);
-            vkCmdEndRenderPass(commandBuffer);
-            endFrame();
-        }
+        ZEngineRender();
         #ifdef USE_MULTITHREADING
             appfps++;
         #endif
