@@ -101,6 +101,7 @@ struct QueuedTexture {
     std::unique_ptr<Texture> texture;
     unsigned int ID;
 };
+extern std::vector<QueuedTexture> queuedTextures;
 
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -143,7 +144,7 @@ struct Vertex {
 };
 
 /* sprites */
-void createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex);
+std::unique_ptr<Texture> createText(unsigned int font, const std::string& text, float fontSize);
 struct alignas(16) SpriteData {
     float position[2];
     float scale[2];
@@ -159,7 +160,12 @@ struct alignas(16) SpriteData {
         rotationMatrix[1] = -rotationMatrix[2];
         rotationMatrix[3] = rotationMatrix[0];
     }
-    inline void setText(const char* text, unsigned int font, float fontSize) { createText(font, text, fontSize, textureIndex); }
+    inline void setText(const char* text, unsigned int font, float fontSize) {
+        QueuedTexture texture;
+        texture.texture = createText(font, text, fontSize);
+        texture.ID = textureIndex;
+        queuedTextures.push_back(std::move(texture));
+    }
 };
 
 struct Sprite {
@@ -172,6 +178,7 @@ struct Sprite {
 extern float deltaTime;
 extern std::vector<SpriteData> sprites;
 extern std::vector<Sprite> spriteCPU;
+extern std::vector<std::unique_ptr<Texture>> spriteTextures;
 extern std::shared_ptr<Model> squareModel;
 
 /* extern funcs */
@@ -229,12 +236,6 @@ VkDescriptorPool descriptorPool;
 std::shared_ptr<Model> squareModel;
 std::vector<std::string> texturePaths;
 std::vector<std::string> fonts;
-#ifdef _WIN32
-    std::vector<std::vector<unsigned char>> fontAtlases;
-    std::vector<float> fontSizes;
-    std::vector<const char*> lastTexts;
-    std::vector<std::vector<stbtt_bakedchar>> fontCharDatas;
-#endif
 
 /* rendersystem vars */
 VkDescriptorSet spriteDataDescriptorSet;
@@ -292,8 +293,6 @@ void createInstance() {
         appInfo.pEngineName = "ZDev-uknown";
     #endif
 
-    std::cout << "Enabling extensions:\n";
-
     size_t rgfWExtensionCount = 0;
     const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
     if (!rgfWExtensions || rgfWExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
@@ -303,6 +302,7 @@ void createInstance() {
         extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     #endif
 
+    std::cout << "Enabling extensions:\n";
     for (unsigned int i = 0; i < extensions.size(); i++) { std::cout << "     - " << extensions[i] << std::endl; }
 
     VkInstanceCreateInfo createInfo{};
@@ -1085,115 +1085,58 @@ inline unsigned char* loadTTF(const std::string& filepath) {
     return buffer;
 }
 
-void createText(unsigned int font, const std::string& text, float fontSize, unsigned int textureIndex) {
-#ifdef _WIN32
-    if (textureIndex < lastTexts.size() && lastTexts[textureIndex] == text) { return; }
-    lastTexts[textureIndex] = text.c_str();
-
-    if (font >= fontAtlases.size() || fontSizes[font] != fontSize) {
-        fontAtlases.resize(font + 1);
-        fontCharDatas.resize(font + 1);
-        fontSizes.resize(font + 1);
-
-        unsigned int atlasSize = (unsigned int)(fontSize * 8.0f);
-        fontAtlases[font].resize(atlasSize * atlasSize);
-        fontCharDatas[font].resize(96);
-
-        const unsigned char* fontData = loadTTF(fonts[font]);
-        int result = stbtt_BakeFontBitmap(fontData, 0, fontSize, fontAtlases[font].data(), atlasSize, atlasSize, 32, 96, fontCharDatas[font].data());
-        if (result <= 0) { throw("Failed to bake font"); }
-        fontSizes[font] = fontSize;
-    }
-
-    auto& grayscale = fontAtlases[font];
-    auto& charData = fontCharDatas[font];
-    unsigned int atlasSize = (unsigned int)sqrt(grayscale.size());
-
-    float min_y = 0.0f;
-    float max_y = 0.0f;
-    float current_x = 0.0f;
-    for (char c : text) {
-        if (c < 32 || c > 127) continue;
-        stbtt_bakedchar cd = charData[c - 32];
-        min_y = min_y < cd.yoff ? min_y : cd.yoff;
-        max_y = max_y > cd.yoff + (cd.y1 - cd.y0) ? max_y : cd.yoff + (cd.y1 - cd.y0);
-        current_x += cd.xadvance;
-    }
-
-    int texsize = (unsigned int)current_x + 1 > (unsigned int)(max_y - min_y) + 1 ? (unsigned int)current_x : (int)(max_y - min_y) + 1;
-    std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
-
-    current_x = 0.0f;
-    for (char c : text) {
-        if (c < 32 || c > 127) continue;
-        stbtt_bakedchar cd = charData[c - 32];
-
-        int dst_x = (int)(current_x + cd.xoff);
-        int dst_y = (int)(cd.yoff - min_y);
-
-        int width = cd.x1 - cd.x0;
-        int height = cd.y1 - cd.y0;
-        for (int py = 0; py < height; ++py) {
-            for (int px = 0; px < width; ++px) {
-                int src_idx = (cd.y0 + py) * atlasSize + (cd.x0 + px);
-                int dst_idx = (dst_y + py) * texsize + (dst_x + px);
-                if (dst_idx >= 0 && dst_idx < texsize * texsize) {
-                    text_grayscale[dst_idx] = grayscale[src_idx];
-                }
-            }
-        }
-        current_x += cd.xadvance;
-    }
-#else
+std::unique_ptr<Texture> createText(unsigned int font, const std::string& text, float fontSize) {
     unsigned int atlasSize = fontSize * 16.f;
+    float minY = 0.0f;
+    float maxY = 0.0f;
+    float currentX = 0.0f;
+    stbtt_bakedchar cache;
     std::vector<unsigned char> grayscale(atlasSize * atlasSize);
     std::vector<stbtt_bakedchar> charData(96);
 
-    int result = stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
+    stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
 
-    float min_y = 0.0f;
-    float max_y = 0.0f;
-    float current_x = 0.0f;
     for (char c : text) {
-        if (c < 32 || c > 127) continue;
-        stbtt_bakedchar cd = charData[c - 32];
-        min_y = min_y < cd.yoff ? min_y : cd.yoff;
-        max_y = max_y > cd.yoff + (cd.y1 - cd.y0) ? max_y : cd.yoff + (cd.y1 - cd.y0);
-        current_x += cd.xadvance;
+        if (c < 32 || c > 127) { continue; }
+        cache = charData[c - 32];
+        minY = minY < cache.yoff ? minY : cache.yoff;
+        maxY = maxY > cache.yoff + (cache.y1 - cache.y0) ? maxY : cache.yoff + (cache.y1 - cache.y0);
+        currentX += cache.xadvance;
     }
 
-    int texsize = ((int)current_x + 1 > (int)(max_y - min_y) + 1 ? (int)current_x : (int)(max_y - min_y)) + 1;
-    std::vector<unsigned char> text_grayscale(texsize * texsize, 0);
+    int texsize = ((int)currentX + 1 > (int)(maxY - minY) + 1 ? (int)currentX : (int)(maxY - minY)) + 1;
+    std::vector<unsigned char> textGrayscale(texsize * texsize, 0);
 
-    current_x = 0.0f;
+    currentX = 0.0f;
+    int xDistance = 0;
+    int yDistance = 0;
+    int xSource = 0;
+    int ySource = 0;
+    int xID = 0;
+    int xDistanceID = 0;
+
     for (char c : text) {
-        if (c < 32 || c > 127) continue;
-        stbtt_bakedchar cd = charData[c - 32];
+        if (c < 32 || c > 127) { continue; }
 
-        int dst_x = (int)(current_x + cd.xoff);
-        int dst_y = (int)(cd.yoff - min_y);
+        cache = charData[c - 32];
+        xDistance = (int)(currentX + cache.xoff);
+        yDistance = (int)(cache.yoff - minY);
 
-        for (int py = 0; py < cd.y1 - cd.y0; ++py) {
-            for (int px = 0; px < cd.x1 - cd.x0; ++px) {
-                int src_x = cd.x0 + px;
-                int src_y = cd.y0 + py;
-                int src_idx = src_y * atlasSize + src_x;
+        for (unsigned int posY = 0; posY < cache.y1 - cache.y0; ++posY) {
+            for (unsigned int posX = 0; posX < cache.x1 - cache.x0; ++posX) {
+                xSource = cache.x0 + posX;
+                ySource = cache.y0 + posY;
+                xID = ySource * atlasSize + xSource;
+                xDistanceID = (yDistance + posY) * texsize + (xDistance + posX);
 
-                int dst_idx = (dst_y + py) * texsize + (dst_x + px);
-                if (dst_idx >= 0 && dst_idx < texsize * texsize) {
-                    text_grayscale[dst_idx] = grayscale[src_idx];
-                }
+                if (xDistanceID >= 0 && xDistanceID < texsize * texsize) { textGrayscale[xDistanceID] = grayscale[xID]; }
             }
         }
 
-        current_x += cd.xadvance;
+        currentX += cache.xadvance;
     }
-#endif
 
-    QueuedTexture texture;
-    texture.texture = std::make_unique<Texture>(text_grayscale.data(), texsize);
-    texture.ID = textureIndex;
-    queuedTextures.push_back(std::move(texture));
+    return std::make_unique<Texture>(textGrayscale.data(), texsize);
 }
 
 void initSprites() {

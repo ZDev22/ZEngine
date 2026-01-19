@@ -29,7 +29,7 @@ public:
 
                     playSound(&audio, "assets/sounds/chirp.mp3");
                     createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
-                    //sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f);
+                    sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f);
                     vertex.cameraZoom[0] -= .025f;
                     vertex.cameraZoom[1] -= .025f;
                 }
