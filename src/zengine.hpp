@@ -81,7 +81,6 @@ struct SwapChain;
 struct Buffer;
 struct Model;
 struct Push;
-struct QueuedTexture;
 struct SwapChainSupportDetails;
 struct QueueFamilyIndices;
 
@@ -90,12 +89,6 @@ struct Push {
     float camera[2];
     float cameraZoom[2];
 };
-
-struct QueuedTexture {
-    std::unique_ptr<Texture> texture;
-    unsigned int ID;
-};
-extern std::vector<QueuedTexture> queuedTextures;
 
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -137,7 +130,15 @@ struct Vertex {
     }
 };
 
+/* extern vars */
+extern float deltaTime;
+extern std::vector<SpriteData> sprites;
+extern std::vector<Sprite> spriteCPU;
+extern std::vector<std::unique_ptr<Texture>> spriteTextures;
+extern std::shared_ptr<Model> squareModel;
+
 /* sprites */
+void updateTexture(unsigned char index);
 struct alignas(16) SpriteData {
     float position[2];
     float scale[2];
@@ -153,11 +154,9 @@ struct alignas(16) SpriteData {
         rotationMatrix[1] = -rotationMatrix[2];
         rotationMatrix[3] = rotationMatrix[0];
     }
-    void setTexture(std::unique_ptr<Texture> textureData) {
-        QueuedTexture texture;
-        texture.texture = std::move(textureData);
-        texture.ID = textureIndex;
-        queuedTextures.push_back(std::move(texture));
+    void setTexture(std::unique_ptr<Texture> texture) {
+        spriteTextures[textureIndex] = std::move(std::move(texture));
+        updateTexture(textureIndex);
     }
 };
 
@@ -166,13 +165,6 @@ struct Sprite {
     Texture* texture;
     bool visible;
 };
-
-/* extern vars */
-extern float deltaTime;
-extern std::vector<SpriteData> sprites;
-extern std::vector<Sprite> spriteCPU;
-extern std::vector<std::unique_ptr<Texture>> spriteTextures;
-extern std::shared_ptr<Model> squareModel;
 
 /* extern funcs */
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
@@ -198,9 +190,9 @@ std::chrono::high_resolution_clock::time_point cpsLastTime;
 std::vector<SpriteData> sprites;
 std::vector<Sprite> spriteCPU;
 unsigned int spriteID = 0;
+
 /* texture vecs */
 std::vector<std::unique_ptr<Texture>> spriteTextures;
-std::vector<QueuedTexture> queuedTextures;
 
 /* window vars */
 bool framebufferResized = false;
@@ -1609,23 +1601,6 @@ void ZEngineRender() {
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
     /* render sprites  */
-    switch(queuedTextures.size()) {
-    case 0:
-        break;
-    case 1:
-        spriteTextures[queuedTextures[0].ID] = std::move(queuedTextures[0].texture);
-        updateTexture(queuedTextures[0].ID);
-        queuedTextures.clear();
-        break;
-    default:
-        while (queuedTextures.size() != 0) {
-            spriteTextures[queuedTextures[0].ID] = std::move(queuedTextures[0].texture);
-            queuedTextures.erase(queuedTextures.begin());
-        }
-        updateAllTextures();
-        break;
-    }
-
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &vertex);

@@ -4,7 +4,6 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 #define FPS_CAP_SET // set if the program will use the FPS cap
 #define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP)
-#define USE_MULTITHREADING - multithread logic and rendering
 */
 
 #if true // render the screen and tick the game (disable if it's a terminal game)
@@ -32,7 +31,6 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 //#define FPS_CAP_SET
 #define FPS_CAP 180.f
-#define USE_MULTITHREADING
 
 void render();
 int main() {
@@ -53,11 +51,6 @@ int main() {
 
     Game game{zwindow, audio, vertex};
 
-    #ifdef USE_MULTITHREADING
-        std::thread renderthread(render);
-        renderthread.detach();
-    #endif
-
     while (true) {
         #ifdef FPS_CAP_SET
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appWait)));
@@ -70,11 +63,7 @@ int main() {
             cpsLastTime = cpsTime;
         #endif
         if (appTimer > 1.f) {
-            #ifdef USE_MULTITHREADING
-                RGFW_window_setName(windowdata, ("cps: " + std::to_string(appcps) + " - fps: " + std::to_string(appfps)).c_str());
-            #else
-                RGFW_window_setName(windowdata, ("fps: " + std::to_string(appcps)).c_str());
-            #endif
+            RGFW_window_setName(windowdata, ("fps: " + std::to_string(appcps)).c_str());
             appTimer = 0.f;
             appfps = 0;
             appcps = 0;
@@ -98,34 +87,12 @@ int main() {
             cpsLastTime = std::chrono::high_resolution_clock::now();
             appWait = std::chrono::duration<float>(cpsLastTime - cpsTime).count();
         #endif
-#ifdef USE_MULTITHREADING
-    }
-    deinit:
-    ma_engine_uninit(&audio);
-    ZEngineDeinit();
-}
 
-void render() {
-    while (!RGFW_window_shouldClose(windowdata)) {
-#endif
-        #if defined(FPS_CAP_SET) && defined(USE_MULTITHREADING)
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appFrameWait)));
-            fpsTime = std::chrono::high_resolution_clock::now();
-        #endif
         ZEngineRender();
-        #ifdef USE_MULTITHREADING
-            appfps++;
-        #endif
-        #if defined(FPS_CAP_SET) && defined(USE_MULTITHREADING)
-            fpsLastTime = std::chrono::high_resolution_clock::now();
-            appFrameWait = std::chrono::duration<float>(fpsLastTime - fpsTime).count();
-        #endif
     }
-#ifndef USE_MULTITHREADING
     deinit:
     ma_engine_uninit(&audio);
     ZEngineDeinit();
-#endif
 }
 
 #else
