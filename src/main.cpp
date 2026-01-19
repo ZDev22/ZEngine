@@ -17,8 +17,12 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 /* ZDEPS */
 #define ZCOLLIDE_IMPLEMENTATION
+#define ZTEXT_IMPLEMENTATION
+#define STB_TRUETYPE_IMPLEMENTATION
+#define STBTT_ASSERT
 #include "zcollide.hpp"
 #include "zwindow.hpp"
+#include "ztext.hpp"
 
 /* graphical applications */
 #include "games/flappyBird.hpp"

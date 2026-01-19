@@ -34,16 +34,12 @@
 
     #define STB_IMAGE_IMPLEMENTATION
     #define STBI_ASSERT
-
-    #define STB_TRUETYPE_IMPLEMENTATION
-    #define STBTT_ASSERT
 #endif
 
 /* dependencies */
 #include "deps/miniaudio.h" /* audio */
 #include "deps/RGFW.h" /* windowing */
 #include "deps/stb_image.h" /* textures */
-#include "deps/stb_truetype.h" /* fonts */
 
 /* undefine these so they don't get used later */
 #undef MINIAUDIO_IMPLEMENTATION
@@ -53,8 +49,6 @@
 #undef RGFW_ASSERT
 #undef STB_IMAGE_IMPLEMENTATION
 #undef STBI_ASSERT
-#undef STB_TRUETYPE_IMPLEMENTATION
-#undef STBTT_assert
 
 /* vulkan */
 #if defined(__linux__)
@@ -144,7 +138,6 @@ struct Vertex {
 };
 
 /* sprites */
-std::unique_ptr<Texture> createText(unsigned int font, const std::string& text, float fontSize);
 struct alignas(16) SpriteData {
     float position[2];
     float scale[2];
@@ -160,9 +153,9 @@ struct alignas(16) SpriteData {
         rotationMatrix[1] = -rotationMatrix[2];
         rotationMatrix[3] = rotationMatrix[0];
     }
-    inline void setText(const char* text, unsigned int font, float fontSize) {
+    void setTexture(std::unique_ptr<Texture> textureData) {
         QueuedTexture texture;
-        texture.texture = createText(font, text, fontSize);
+        texture.texture = std::move(textureData);
         texture.ID = textureIndex;
         queuedTextures.push_back(std::move(texture));
     }
@@ -235,7 +228,6 @@ VkDescriptorSetLayout descriptorSetLayout;
 VkDescriptorPool descriptorPool;
 std::shared_ptr<Model> squareModel;
 std::vector<std::string> texturePaths;
-std::vector<std::string> fonts;
 
 /* rendersystem vars */
 VkDescriptorSet spriteDataDescriptorSet;
@@ -1066,87 +1058,8 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
     spriteCPU.push_back(sprite);
 }
 
-inline unsigned char* loadTTF(const std::string& filepath) {
-    FILE* file = std::fopen(filepath.c_str(), "rb");
-    if (!file) { throw("Failed to open font file"); }
-
-    std::fseek(file, 0, SEEK_END);
-    unsigned int fileSize = (unsigned int)std::ftell(file);
-    std::rewind(file);
-
-    unsigned char* buffer = new unsigned char[fileSize];
-    if (std::fread(buffer, 1, fileSize, file) != fileSize) {
-        std::fclose(file);
-        delete[] buffer;
-        throw("Failed to read font file");
-    }
-
-    std::fclose(file);
-    return buffer;
-}
-
-std::unique_ptr<Texture> createText(unsigned int font, const std::string& text, float fontSize) {
-    unsigned int atlasSize = fontSize * 16.f;
-    float minY = 0.0f;
-    float maxY = 0.0f;
-    float currentX = 0.0f;
-    stbtt_bakedchar cache;
-    std::vector<unsigned char> grayscale(atlasSize * atlasSize);
-    std::vector<stbtt_bakedchar> charData(96);
-
-    stbtt_BakeFontBitmap(loadTTF(fonts[font]), 0, fontSize, grayscale.data(), atlasSize, atlasSize, 32, 96, charData.data());
-
-    for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
-        cache = charData[c - 32];
-        minY = minY < cache.yoff ? minY : cache.yoff;
-        maxY = maxY > cache.yoff + (cache.y1 - cache.y0) ? maxY : cache.yoff + (cache.y1 - cache.y0);
-        currentX += cache.xadvance;
-    }
-
-    int texsize = ((int)currentX + 1 > (int)(maxY - minY) + 1 ? (int)currentX : (int)(maxY - minY)) + 1;
-    std::vector<unsigned char> textGrayscale(texsize * texsize, 0);
-
-    currentX = 0.0f;
-    int xDistance = 0;
-    int yDistance = 0;
-    int xSource = 0;
-    int ySource = 0;
-    int xID = 0;
-    int xDistanceID = 0;
-
-    for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
-
-        cache = charData[c - 32];
-        xDistance = (int)(currentX + cache.xoff);
-        yDistance = (int)(cache.yoff - minY);
-
-        for (unsigned int posY = 0; posY < cache.y1 - cache.y0; ++posY) {
-            for (unsigned int posX = 0; posX < cache.x1 - cache.x0; ++posX) {
-                xSource = cache.x0 + posX;
-                ySource = cache.y0 + posY;
-                xID = ySource * atlasSize + xSource;
-                xDistanceID = (yDistance + posY) * texsize + (xDistance + posX);
-
-                if (xDistanceID >= 0 && xDistanceID < texsize * texsize) { textGrayscale[xDistanceID] = grayscale[xID]; }
-            }
-        }
-
-        currentX += cache.xadvance;
-    }
-
-    return std::make_unique<Texture>(textGrayscale.data(), texsize);
-}
-
 void initSprites() {
     spriteTextures.reserve(ZENGINE_MAX_TEXTURES);
-#ifdef _WIN32
-    lastTexts.resize(ZENGINE_MAX_TEXTURES, "");
-    fontAtlases.resize(fonts.size());
-    fontCharDatas.resize(fonts.size());
-    fontSizes.resize(fonts.size(), 0.0f);
-#endif
     squareModel = makeModel({
         -.5f, -.5f, // Bottom-Left
         .5f, -.5f,  // Bottom-Right
@@ -1160,7 +1073,6 @@ void initSprites() {
 
 void loadFlappyBird() {
     texturePaths = { "flappyBird.png", "pipe.png" };
-    fonts = { "assets/fonts/Bullpen3D.ttf" };
     initSprites();
 
     createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f);
@@ -1173,7 +1085,6 @@ void loadFlappyBird() {
 
 void loadSlimeAttack() {
     texturePaths = { "flappyBird.png", "pipe.png" };
-    fonts = {};
     initSprites();
 
     createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f);

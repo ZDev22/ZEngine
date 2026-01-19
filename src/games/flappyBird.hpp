@@ -6,6 +6,7 @@
 #include "zengine.hpp"
 #include "zcollide.hpp"
 #include "zmath.hpp"
+#include "ztext.hpp"
 
 float flappyBirdSpeedY = 0.f;
 bool flappyBirdDead = false;
@@ -14,7 +15,9 @@ int flappyBirdScore = 0;
 
 struct Game {
 public:
-    Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex) {}
+    Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex) {
+        loadFont("assets/fonts/Bullpen3D.ttf", 32.f);
+    }
 
     void tick() {
         if (flappyBirdStarted) {
@@ -29,7 +32,7 @@ public:
 
                     playSound(&audio, "assets/sounds/chirp.mp3");
                     createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
-                    sprites[sprites.size() - 1].setText("ZDEV", 0, 32.f);
+                    sprites[sprites.size() - 1].setTexture(createText(0, "ZDEV", 32));
                     vertex.cameraZoom[0] -= .025f;
                     vertex.cameraZoom[1] -= .025f;
                 }
@@ -37,7 +40,7 @@ public:
                 if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
                     flappyBirdDead = true;
                     playSound(&audio, "assets/sounds/hit.mp3");
-                    sprites[sprites.size() - 1].setText("Something", 0, 32.f);
+                    sprites[sprites.size() - 1].setTexture(createText(0, "something", 32));
                 }
             }
             else if (sprites[0].position[1] > 2.5f) {
