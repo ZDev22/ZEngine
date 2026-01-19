@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.9.2
+v2.9.3
 
 zwindow.hpp is a lightweight cross-platform single-header cpp window abstraction library built off the latest RGFW
 works best with zengine, but can be a solo library
@@ -15,7 +15,6 @@ zwindow.keyHit(RGFW_a);
 #define RGFW_VULKAN
 #include "deps/RGFW.h"
 
-#include <string.h>
 #include <vector>
 
 struct ZWindow {

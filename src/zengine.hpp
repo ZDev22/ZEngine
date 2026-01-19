@@ -1085,7 +1085,7 @@ void loadSlimeAttack() {
 
 struct Texture {
 public:
-    static void createTextureSampler(VkSampler& sampler) {
+    void createTextureSampler() {
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         samplerInfo.magFilter = VK_FILTER_NEAREST;
@@ -1102,7 +1102,7 @@ public:
         vkCreateSampler(device_, &samplerInfo, nullptr, &sampler);
     }
 
-    Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
+    Texture(std::string filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         if (!pixels) { throw("failed to load texture"); }
 
@@ -1152,10 +1152,10 @@ public:
         viewInfo.subresourceRange.layerCount = 1;
 
         vkCreateImageView(device_, &viewInfo, nullptr, &imageView);
-        createTextureSampler(sampler);
+        createTextureSampler();
     }
 
-    Texture(const unsigned char* pixelData, unsigned int size) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+    Texture(const unsigned char* pixelData, const unsigned int size) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
         texWidth = size;
         texHeight = size;
         VkDeviceSize imageSize = size * size * 4;
@@ -1207,7 +1207,7 @@ public:
 
         if (vkCreateImageView(device_, &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture view"); }
 
-        createTextureSampler(sampler);
+        createTextureSampler();
     }
 
     ~Texture() {
