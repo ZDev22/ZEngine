@@ -26,11 +26,10 @@
 
 #ifdef ZENGINE_IMPLEMENTATION
     #define MINIAUDIO_IMPLEMENTATION
-    #define MA_ASSERT
 
     #define RGFW_IMPLEMENTATION
     #define RGFW_EXPORT
-    #define RGFW_ASSERT
+    #define RGFW_ASSERT(x)
 
     #define STB_IMAGE_IMPLEMENTATION
     #define STBI_ASSERT
