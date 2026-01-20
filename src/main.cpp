@@ -81,7 +81,6 @@ int main() {
         game.tick();
 
         zcollide_clearAABB();
-        updateSprites();
 
         #ifdef FPS_CAP_SET
             cpsLastTime = std::chrono::high_resolution_clock::now();

@@ -229,78 +229,6 @@ std::unique_ptr<Buffer> spriteDataBuffer;
 std::unique_ptr<SwapChain> swapChain;
 VkSwapchainKHR oldSwapChain;
 
-/* compile shaders */
-inline bool compileShaders() {
-    const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
-    const char* stages[4]     = { "vert",  "frag",  "comp",  "geom" };
-
-    bool success = true;
-    for (const auto& file : std::filesystem::directory_iterator("shaders")) {
-        if (!file.is_regular_file()) { continue; }
-        for (int i = 0; i < 4; ++i) {
-            if (file.path().extension().string() == extensions[i]) {
-
-                std::string inputFile = file.path().string().c_str();
-                std::string outputFile = (file.path().string() + ".spv").c_str();
-
-                if (std::filesystem::exists(outputFile)  && std::filesystem::last_write_time(outputFile) >= std::filesystem::last_write_time(inputFile)) { std::cout << "Shader " << inputFile << " is up to date.\n"; }
-                else {
-                    std::cout << "Compiling " << inputFile << "...\n";
-                    int result = std::system(("glslc -fshader-stage=" + std::string(stages[i]) + " " + inputFile + " -o " + outputFile).c_str());
-                    if (result != 0) {
-                        std::cerr << "Failed to compile " << inputFile << " (error: " << result << ")\n";
-                        success = false;
-                    }
-                }
-
-                break;
-            }
-        }
-    }
-    return success;
-}
-
-void createInstance() {
-    VkApplicationInfo appInfo{};
-    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
-    appInfo.engineVersion = VK_MAKE_VERSION(0, 11, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_4;
-    appInfo.pApplicationName = "ZDev";
-    #ifdef __linux__
-        appInfo.pEngineName = "ZDev-linux";
-    #elif defined(_APPLE_)
-        appInfo.pEngineName = "ZDev-mac";
-    #elif defined(_WIN32)
-        appInfo.pEngineName = "ZDev-windows";
-    #else
-        appInfo.pEngineName = "ZDev-uknown";
-    #endif
-
-    size_t rgfWExtensionCount = 0;
-    const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
-    if (!rgfWExtensions || rgfWExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
-
-    std::vector<const char*> extensions(rgfWExtensions, rgfWExtensions + rgfWExtensionCount);
-    #ifdef __APPLE__
-        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    #endif
-
-    std::cout << "Enabling extensions:\n";
-    for (unsigned int i = 0; i < extensions.size(); i++) { std::cout << "     - " << extensions[i] << std::endl; }
-
-    VkInstanceCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    #ifdef __APPLE__
-        createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-    #endif
-    createInfo.pApplicationInfo = &appInfo;
-    createInfo.enabledExtensionCount = (unsigned int)extensions.size();
-    createInfo.ppEnabledExtensionNames = extensions.data();
-
-    vkCreateInstance(&createInfo, nullptr, &instance);
-}
-
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
     unsigned int queueFamilyCount = 0;
@@ -342,120 +270,6 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
     }
     return details;
-}
-
-void pickPhysicalDevice() {
-    unsigned int deviceCount = 0;
-    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-    if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
-    else if (deviceCount == 1) { std::cout << "Found 1 GPU\n"; }
-    else { std::cout << "Found " << deviceCount << " GPUs\n"; }
-
-    std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
-
-    short highScore = 0;
-    for (unsigned int i = 0; i < devices.size(); ++i) {
-        /* check if device is suitable, and score it */
-        short newScore = 0;
-        QueueFamilyIndices indices = findQueueFamilies(devices[i]);
-        unsigned int extensionCount = 0;
-        bool swapChainAdequate = false;
-
-        /* check if extensions are supported on the GPU: */
-        vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, nullptr);
-        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, availableExtensions.data());
-
-        std::vector<const char*> requiredExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-
-        for (auto it = requiredExtensions.begin(); it != requiredExtensions.end();) {
-            bool found = false;
-            for (const auto& extension : availableExtensions) { if (std::string(extension.extensionName) == *it) { found = true; break; }}
-            if (found) { it = requiredExtensions.erase(it); }
-            else { ++it; }
-        }
-        bool extensionsSupported = requiredExtensions.empty();
-
-        if (extensionsSupported) {
-            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(devices[i]);
-            swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-            std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
-            for (unsigned char i = 0; i < swapChainSupport.presentModes.size(); i++) {
-                if (swapChainSupport.presentModes[i] == 0) { std::cout << "    - GPU supports VSync\n"; }
-                else if (swapChainSupport.presentModes[i] == 2) { std::cout << "    - GPU can disable VSync\n"; }
-            }
-            newScore += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
-        }
-        VkPhysicalDeviceFeatures supportedFeatures;
-        vkGetPhysicalDeviceFeatures(devices[i], &supportedFeatures);
-        if (!(indices.isComplete() && extensionsSupported && swapChainAdequate)) { newScore = 0; }
-        if (newScore > highScore) {
-            highScore = newScore;
-            physicalDevice = devices[i];
-            break;
-        }
-    }
-
-    if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; std::cout << "Selected GPU is unsupported! Expect bugs!"; }
-    vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-    std::cout << "Selected GPU: " << properties.deviceName << std::endl;
-}
-
-void createLogicalDevice() {
-    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-
-    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    float queuePriority = 1.0f;
-
-    std::vector<unsigned int> uniqueQueueFamilies;
-    uniqueQueueFamilies.push_back(indices.graphicsFamily);
-    if (indices.presentFamily != indices.graphicsFamily) { uniqueQueueFamilies.push_back(indices.presentFamily); }
-
-    for (unsigned int queueFamily : uniqueQueueFamilies) {
-        VkDeviceQueueCreateInfo queueCreateInfo{};
-        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueFamilyIndex = queueFamily;
-        queueCreateInfo.queueCount = 1;
-        queueCreateInfo.pQueuePriorities = &queuePriority;
-        queueCreateInfos.push_back(queueCreateInfo);
-    }
-
-    #ifdef __APPLE__
-        VkPhysicalDeviceVulkan12Features VKFeatures{};
-        VKFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-        VKFeatures.bufferDeviceAddress = VK_FALSE;
-        VKFeatures.bufferDeviceAddressCaptureReplay = VK_FALSE;
-        VKFeatures.bufferDeviceAddressMultiDevice = VK_FALSE;
-    #endif
-
-    VkDeviceCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pQueueCreateInfos = queueCreateInfos.data();
-    createInfo.queueCreateInfoCount = (unsigned int)queueCreateInfos.size();
-    #ifdef __APPLE__
-        createInfo.pNext = &VKFeatures;
-    #endif
-
-    std::vector<const char*> extension = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-
-    createInfo.enabledExtensionCount = 1;
-    createInfo.ppEnabledExtensionNames = extension.data();
-    createInfo.enabledLayerCount = 0;
-
-    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }
-    vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
-    vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
-}
-
-void createCommandPool() {
-    QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool"); }
 }
 
 VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
@@ -1278,14 +1092,182 @@ private:
 };
 
 void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
-    compileShaders();
-    std::cout << "Creating instance...\n"; createInstance();
-    std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_);
-    std::cout << "Creating physical device...\n"; pickPhysicalDevice();
-    std::cout << "Creating logical device...\n"; createLogicalDevice();
-    std::cout << "Creating command pool...\n"; createCommandPool();
-    std::cout << "Getting project ready...\n";
+    std::cout << "Compiling shaders...\n"; //---------------------------------------------------------------------------------------------------------------
+    {
+    const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
+    const char* stages[4]     = { "vert",  "frag",  "comp",  "geom" };
 
+    for (const auto& file : std::filesystem::directory_iterator("shaders")) {
+        if (!file.is_regular_file()) { continue; }
+        for (int i = 0; i < 4; ++i) {
+            if (file.path().extension().string() == extensions[i]) {
+                std::string inputFile = file.path().string().c_str();
+                std::string outputFile = (file.path().string() + ".spv").c_str();
+
+                if (!(std::filesystem::exists(outputFile)  && std::filesystem::last_write_time(outputFile) >= std::filesystem::last_write_time(inputFile))) {
+                    int result = std::system(("glslc -fshader-stage=" + std::string(stages[i]) + " " + inputFile + " -o " + outputFile).c_str());
+                    if (result != 0) { std::cerr << "Failed to compile " << inputFile << " (error: " << result << ")\n"; }
+                }
+                break;
+            }
+        }
+    }
+    }
+
+    std::cout << "Creating instance...\n"; //---------------------------------------------------------------------------------------------------------------
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
+    appInfo.engineVersion = VK_MAKE_VERSION(0, 11, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_4;
+    appInfo.pApplicationName = "ZDev";
+    #ifdef __linux__
+        appInfo.pEngineName = "ZDev-linux";
+    #elif defined(_APPLE_)
+        appInfo.pEngineName = "ZDev-mac";
+    #elif defined(_WIN32)
+        appInfo.pEngineName = "ZDev-windows";
+    #else
+        appInfo.pEngineName = "ZDev-uknown";
+    #endif
+
+    size_t rgfWExtensionCount = 0;
+    const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
+    if (!rgfWExtensions || rgfWExtensionCount == 0) { throw("Failed to get Vulkan extensions"); }
+
+    std::vector<const char*> extensions(rgfWExtensions, rgfWExtensions + rgfWExtensionCount);
+    #ifdef __APPLE__
+        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    #endif
+
+    std::cout << "Enabling extensions:\n";
+    for (unsigned int i = 0; i < extensions.size(); i++) { std::cout << "     - " << extensions[i] << std::endl; }
+
+    VkInstanceCreateInfo instanceInfo{};
+    instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    #ifdef __APPLE__
+        instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    #endif
+    instanceInfo.pApplicationInfo = &appInfo;
+    instanceInfo.enabledExtensionCount = (unsigned int)extensions.size();
+    instanceInfo.ppEnabledExtensionNames = extensions.data();
+
+    vkCreateInstance(&instanceInfo, nullptr, &instance);
+
+    std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
+
+    std::cout << "Creating physical device...\n"; //---------------------------------------------------------------------------------------------------------------
+    unsigned int deviceCount = 0;
+    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+    if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
+    else if (deviceCount == 1) { std::cout << "Found 1 GPU\n"; }
+    else { std::cout << "Found " << deviceCount << " GPUs\n"; }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+    short highScore = 0;
+    for (unsigned int i = 0; i < devices.size(); ++i) {
+        /* check if device is suitable, and score it */
+        short newScore = 0;
+        QueueFamilyIndices indices = findQueueFamilies(devices[i]);
+        unsigned int extensionCount = 0;
+        bool swapChainAdequate = false;
+
+        /* check if extensions are supported on the GPU: */
+        vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, nullptr);
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, availableExtensions.data());
+
+        std::vector<const char*> requiredExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
+        for (auto it = requiredExtensions.begin(); it != requiredExtensions.end();) {
+            bool found = false;
+            for (const auto& extension : availableExtensions) { if (std::string(extension.extensionName) == *it) { found = true; break; }}
+            if (found) { it = requiredExtensions.erase(it); }
+            else { ++it; }
+        }
+        bool extensionsSupported = requiredExtensions.empty();
+
+        if (extensionsSupported) {
+            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(devices[i]);
+            swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+            std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
+            for (unsigned char i = 0; i < swapChainSupport.presentModes.size(); i++) {
+                if (swapChainSupport.presentModes[i] == 0) { std::cout << "    - GPU supports VSync\n"; }
+                else if (swapChainSupport.presentModes[i] == 2) { std::cout << "    - GPU can disable VSync\n"; }
+            }
+            newScore += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
+        }
+        VkPhysicalDeviceFeatures supportedFeatures;
+        vkGetPhysicalDeviceFeatures(devices[i], &supportedFeatures);
+        if (!(indices.isComplete() && extensionsSupported && swapChainAdequate)) { newScore = 0; }
+        if (newScore > highScore) {
+            highScore = newScore;
+            physicalDevice = devices[i];
+            break;
+        }
+    }
+
+    if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; std::cout << "Selected GPU is unsupported! Expect bugs!"; }
+    vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+    std::cout << "Selected GPU: " << properties.deviceName << std::endl;
+
+    std::cout << "Creating logical device...\n"; //---------------------------------------------------------------------------------------------------------------
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    float queuePriority = 1.0f;
+
+    std::vector<unsigned int> uniqueQueueFamilies;
+    uniqueQueueFamilies.push_back(indices.graphicsFamily);
+    if (indices.presentFamily != indices.graphicsFamily) { uniqueQueueFamilies.push_back(indices.presentFamily); }
+
+    for (unsigned int queueFamily : uniqueQueueFamilies) {
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
+
+    #ifdef __APPLE__
+        VkPhysicalDeviceVulkan12Features VKFeatures{};
+        VKFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+        VKFeatures.bufferDeviceAddress = VK_FALSE;
+        VKFeatures.bufferDeviceAddressCaptureReplay = VK_FALSE;
+        VKFeatures.bufferDeviceAddressMultiDevice = VK_FALSE;
+    #endif
+
+    VkDeviceCreateInfo deviceInfo{};
+    deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceInfo.pQueueCreateInfos = queueCreateInfos.data();
+    deviceInfo.queueCreateInfoCount = (unsigned int)queueCreateInfos.size();
+    #ifdef __APPLE__
+        deviceInfo.pNext = &VKFeatures;
+    #endif
+
+    std::vector<const char*> extension = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+    deviceInfo.enabledExtensionCount = 1;
+    deviceInfo.ppEnabledExtensionNames = extension.data();
+    deviceInfo.enabledLayerCount = 0;
+
+    if (vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }
+    vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
+    vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
+
+    std::cout << "Creating command pool...\n"; //---------------------------------------------------------------------------------------------------------------
+    QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
+    VkCommandPoolCreateInfo commandPoolInfo{};
+    commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    commandPoolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
+    commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    if (vkCreateCommandPool(device_, &commandPoolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool"); }
+
+    std::cout << "Getting project ready...\n"; //---------------------------------------------------------------------------------------------------------------
     swapChain = std::make_unique<SwapChain>();
     createCommandBuffers();
 
@@ -1385,13 +1367,13 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZENGINE_MAX_TEXTURES * (ZENGINE_MAX_TEXTURES + 1) }
     };
 
-    VkDescriptorPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = 2;
-    poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = ZENGINE_MAX_TEXTURES + 1;
+    VkDescriptorPoolCreateInfo descriptorPoolInfo{};
+    descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolInfo.poolSizeCount = 2;
+    descriptorPoolInfo.pPoolSizes = poolSizes;
+    descriptorPoolInfo.maxSets = ZENGINE_MAX_TEXTURES + 1;
 
-    if (vkCreateDescriptorPool(device_, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
+    if (vkCreateDescriptorPool(device_, &descriptorPoolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -1512,29 +1494,6 @@ void ZEngineDeinit() {
     spriteDataBuffer->unmap();
 }
 
-void updateAllTextures() {
-    std::vector<VkDescriptorImageInfo> imageInfos(ZENGINE_MAX_TEXTURES);
-
-    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
-        Texture* texture = spriteTextures[i].get();
-        VkDescriptorImageInfo& imageInfo = imageInfos[i];
-        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = texture->getImageView();
-        imageInfo.sampler = texture->getSampler();
-    }
-
-    VkWriteDescriptorSet imageWrite{};
-    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    imageWrite.dstSet = spriteDataDescriptorSet;
-    imageWrite.dstBinding = 1;
-    imageWrite.dstArrayElement = 0;
-    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = ZENGINE_MAX_TEXTURES;
-    imageWrite.pImageInfo = imageInfos.data();
-
-    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
-}
-
 void updateTexture(unsigned char index) {
     Texture* texture = spriteTextures[index].get();
     VkDescriptorImageInfo imageInfo{};
@@ -1554,9 +1513,10 @@ void updateTexture(unsigned char index) {
     vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
 }
 
-inline void updateSprites() { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
-
 void ZEngineRender() {
+    /* update sprite position, rotation & other */
+    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
+
     /* create command buffer */
     if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {
         recreateSwapChain();
