@@ -106,7 +106,7 @@ void loadFont(const char* font, const unsigned int fontSize) {
     stbtt_BakeFontBitmap(buffer, 0, fontSize, fontData.grayscale.data(), atlasSize, atlasSize, 32, 96, fontData.charData);
     delete[] buffer;
 
-    fonts.push_back(fontData);
+    fonts.emplace_back(fontData);
 }
 
 #undef ZTEXT_IMPLEMENTATION

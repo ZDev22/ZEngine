@@ -840,7 +840,7 @@ std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
         v.position[1] = positions[i + 1];
         v.texCoord[0] = positions[i] + .5f;
         v.texCoord[1] = positions[i + 1] + .5f;
-        vertices.push_back(v);
+        vertices.emplace_back(v);
     }
 
     return std::make_shared<Model>(vertices);
@@ -863,8 +863,8 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
     spriteData.textureIndex = textureIndex;
     spriteData.ID = spriteID++;
 
-    sprites.push_back(spriteData);
-    spriteCPU.push_back(sprite);
+    sprites.emplace_back(spriteData);
+    spriteCPU.emplace_back(sprite);
 }
 
 void initSprites() {
@@ -876,8 +876,8 @@ void initSprites() {
         .5f, .5f    // Top-Left
     });
 
-    while (texturePaths.size() < ZENGINE_MAX_TEXTURES) { texturePaths.push_back("e.jpg"); }
-    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.push_back(std::make_unique<Texture>(texturePaths[i])); }
+    while (texturePaths.size() < ZENGINE_MAX_TEXTURES) { texturePaths.emplace_back("e.jpg"); }
+    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.emplace_back(std::make_unique<Texture>(texturePaths[i])); }
 }
 
 void loadFlappyBird() {
@@ -1140,7 +1140,7 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
 
     std::vector<const char*> extensions(rgfWExtensions, rgfWExtensions + rgfWExtensionCount);
     #ifdef __APPLE__
-        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        extensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     #endif
 
     std::cout << "Enabling extensions:\n";
@@ -1223,8 +1223,8 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
     float queuePriority = 1.0f;
 
     std::vector<unsigned int> uniqueQueueFamilies;
-    uniqueQueueFamilies.push_back(indices.graphicsFamily);
-    if (indices.presentFamily != indices.graphicsFamily) { uniqueQueueFamilies.push_back(indices.presentFamily); }
+    uniqueQueueFamilies.emplace_back(indices.graphicsFamily);
+    if (indices.presentFamily != indices.graphicsFamily) { uniqueQueueFamilies.emplace_back(indices.presentFamily); }
 
     for (unsigned int queueFamily : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
@@ -1232,7 +1232,7 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
         queueCreateInfo.queueFamilyIndex = queueFamily;
         queueCreateInfo.queueCount = 1;
         queueCreateInfo.pQueuePriorities = &queuePriority;
-        queueCreateInfos.push_back(queueCreateInfo);
+        queueCreateInfos.emplace_back(queueCreateInfo);
     }
 
     #ifdef __APPLE__

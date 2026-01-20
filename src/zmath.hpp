@@ -98,7 +98,7 @@ namespace zmath {
             weightValues.value = value;
             weightValues.ID = weights.size();
             weightValues.offset = 0;
-            weights.push_back(weightValues);
+            weights.emplace_back(weightValues);
         }
 
         void removeItem(unsigned int ID) {
@@ -236,7 +236,7 @@ template<unsigned int bitCount> inline ZInt<bitCount> superFactorial(unsigned in
 
     for (unsigned int q = n; q > 0; q--) {
         for (unsigned int i = 1; i <= q; i++) { result *= i; }
-        legs.push_back(result);
+        legs.emplace_back(result);
         result = 1;
     }
 

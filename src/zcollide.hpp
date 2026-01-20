@@ -65,7 +65,7 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
             if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
         }
 
-        zcollide_AABB.push_back(b);
+        zcollide_AABB.emplace_back(b);
         return (zcollide_AABB[usingAAABB].pos[0] <= b.pos[2] && zcollide_AABB[usingAAABB].pos[2] >= b.pos[0]) && (zcollide_AABB[usingAAABB].pos[1] <= b.pos[3] && zcollide_AABB[usingAAABB].pos[3] >= b.pos[1]);
     }
     else if (usingAAABB == -1 && usingBAABB != -1) {
@@ -85,7 +85,7 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
             if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
         }
 
-        zcollide_AABB.push_back(a);
+        zcollide_AABB.emplace_back(a);
         return (a.pos[0] <= zcollide_AABB[usingBAABB].pos[2] && a.pos[2] >= zcollide_AABB[usingBAABB].pos[0]) && (a.pos[1] <= zcollide_AABB[usingBAABB].pos[3] && a.pos[3] >= zcollide_AABB[usingBAABB].pos[1]);
     }
     else {
@@ -179,8 +179,8 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
                 if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
             }
         }
-        zcollide_AABB.push_back(a);
-        zcollide_AABB.push_back(b);
+        zcollide_AABB.emplace_back(a);
+        zcollide_AABB.emplace_back(b);
         return (a.pos[0] <= b.pos[2] && a.pos[2] >= b.pos[0]) && (a.pos[1] <= b.pos[3] && a.pos[3] >= b.pos[1]);
     }
 }

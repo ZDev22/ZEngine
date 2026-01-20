@@ -71,7 +71,7 @@ struct ZBitset { /* the bitset */
     #if !defined(ZBIT_NO_INCLUDE) && defined(ZBIT_DYNAMIC_SIZE)
         std::vector<ZBit> data(ZBIT_SET_SIZE); /* vector to store the bitset */
 
-        void add() { data.push_back(0); } /* add more bits */
+        void add() { data.emplace_back(0); } /* add more bits */
         void remove() { data.erase(data.begin() + data.size()); } // remove bits
         void on() { for (unsigned int i = 0; i < data.size(); i++) { data[i].data = (ZBIT_VARIABLE_TYPE)18446744073709551615ULL; }} /* turn all bits on */
         void off() { for (unsigned int i = 0; i < data.size(); i++) { data[i].data = 0; }}; /* turn all bits off */

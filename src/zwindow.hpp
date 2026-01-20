@@ -58,17 +58,17 @@ public:
     unsigned char whatKeyReleased() { for (auto Keys : rgfwKeys) { if (RGFW_isKeyReleased(Keys)) return Keys; } return -1; } /* find what key is being released*/
     std::vector<unsigned char> whatKeysPressed() { /* find all keys being pressed */
         std::vector<unsigned char> keysPressed;
-        for (auto Keys : rgfwKeys) { if (RGFW_isKeyDown(Keys)) keysPressed.push_back(Keys); }
+        for (auto Keys : rgfwKeys) { if (RGFW_isKeyDown(Keys)) keysPressed.emplace_back(Keys); }
         return keysPressed;
     }
     std::vector<unsigned char> whatKeysHit() { /* find all keys being hit */
         std::vector<unsigned char> keysHit;
-        for (auto Keys : rgfwKeys) { if (RGFW_isKeyPressed(Keys)) keysHit.push_back(Keys); }
+        for (auto Keys : rgfwKeys) { if (RGFW_isKeyPressed(Keys)) keysHit.emplace_back(Keys); }
         return keysHit;
     }
     std::vector<unsigned char> whatKeysReleased() { /* find all keys being released*/
         std::vector<unsigned char> keysReleased;
-        for (auto Keys : rgfwKeys) { if (RGFW_isKeyReleased(Keys)) keysReleased.push_back(Keys);}
+        for (auto Keys : rgfwKeys) { if (RGFW_isKeyReleased(Keys)) keysReleased.emplace_back(Keys);}
         return keysReleased;
     }
 
@@ -78,12 +78,12 @@ public:
         unsigned char rebind;
     };
 
-    inline void addKeyBind(KeyBind keyBind) { keyBinds.push_back(keyBind); } /* add a keybind */
+    inline void addKeyBind(KeyBind keyBind) { keyBinds.emplace_back(keyBind); } /* add a keybind */
     void addKeyBind(unsigned char key, unsigned char rebind) { /* add a keybind */
         KeyBind keyBind;
         keyBind.key = key;
         keyBind.rebind = rebind;
-        keyBinds.push_back(keyBind);
+        keyBinds.emplace_back(keyBind);
     }
     inline void deleteKeyBind(unsigned char index) { keyBinds.erase(keyBinds.begin() + index); } /* delete a keyBind */
     inline void deleteAllKeyBinds() { keyBinds.clear(); } /* clear all keybinds */
