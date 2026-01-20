@@ -396,10 +396,9 @@ public:
         for (auto imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
         swapChainImageViews.clear();
 
-        if (swapChain != nullptr) {
-            vkDestroySwapchainKHR(device_, swapChain, nullptr);
-            swapChain = nullptr;
-        }
+        vkDestroySwapchainKHR(device_, swapChain, nullptr);
+        swapChain = nullptr;
+
         for (unsigned int i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device_, depthImageViews[i], nullptr);
             vkDestroyImage(device_, depthImages[i], nullptr);
@@ -1478,19 +1477,28 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
 }
 
 void ZEngineDeinit() {
-    vkDestroyCommandPool(device_, commandPool, nullptr);
-    vkDestroyDevice(device_, nullptr);
-    vkDestroySurfaceKHR(instance, surface_, nullptr);
-    vkDestroyInstance(instance, nullptr);
+    vkDeviceWaitIdle(device_);
+    freeCommandBuffers();
+
+    spriteTextures.clear();
+    sprites.clear();
+    spriteCPU.clear();
+    squareModel.reset();
+    spriteDataBuffer->unmap();
+    spriteDataBuffer.reset();
+
+    vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
     vkDestroyPipeline(device_, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
     vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
     vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
-    vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
 
-    freeCommandBuffers();
-    spriteTextures.clear();
-    spriteDataBuffer->unmap();
+    swapChain.reset();
+
+    vkDestroyCommandPool(device_, commandPool, nullptr);
+    vkDestroyDevice(device_, nullptr);
+    vkDestroySurfaceKHR(instance, surface_, nullptr);
+    vkDestroyInstance(instance, nullptr);
 }
 
 void updateTexture(unsigned char index) {

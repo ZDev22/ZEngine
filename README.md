@@ -104,7 +104,7 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 
 # Dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>
-[RGFW (Window)] (https://github.com/ColleagueRiley/RGFW)</br>
+[RGFW (Window)](https://github.com/ColleagueRiley/RGFW)</br>
 [MINIAUDIO (Audio) {Modified}](https://miniaud.io/)</br>
 [STB-IMAGE (Image loader) {Modified}](https://github.com/nothings/stb)</br>
 [STB-TRUETYPE (font text rasterizer) {Modified}](https://github.com/nothings/stb)

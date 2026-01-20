@@ -72,7 +72,9 @@ int main() {
 
         switch(zwindow.pollEvents()) {
         case 0:
-            goto deinit;
+            ma_engine_uninit(&audio);
+            ZEngineDeinit();
+            return 1;
         case 1:
             framebufferResized = true;
             break;
@@ -89,9 +91,6 @@ int main() {
 
         ZEngineRender();
     }
-    deinit:
-    ma_engine_uninit(&audio);
-    ZEngineDeinit();
 }
 
 #else
