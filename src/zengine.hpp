@@ -755,7 +755,12 @@ public:
         vkAllocateMemory(device_, &allocInfo, nullptr, &memory);
         vkBindBufferMemory(device_, buffer, memory, 0);
     }
-    ~Buffer() = default;
+    ~Buffer() {
+        vkDestroyBuffer(device_, buffer, nullptr);
+        vkFreeMemory(device_, memory, nullptr);
+        buffer = VK_NULL_HANDLE;
+        memory = VK_NULL_HANDLE;
+    }
 
     void map() {
         void* temp = nullptr;
