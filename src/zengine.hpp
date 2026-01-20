@@ -29,7 +29,7 @@
 
     #define RGFW_IMPLEMENTATION
     #define RGFW_EXPORT
-    #define RGFW_ASSERT(x)
+    #define RGFW_ASSERT(x) (void)(x)
 
     #define STB_IMAGE_IMPLEMENTATION
     #define STBI_ASSERT
@@ -400,7 +400,7 @@ public:
             vkDestroySwapchainKHR(device_, swapChain, nullptr);
             swapChain = nullptr;
         }
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (unsigned int i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device_, depthImageViews[i], nullptr);
             vkDestroyImage(device_, depthImages[i], nullptr);
             vkFreeMemory(device_, depthImageMemorys[i], nullptr);
@@ -632,7 +632,7 @@ public:
         depthImageMemorys.resize(swapChainImages.size());
         depthImageViews.resize(swapChainImages.size());
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (unsigned int i = 0; i < depthImages.size(); i++) {
             VkImageCreateInfo imageInfo{};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -975,7 +975,7 @@ public:
 
         std::vector<unsigned char> rgbaPixels(imageSize);
         memset(rgbaPixels.data(), 255, size * size * 4);
-        for (int i = 0; i < size * size; ++i) { rgbaPixels[i * 4 + 3] = pixelData[i]; }
+        for (unsigned int i = 0; i < size * size; ++i) { rgbaPixels[i * 4 + 3] = pixelData[i]; }
 
         createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 

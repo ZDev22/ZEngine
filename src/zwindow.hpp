@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.9.3
+v2.9.4
 
 zwindow.hpp is a lightweight cross-platform single-header cpp window abstraction library built off the latest RGFW
 works best with zengine, but can be a solo library
@@ -139,8 +139,6 @@ public:
 
     // Capture
     inline void captureMouse(bool state) { RGFW_window_captureMouse(window, state); }
-    inline void holdMouse() { RGFW_window_holdMouse(window); }
-    inline void unholdMouse() { RGFW_window_unholdMouse(window); }
     inline bool isCaptured() { return RGFW_window_isCaptured(window); }
 
     // Visibility

@@ -34,21 +34,21 @@ void loadFont(const char* font, const unsigned int fontSize);
 std::vector<ZText> fonts;
 
 std::unique_ptr<Texture> createText(const unsigned int font, const std::string& text, const unsigned int fontSize) {
-    unsigned int atlasSize = fontSize * 16.f;
+    unsigned int atlasSize = fontSize * 16;
     float minY = 0.0f;
     float maxY = 0.0f;
     float currentX = 0.0f;
     stbtt_bakedchar cache;
 
     for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
+        if (c < 32) { continue; }
         cache = fonts[font].charData[c - 32];
         minY = minY < cache.yoff ? minY : cache.yoff;
         maxY = maxY > cache.yoff + (cache.y1 - cache.y0) ? maxY : cache.yoff + (cache.y1 - cache.y0);
         currentX += cache.xadvance;
     }
 
-    int texsize = ((int)currentX + 1 > (int)(maxY - minY) + 1 ? (int)currentX : (int)(maxY - minY)) + 1;
+    unsigned int texsize = ((unsigned int)currentX + 1 > (unsigned int)(maxY - minY) + 1 ? (unsigned int)currentX : (unsigned int)(maxY - minY)) + 1;
     std::vector<unsigned char> textGrayscale(texsize * texsize, 0);
 
     currentX = 0.0f;
@@ -60,20 +60,20 @@ std::unique_ptr<Texture> createText(const unsigned int font, const std::string& 
     int xDistanceID = 0;
 
     for (char c : text) {
-        if (c < 32 || c > 127) { continue; }
+        if (c < 32) { continue; }
 
         cache = fonts[font].charData[c - 32];
         xDistance = (int)(currentX + cache.xoff);
         yDistance = (int)(cache.yoff - minY);
 
-        for (unsigned int posY = 0; posY < cache.y1 - cache.y0; ++posY) {
-            for (unsigned int posX = 0; posX < cache.x1 - cache.x0; ++posX) {
+        for (int posY = 0; posY < cache.y1 - cache.y0; ++posY) {
+            for (int posX = 0; posX < cache.x1 - cache.x0; ++posX) {
                 xSource = cache.x0 + posX;
                 ySource = cache.y0 + posY;
                 xID = ySource * atlasSize + xSource;
                 xDistanceID = (yDistance + posY) * texsize + (xDistance + posX);
 
-                if (xDistanceID >= 0 && xDistanceID < texsize * texsize) { textGrayscale[xDistanceID] = fonts[font].grayscale[xID]; }
+                if (xDistanceID >= 0 && xDistanceID < (int)(texsize * texsize)) { textGrayscale[xDistanceID] = fonts[font].grayscale[xID]; }
             }
         }
 
@@ -105,7 +105,7 @@ void loadFont(const char* font, const unsigned int fontSize) {
     fontData.grayscale.resize(atlasSize * atlasSize);
     stbtt_BakeFontBitmap(buffer, 0, fontSize, fontData.grayscale.data(), atlasSize, atlasSize, 32, 96, fontData.charData);
     delete[] buffer;
-    
+
     fonts.push_back(fontData);
 }
 
