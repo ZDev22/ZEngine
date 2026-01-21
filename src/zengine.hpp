@@ -74,14 +74,11 @@
 
 /* forward declaration of all structs lol */
 struct Texture;
+struct SwapChain;
 struct Sprite;
 struct SpriteData;
-struct SwapChain;
 struct Buffer;
 struct Model;
-struct Push;
-struct SwapChainSupportDetails;
-struct QueueFamilyIndices;
 
 /* structs */
 struct Push {
@@ -100,7 +97,7 @@ struct QueueFamilyIndices {
     unsigned int presentFamily;
     bool graphicsFamilyHasValue = false;
     bool presentFamilyHasValue = false;
-    bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
+    inline bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
 struct Vertex {
@@ -404,9 +401,7 @@ public:
         }
     }
 
-    inline VkResult acquireNextImage(unsigned int* imageIndex) {
-        return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex);
-    }
+    inline VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
 
     VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
         imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
@@ -739,7 +734,6 @@ public:
         vkMapMemory(device_, memory, 0, bufferSize, 0, &temp);
         mapped = (char*)temp;
     }
-    inline void writeToBuffer(const void* data, unsigned int size) { memcpy(mapped, data, size); }
     void unmap() {
         if (mapped) {
             vkUnmapMemory(device_, memory);
@@ -747,6 +741,7 @@ public:
         }
     }
 
+    inline void writeToBuffer(const void* data, unsigned int size) { memcpy(mapped, data, size); }
     inline VkBuffer getBuffer() const { return buffer; }
 
 private:
@@ -772,8 +767,8 @@ public:
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     }
 
-    void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)vertices.size(), instanceCount, 0, firstInstance); }
-    const std::vector<Vertex>& getVertices() const { return vertices; }
+    inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)vertices.size(), instanceCount, 0, firstInstance); }
+    inline const std::vector<Vertex>& getVertices() const { return vertices; }
 
 private:
     std::unique_ptr<Buffer> vertexBuffer;
@@ -891,7 +886,7 @@ public:
         vkCreateSampler(device_, &samplerInfo, nullptr, &sampler);
     }
 
-    Texture(std::string filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
+    Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         if (!pixels) { throw("failed to load texture"); }
 
@@ -1045,13 +1040,8 @@ public:
         imageLayout = newLayout;
     }
 
-    VkImageView getImageView() { return imageView; }
-    VkSampler getSampler() { return sampler; }
-    VkImageLayout getImageLayout() { return imageLayout; }
-    unsigned int getArrayLayers() const { return arrayLayers; }
-
-    int getTexWidth() const { return texWidth; }
-    int getTexHeight() const { return texHeight; }
+    inline VkImageView getImageView() const { return imageView; }
+    inline VkSampler getSampler() const { return sampler; }
 
 private:
     VkImageLayout imageLayout;
@@ -1065,6 +1055,25 @@ private:
     int texWidth, texHeight, texChannels;
     std::vector<void*> pixelsArray;
 };
+
+void updateTexture(unsigned char index) {
+    Texture* texture = spriteTextures[index].get();
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = texture->getImageView();
+    imageInfo.sampler = texture->getSampler();
+
+    VkWriteDescriptorSet imageWrite{};
+    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    imageWrite.dstSet = spriteDataDescriptorSet;
+    imageWrite.dstBinding = 1;
+    imageWrite.dstArrayElement = index;
+    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    imageWrite.descriptorCount = 1;
+    imageWrite.pImageInfo = &imageInfo;
+
+    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
+}
 
 void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
     std::cout << "Compiling shaders...\n"; //---------------------------------------------------------------------------------------------------------------
@@ -1453,51 +1462,6 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
     vkUpdateDescriptorSets(device_, 2, descriptorWrites, 0, nullptr);
 }
 
-void ZEngineDeinit() {
-    vkDeviceWaitIdle(device_);
-    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
-
-    commandBuffers.clear();
-    spriteTextures.clear();
-    sprites.clear();
-    spriteCPU.clear();
-    squareModel.reset();
-    spriteDataBuffer->unmap();
-    spriteDataBuffer.reset();
-
-    vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
-    vkDestroyPipeline(device_, graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
-    vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
-    vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
-
-    swapChain.reset();
-
-    vkDestroyCommandPool(device_, commandPool, nullptr);
-    vkDestroyDevice(device_, nullptr);
-    vkDestroySurfaceKHR(instance, surface_, nullptr);
-    vkDestroyInstance(instance, nullptr);
-}
-
-void updateTexture(unsigned char index) {
-    Texture* texture = spriteTextures[index].get();
-    VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = texture->getImageView();
-    imageInfo.sampler = texture->getSampler();
-
-    VkWriteDescriptorSet imageWrite{};
-    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    imageWrite.dstSet = spriteDataDescriptorSet;
-    imageWrite.dstBinding = 1;
-    imageWrite.dstArrayElement = index;
-    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = 1;
-    imageWrite.pImageInfo = &imageInfo;
-
-    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
-}
-
 void ZEngineRender() {
     spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); /* update sprite position, rotation & other */
 
@@ -1554,26 +1518,69 @@ void ZEngineRender() {
     scissor.extent = windowExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    /* render sprites  */
+    /* render sprites */
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &vertex);
 
-    std::shared_ptr<Model> lastModel = nullptr;
-    for (unsigned int i = 0; i < spriteCPU.size(); i++) {
+    std::shared_ptr<Model> lastModel = squareModel;
+    unsigned int instance = 0;
+    unsigned int instanceCount = 0;
+
+    for (unsigned int i = 0; i < spriteCPU.size(); ++i) {
         if (spriteCPU[i].visible) {
-            if (spriteCPU[i].model != lastModel) {
-                spriteCPU[i].model->bind(commandBuffer);
+            if (spriteCPU[i].model == lastModel) { instanceCount++; } /* model is the same, add it to the instance */
+            else { /* model changed, draw the batch and count again */
                 lastModel = spriteCPU[i].model;
+                if (instanceCount > 0) {
+                    lastModel->bind(commandBuffer);
+                    lastModel->draw(commandBuffer, instanceCount, instance);
+                }
+                instance = i;
+                instanceCount = 1;
             }
-            spriteCPU[i].model->draw(commandBuffer, 1, i);
         }
+        else { /* this is the best way to not draw invisible sprites */
+            lastModel->bind(commandBuffer);
+            lastModel->draw(commandBuffer, instanceCount, instance);
+            instanceCount = 0;
+        }
+    }
+    if (instanceCount > 0) { /* draw the last few sprites not accounted for by visibility or model switching */
+        lastModel->bind(commandBuffer);
+        lastModel->draw(commandBuffer, instanceCount, instance);
     }
 
     /* end frame */
     vkCmdEndRenderPass(commandBuffer);
     vkEndCommandBuffer(commandBuffer);
     swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+}
+
+void ZEngineDeinit() {
+    vkDeviceWaitIdle(device_);
+    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
+
+    commandBuffers.clear();
+    spriteTextures.clear();
+    sprites.clear();
+    spriteCPU.clear();
+    squareModel.reset();
+    spriteDataBuffer->unmap();
+    spriteDataBuffer.reset();
+
+    vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
+    vkDestroyPipeline(device_, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
+    vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
+    vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
+
+    swapChain.reset();
+
+    vkDestroyCommandPool(device_, commandPool, nullptr);
+    vkDestroyDevice(device_, nullptr);
+    vkDestroySurfaceKHR(instance, surface_, nullptr);
+    vkDestroyInstance(instance, nullptr);
 }
 
 inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model) { return model->getVertices(); }
