@@ -1559,9 +1559,13 @@ void ZEngineRender() {
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &vertex);
 
+    std::shared_ptr<Model> lastModel = nullptr;
     for (unsigned int i = 0; i < spriteCPU.size(); i++) {
         if (spriteCPU[i].visible) {
-            spriteCPU[i].model->bind(commandBuffer);
+            if (spriteCPU[i].model != lastModel) {
+                spriteCPU[i].model->bind(commandBuffer);
+                lastModel = spriteCPU[i].model;
+            }
             spriteCPU[i].model->draw(commandBuffer, 1, i);
         }
     }
