@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v1.0.0
+v1.0.1
 
 ztext.hpp is a lightweight cross-platform single-header cpp font-text rasterizer built off stb_truetype
 

@@ -111,18 +111,18 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 # Build commands:
 ## Linux:
 ```bash
-cmake --preset linuxdebug
-cmake --build --preset linuxdebug -j8
+cmake --preset linuxrelease
+cmake --build --preset linuxrelease -j4
 ```
 ## Mac:
 ```bash
-cmake --preset macdebug
-cmake --build --preset macdebug -j8
+cmake --preset macrelease
+cmake --build --preset macrelease -j4
 ```
 ## Windows:
 ```bash
-cmake --preset windowsdebug
-cmake --build --preset windowsdebug -j8
+cmake --preset windowsrelease
+cmake --build --preset windowsrelease -j4
 ```
 ### Availiable presets:
 ```

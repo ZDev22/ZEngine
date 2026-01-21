@@ -173,17 +173,7 @@ inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model);
 
 Push vertex; /* kinda just chillin ngl */
 
-/* vars for calculating fps, cps and deltaTime */
-int appfps = 0;
-int appcps = 0;
-float appTimer = 0.f;
-float appWait = 0.f;
-float appFrameWait = 0.f;
-float deltaTime = 0.f;
-std::chrono::high_resolution_clock::time_point fpsTime;
-std::chrono::high_resolution_clock::time_point cpsTime;
-std::chrono::high_resolution_clock::time_point fpsLastTime;
-std::chrono::high_resolution_clock::time_point cpsLastTime;
+float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 
 /* sprite vecs */
 std::vector<SpriteData> sprites;
@@ -397,6 +387,8 @@ public:
         swapChainImageViews.clear();
 
         vkDestroySwapchainKHR(device_, swapChain, nullptr);
+        vkDestroyRenderPass(device_, renderPass, nullptr);
+
         swapChain = nullptr;
 
         for (unsigned int i = 0; i < depthImages.size(); i++) {
@@ -404,24 +396,19 @@ public:
             vkDestroyImage(device_, depthImages[i], nullptr);
             vkFreeMemory(device_, depthImageMemorys[i], nullptr);
         }
-
-        for (auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
-        vkDestroyRenderPass(device_, renderPass, nullptr);
-
+        for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
         for (unsigned int i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
-            if (imageAvailableSemaphores[i] != VK_NULL_HANDLE) { vkDestroySemaphore(device_, imageAvailableSemaphores[i], nullptr); }
-            if (renderFinishedSemaphores[i] != VK_NULL_HANDLE) { vkDestroySemaphore(device_, renderFinishedSemaphores[i], nullptr); }
-            if (inFlightFences[i] != VK_NULL_HANDLE) { vkDestroyFence(device_, inFlightFences[i], nullptr); }
+            vkDestroySemaphore(device_, imageAvailableSemaphores[i], nullptr);
+            vkDestroySemaphore(device_, renderFinishedSemaphores[i], nullptr);
+            vkDestroyFence(device_, inFlightFences[i], nullptr);
         }
     }
 
-    VkResult acquireNextImage(unsigned int* imageIndex) {
-        vkWaitForFences(device_, 1, &inFlightFences[currentFrame], VK_TRUE, 18446744073709551615ULL);
+    inline VkResult acquireNextImage(unsigned int* imageIndex) {
         return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex);
     }
 
     VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
-        if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, 18446744073709551615ULL); }
         imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
         VkSubmitInfo submitInfo = {};
@@ -513,7 +500,7 @@ public:
         #ifdef ZENGINE_DISABLE_VSYNC
             createInfo.presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
         #else
-            createInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+            createInfo.presentMode = VK_PRESENT_MODE_MAILBOX_KHR;
         #endif
 
         if (vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain) != VK_SUCCESS) { throw("failed to create swapchain!"); }
@@ -684,7 +671,7 @@ public:
     inline VkFramebuffer getFrameBuffer(unsigned long index) const { return swapChainFramebuffers[index]; }
     inline VkImageView getImageView(int index) const { return swapChainImageViews[index]; }
     inline VkRenderPass getRenderPass() const { return renderPass; }
-    inline std::vector<VkImage> getSwapChainImages() const { return swapChainImages; }
+    inline unsigned int getSwapChainImageSize() const { return swapChainImages.size(); }
     inline VkSwapchainKHR getSwapChain() const { return swapChain; }
 
 private:
@@ -706,7 +693,7 @@ private:
 };
 
 void createCommandBuffers() {
-    commandBuffers.resize(swapChain->getSwapChainImages().size());
+    commandBuffers.resize(swapChain->getSwapChainImageSize());
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -714,22 +701,7 @@ void createCommandBuffers() {
     allocInfo.commandPool = commandPool;
     allocInfo.commandBufferCount = (unsigned int)commandBuffers.size();
 
-    if (vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data()) != VK_SUCCESS) { throw("failed to allocate command buffers!"); }
-}
-
-void freeCommandBuffers() {
-    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
-    commandBuffers.clear();
-}
-
-void recreateSwapChain() {
-    vkDeviceWaitIdle(device_);
-    oldSwapChain = swapChain->getSwapChain();
-    swapChain = std::make_unique<SwapChain>();
-    if (swapChain->getSwapChainImages().size() != commandBuffers.size()) {
-        freeCommandBuffers();
-        createCommandBuffers();
-    }
+    vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data());
 }
 
 struct Buffer {
@@ -767,7 +739,7 @@ public:
         vkMapMemory(device_, memory, 0, bufferSize, 0, &temp);
         mapped = (char*)temp;
     }
-    void writeToBuffer(const void* data, unsigned int size) { memcpy(mapped, data, size); }
+    inline void writeToBuffer(const void* data, unsigned int size) { memcpy(mapped, data, size); }
     void unmap() {
         if (mapped) {
             vkUnmapMemory(device_, memory);
@@ -1483,8 +1455,9 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
 
 void ZEngineDeinit() {
     vkDeviceWaitIdle(device_);
-    freeCommandBuffers();
+    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
 
+    commandBuffers.clear();
     spriteTextures.clear();
     sprites.clear();
     spriteCPU.clear();
@@ -1526,16 +1499,25 @@ void updateTexture(unsigned char index) {
 }
 
 void ZEngineRender() {
-    /* update sprite position, rotation & other */
-    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
+    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); /* update sprite position, rotation & other */
 
-    /* create command buffer */
+    /* resize window */
     if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {
-        recreateSwapChain();
+        /* recreate swapchain */
+        vkDeviceWaitIdle(device_);
+        oldSwapChain = swapChain->getSwapChain();
+        swapChain = std::make_unique<SwapChain>();
+        if (swapChain->getSwapChainImageSize() != commandBuffers.size()) {
+            vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
+            commandBuffers.clear();
+            createCommandBuffers();
+        }
+
         framebufferResized = false;
         return;
     }
 
+    /* create command buffer */
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -1586,7 +1568,6 @@ void ZEngineRender() {
 
     /* end frame */
     vkCmdEndRenderPass(commandBuffer);
-    commandBuffer = commandBuffers[currentImageIndex];
     vkEndCommandBuffer(commandBuffer);
     swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
 }

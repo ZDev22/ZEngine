@@ -32,6 +32,13 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 //#define FPS_CAP_SET
 #define FPS_CAP 180.f
 
+/* vars for calculating fps and deltaTime */
+int fps = 0;
+float appTimer = 0.f;
+float appWait = 0.f;
+std::chrono::high_resolution_clock::time_point fpsTime;
+std::chrono::high_resolution_clock::time_point fpsLastTime;
+
 void render();
 int main() {
     /* sanity check */
@@ -54,27 +61,26 @@ int main() {
     while (true) {
         #ifdef FPS_CAP_SET
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appWait)));
-            cpsTime = std::chrono::high_resolution_clock::now();
+            fpsTime = std::chrono::high_resolution_clock::now();
             appTimer += 1.f / FPS_CAP;
         #else
-            cpsTime = std::chrono::high_resolution_clock::now();
-            deltaTime = std::chrono::duration<float>(cpsTime - cpsLastTime).count();
+            fpsTime = std::chrono::high_resolution_clock::now();
+            deltaTime = std::chrono::duration<float>(fpsTime - fpsLastTime).count();
             appTimer += deltaTime;
-            cpsLastTime = cpsTime;
+            fpsLastTime = fpsTime;
         #endif
         if (appTimer > 1.f) {
-            RGFW_window_setName(windowdata, ("fps: " + std::to_string(appcps)).c_str());
+            RGFW_window_setName(windowdata, ("fps: " + std::to_string(fps)).c_str());
             appTimer = 0.f;
-            appfps = 0;
-            appcps = 0;
+            fps = 0;
         }
-        appcps++;
+        fps++;
 
         switch(zwindow.pollEvents()) {
         case 0:
             ma_engine_uninit(&audio);
             ZEngineDeinit();
-            return 1;
+            return 0;
         case 1:
             framebufferResized = true;
             break;
@@ -85,8 +91,8 @@ int main() {
         zcollide_clearAABB();
 
         #ifdef FPS_CAP_SET
-            cpsLastTime = std::chrono::high_resolution_clock::now();
-            appWait = std::chrono::duration<float>(cpsLastTime - cpsTime).count();
+            fpsLastTime = std::chrono::high_resolution_clock::now();
+            appWait = std::chrono::duration<float>(fpsLastTime - fpsTime).count();
         #endif
 
         ZEngineRender();
