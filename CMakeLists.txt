@@ -6,12 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Vulkan REQUIRED)
 
-if(WIN32)
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_SMOL ${CMAKE_SOURCE_DIR}/build/windows/Smol)
-
-elseif(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/linux/Debug)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/linux/Release)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_SMOL ${CMAKE_SOURCE_DIR}/build/linux/Smol)
@@ -31,6 +26,12 @@ elseif(APPLE)
 
    set(VULKAN_LIB "${VULKAN_SDK_DIR}/lib/libvulkan.1.dylib")
    set(VULKAN_INCLUDE "${VULKAN_SDK_DIR}/include")
+
+elseif(WIN32)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_SMOL ${CMAKE_SOURCE_DIR}/build/windows/Smol)
+
 else()
    message(FATAL_ERROR "Unsupported platform!")
 endif()
@@ -42,6 +43,17 @@ set(SOURCES "")
 list(APPEND SOURCES ${ALL_CPP_SOURCES} ${ALL_C_SOURCES})
 
 add_executable(main ${SOURCES})
+
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/shaders
+            $<TARGET_FILE_DIR:main>/shaders
+)
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/assets
+            $<TARGET_FILE_DIR:main>/assets
+)
 
 target_include_directories(main PRIVATE
    "${CMAKE_SOURCE_DIR}/src"
