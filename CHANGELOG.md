@@ -1,8 +1,13 @@
 # v1.11 - DEV
 - **MADE ENGINE SINGLE-HEADER**
+- **BINARY CAN NOW BE RUN WITHOUT DEBUGGER**
+- **HUGE API IMPROVEMENTS**
 - **FIXED WAYLAND SUPPORT**
+- **ADDED ZTEXT.HPP**
+- Vulkan now required dependency on windows
 - MUCH more ZWindow functionality
 - Improved API and efficiency of zcollide & zbit
+- Removed hundreds of warnings
 - Mac improvements
 - Optimizations
 - Bugfixes

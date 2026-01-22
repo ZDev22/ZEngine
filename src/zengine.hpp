@@ -36,8 +36,8 @@
 #endif
 
 /* dependencies */
-#include "deps/miniaudio.h" /* audio */
 #include "deps/RGFW.h" /* windowing */
+#include "deps/miniaudio.h" /* audio */
 #include "deps/stb_image.h" /* textures */
 
 /* undefine these so they don't get used later */
@@ -78,26 +78,47 @@ struct SwapChain;
 struct Sprite;
 struct SpriteData;
 struct Buffer;
+struct Vertex;
 struct Model;
 
+/* extern vars */
+extern float deltaTime;
+extern std::vector<SpriteData> sprites;
+extern std::vector<Sprite> spriteCPU;
+extern std::vector<std::unique_ptr<Texture>> spriteTextures;
+extern std::shared_ptr<Model> squareModel;
+
+/* extern funcs */
+void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
+inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model);
+void updateTexture(unsigned char index);
+
 /* structs */
-struct Push {
-    float camera[2];
-    float cameraZoom[2];
+struct alignas(16) SpriteData {
+    float position[2];
+    float scale[2];
+    float rotationMatrix[4];
+
+    unsigned int textureIndex;
+    unsigned int ID;
+    float rotation;
+
+    constexpr void setRotationMatrix() {
+        rotationMatrix[0] = cos(rotation * .0174532925f);
+        rotationMatrix[2] = sin(rotation * .0174532925f);
+        rotationMatrix[1] = -rotationMatrix[2];
+        rotationMatrix[3] = rotationMatrix[0];
+    }
+    void setTexture(std::unique_ptr<Texture> texture) {
+        spriteTextures[textureIndex] = std::move(std::move(texture));
+        updateTexture(textureIndex);
+    }
 };
 
-struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
-
-struct QueueFamilyIndices {
-    unsigned int graphicsFamily;
-    unsigned int presentFamily;
-    bool graphicsFamilyHasValue = false;
-    bool presentFamilyHasValue = false;
-    inline bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
+struct Sprite {
+    std::shared_ptr<Model> model;
+    Texture* texture;
+    bool visible;
 };
 
 struct Vertex {
@@ -126,45 +147,24 @@ struct Vertex {
     }
 };
 
-/* extern vars */
-extern float deltaTime;
-extern std::vector<SpriteData> sprites;
-extern std::vector<Sprite> spriteCPU;
-extern std::vector<std::unique_ptr<Texture>> spriteTextures;
-extern std::shared_ptr<Model> squareModel;
-
-/* sprites */
-void updateTexture(unsigned char index);
-struct alignas(16) SpriteData {
-    float position[2];
-    float scale[2];
-    float rotationMatrix[4];
-
-    unsigned int textureIndex;
-    unsigned int ID;
-    float rotation;
-
-    constexpr void setRotationMatrix() {
-        rotationMatrix[0] = cos(rotation * .0174532925f);
-        rotationMatrix[2] = sin(rotation * .0174532925f);
-        rotationMatrix[1] = -rotationMatrix[2];
-        rotationMatrix[3] = rotationMatrix[0];
-    }
-    void setTexture(std::unique_ptr<Texture> texture) {
-        spriteTextures[textureIndex] = std::move(std::move(texture));
-        updateTexture(textureIndex);
-    }
+struct Push {
+    float camera[2];
+    float cameraZoom[2];
 };
 
-struct Sprite {
-    std::shared_ptr<Model> model;
-    Texture* texture;
-    bool visible;
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
 };
 
-/* extern funcs */
-void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model);
+struct QueueFamilyIndices {
+    unsigned int graphicsFamily;
+    unsigned int presentFamily;
+    bool graphicsFamilyHasValue = false;
+    bool presentFamilyHasValue = false;
+    inline bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
+};
 
 #ifdef ZENGINE_IMPLEMENTATION
 
@@ -215,6 +215,8 @@ std::unique_ptr<Buffer> spriteDataBuffer;
 std::unique_ptr<SwapChain> swapChain;
 VkSwapchainKHR oldSwapChain;
 
+
+/* ZENGINE FUNCTIONS */
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
     unsigned int queueFamilyCount = 0;
@@ -228,6 +230,7 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
             indices.graphicsFamily = i;
             indices.graphicsFamilyHasValue = true;
         }
+
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
         if (queueFamily.queueCount > 0 && presentSupport) {
@@ -242,15 +245,16 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
 
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
     SwapChainSupportDetails details;
+    unsigned int formatCount = 0;
+    unsigned int presentModeCount = 0;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
-    unsigned int formatCount;
     vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
+
     if (formatCount != 0) {
         details.formats.resize(formatCount);
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
     }
-    unsigned int presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
     if (presentModeCount != 0) {
         details.presentModes.resize(presentModeCount);
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
@@ -259,8 +263,8 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
 }
 
 VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    VkFormatProperties props;
     for (VkFormat format : candidates) {
-        VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
         if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
@@ -273,27 +277,6 @@ unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags prope
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
     for (unsigned int i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }}
     throw("Failed to find suitable memory type");
-}
-
-void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
-    VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-    vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-
-    vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
-    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
 VkCommandBuffer beginSingleTimeCommands() {
@@ -326,6 +309,27 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkQueueWaitIdle(graphicsQueue_);
 
     vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
+}
+
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
+    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
 void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
@@ -369,6 +373,7 @@ void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFla
     vkBindImageMemory(device_, image, imageMemory, 0);
 }
 
+/* ZENGINE STRUCTS */
 struct SwapChain {
 public:
     SwapChain() {
@@ -688,186 +693,6 @@ private:
     unsigned int currentFrame = 0;
 };
 
-void createCommandBuffers() {
-    commandBuffers.resize(swapChain->getSwapChainImageSize());
-
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
-    allocInfo.commandBufferCount = (unsigned int)commandBuffers.size();
-
-    vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data());
-}
-
-struct Buffer {
-public:
-    Buffer(VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : bufferSize(instanceSize * instanceCount) {
-
-        VkBufferCreateInfo bufferInfo{};
-        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        bufferInfo.size = bufferSize;
-        bufferInfo.usage = usageFlags;
-        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-        vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
-
-        VkMemoryRequirements memRequirements;
-        vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
-
-        VkMemoryAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
-
-        vkAllocateMemory(device_, &allocInfo, nullptr, &memory);
-        vkBindBufferMemory(device_, buffer, memory, 0);
-    }
-    ~Buffer() {
-        vkDestroyBuffer(device_, buffer, nullptr);
-        vkFreeMemory(device_, memory, nullptr);
-        buffer = VK_NULL_HANDLE;
-        memory = VK_NULL_HANDLE;
-    }
-
-    void map() {
-        void* temp = nullptr;
-        vkMapMemory(device_, memory, 0, bufferSize, 0, &temp);
-        mapped = (char*)temp;
-    }
-    void unmap() {
-        if (mapped) {
-            vkUnmapMemory(device_, memory);
-            mapped = nullptr;
-        }
-    }
-
-    inline void writeToBuffer(const void* data, unsigned int size) { memcpy(mapped, data, size); }
-    inline VkBuffer getBuffer() const { return buffer; }
-
-private:
-    VkBuffer buffer = VK_NULL_HANDLE;
-    VkDeviceMemory memory = VK_NULL_HANDLE;
-    VkDeviceSize bufferSize;
-    void* mapped = nullptr;
-};
-
-struct Model {
-public:
-    Model(const std::vector<Vertex>& vertices) : vertices(vertices) {
-        vertexBuffer = std::make_unique<Buffer>(sizeof(Vertex) * vertices.size(), 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        vertexBuffer->map();
-        vertexBuffer->writeToBuffer((const void*)(vertices.data()), (unsigned int)(sizeof(Vertex) * vertices.size()));
-        vertexBuffer->unmap();
-    }
-    ~Model() { vertices.clear(); }
-
-    void bind(VkCommandBuffer commandBuffer) {
-        VkBuffer buffers[] = { vertexBuffer->getBuffer() };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-    }
-
-    inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)vertices.size(), instanceCount, 0, firstInstance); }
-    inline const std::vector<Vertex>& getVertices() const { return vertices; }
-
-private:
-    std::unique_ptr<Buffer> vertexBuffer;
-    std::vector<Vertex> vertices;
-};
-
-VkShaderModule createShaderModule(const std::vector<char>& code) {
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = code.size();
-    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-    VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw("failed to create shader module!"); }
-    return shaderModule;
-}
-
-std::vector<char> readFile(const std::string& filepath) {
-    std::ifstream file(filepath, std::ios::ate | std::ios::binary);
-    if (!file.is_open()) { throw("failed to open file: " + filepath); }
-    unsigned int fileSize = (unsigned int)file.tellg();
-    std::vector<char> buffer(fileSize);
-    file.seekg(0);
-    file.read(buffer.data(), fileSize);
-    file.close();
-    return buffer;
-}
-
-std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
-    std::vector<Vertex> vertices;
-    vertices.reserve(positions.size() / 2);
-
-    for (unsigned int i = 0; i < positions.size(); i += 2) {
-        Vertex v{};
-        v.position[0] = positions[i];
-        v.position[1] = positions[i + 1];
-        v.texCoord[0] = positions[i] + .5f;
-        v.texCoord[1] = positions[i + 1] + .5f;
-        vertices.emplace_back(v);
-    }
-
-    return std::make_shared<Model>(vertices);
-}
-
-void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
-    if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
-    Sprite sprite;
-    SpriteData spriteData;
-
-    sprite.model = model;
-    sprite.texture = spriteTextures[textureIndex].get();
-    sprite.visible = true;
-
-    spriteData.position[0] = positionx;
-    spriteData.position[1] = positiony;
-    spriteData.scale[0] = scalex;
-    spriteData.scale[1] = scaley;
-    spriteData.rotation = rotation;
-    spriteData.textureIndex = textureIndex;
-    spriteData.ID = spriteID++;
-
-    sprites.emplace_back(spriteData);
-    spriteCPU.emplace_back(sprite);
-}
-
-void initSprites() {
-    spriteTextures.reserve(ZENGINE_MAX_TEXTURES);
-    squareModel = makeModel({
-        -.5f, -.5f, // Bottom-Left
-        .5f, -.5f,  // Bottom-Right
-        -.5f, .5f,  // Top-Right
-        .5f, .5f    // Top-Left
-    });
-
-    while (texturePaths.size() < ZENGINE_MAX_TEXTURES) { texturePaths.emplace_back("e.jpg"); }
-    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.emplace_back(std::make_unique<Texture>(texturePaths[i])); }
-}
-
-void loadFlappyBird() {
-    texturePaths = { "flappyBird.png", "pipe.png" };
-    initSprites();
-
-    createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f);
-
-    for (float i = 1.f; i < 5.f; i += 1.f) {
-        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
-        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
-    }
-}
-
-void loadSlimeAttack() {
-    texturePaths = { "flappyBird.png", "pipe.png" };
-    initSprites();
-
-    createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f);
-    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
-}
-
 struct Texture {
 public:
     void createTextureSampler() {
@@ -1001,7 +826,6 @@ public:
         vkDestroyImageView(device_, imageView, nullptr);
         vkDestroyImage(device_, image, nullptr);
         vkFreeMemory(device_, imageMemory, nullptr);
-        pixelsArray.clear();
     }
 
     void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout) {
@@ -1054,9 +878,85 @@ private:
     VkDeviceMemory stagingBufferMemory;
     unsigned int arrayLayers {1};
     int texWidth, texHeight, texChannels;
-    std::vector<void*> pixelsArray;
 };
 
+struct Buffer {
+public:
+    Buffer(VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags) : bufferSize(instanceSize * instanceCount) {
+
+        VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = bufferSize;
+        bufferInfo.usage = usageFlags;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
+
+        vkAllocateMemory(device_, &allocInfo, nullptr, &memory);
+        vkBindBufferMemory(device_, buffer, memory, 0);
+    }
+    ~Buffer() {
+        vkDestroyBuffer(device_, buffer, nullptr);
+        vkFreeMemory(device_, memory, nullptr);
+        buffer = VK_NULL_HANDLE;
+        memory = VK_NULL_HANDLE;
+    }
+
+    void map() {
+        void* temp = nullptr;
+        vkMapMemory(device_, memory, 0, bufferSize, 0, &temp);
+        mapped = (char*)temp;
+    }
+    void unmap() {
+        if (mapped) {
+            vkUnmapMemory(device_, memory);
+            mapped = nullptr;
+        }
+    }
+
+    inline void writeToBuffer(const void* data, unsigned int size) { memcpy(mapped, data, size); }
+    inline VkBuffer getBuffer() const { return buffer; }
+
+private:
+    VkBuffer buffer = VK_NULL_HANDLE;
+    VkDeviceMemory memory = VK_NULL_HANDLE;
+    VkDeviceSize bufferSize;
+    void* mapped = nullptr;
+};
+
+struct Model {
+public:
+    Model(const std::vector<Vertex>& vertices) : vertices(vertices) {
+        vertexBuffer = std::make_unique<Buffer>(sizeof(Vertex) * vertices.size(), 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        vertexBuffer->map();
+        vertexBuffer->writeToBuffer((const void*)(vertices.data()), (unsigned int)(sizeof(Vertex) * vertices.size()));
+        vertexBuffer->unmap();
+    }
+    ~Model() { vertices.clear(); }
+
+    void bind(VkCommandBuffer commandBuffer) {
+        VkBuffer buffers[] = { vertexBuffer->getBuffer() };
+        VkDeviceSize offsets[] = { 0 };
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+    }
+
+    inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)vertices.size(), instanceCount, 0, firstInstance); }
+    inline const std::vector<Vertex>& getVertices() const { return vertices; }
+
+private:
+    std::unique_ptr<Buffer> vertexBuffer;
+    std::vector<Vertex> vertices;
+};
+
+/* ZENGINE HELPER FUNCTIONS */
 void updateTexture(unsigned char index) {
     Texture* texture = spriteTextures[index].get();
     VkDescriptorImageInfo imageInfo{};
@@ -1074,6 +974,110 @@ void updateTexture(unsigned char index) {
     imageWrite.pImageInfo = &imageInfo;
 
     vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
+}
+
+void createCommandBuffers() {
+    commandBuffers.resize(swapChain->getSwapChainImageSize());
+
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = (unsigned int)commandBuffers.size();
+
+    vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data());
+}
+
+VkShaderModule createShaderModule(const std::vector<char>& code) {
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw("failed to create shader module!"); }
+    return shaderModule;
+}
+
+std::vector<char> readFile(const std::string& filepath) {
+    std::ifstream file(filepath, std::ios::ate | std::ios::binary);
+    if (!file.is_open()) { throw("failed to open file"); }
+    unsigned int fileSize = (unsigned int)file.tellg();
+    std::vector<char> buffer(fileSize);
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+    file.close();
+    return buffer;
+}
+
+std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
+    std::vector<Vertex> vertices;
+    vertices.reserve(positions.size() / 2);
+
+    for (unsigned int i = 0; i < positions.size(); i += 2) {
+        Vertex v{};
+        v.position[0] = positions[i];
+        v.position[1] = positions[i + 1];
+        v.texCoord[0] = positions[i] + .5f;
+        v.texCoord[1] = positions[i + 1] + .5f;
+        vertices.emplace_back(v);
+    }
+
+    return std::make_shared<Model>(vertices);
+}
+
+void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
+    if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
+    Sprite sprite;
+    SpriteData spriteData;
+
+    sprite.model = model;
+    sprite.texture = spriteTextures[textureIndex].get();
+    sprite.visible = true;
+
+    spriteData.position[0] = positionx;
+    spriteData.position[1] = positiony;
+    spriteData.scale[0] = scalex;
+    spriteData.scale[1] = scaley;
+    spriteData.rotation = rotation;
+    spriteData.textureIndex = textureIndex;
+    spriteData.ID = spriteID++;
+
+    sprites.emplace_back(spriteData);
+    spriteCPU.emplace_back(sprite);
+}
+
+void initSprites() {
+    spriteTextures.reserve(ZENGINE_MAX_TEXTURES);
+    squareModel = makeModel({
+        -.5f, -.5f, // Bottom-Left
+        .5f, -.5f,  // Bottom-Right
+        -.5f, .5f,  // Top-Right
+        .5f, .5f    // Top-Left
+    });
+
+    while (texturePaths.size() < ZENGINE_MAX_TEXTURES) { texturePaths.emplace_back("e.jpg"); }
+    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.emplace_back(std::make_unique<Texture>(texturePaths[i])); }
+}
+
+void loadFlappyBird() {
+    texturePaths = { "flappyBird.png", "pipe.png" };
+    initSprites();
+
+    createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f);
+
+    for (float i = 1.f; i < 5.f; i += 1.f) {
+        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
+        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
+    }
+}
+
+void loadSlimeAttack() {
+    texturePaths = { "flappyBird.png", "pipe.png" };
+    initSprites();
+
+    createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f);
+    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
 }
 
 void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
