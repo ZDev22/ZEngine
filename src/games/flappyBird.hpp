@@ -17,6 +17,12 @@ struct Game {
 public:
     Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex) {
         loadFont("assets/fonts/Bullpen3D.ttf", 32.f);
+        for (unsigned int i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
+   
+        sprites[0].position[0] = -.7f;
+        sprites[0].position[1] = -.2f;
+        sprites[0].setTexture(std::make_unique<Texture>("flappyBird.png"));
+        sprites[1].setTexture(std::make_unique<Texture>("pipe.png"));
     }
 
     void tick() {
@@ -50,28 +56,28 @@ public:
                 flappyBirdSpeedY = 0.f;
                 flappyBirdDead = false;
             }
+
+            for (unsigned int i = 1; i < sprites.size() / 2; i++) {
+                unsigned int index = ((i - 1) * 2) + 1;
+                sprites[index].position[0] -= .5f * deltaTime;
+                if (sprites[index].position[0] < -1.5f) {
+                    sprites[index].position[0] = 1.5f;
+                    sprites[index].position[1] = Random(4, 14) / 10.f;
+                }
+                sprites[index + 1].position[0] = sprites[index].position[0];
+                sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;
+
+                 if (flappyBirdStarted && !flappyBirdDead && (zcollide_checkSquareCollision(sprites[index], sprites[0]) || zcollide_checkSquareCollision(sprites[index + 1], sprites[0]))) {
+                    flappyBirdDead = true;
+                    flappyBirdSpeedY = -1.5f;
+                    sprites[0].rotation = 60.f;
+                    sprites[0].textureIndex = 1;
+
+                    playSound(&audio, "assets/sounds/hit.mp3");
+                }
+            }
         }
         else { if (zwindow.keyPressed(RGFW_space)) { flappyBirdStarted = true; }}
-
-        for (unsigned int i = 1; i < sprites.size() / 2; i++) {
-            unsigned int index = ((i - 1) * 2) + 1;
-            sprites[index].position[0] -= .5f * deltaTime;
-            if (sprites[index].position[0] < -1.5f) {
-                sprites[index].position[0] = 1.5f;
-                sprites[index].position[1] = Random(4, 14) / 10.f;
-            }
-            sprites[index + 1].position[0] = sprites[index].position[0];
-            sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;
-
-            if (flappyBirdStarted && !flappyBirdDead && (zcollide_checkSquareCollision(sprites[index], sprites[0]) || zcollide_checkSquareCollision(sprites[index + 1], sprites[0]))) {
-                flappyBirdDead = true;
-                flappyBirdSpeedY = -1.5f;
-                sprites[0].rotation = 60.f;
-                sprites[0].textureIndex = 1;
-
-                playSound(&audio, "assets/sounds/hit.mp3");
-            }
-        }
     }
 private:
     ZWindow& zwindow;

@@ -85,7 +85,7 @@ struct Model;
 extern float deltaTime;
 extern std::vector<SpriteData> sprites;
 extern std::vector<Sprite> spriteCPU;
-extern std::vector<std::unique_ptr<Texture>> spriteTextures;
+extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
 extern std::shared_ptr<Model> squareModel;
 
 /* extern funcs */
@@ -178,7 +178,7 @@ std::vector<Sprite> spriteCPU;
 unsigned int spriteID = 0;
 
 /* texture vecs */
-std::vector<std::unique_ptr<Texture>> spriteTextures;
+std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
 
 /* window vars */
 bool framebufferResized = false;
@@ -205,7 +205,6 @@ VkPipelineLayout pipelineLayout;
 VkDescriptorSetLayout descriptorSetLayout;
 VkDescriptorPool descriptorPool;
 std::shared_ptr<Model> squareModel;
-std::vector<std::string> texturePaths;
 
 /* rendersystem vars */
 VkDescriptorSet spriteDataDescriptorSet;
@@ -1007,6 +1006,7 @@ std::vector<char> readFile(const std::string& filepath) {
     file.seekg(0);
     file.read(buffer.data(), fileSize);
     file.close();
+
     return buffer;
 }
 
@@ -1045,39 +1045,6 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
 
     sprites.emplace_back(spriteData);
     spriteCPU.emplace_back(sprite);
-}
-
-void initSprites() {
-    spriteTextures.reserve(ZENGINE_MAX_TEXTURES);
-    squareModel = makeModel({
-        -.5f, -.5f, // Bottom-Left
-        .5f, -.5f,  // Bottom-Right
-        -.5f, .5f,  // Top-Right
-        .5f, .5f    // Top-Left
-    });
-
-    while (texturePaths.size() < ZENGINE_MAX_TEXTURES) { texturePaths.emplace_back("e.jpg"); }
-    for (unsigned char i = 0; i < texturePaths.size(); i++) { spriteTextures.emplace_back(std::make_unique<Texture>(texturePaths[i])); }
-}
-
-void loadFlappyBird() {
-    texturePaths = { "flappyBird.png", "pipe.png" };
-    initSprites();
-
-    createSprite(squareModel, 0, -.7f, -.2f, .1f, .1f, 0.f);
-
-    for (float i = 1.f; i < 5.f; i += 1.f) {
-        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
-        createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f);
-    }
-}
-
-void loadSlimeAttack() {
-    texturePaths = { "flappyBird.png", "pipe.png" };
-    initSprites();
-
-    createSprite(squareModel, 1, 0.f, 0.f, .15f, .15f, 0.f);
-    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
 }
 
 void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
@@ -1395,8 +1362,6 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
     vkDestroyShaderModule(device_, shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device_, shaderStages[1].module, nullptr);
 
-    loadFlappyBird();
-
     /* create the pipeline layout */
     VkPushConstantRange pushConstantRange{};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -1411,7 +1376,29 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
 
     if (vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 
-    /* initialize sprite data */
+    /* create texture array descriptor set */
+    std::vector<VkDescriptorImageInfo> imageInfos(ZENGINE_MAX_TEXTURES);
+    
+    std::unique_ptr<Texture> texture = std::make_unique<Texture>("e.jpg");
+    VkImageView textureImage = texture->getImageView();
+    VkSampler textureSampler = texture->getSampler();
+    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
+        spriteTextures[i] = std::move(texture);
+        VkDescriptorImageInfo& imageInfo = imageInfos[i];
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = textureImage;;
+        imageInfo.sampler = textureSampler;
+    }
+
+     /* init sprites */
+    squareModel = makeModel({
+        -.5f, -.5f, // Bottom-Left
+        .5f, -.5f,  // Bottom-Right
+        -.5f, .5f,  // Top-Right
+        .5f, .5f    // Top-Left
+    });
+    createSprite(squareModel, 0, 0.f, 0.f, .1f, .1f, 0.f);
+
     VkDeviceSize bufferSize = sizeof(SpriteData) * ZENGINE_MAX_SPRITES;
     spriteDataBuffer = std::make_unique<Buffer>(bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     spriteDataBuffer->map();
@@ -1421,17 +1408,7 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
     vertex.cameraZoom[0] = 1.f;
     vertex.cameraZoom[1] = 1.f;
 
-    /* create texture array descriptor set */
-    std::vector<VkDescriptorImageInfo> imageInfos(ZENGINE_MAX_TEXTURES);
-
-    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
-        Texture* texture = spriteTextures[i].get();
-        VkDescriptorImageInfo& imageInfo = imageInfos[i];
-        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = texture->getImageView();
-        imageInfo.sampler = texture->getSampler();
-    }
-
+    /* allocate info */
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
@@ -1567,7 +1544,6 @@ void ZEngineDeinit() {
     vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
 
     commandBuffers.clear();
-    spriteTextures.clear();
     sprites.clear();
     spriteCPU.clear();
     squareModel.reset();

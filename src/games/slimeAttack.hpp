@@ -21,6 +21,15 @@ int health = 3;
 #define SLIMEATTACK_ENEMY_TYPE_OGRE 6
 #define SLIMEATTACK_ENEMY_TYPE_BOSS 7
 
+void knockback(float origin) {
+    if (slimeAttackHitTimer > 1.f) {
+        slimeAttackSpeed[0] = origin >= sprites[0].position[0] ? -.5f : .5f;
+        slimeAttackSpeed[1] = 1.f;
+        slimeAttackHitTimer = 0.f;
+        health--;
+    }
+}
+
 struct Game;
 struct SlimeAttackEnemies {
 public:
@@ -186,7 +195,7 @@ public:
 
                 case SLIMEATTACK_ENEMY_TYPE_OGRE:
                     enemies[i].cooldown += deltaTime;
-                    if (enemies[i].cooldown > 2.5f) { if (abs(sprites[0].position[0] - sprites[i].position[0]) <= .2f) { game.knockback(sprites[i].position[0]); }}
+                    if (enemies[i].cooldown > 2.5f) { if (abs(sprites[0].position[0] - sprites[i].position[0]) <= .2f) { knockback(sprites[i].position[0]); }}
                     enemies[i].speed[0] += (sprites[0].position[0] >= sprites[i].position[0] ? -.1f : .1f) * deltaTime;
                     break;
 
@@ -240,7 +249,11 @@ private:
 
 struct Game {
 public:
-    Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex), slimeAttackEnemies(*this) {}
+    Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex), slimeAttackEnemies(*this) {
+    sprites[0].scale[0] = .15f;
+    sprites[0].scale[1] = .15f;
+    createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
+}
 
     void tick() {
         slimeAttackEnemies.simulateEnemies();
@@ -294,15 +307,6 @@ public:
                 slimeAttackSpeed[1] = 0;
             }
             else { slimeAttackTouchingGround = false; }
-        }
-    }
-
-    void knockback(float origin) {
-        if (slimeAttackHitTimer > 1.f) {
-            slimeAttackSpeed[0] = origin >= sprites[0].position[0] ? -.5f : .5f;
-            slimeAttackSpeed[1] = 1.f;
-            slimeAttackHitTimer = 0.f;
-            health--;
         }
     }
 private:

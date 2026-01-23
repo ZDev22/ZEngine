@@ -97,10 +97,11 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 - Install the **cppdbg** extension to run the program in VSCodium
 
 # How do make your own games:
-- Make a new folder in src/games named whatever you want to name your game
 - Duplicate flappybird.hpp as a good base for your game
-- In main.cpp make sure to include your game instead of the example
 - Delete the tick() implementation and replace it with your own
+- In main.cpp make sure to include your game instead of the example
+- ZDeps documentation is inside their respective files
+- sprites[0] is the default sprite, you dont need to create it
 
 # Dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>
