@@ -51,11 +51,11 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
     else if (usingAAABB != -1 && usingBAABB == -1) {
         ZCOLLIDE_AABBS b;
         b.ID = dataB.ID;
-        const auto& verticesB = getVertices(spriteB.model);
+        const Vertex* verticesB = getVertices(spriteB.model);
 
-        for (auto verticy : verticesB) {
-            float pxB = verticy.position[0] * dataB.scale[0];
-            float pyB = verticy.position[1] * dataB.scale[1];
+        for (unsigned int i = 0; i < getVerticySize(spriteB.model); i++) {
+            const float pxB = verticesB[i].position[0] * dataB.scale[0];
+            const float pyB = verticesB[i].position[1] * dataB.scale[1];
             float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
             transformedB[0] += dataB.position[0];
             transformedB[1] += dataB.position[1];
@@ -71,11 +71,11 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
     else if (usingAAABB == -1 && usingBAABB != -1) {
         ZCOLLIDE_AABBS a;
         a.ID = dataA.ID;
-        const auto& verticesA = getVertices(spriteA.model);
+        const Vertex* verticesA = getVertices(spriteA.model);
 
-        for (auto verticy : verticesA) {
-            float pxA = verticy.position[0] * dataA.scale[0];
-            float pyA = verticy.position[1] * dataA.scale[1];
+        for (unsigned int i = 0; i < getVerticySize(spriteA.model); i++) {
+            const float pxA = verticesA[i].position[0] * dataA.scale[0];
+            const float pyA = verticesA[i].position[1] * dataA.scale[1];
             float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
             transformedA[0] += dataA.position[0];
             transformedA[1] += dataA.position[1];
@@ -97,13 +97,15 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
         ZCOLLIDE_AABBS b;
         b.ID = dataB.ID;
 
-        const auto& verticesA = getVertices(spriteA.model);
-        const auto& verticesB = getVertices(spriteB.model);
+        const Vertex* verticesA = getVertices(spriteA.model);
+        const Vertex* verticesB = getVertices(spriteB.model);
+        const unsigned int verticesAsize = getVerticySize(spriteA.model);
+        const unsigned int verticesBsize = getVerticySize(spriteB.model);
 
-        if (verticesA.size() > verticesB.size()) {
-            for (unsigned int i = 0; i < verticesA.size(); i++) {
-                float pxA = verticesA[i].position[0] * dataA.scale[0];
-                float pyA = verticesA[i].position[1] * dataA.scale[1];
+        if (verticesAsize > verticesBsize) {
+            for (unsigned int i = 0; i < verticesAsize; i++) {
+                const float pxA = verticesA[i].position[0] * dataA.scale[0];
+                const float pyA = verticesA[i].position[1] * dataA.scale[1];
                 float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                 transformedA[0] += dataA.position[0];
                 transformedA[1] += dataA.position[1];
@@ -112,9 +114,9 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
                 if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
                 if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
-                if (i < verticesB.size()) {
-                    float pxB = verticesB[i].position[0] * dataB.scale[0];
-                    float pyB = verticesB[i].position[1] * dataB.scale[1];
+                if (i < verticesBsize) {
+                    const float pxB = verticesB[i].position[0] * dataB.scale[0];
+                    const float pyB = verticesB[i].position[1] * dataB.scale[1];
                     float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
                     transformedB[0] += dataB.position[0];
                     transformedB[1] += dataB.position[1];
@@ -125,25 +127,21 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
                 }
             }
         }
-        else if (verticesA.size() < verticesB.size()) {
-            for (unsigned int i = 0; i < verticesB.size(); i++) {
-                float pxB = verticesB[i].position[0] * dataB.scale[0];
-                float pyB = verticesB[i].position[1] * dataB.scale[1];
-                float transformedB[2] = {
-                    dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB,
-                    dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB
-                };
+        else if (verticesAsize < verticesBsize) {
+            for (unsigned int i = 0; i < verticesBsize; i++) {
+                const float pxB = verticesB[i].position[0] * dataB.scale[0];
+                const float pyB = verticesB[i].position[1] * dataB.scale[1];
+                float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB };
                 transformedB[0] += dataB.position[0];
                 transformedB[1] += dataB.position[1];
-
                 if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
                 if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
                 if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];
                 if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
 
-                if (i < verticesA.size()) {
-                    float pxA = verticesA[i].position[0] * dataA.scale[0];
-                    float pyA = verticesA[i].position[1] * dataA.scale[1];
+                if (i < verticesAsize) {
+                    const float pxA = verticesA[i].position[0] * dataA.scale[0];
+                    const float pyA = verticesA[i].position[1] * dataA.scale[1];
                     float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                     transformedA[0] += dataA.position[0];
                     transformedA[1] += dataA.position[1];
@@ -155,24 +153,22 @@ bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Spr
             }
         }
         else {
-            for (unsigned int i = 0; i < verticesA.size(); i++) {
-                float pxA = verticesA[i].position[0] * dataA.scale[0];
-                float pyA = verticesA[i].position[1] * dataA.scale[1];
+            for (unsigned int i = 0; i < verticesAsize; i++) {
+                const float pxA = verticesA[i].position[0] * dataA.scale[0];
+                const float pyA = verticesA[i].position[1] * dataA.scale[1];
                 float transformedA[2] = { dataA.rotationMatrix[0] * pxA + dataA.rotationMatrix[1] * pyA, dataA.rotationMatrix[2] * pxA + dataA.rotationMatrix[3] * pyA};
                 transformedA[0] += dataA.position[0];
                 transformedA[1] += dataA.position[1];
-
                 if (transformedA[0] < a.pos[0]) a.pos[0] = transformedA[0];
                 if (transformedA[1] < a.pos[1]) a.pos[1] = transformedA[1];
                 if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
                 if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
-                float pxB = verticesB[i].position[0] * dataB.scale[0];
-                float pyB = verticesB[i].position[1] * dataB.scale[1];
+                const float pxB = verticesB[i].position[0] * dataB.scale[0];
+                const float pyB = verticesB[i].position[1] * dataB.scale[1];
                 float transformedB[2] = { dataB.rotationMatrix[0] * pxB + dataB.rotationMatrix[1] * pyB, dataB.rotationMatrix[2] * pxB + dataB.rotationMatrix[3] * pyB};
                 transformedB[0] += dataB.position[0];
                 transformedB[1] += dataB.position[1];
-
                 if (transformedB[0] < b.pos[0]) b.pos[0] = transformedB[0];
                 if (transformedB[1] < b.pos[1]) b.pos[1] = transformedB[1];
                 if (transformedB[0] > b.pos[2]) b.pos[2] = transformedB[0];

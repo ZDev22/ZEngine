@@ -93,7 +93,8 @@ void ZEngineInit();
 void ZEngineRender();
 void ZEngineDeinit();
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model);
+inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
+inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model);
 void updateTexture(unsigned char index);
 
 /* structs */
@@ -935,13 +936,13 @@ private:
 
 struct Model {
 public:
-    Model(const std::vector<Vertex>& vertices) : vertices(vertices) {
-        vertexBuffer = std::make_unique<Buffer>(sizeof(Vertex) * vertices.size(), 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    Model(const Vertex* vertices, const unsigned int verticySize) : vertices(vertices), verticySize(verticySize) {
+        vertexBuffer = std::make_unique<Buffer>(sizeof(Vertex) * verticySize, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
         vertexBuffer->map();
-        vertexBuffer->writeToBuffer((const void*)(vertices.data()), (unsigned int)(sizeof(Vertex) * vertices.size()));
+        vertexBuffer->writeToBuffer((const void*)vertices, (unsigned int)(sizeof(Vertex) * verticySize));
         vertexBuffer->unmap();
     }
-    ~Model() { vertices.clear(); }
+    ~Model() { delete[] vertices; }
 
     void bind(VkCommandBuffer commandBuffer) {
         VkBuffer buffers[] = { vertexBuffer->getBuffer() };
@@ -949,16 +950,19 @@ public:
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     }
 
-    inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)vertices.size(), instanceCount, 0, firstInstance); }
-    inline const std::vector<Vertex>& getVertices() const { return vertices; }
+    inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)verticySize, instanceCount, 0, firstInstance); }
+    inline const Vertex* getVertices() const { return vertices; }
+    inline const unsigned int size() const { return verticySize; }
 
 private:
     std::unique_ptr<Buffer> vertexBuffer;
-    std::vector<Vertex> vertices;
+    const Vertex* vertices;
+    const unsigned int verticySize;
 };
 
 /* ZENGINE HELPER FUNCTIONS */
-inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model) { return model->getVertices(); }
+inline const Vertex* getVertices(const std::shared_ptr<Model>& model) { return model->getVertices(); }
+inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model) { return model->size(); }
 
 void updateTexture(unsigned char index) {
     Texture* texture = spriteTextures[index].get();
@@ -1013,19 +1017,19 @@ VkShaderModule createShaderModule(const char* filepath) {
 }
 
 std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
-    std::vector<Vertex> vertices;
-    vertices.reserve(positions.size() / 2);
+    unsigned int verticySize = positions.size() / 2;
+    Vertex* vertices = new Vertex[verticySize];
 
-    for (unsigned int i = 0; i < positions.size(); i += 2) {
+    for (unsigned int j = 0; j < verticySize; ++j) {
         Vertex v{};
-        v.position[0] = positions[i];
-        v.position[1] = positions[i + 1];
-        v.texCoord[0] = positions[i] + .5f;
-        v.texCoord[1] = positions[i + 1] + .5f;
-        vertices.emplace_back(v);
+        v.position[0] = positions[j * 2];
+        v.position[1] = positions[j * 2 + 1];
+        v.texCoord[0] = positions[j * 2] + 0.5f;
+        v.texCoord[1] = positions[j * 2 + 1] + 0.5f;
+        vertices[j] = v;
     }
 
-    return std::make_shared<Model>(vertices);
+    return std::make_shared<Model>(vertices, verticySize);
 }
 
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
