@@ -223,19 +223,18 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
     unsigned int queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+    VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies);
 
-    unsigned int i = 0;
-    for (const auto& queueFamily : queueFamilies) {
-        if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+    for (unsigned int i = 0; i < queueFamilyCount; i++) {
+        if (queueFamilies[i].queueCount > 0 && queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = i;
             indices.graphicsFamilyHasValue = true;
         }
 
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
-        if (queueFamily.queueCount > 0 && presentSupport) {
+        if (queueFamilies[i].queueCount > 0 && presentSupport) {
             indices.presentFamily = i;
             indices.presentFamilyHasValue = true;
         }
@@ -387,7 +386,7 @@ public:
         createSyncObjects();
     }
     ~SwapChain() {
-        for (auto imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
+        for (VkImageView imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
         swapChainImageViews.clear();
 
         vkDestroySwapchainKHR(device_, swapChain, nullptr);
@@ -936,7 +935,7 @@ private:
 
 struct Model {
 public:
-    Model(const Vertex* vertices, const unsigned int verticySize) : vertices(vertices), verticySize(verticySize) {
+    Model(Vertex* vertices, const unsigned int verticySize) : vertices(vertices), verticySize(verticySize) {
         vertexBuffer = std::make_unique<Buffer>(sizeof(Vertex) * verticySize, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
         vertexBuffer->map();
         vertexBuffer->writeToBuffer((const void*)vertices, (unsigned int)(sizeof(Vertex) * verticySize));
@@ -950,13 +949,19 @@ public:
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     }
 
+    /* this fixes copying memory leak ig */
+    Model(const Model&) = delete;
+    Model& operator=(const Model&) = delete;
+    Model(Model&&) = default;
+    Model& operator=(Model&&) = default;
+
     inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)verticySize, instanceCount, 0, firstInstance); }
     inline const Vertex* getVertices() const { return vertices; }
     inline const unsigned int size() const { return verticySize; }
 
 private:
     std::unique_ptr<Buffer> vertexBuffer;
-    const Vertex* vertices;
+    Vertex* vertices;
     const unsigned int verticySize;
 };
 
@@ -1137,29 +1142,18 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
         vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, availableExtensions.data());
 
-        std::vector<const char*> requiredExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-
-        for (auto it = requiredExtensions.begin(); it != requiredExtensions.end();) {
-            bool found = false;
-            for (const auto& extension : availableExtensions) { if (std::string(extension.extensionName) == *it) { found = true; break; }}
-            if (found) { it = requiredExtensions.erase(it); }
-            else { ++it; }
+        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(devices[i]);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+        std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
+        for (unsigned char i = 0; i < swapChainSupport.presentModes.size(); i++) {
+            if (swapChainSupport.presentModes[i] == 0) { std::cout << "    - GPU supports VSync\n"; }
+            else if (swapChainSupport.presentModes[i] == 2) { std::cout << "    - GPU can disable VSync\n"; }
         }
-        bool extensionsSupported = requiredExtensions.empty();
+        newScore += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
 
-        if (extensionsSupported) {
-            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(devices[i]);
-            swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-            std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
-            for (unsigned char i = 0; i < swapChainSupport.presentModes.size(); i++) {
-                if (swapChainSupport.presentModes[i] == 0) { std::cout << "    - GPU supports VSync\n"; }
-                else if (swapChainSupport.presentModes[i] == 2) { std::cout << "    - GPU can disable VSync\n"; }
-            }
-            newScore += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
-        }
         VkPhysicalDeviceFeatures supportedFeatures;
         vkGetPhysicalDeviceFeatures(devices[i], &supportedFeatures);
-        if (!(indices.isComplete() && extensionsSupported && swapChainAdequate)) { newScore = 0; }
+        if (!(indices.isComplete() && swapChainAdequate)) { newScore = 0; }
         if (newScore > highScore) {
             highScore = newScore;
             physicalDevice = devices[i];
@@ -1239,7 +1233,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     shaderStages[1].pName = "main";
 
     VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
-    auto attributeDescriptions = Vertex::getAttributeDescriptions();
+    std::vector<VkVertexInputAttributeDescription> attributeDescriptions = Vertex::getAttributeDescriptions();
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 1;
