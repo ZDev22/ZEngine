@@ -991,29 +991,25 @@ void createCommandBuffers() {
     vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data());
 }
 
-VkShaderModule createShaderModule(const char* code, long int fileSize) {
+VkShaderModule createShaderModule(const char* filepath) {
+    std::ifstream file(filepath, std::ios::ate | std::ios::binary);
+    if (!file.is_open()) { throw ("Failed to open shader!"); }
+
+    size_t fileSize = file.tellg();
+    file.seekg(0);
+
+    unsigned int buffer[fileSize / 4];
+    file.read(reinterpret_cast<char*>(buffer), fileSize);
+
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = fileSize;
-    createInfo.pCode = reinterpret_cast<const uint32_t*>(code);
+    createInfo.pCode = buffer;
 
     VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw("failed to create shader module!"); }
+    if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw ("failed to create shader module"); }
+
     return shaderModule;
-}
-
-char* readFile(const char* filepath, long int* fileSize) {
-    std::ifstream file(filepath, std::ios::ate | std::ios::binary);
-    if (!file.is_open()) { throw("Failed to open shader!"); }
-
-    *fileSize = file.tellg();
-    file.seekg(0);
-
-    char* buffer = new char[*fileSize];
-    file.read(buffer, *fileSize);
-    file.close();
-
-    return buffer;
 }
 
 std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
@@ -1228,21 +1224,15 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     swapChain = std::make_unique<SwapChain>();
     createCommandBuffers();
 
-    long int shaderSize = 0;
     VkPipelineShaderStageCreateInfo shaderStages[2] = {};
     shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    char* vertbuffer = readFile("shaders/texture.vert.spv", &shaderSize);
-    shaderStages[0].module = createShaderModule(vertbuffer, shaderSize);
+    shaderStages[0].module = createShaderModule("shaders/texture.vert.spv");
     shaderStages[0].pName = "main";
     shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    char* fragbuffer = readFile("shaders/texture.frag.spv", &shaderSize);
-    shaderStages[1].module = createShaderModule(fragbuffer, shaderSize);
+    shaderStages[1].module = createShaderModule("shaders/texture.frag.spv");
     shaderStages[1].pName = "main";
-
-    delete[] vertbuffer;
-    delete[] fragbuffer;
 
     VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
     auto attributeDescriptions = Vertex::getAttributeDescriptions();
