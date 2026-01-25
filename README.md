@@ -77,9 +77,9 @@ brew install gcc cmake lld #C/C++/Cmake/Cppdbg
 brew install vulkan-tools vulkan-headers molten-vk #Vulkan
 ```
 ## WINDOWS:
-- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
-- Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
 - Download the **Windows Installer** from [https://cmake.org/download/](https://cmake.org/download/)
+- Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
+- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
 - Launch MSYS2 MSYS (the purple one)
 - Run the following commands to download a C++ compiler:
 ```bash
@@ -93,7 +93,7 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 - Restart your IDE (or terminal)
 
 ## Extensions (Linux/Windows):
-- Install **@category:debuggers cppdbg** to run the program in VSCode
+- Install **@category:debuggers cppdbg** or **ms-vscode.cpptools** to run the program in VSCode
 - Install the **cppdbg** extension to run the program in VSCodium
 
 # How do make your own games:
