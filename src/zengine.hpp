@@ -89,6 +89,9 @@ extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
 extern std::shared_ptr<Model> squareModel;
 
 /* extern funcs */
+void ZEngineInit();
+void ZEngineRender();
+void ZEngineDeinit();
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
 inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model);
 void updateTexture(unsigned char index);
@@ -989,24 +992,26 @@ void createCommandBuffers() {
     vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data());
 }
 
-VkShaderModule createShaderModule(const std::vector<char>& code) {
+VkShaderModule createShaderModule(const char* code, long int fileSize) {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = code.size();
-    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+    createInfo.codeSize = fileSize;
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(code);
 
     VkShaderModule shaderModule;
     if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw("failed to create shader module!"); }
     return shaderModule;
 }
 
-std::vector<char> readFile(const std::string& filepath) {
+char* readFile(const char* filepath, long int* fileSize) {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
-    if (!file.is_open()) { throw("failed to open file"); }
-    unsigned int fileSize = (unsigned int)file.tellg();
-    std::vector<char> buffer(fileSize);
+    if (!file.is_open()) { throw("Failed to open shader!"); }
+
+    *fileSize = file.tellg();
     file.seekg(0);
-    file.read(buffer.data(), fileSize);
+
+    char* buffer = new char[*fileSize];
+    file.read(buffer, *fileSize);
     file.close();
 
     return buffer;
@@ -1049,7 +1054,7 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
     spriteCPU.emplace_back(sprite);
 }
 
-void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
+void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
     std::cout << "Compiling shaders...\n"; //---------------------------------------------------------------------------------------------------------------
     {
     const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
@@ -1225,15 +1230,21 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
     swapChain = std::make_unique<SwapChain>();
     createCommandBuffers();
 
+    long int shaderSize = 0;
     VkPipelineShaderStageCreateInfo shaderStages[2] = {};
     shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    shaderStages[0].module = createShaderModule(readFile("shaders/" + shader + ".vert.spv"));
+    char* vertbuffer = readFile("shaders/texture.vert.spv", &shaderSize);
+    shaderStages[0].module = createShaderModule(vertbuffer, shaderSize);
     shaderStages[0].pName = "main";
     shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    shaderStages[1].module = createShaderModule(readFile("shaders/" + shader + ".frag.spv"));
+    char* fragbuffer = readFile("shaders/texture.frag.spv", &shaderSize);
+    shaderStages[1].module = createShaderModule(fragbuffer, shaderSize);
     shaderStages[1].pName = "main";
+
+    delete[] vertbuffer;
+    delete[] fragbuffer;
 
     VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
     auto attributeDescriptions = Vertex::getAttributeDescriptions();

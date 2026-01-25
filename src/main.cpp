@@ -51,7 +51,7 @@ int main() {
 
     ZWindow zwindow{windowdata, 720, 480};
 
-    ZEngineInit("texture");
+    ZEngineInit();
 
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
