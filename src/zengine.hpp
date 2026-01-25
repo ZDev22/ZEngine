@@ -956,6 +956,8 @@ private:
 };
 
 /* ZENGINE HELPER FUNCTIONS */
+inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model) { return model->getVertices(); }
+
 void updateTexture(unsigned char index) {
     Texture* texture = spriteTextures[index].get();
     VkDescriptorImageInfo imageInfo{};
@@ -1073,19 +1075,15 @@ void ZEngineInit(std::string shader) { /* YOU MUST CREATE THE RGFW WINDOW BEFORE
     std::cout << "Creating instance...\n"; //---------------------------------------------------------------------------------------------------------------
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
-    appInfo.engineVersion = VK_MAKE_VERSION(0, 11, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_4;
     appInfo.pApplicationName = "ZDev";
-    #ifdef __linux__
-        appInfo.pEngineName = "ZDev-linux";
-    #elif defined(_APPLE_)
-        appInfo.pEngineName = "ZDev-mac";
-    #elif defined(_WIN32)
-        appInfo.pEngineName = "ZDev-windows";
-    #else
-        appInfo.pEngineName = "ZDev-uknown";
-    #endif
+    appInfo.pEngineName = "ZEngine";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 11, 0);
+#ifdef _APPLE
+    appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 3, 0);
+#else
+    appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 4, 0);
+#endif
 
     size_t rgfWExtensionCount = 0;
     const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
@@ -1543,9 +1541,11 @@ void ZEngineDeinit() {
     vkDeviceWaitIdle(device_);
     vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
 
+    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { spriteTextures[i].reset(); }
     commandBuffers.clear();
     sprites.clear();
     spriteCPU.clear();
+    swapChain.reset();
     squareModel.reset();
     spriteDataBuffer->unmap();
     spriteDataBuffer.reset();
@@ -1555,16 +1555,11 @@ void ZEngineDeinit() {
     vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
     vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
     vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
-
-    swapChain.reset();
-
     vkDestroyCommandPool(device_, commandPool, nullptr);
     vkDestroyDevice(device_, nullptr);
     vkDestroySurfaceKHR(instance, surface_, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
-
-inline std::vector<Vertex> getVertices(std::shared_ptr<Model> model) { return model->getVertices(); }
 
 #endif // ZENGINE_IMPLEMENTATION
 #undef ZENGINE_IMPLEMENTATION
