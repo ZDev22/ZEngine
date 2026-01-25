@@ -61,16 +61,16 @@
 #include <vulkan/vulkan_core.h>
 
 /* std libs (the less the better) */
-#include <iostream> // maybe get rid in debug mode
-#include <vector> // not a fan, but seemingly irriplacable
-#include <string> // c-strings
-#include <cstdio> // stdio.h is better
+#include <string> // c-strings are better
 #include <memory>
+#include <vector>
 #include <fstream>
+#include <iostream> // maybe get rid in debug mode
 #include <filesystem>
-#include <cstdlib> // stdlib.h is better
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 /* forward declaration of all structs lol */
 struct Texture;
@@ -216,7 +216,6 @@ std::unique_ptr<Buffer> spriteDataBuffer;
 /* swapchain vars */
 std::unique_ptr<SwapChain> swapChain;
 VkSwapchainKHR oldSwapChain;
-
 
 /* ZENGINE FUNCTIONS */
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -1208,7 +1207,6 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     #endif
 
     std::vector<const char*> extension = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-
     deviceInfo.enabledExtensionCount = 1;
     deviceInfo.ppEnabledExtensionNames = extension.data();
     deviceInfo.enabledLayerCount = 0;
@@ -1549,9 +1547,9 @@ void ZEngineRender() {
 }
 
 void ZEngineDeinit() {
-    vkDeviceWaitIdle(device_);
-    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
+    vkDeviceWaitIdle(device_); /* wait for gpu*/
 
+    /* free allocated memory*/
     for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { spriteTextures[i].reset(); }
     commandBuffers.clear();
     sprites.clear();
@@ -1561,6 +1559,8 @@ void ZEngineDeinit() {
     spriteDataBuffer->unmap();
     spriteDataBuffer.reset();
 
+    /* free vulkan variables*/
+    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
     vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
     vkDestroyPipeline(device_, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
