@@ -409,11 +409,10 @@ public:
         createSyncObjects();
     }
     ~SwapChain() {
-        //vkDeviceWaitIdle(device_);
         ZENGINE_PRINT3(" - Destroying framebuffers\n"); for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
-
         ZENGINE_PRINT3(" - Destroying depth data\n");
-        for (size_t i = 0; i < depthImages.size(); i++) {
+
+        for (unsigned char i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device_, depthImageViews[i], nullptr);
             vkDestroyImage(device_, depthImages[i], nullptr);
             vkFreeMemory(device_, depthImageMemorys[i], nullptr);
@@ -422,9 +421,8 @@ public:
         ZENGINE_PRINT3(" - Destroying image views\n"); for (VkImageView imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
         ZENGINE_PRINT3(" - Destroying render pass\n"); vkDestroyRenderPass(device_, renderPass, nullptr);
         if (!ZEngineClose) { ZENGINE_PRINT3(" - Destroying swapchain KHR\n"); vkDestroySwapchainKHR(device_, swapChain, nullptr); }
-
         ZENGINE_PRINT3(" - Destroying semaphores\n");
-            for (uint32_t i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
+        for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device_, imageAvailableSemaphores[i], nullptr);
             vkDestroySemaphore(device_, renderFinishedSemaphores[i], nullptr);
             vkDestroyFence(device_, inFlightFences[i], nullptr);
@@ -432,38 +430,34 @@ public:
     }
 
     inline VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
-
+    
     VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
-        if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, 18446744073709551615ULL); }
+        if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
         imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
-        VkSubmitInfo submitInfo = {};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        const VkSemaphore waitSemaphores[1] = { imageAvailableSemaphores[currentFrame] };
+        const VkPipelineStageFlags waitStages[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        const VkSemaphore signalSemaphores[1] = { renderFinishedSemaphores[currentFrame] };
 
-        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
-
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = buffers;
-
-        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 
         vkResetFences(device_, 1, &inFlightFences[currentFrame]);
         vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences[currentFrame]);
 
-        VkPresentInfoKHR presentInfo = {};
+        VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = signalSemaphores;
-
-        VkSwapchainKHR swapChains[] = {swapChain};
         presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
+        presentInfo.pSwapchains = &swapChain;
         presentInfo.pImageIndices = imageIndex;
 
         currentFrame = (currentFrame + 1) % ZENGINE_MAX_FRAMES_IN_FLIGHT;
@@ -483,14 +477,7 @@ public:
             }
         }
 
-        if (swapChainSupport.capabilities.currentExtent.width == 4294967295U) {
-            if (windowExtent.width < swapChainSupport.capabilities.minImageExtent.width) { windowExtent.width = swapChainSupport.capabilities.minImageExtent.width; }
-            if (windowExtent.width > swapChainSupport.capabilities.maxImageExtent.width) { windowExtent.width = swapChainSupport.capabilities.maxImageExtent.width; }
-            if (windowExtent.height < swapChainSupport.capabilities.minImageExtent.height) { windowExtent.height = swapChainSupport.capabilities.minImageExtent.height; }
-            if (windowExtent.height > swapChainSupport.capabilities.maxImageExtent.height) { windowExtent.height = swapChainSupport.capabilities.maxImageExtent.height; }
-        }
-        else { windowExtent = swapChainSupport.capabilities.currentExtent; }
-
+        windowExtent = swapChainSupport.capabilities.currentExtent;
         unsigned int imageCount = swapChainSupport.capabilities.minImageCount + 1;
         if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) { imageCount = swapChainSupport.capabilities.maxImageCount; }
 
@@ -506,9 +493,8 @@ public:
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
         QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-        unsigned int queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
-
         if (indices.graphicsFamily != indices.presentFamily) {
+            const unsigned int queueFamilyIndices[2] = { indices.graphicsFamily, indices.presentFamily };
             createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
             createInfo.queueFamilyIndexCount = 2;
             createInfo.pQueueFamilyIndices = queueFamilyIndices;
@@ -529,7 +515,7 @@ public:
             createInfo.presentMode = VK_PRESENT_MODE_MAILBOX_KHR;
         #endif
 
-        if (vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain) != VK_SUCCESS) { throw("failed to create swapchain!"); }
+        vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain);
         vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr);
         swapChainImages.resize(imageCount);
         vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data());
@@ -550,7 +536,8 @@ public:
             viewInfo.subresourceRange.levelCount = 1;
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
-            if (vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) { throw("failed to create texture image view!"); }
+
+            vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews[i]);
         }
     }
 
@@ -618,7 +605,7 @@ public:
         swapChainFramebuffers.resize(swapChainImages.size());
 
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
-            VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
+            const VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
 
             VkFramebufferCreateInfo framebufferInfo{};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -629,9 +616,7 @@ public:
             framebufferInfo.height = windowExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-                throw("failed to create framebuffer!");
-            }
+            vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
         }
     }
 
@@ -674,7 +659,7 @@ public:
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(device_, &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) { throw("failed to create texture image view!"); }
+            vkCreateImageView(device_, &viewInfo, nullptr, &depthImageViews[i]);
         }
     }
 
@@ -691,7 +676,11 @@ public:
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        for (unsigned int i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) { if (vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS || vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS || vkCreateFence(device_, &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) { throw("failed to create synchronization objects for a frame!"); }}
+        for (unsigned int i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
+            vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
+            vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
+            vkCreateFence(device_, &fenceInfo, nullptr, &inFlightFences[i]);
+        }
     }
 
     inline VkFramebuffer getFrameBuffer(unsigned long index) const { return swapChainFramebuffers[index]; }
@@ -1442,6 +1431,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(SpriteData) * ZENGINE_MAX_SPRITES;
 
+    ZENGINE_PRINT2("Writing sprite descriptor sets\n");
     VkWriteDescriptorSet bufferWrite{};
     bufferWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     bufferWrite.dstSet = spriteDataDescriptorSet;
