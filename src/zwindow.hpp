@@ -182,13 +182,13 @@ public:
 
     // MONITOR --------------------------------------------------------------------------
 
-    inline void getMonitorWorkArea(i32* x, i32* y, i32* w, i32* h) { RGFW_monitor_getWorkarea(mon, x, y, w, h); }
+    inline void getMonitorWorkArea(i32* x, i32* y, i32* w, i32* h) { RGFW_monitor_getWorkarea(monitor, x, y, w, h); }
     inline void scaleMonitorToWindow() { RGFW_monitor_scaleToWindow(monitor, window); }
     inline size_t initModeCount() {
 	    modes = (RGFW_monitorMode*)RGFW_ALLOC(RGFW_monitor_getModesPtr(monitor, NULL) * sizeof(RGFW_monitorNode));
 	    return RGFW_monitor_getModesPtr(monitor, &modes);
     }
-    inline void setMonitorMode(unsigned char i) { RGFW_monitor_setMode(mon, &modes[i]); }
+    inline void setMonitorMode(unsigned char i) { RGFW_monitor_setMode(monitor, &modes[i]); }
 
 private:
     RGFW_window*& window;

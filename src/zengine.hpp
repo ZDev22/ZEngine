@@ -2,6 +2,7 @@
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
+#define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
 #define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 #define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
@@ -19,6 +20,27 @@
 #endif
 #ifndef ZENGINE_MAX_TEXTURES
     #define ZENGINE_MAX_TEXTURES 50
+#endif
+
+/* debugging printing */
+#define ZENGINE_PRINT1(x)
+#define ZENGINE_PRINT2(x)
+#define ZENGINE_PRINT3(x)
+
+#ifdef ZENGINE_DEBUG
+    #include <iostream>
+    #if ZENGINE_DEBUG > 2
+        #undef ZENGINE_PRINT3
+        #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
+    #endif    
+    #if ZENGINE_DEBUG > 1
+        #undef ZENGINE_PRINT2
+        #define ZENGINE_PRINT2(...) std::cout << __VA_ARGS__
+    #endif
+    #if ZENGINE_DEBUG > 0
+        #undef ZENGINE_PRINT1
+        #define ZENGINE_PRINT1(...) std::cout << __VA_ARGS__
+    #endif
 #endif
 
 /* define these for dependencies */
@@ -65,7 +87,6 @@
 #include <memory>
 #include <vector>
 #include <fstream>
-#include <iostream> // maybe get rid in debug mode
 #include <filesystem>
 #include <math.h>
 #include <stdio.h>
@@ -83,6 +104,7 @@ struct Model;
 
 /* extern vars */
 extern float deltaTime;
+extern bool ZEngineClose;
 extern std::vector<SpriteData> sprites;
 extern std::vector<Sprite> spriteCPU;
 extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
@@ -175,6 +197,7 @@ struct QueueFamilyIndices {
 Push vertex; /* kinda just chillin ngl */
 
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
+bool ZEngineClose = false; /* flag to show when the engine is closing */
 
 /* sprite vecs */
 std::vector<SpriteData> sprites;
@@ -386,21 +409,22 @@ public:
         createSyncObjects();
     }
     ~SwapChain() {
-        for (VkImageView imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
-        swapChainImageViews.clear();
+        //vkDeviceWaitIdle(device_);
+        ZENGINE_PRINT3(" - Destroying framebuffers\n"); for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
 
-        vkDestroySwapchainKHR(device_, swapChain, nullptr);
-        vkDestroyRenderPass(device_, renderPass, nullptr);
-
-        swapChain = nullptr;
-
-        for (unsigned int i = 0; i < depthImages.size(); i++) {
+        ZENGINE_PRINT3(" - Destroying depth data\n");
+        for (size_t i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device_, depthImageViews[i], nullptr);
             vkDestroyImage(device_, depthImages[i], nullptr);
             vkFreeMemory(device_, depthImageMemorys[i], nullptr);
         }
-        for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
-        for (unsigned int i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
+
+        ZENGINE_PRINT3(" - Destroying image views\n"); for (VkImageView imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
+        ZENGINE_PRINT3(" - Destroying render pass\n"); vkDestroyRenderPass(device_, renderPass, nullptr);
+        if (!ZEngineClose) { ZENGINE_PRINT3(" - Destroying swapchain KHR\n"); vkDestroySwapchainKHR(device_, swapChain, nullptr); }
+
+        ZENGINE_PRINT3(" - Destroying semaphores\n");
+            for (uint32_t i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device_, imageAvailableSemaphores[i], nullptr);
             vkDestroySemaphore(device_, renderFinishedSemaphores[i], nullptr);
             vkDestroyFence(device_, inFlightFences[i], nullptr);
@@ -1059,7 +1083,7 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
 }
 
 void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
-    std::cout << "Compiling shaders...\n"; //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Compiling shaders\n"); //---------------------------------------------------------------------------------------------------------------
     {
     const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
     const char* stages[4]     = { "vert",  "frag",  "comp",  "geom" };
@@ -1073,7 +1097,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
 
                 if (!(std::filesystem::exists(outputFile)  && std::filesystem::last_write_time(outputFile) >= std::filesystem::last_write_time(inputFile))) {
                     int result = std::system(("glslc -fshader-stage=" + std::string(stages[i]) + " " + inputFile + " -o " + outputFile).c_str());
-                    if (result != 0) { std::cerr << "Failed to compile " << inputFile << " (error: " << result << ")\n"; }
+                    if (result != 0) { ZENGINE_PRINT1("Failed to compile " << inputFile << " (error: " << result << ")\n"); }
                 }
                 break;
             }
@@ -1081,7 +1105,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     }
     }
 
-    std::cout << "Creating instance...\n"; //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Creating instance...\n"); //---------------------------------------------------------------------------------------------------------------
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "ZDev";
@@ -1103,8 +1127,8 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
         extensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     #endif
 
-    std::cout << "Enabling extensions:\n";
-    for (unsigned int i = 0; i < extensions.size(); i++) { std::cout << "     - " << extensions[i] << std::endl; }
+    ZENGINE_PRINT1("Enabling extensions:\n");
+    for (unsigned int i = 0; i < extensions.size(); i++) { ZENGINE_PRINT2("     - " << extensions[i] << std::endl); }
 
     VkInstanceCreateInfo instanceInfo{};
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -1117,14 +1141,14 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
 
     vkCreateInstance(&instanceInfo, nullptr, &instance);
 
-    std::cout << "Creating surface...\n"; RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Creating surface...\n"); RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
 
-    std::cout << "Creating physical device...\n"; //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Creating physical device...\n"); //---------------------------------------------------------------------------------------------------------------
     unsigned int deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
     if (deviceCount == 0) { throw("No Vulkan-compatible GPUs found"); }
-    else if (deviceCount == 1) { std::cout << "Found 1 GPU\n"; }
-    else { std::cout << "Found " << deviceCount << " GPUs\n"; }
+    else if (deviceCount == 1) { ZENGINE_PRINT2("Found 1 GPU\n"); }
+    else { ZENGINE_PRINT2("Found " << deviceCount << " GPUs\n"); }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
@@ -1144,10 +1168,10 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
 
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(devices[i]);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-        std::cout << "SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl;
+        ZENGINE_PRINT1("SwapChain formats: " << swapChainSupport.formats.size() << ", present modes: " << swapChainSupport.presentModes.size() << std::endl);
         for (unsigned char i = 0; i < swapChainSupport.presentModes.size(); i++) {
-            if (swapChainSupport.presentModes[i] == 0) { std::cout << "    - GPU supports VSync\n"; }
-            else if (swapChainSupport.presentModes[i] == 2) { std::cout << "    - GPU can disable VSync\n"; }
+            if (swapChainSupport.presentModes[i] == 0) { ZENGINE_PRINT2("    - GPU supports VSync\n"); }
+            else if (swapChainSupport.presentModes[i] == 2) { ZENGINE_PRINT2("    - GPU can disable VSync\n"); }
         }
         newScore += (swapChainSupport.formats.size() * swapChainSupport.presentModes.size());
 
@@ -1161,11 +1185,11 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
         }
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; std::cout << "Selected GPU is unsupported! Expect bugs!"; }
+    if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; ZENGINE_PRINT1("Selected GPU is unsupported! Expect bugs!\n"); }
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-    std::cout << "Selected GPU: " << properties.deviceName << std::endl;
+    ZENGINE_PRINT1("Selected GPU: " << properties.deviceName << std::endl);
 
-    std::cout << "Creating logical device...\n"; //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Creating logical device...\n"); //---------------------------------------------------------------------------------------------------------------
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -1209,7 +1233,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 
-    std::cout << "Creating command pool...\n"; //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Creating command pool...\n"); //---------------------------------------------------------------------------------------------------------------
     QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
     VkCommandPoolCreateInfo commandPoolInfo{};
     commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -1218,7 +1242,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
 
     if (vkCreateCommandPool(device_, &commandPoolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool"); }
 
-    std::cout << "Getting project ready...\n"; //---------------------------------------------------------------------------------------------------------------
+    ZENGINE_PRINT1("Getting project ready...\n"); //---------------------------------------------------------------------------------------------------------------
     swapChain = std::make_unique<SwapChain>();
     createCommandBuffers();
 
@@ -1374,6 +1398,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     /* create texture array descriptor set */
     std::vector<VkDescriptorImageInfo> imageInfos(ZENGINE_MAX_TEXTURES);
     
+    ZENGINE_PRINT2("Initing sprites...\n");
     std::unique_ptr<Texture> texture = std::make_unique<Texture>("e.jpg");
     VkImageView textureImage = texture->getImageView();
     VkSampler textureSampler = texture->getSampler();
@@ -1535,29 +1560,30 @@ void ZEngineRender() {
 }
 
 void ZEngineDeinit() {
-    vkDeviceWaitIdle(device_); /* wait for gpu*/
+    ZEngineClose = true;
+    ZENGINE_PRINT3("Waiting for GPU...\n"); vkDeviceWaitIdle(device_);
 
-    /* free allocated memory*/
-    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { spriteTextures[i].reset(); }
+    ZENGINE_PRINT2("Freeing command buffers\n"); vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
     commandBuffers.clear();
-    sprites.clear();
-    spriteCPU.clear();
-    swapChain.reset();
-    squareModel.reset();
-    spriteDataBuffer->unmap();
-    spriteDataBuffer.reset();
 
-    /* free vulkan variables*/
-    vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
-    vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
-    vkDestroyPipeline(device_, graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
-    vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
-    vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
-    vkDestroyCommandPool(device_, commandPool, nullptr);
-    vkDestroyDevice(device_, nullptr);
-    vkDestroySurfaceKHR(instance, surface_, nullptr);
-    vkDestroyInstance(instance, nullptr);
+    ZENGINE_PRINT3("Freeing graphics pipeline\n"); vkDestroyPipeline(device_, graphicsPipeline, nullptr);
+    ZENGINE_PRINT3("Freeing pipeline layout\n");   vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
+    ZENGINE_PRINT3("Freeing discriptor pool\n");   vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
+
+    ZENGINE_PRINT2("Freeing textures\n"); for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { spriteTextures[i].reset(); }
+    ZENGINE_PRINT2("Unmaping sprite data buffer\n"); spriteDataBuffer->unmap();
+    ZENGINE_PRINT3("Freeing sprite data buffer\n"); spriteDataBuffer.reset();
+    ZENGINE_PRINT2("Freeing sprites\n"); sprites.clear();
+    ZENGINE_PRINT3("Freeing sprite models\n"); spriteCPU.clear();
+    ZENGINE_PRINT3("Freeing square model\n"); squareModel.reset();
+    ZENGINE_PRINT3("Freein swapchain\n"); swapChain.reset();
+
+    ZENGINE_PRINT3("Freeing descriptor set layout\n"); vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
+    ZENGINE_PRINT3("Freeing descriptor pool\n"); vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
+    ZENGINE_PRINT3("Freeing command pool\n"); vkDestroyCommandPool(device_, commandPool, nullptr);
+    ZENGINE_PRINT3("Destroying device\n"); vkDestroyDevice(device_, nullptr);
+    ZENGINE_PRINT3("Freeing window surface\n"); vkDestroySurfaceKHR(instance, surface_, nullptr);
+    ZENGINE_PRINT1("Destroying instance\n"); vkDestroyInstance(instance, nullptr);
 }
 
 #endif // ZENGINE_IMPLEMENTATION
