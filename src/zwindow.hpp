@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v2.9.4
+v2.10.4
 
 zwindow.hpp is a lightweight cross-platform single-header cpp window abstraction library built off the latest RGFW
 works best with zengine, but can be a solo library
@@ -24,14 +24,12 @@ public:
         window = RGFW_createWindow("loading...", 100, 100, windowWidth, windowHeight, (u64)0);
         u8 icon[4 * 3 * 3] = {0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF};
         RGFW_window_setIcon(window, icon, 3, 3, 4);
+        monitor = RGFW_window_getMonitor(window);
     }
 
     unsigned char pollEvents() {
         while (RGFW_window_checkEvent(window, &event)) {
-            if (event.type == RGFW_windowResized) {
-                RGFW_window_getSize(window, &windowSize[0], &windowSize[1]);
-                return 1;
-            }
+            if (event.type == RGFW_windowResized) { return 1; }
             else if (event.type == RGFW_quit) {
                 RGFW_window_close(window);
                 window = nullptr;
@@ -121,9 +119,9 @@ public:
 
     // Position
     inline void setMousePosition(i32 x, i32 y) { RGFW_window_moveMouse(window, x, y); }
-    inline void updateMousePosition() { RGFW_window_getMouse(window, &mousePos[0], &mousePos[1]); }
-    inline i32 getMouseX() { return mousePos[0]; }
-    inline i32 getMouseY() { return mousePos[1]; }
+    inline void getMousePosition(i32* x, i32* y) { RGFW_window_getMouse(window, x, y); }
+    inline i32 getMouseX() { i32 x = 0; RGFW_window_getMouse(window, &x, nullptr); return x; }
+    inline i32 getMouseY() { i32 y = 0; RGFW_window_getMouse(window, nullptr, &y); return y; }
 
     // Clicks
     inline bool LMBPressed() { return RGFW_isMouseDown(RGFW_mouseLeft); }
@@ -157,6 +155,9 @@ public:
     inline void setMinSize(i32 x, i32 y) { RGFW_window_setMinSize(window, x, y); }
     inline void setMaxSize(i32 x, i32 y) { RGFW_window_setMaxSize(window, x, y); }
     inline void setAspectRatio(i32 x, i32 y) { RGFW_window_setAspectRatio(window, x, y); }
+    inline void getWindowSize(i32* x, i32* y) { RGFW_window_getSize(window, x, y); }
+    inline i32 getWindowSizeX() { i32 x = 0; RGFW_window_getSize(window, &x, nullptr); return x; }
+    inline i32 getWindowSizeY() { i32 y = 0; RGFW_window_getSize(window, nullptr, &y); return y; }
 
     // State
     inline void focus() { RGFW_window_focus(window); }
@@ -179,8 +180,20 @@ public:
     inline void show() { RGFW_window_show(window); }
     inline void close() { RGFW_window_close(window); }
 
+    // MONITOR --------------------------------------------------------------------------
+
+    inline void getMonitorWorkArea(i32* x, i32* y, i32* w, i32* h) { RGFW_monitor_getWorkarea(mon, x, y, w, h); }
+    inline void scaleMonitorToWindow() { RGFW_monitor_scaleToWindow(monitor, window); }
+    inline size_t initModeCount() {
+	    modes = (RGFW_monitorMode*)RGFW_ALLOC(RGFW_monitor_getModesPtr(monitor, NULL) * sizeof(RGFW_monitorNode));
+	    return RGFW_monitor_getModesPtr(monitor, &modes);
+    }
+    inline void setMonitorMode(unsigned char i) { RGFW_monitor_setMode(mon, &modes[i]); }
+
 private:
     RGFW_window*& window;
+    RGFW_monitor* monitor;
+    RGFW_monitorMode* modes;
     RGFW_event event;
     unsigned char rgfwKeys[97] = { /* ordered by order of rarities so more common keys get checked for first in loops */
         /* common    */ RGFW_a, RGFW_s, RGFW_w, RGFW_d, RGFW_space, RGFW_e, RGFW_q, RGFW_z, RGFW_x, RGFW_c, RGFW_t, RGFW_f, RGFW_g, RGFW_h, RGFW_i, RGFW_j, RGFW_k, RGFW_l, RGFW_right, RGFW_left, RGFW_down, RGFW_up, RGFW_v, RGFW_1, RGFW_2, RGFW_3, RGFW_4, RGFW_5, RGFW_6, RGFW_7, RGFW_8, RGFW_9, RGFW_0,
@@ -188,8 +201,6 @@ private:
         /* legendary */ RGFW_b, RGFW_m, RGFW_n, RGFW_o, RGFW_p, RGFW_r, RGFW_u, RGFW_y, RGFW_kp0, RGFW_kp1, RGFW_kp2, RGFW_kp3, RGFW_kp4, RGFW_kp5, RGFW_kp6, RGFW_kp7, RGFW_kp8, RGFW_kp9, RGFW_kpPeriod, RGFW_kpSlash, RGFW_kpMultiply, RGFW_kpMinus, RGFW_kpReturn, RGFW_home, RGFW_end, RGFW_capsLock, RGFW_numLock, RGFW_F1, RGFW_F2, RGFW_F3, RGFW_F4, RGFW_F5, RGFW_F6, RGFW_F7, RGFW_F8, RGFW_F9, RGFW_F10, RGFW_F11, RGFW_F12,
         /* mythic    */ RGFW_controlL, RGFW_altL, RGFW_controlR, RGFW_altR, RGFW_superR, RGFW_apostrophe, RGFW_minus, RGFW_equals, RGFW_bracket, RGFW_backSlash, RGFW_pageUp, RGFW_pageDown
     };
-    int windowSize[2] = {0};
-    i32 mousePos[2] = {0};
     std::vector<KeyBind> keyBinds;
     bool modifiers[2] = {false};
 };
