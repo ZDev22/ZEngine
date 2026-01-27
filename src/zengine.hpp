@@ -93,59 +93,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-/* forward declaration of all structs lol */
+/* forward declaration of a bunch of structs lol */
 struct Texture;
 struct SwapChain;
 struct Sprite;
 struct SpriteData;
 struct Buffer;
-struct Vertex;
 struct Model;
-
-/* extern vars */
-extern float deltaTime;
-extern bool ZEngineClose;
-extern std::vector<SpriteData> sprites;
-extern std::vector<Sprite> spriteCPU;
-extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
-extern std::shared_ptr<Model> squareModel;
-
-/* extern funcs */
-void ZEngineInit();
-void ZEngineRender();
-void ZEngineDeinit();
-void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
-inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model);
-void updateTexture(unsigned char index);
-
-/* structs */
-struct alignas(16) SpriteData {
-    float position[2];
-    float scale[2];
-    float rotationMatrix[4];
-
-    unsigned int textureIndex;
-    unsigned int ID;
-    float rotation;
-
-    constexpr void setRotationMatrix() {
-        rotationMatrix[0] = cos(rotation * .0174532925f);
-        rotationMatrix[2] = sin(rotation * .0174532925f);
-        rotationMatrix[1] = -rotationMatrix[2];
-        rotationMatrix[3] = rotationMatrix[0];
-    }
-    void setTexture(std::unique_ptr<Texture> texture) {
-        spriteTextures[textureIndex] = std::move(std::move(texture));
-        updateTexture(textureIndex);
-    }
-};
-
-struct Sprite {
-    std::shared_ptr<Model> model;
-    Texture* texture;
-    bool visible;
-};
 
 struct Vertex {
     float position[2];
@@ -191,6 +145,13 @@ struct QueueFamilyIndices {
     bool presentFamilyHasValue = false;
     inline bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
+
+/* extern vars */
+extern float deltaTime;
+extern bool ZEngineClose;
+extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
+extern std::shared_ptr<Model> squareModel;
+extern VkDevice device_;
 
 #ifdef ZENGINE_IMPLEMENTATION
 
@@ -241,163 +202,60 @@ std::unique_ptr<Buffer> spriteDataBuffer;
 std::unique_ptr<SwapChain> swapChain;
 VkSwapchainKHR oldSwapChain;
 
-/* ZENGINE FUNCTIONS */
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
-    QueueFamilyIndices indices;
-    unsigned int queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-    VkQueueFamilyProperties queueFamilies[queueFamilyCount];
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies);
+#endif // ZENGINE_IMPLEMENTATION (variables)
 
-    for (unsigned int i = 0; i < queueFamilyCount; i++) {
-        if (queueFamilies[i].queueCount > 0 && queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.graphicsFamily = i;
-            indices.graphicsFamilyHasValue = true;
-        }
-
-        VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
-        if (queueFamilies[i].queueCount > 0 && presentSupport) {
-            indices.presentFamily = i;
-            indices.presentFamilyHasValue = true;
-        }
-        if (indices.isComplete()) { break; }
-        i++;
-    }
-    return indices;
-}
-
-SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
-    SwapChainSupportDetails details;
-    unsigned int formatCount = 0;
-    unsigned int presentModeCount = 0;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
-
-    if (formatCount != 0) {
-        details.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
-    }
-    if (presentModeCount != 0) {
-        details.presentModes.resize(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
-    }
-    return details;
-}
-
-VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
-    VkFormatProperties props;
-    for (VkFormat format : candidates) {
-        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
-        if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
-    }
-    throw("failed to find supported format");
-}
-
-unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-    for (unsigned int i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }}
-    throw("Failed to find suitable memory type");
-}
-
-VkCommandBuffer beginSingleTimeCommands() {
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    return commandBuffer;
-}
-
-void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-    vkEndCommandBuffer(commandBuffer);
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(graphicsQueue_);
-
-    vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
-}
-
-void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
-    VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-    vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-
-    vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
-    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
-}
-
-void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    VkBufferCopy copyRegion{};
-    copyRegion.srcOffset = 0;
-    copyRegion.dstOffset = 0;
-    copyRegion.size = size;
-    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-    endSingleTimeCommands(commandBuffer);
-}
-
-void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    VkBufferImageCopy region{};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = layerCount;
-    region.imageOffset = { 0, 0, 0 };
-    region.imageExtent = { width, height, 1 };
-    vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-    endSingleTimeCommands(commandBuffer);
-}
-
-void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
-    vkCreateImage(device_, &imageInfo, nullptr, &image);
-
-    VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(device_, image, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-
-    vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory);
-    vkBindImageMemory(device_, image, imageMemory, 0);
-}
+/* extern funcs */
+void ZEngineInit();
+void ZEngineRender();
+void ZEngineDeinit();
+void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
+inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
+inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model);
+void updateTexture(unsigned char index);
+SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties);
+VkCommandBuffer beginSingleTimeCommands();
+void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount);
+void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+void createCommandBuffers();
+VkShaderModule createShaderModule(const char* filepath);
 
 /* ZENGINE STRUCTS */
+struct alignas(16) SpriteData {
+    float position[2];
+    float scale[2];
+    float rotationMatrix[4];
+
+    unsigned int textureIndex;
+    unsigned int ID;
+    float rotation;
+
+    constexpr void setRotationMatrix() {
+        rotationMatrix[0] = cos(rotation * .0174532925f);
+        rotationMatrix[2] = sin(rotation * .0174532925f);
+        rotationMatrix[1] = -rotationMatrix[2];
+        rotationMatrix[3] = rotationMatrix[0];
+    }
+    void setTexture(std::unique_ptr<Texture> texture) {
+        spriteTextures[textureIndex] = std::move(std::move(texture));
+        updateTexture(textureIndex);
+    }
+};
+
+struct Sprite {
+    std::shared_ptr<Model> model;
+    Texture* texture;
+    bool visible;
+};
+
+extern std::vector<SpriteData> sprites;
+extern std::vector<Sprite> spriteCPU;
+
 struct SwapChain {
 public:
     SwapChain() {
@@ -948,7 +806,20 @@ private:
 
 struct Model {
 public:
-    Model(Vertex* vertices, const unsigned int verticySize) : vertices(vertices), verticySize(verticySize) {
+    Model(float* positions, const unsigned int verticySize) : verticySize(verticySize) { /* verticies are X and Y positions, verticy size is the size of the vector / 2 */
+        vertices = new Vertex[verticySize];
+
+        unsigned int index = 0;
+        for (unsigned int i = 0; i < verticySize; ++i) {
+            Vertex v{};
+            index = i << 1; /* << 1 is * 2 lol*/
+            v.position[0] = positions[index];
+            v.position[1] = positions[index + 1];
+            v.texCoord[0] = positions[index] + 0.5f;
+            v.texCoord[1] = positions[index + 1] + 0.5f;
+            vertices[i] = v;
+        }
+
         vertexBuffer = std::make_unique<Buffer>(sizeof(Vertex) * verticySize, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
         vertexBuffer->map();
         vertexBuffer->writeToBuffer((const void*)vertices, (unsigned int)(sizeof(Vertex) * verticySize));
@@ -956,9 +827,9 @@ public:
     }
     ~Model() { delete[] vertices; }
 
-    void bind(VkCommandBuffer commandBuffer) {
-        VkBuffer buffers[] = { vertexBuffer->getBuffer() };
-        VkDeviceSize offsets[] = { 0 };
+    inline void bind(VkCommandBuffer commandBuffer) {
+        static VkBuffer buffers[] = { vertexBuffer->getBuffer() };
+        static VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     }
 
@@ -974,9 +845,167 @@ public:
 
 private:
     std::unique_ptr<Buffer> vertexBuffer;
-    Vertex* vertices;
     const unsigned int verticySize;
+    Vertex* vertices;
 };
+
+#ifdef ZENGINE_IMPLEMENTATION
+
+/* ZENIGNE HELPER FUNCTIONS */
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
+    QueueFamilyIndices indices;
+    unsigned int queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+    VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies);
+
+    for (unsigned int i = 0; i < queueFamilyCount; i++) {
+        if (queueFamilies[i].queueCount > 0 && queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            indices.graphicsFamily = i;
+            indices.graphicsFamilyHasValue = true;
+        }
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
+        if (queueFamilies[i].queueCount > 0 && presentSupport) {
+            indices.presentFamily = i;
+            indices.presentFamilyHasValue = true;
+        }
+        if (indices.isComplete()) { break; }
+        i++;
+    }
+    return indices;
+}
+
+SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
+    SwapChainSupportDetails details;
+    unsigned int formatCount = 0;
+    unsigned int presentModeCount = 0;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
+
+    if (formatCount != 0) {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
+    }
+    if (presentModeCount != 0) {
+        details.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
+    }
+    return details;
+}
+
+VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    VkFormatProperties props;
+    for (VkFormat format : candidates) {
+        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+        if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
+    }
+    throw("failed to find supported format");
+}
+
+unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+    for (unsigned int i = 0; i < memProperties.memoryTypeCount; i++) { if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }}
+    throw("Failed to find suitable memory type");
+}
+
+VkCommandBuffer beginSingleTimeCommands() {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    return commandBuffer;
+}
+
+void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(graphicsQueue_);
+
+    vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
+}
+
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory);
+    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
+}
+
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = size;
+    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+    endSingleTimeCommands(commandBuffer);
+}
+
+void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = layerCount;
+    region.imageOffset = { 0, 0, 0 };
+    region.imageExtent = { width, height, 1 };
+    vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    endSingleTimeCommands(commandBuffer);
+}
+
+void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
+    vkCreateImage(device_, &imageInfo, nullptr, &image);
+
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(device_, image, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory);
+    vkBindImageMemory(device_, image, imageMemory, 0);
+}
 
 /* ZENGINE HELPER FUNCTIONS */
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model) { return model->getVertices(); }
@@ -1034,22 +1063,6 @@ VkShaderModule createShaderModule(const char* filepath) {
     return shaderModule;
 }
 
-std::shared_ptr<Model> makeModel(const std::vector<float>& positions) {
-    unsigned int verticySize = positions.size() / 2;
-    Vertex* vertices = new Vertex[verticySize];
-
-    for (unsigned int j = 0; j < verticySize; ++j) {
-        Vertex v{};
-        v.position[0] = positions[j * 2];
-        v.position[1] = positions[j * 2 + 1];
-        v.texCoord[0] = positions[j * 2] + 0.5f;
-        v.texCoord[1] = positions[j * 2 + 1] + 0.5f;
-        vertices[j] = v;
-    }
-
-    return std::make_shared<Model>(vertices, verticySize);
-}
-
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
     Sprite sprite;
@@ -1071,7 +1084,8 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
     spriteCPU.emplace_back(sprite);
 }
 
-void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGINE */
+/* ZENGINE */
+void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE */
     ZENGINE_PRINT1("Compiling shaders\n"); //---------------------------------------------------------------------------------------------------------------
     {
     const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
@@ -1400,13 +1414,15 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING THE ENGIN
     }
 
      /* init sprites */
-    squareModel = makeModel({
+    float* positions = new float[8] {
         -.5f, -.5f, // Bottom-Left
         .5f, -.5f,  // Bottom-Right
         -.5f, .5f,  // Top-Right
         .5f, .5f    // Top-Left
-    });
+    };
+    squareModel = std::make_shared<Model>(positions, 8);
     createSprite(squareModel, 0, 0.f, 0.f, .1f, .1f, 0.f);
+    delete[] positions;
 
     VkDeviceSize bufferSize = sizeof(SpriteData) * ZENGINE_MAX_SPRITES;
     spriteDataBuffer = std::make_unique<Buffer>(bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
