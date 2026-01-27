@@ -15,17 +15,15 @@ Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destruct
 sudo pacman -Syu --noconfirm
 sudo pacman -S gcc cmake gdb --noconfirm #C/C++/Cmake/Cdbg
 sudo pacman -S libx11 libxrandr libxcursor xkbcommon mesa --noconfirm #X11
-sudo pacman -S wayland wayland-protocols --noconfirm #Wayland
 sudo pacman -S vulkan-headers vulkan-tools vulkan-icd-loader --noconfirm #Vulkan
-# Intel: sudo pacman -S vulkan-intel --noconfirm
-# AMD: sudo pacman -S vulkan-radeon --noconfirm
+# Intel GPU: sudo pacman -S vulkan-intel --noconfirm
+# AMD GPU: sudo pacman -S vulkan-radeon --noconfirm
 ```
 #### Debian:
 ```bash
 sudo apt update
 sudo apt install build-essential cmake gdb -y #C/C++/Cmake/Cdbg
 sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev libxi-dev -y #X11
-sudo apt install libwayland-dev wayland-protocols -y #Wayland
 sudo apt install libvulkan-dev libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
 ```
 #### Fedora:
@@ -33,20 +31,18 @@ sudo apt install libvulkan-dev libvulkan1 mesa-vulkan-drivers vulkan-tools -y #V
 sudo dnf update -y
 sudo dnf install gcc gcc-c++ cmake gdb -y #C/C++/CMake/Cdbg
 sudo dnf install libX11-devel libXrandr-devel libxkbcommon-devel mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
-sudo dnf install wayland-devel wayland-protocols-devel -y #Wayland
 sudo dnf install vulkan-headers vulkan-tools vulkan-loader-devel -y #Vulkan
-# Intel: sudo dnf install vulkan-intel -y
-# AMD: sudo dnf install vulkan-radeon -y
+# Intel GPU: sudo dnf install vulkan-intel -y
+# AMD GPU: sudo dnf install vulkan-radeon -y
 ```
 #### Gentoo:
 ```bash
 root # emerge --sync
 sudo emerge --ask sys-devel/gcc sys-devel/cmake sys-devel/gdb -y #C/C++/CMake/Cdbg
 sudo emerge --ask x11-libs/libX11 x11-libs/libXrandr x11-libs/libXi x11-libs/libXcursor x11-libs/libxkbcommon mesa-libs/mesa -y #X11
-sudo emerge --ask x11-libs/wayland x11-libs/wayland-protocols -y #Wayland
 sudo emerge --ask media-libs/vulkan-loader dev-util/vulkan-headers media-libs/vulkan-tools -y #Vulkan
-# Intel: sudo emerge --ask media-libs/vulkan-intel
-# AMD: sudo emerge --ask media-libs/vulkan-radeon
+# Intel GPU: sudo emerge --ask media-libs/vulkan-intel
+# AMD GPU: sudo emerge --ask media-libs/vulkan-radeon
 ```
 #### Leap:
 ```bash
@@ -54,20 +50,18 @@ sudo zypper refresh
 sudo zypper update -y
 sudo zypper install -t pattern devel_C_C++ cmake gdb -y #C/C++/CMake/Cdbg
 sudo zypper install libX11-devel libXrandr-devel libxkbcommon-devel Mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
-sudo zypper install wayland-devel wayland-protocols-devel -y #Wayland
 sudo zypper install vulkan-headers vulkan-loader-devel vulkan-tools -y #Vulkan
-# Intel: sudo zypper install vulkan-intel -y
-# AMD: sudo zypper install vulkan-radeon -y
+# Intel GPU: sudo zypper install vulkan-intel -y
+# AMD GPU: sudo zypper install vulkan-radeon -y
 ```
 #### Alpine:
 ```bash
 sudo apk update
 sudo apk add build-base cmake gdb #C/C++/CMake/Cdbg
 sudo apk add libx11-dev libxrandr-dev libxkbcommon-dev libxi-dev libxcursor-dev mesa-egl-dev #X11
-sudo apk add wayland wayland-protocols-dev #Wayland
 sudo apk add vulkan-headers vulkan-tools vulkan-loader-dev #Vulkan
-# Intel: sudo apk add vulkan-intel
-# AMD: sudo apk add vulkan-radeon
+# Intel GPU: sudo apk add vulkan-intel
+# AMD GPU: sudo apk add vulkan-radeon
 ```
 ## MAC (beta):
 - Install XCode from the app store
@@ -89,7 +83,6 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 - In the windows search bar, look up "Edit environment variables"
 - Add C:\msys64\ucrt64\bin to your user (or system) PATH
 - Add C:\msys64\mingw64\bin to your user (or system) PATH
-- Add C:\VulkanSDK\1.4.335.0\Bin to your user (or system) PATH
 - Restart your IDE (or terminal)
 
 ## Extensions (Linux/Windows):

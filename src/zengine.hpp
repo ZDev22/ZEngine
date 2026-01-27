@@ -271,7 +271,6 @@ extern std::vector<Sprite> spriteCPU;
 struct SwapChain {
 public:
     SwapChain() {
-
         /* create swapchain KHR */
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 
@@ -327,11 +326,11 @@ public:
         vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr);
         swapChainImages.resize(imageCount);
         vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data());
-
         swapChainImageFormat = surfaceFormat.format;
 
-        /* create swapchain image views*/
+        /* create image views*/
         swapChainImageViews.resize(swapChainImages.size());
+
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
             VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -346,7 +345,7 @@ public:
 
             vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews[i]);
         }
-
+ 
         /* create renderpass */
         swapChainDepthFormat = findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
@@ -392,7 +391,7 @@ public:
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
         dependency.srcAccessMask = 0;
         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-
+ 
         VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
         VkRenderPassCreateInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -402,14 +401,14 @@ public:
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
-
+ 
         vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass);
-
+ 
         /* create depth resources */
         depthImages.resize(swapChainImages.size());
         depthImageMemorys.resize(swapChainImages.size());
         depthImageViews.resize(swapChainImages.size());
-
+ 
         for (unsigned int i = 0; i < depthImages.size(); i++) {
             VkImageCreateInfo imageInfo{};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -444,11 +443,11 @@ public:
         }
 
         /* create frame buffers*/
-        swapChainFramebuffers.resize(swapChainImages.size());
+        swapChainFramebuffers.resize(swapChainImages.size()); 
 
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
             const VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
-
+ 
             VkFramebufferCreateInfo framebufferInfo{};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
@@ -457,7 +456,7 @@ public:
             framebufferInfo.width = windowExtent.width;
             framebufferInfo.height = windowExtent.height;
             framebufferInfo.layers = 1;
-
+ 
             vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
         }
 
@@ -480,6 +479,7 @@ public:
             vkCreateFence(device_, &fenceInfo, nullptr, &inFlightFences[i]);
         }
     }
+
     ~SwapChain() {
         ZENGINE_PRINT3(" - Destroying framebuffers\n"); for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
         ZENGINE_PRINT3(" - Destroying depth data\n");
@@ -579,7 +579,7 @@ public:
         vkCreateSampler(device_, &samplerInfo, nullptr, &sampler);
     }
 
-    Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
+    Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE) {
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
         VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -631,20 +631,20 @@ public:
         createTextureSampler();
     }
 
-    Texture(const unsigned char* pixelData, const unsigned int size) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1), texChannels(1) {
+    Texture(const unsigned char* pixelData, const unsigned int size) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), texChannels(1) {
         texWidth = size;
         texHeight = size;
         VkDeviceSize imageSize = size * size * 4;
 
-        std::vector<unsigned char> rgbaPixels(imageSize);
-        memset(rgbaPixels.data(), 255, size * size * 4);
+        unsigned char* rgbaPixels = (unsigned char*)malloc(imageSize);
+        memset(rgbaPixels, 0xFF, imageSize);
         for (unsigned int i = 0; i < size * size; ++i) { rgbaPixels[i * 4 + 3] = pixelData[i]; }
 
         createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
         void* data;
         vkMapMemory(device_, stagingBufferMemory, 0, imageSize, 0, &data);
-        memcpy(data, rgbaPixels.data(), imageSize);
+        memcpy(data, rgbaPixels, imageSize);
         vkUnmapMemory(device_, stagingBufferMemory);
 
         VkImageCreateInfo imageInfo{};
@@ -681,8 +681,8 @@ public:
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
+        free(rgbaPixels);
         vkCreateImageView(device_, &viewInfo, nullptr, &imageView);
-
         createTextureSampler();
     }
 
@@ -708,7 +708,7 @@ public:
         barrier.subresourceRange.baseMipLevel = 0;
         barrier.subresourceRange.levelCount = 1;
         barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount = arrayLayers;
+        barrier.subresourceRange.layerCount = 1;
 
         VkPipelineStageFlags sourceStage;
         VkPipelineStageFlags destinationStage;
@@ -742,7 +742,6 @@ private:
     VkSampler sampler;
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    unsigned int arrayLayers {1};
     int texWidth, texHeight, texChannels;
 };
 
