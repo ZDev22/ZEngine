@@ -6,6 +6,15 @@
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
 #define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 #define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
+
+CREATE A SPRITE:
+createSprite(model, textureIndex, x, y, scalex, scaley, rotation);
+
+CREATE A TEXTURE:
+sprites[0].setTexture(std::make_unique<Texture>("texture.png")); - automatically assumes assets/images/texture.png
+
+CREATE A MODEL:
+std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); - see ZEngineInit for a real-world example
 */
 
 #ifndef ZENGINE_HPP
@@ -94,16 +103,17 @@
 #include <stdlib.h>
 
 /* forward declaration of a bunch of structs lol */
-struct Texture;
-struct SwapChain;
-struct Sprite;
 struct SpriteData;
+struct Sprite;
 struct Buffer;
 struct Model;
+struct Texture;
+struct SwapChain;
 
+/* declare a few structs before creating variables about them */
 struct Vertex {
-    float position[2];
-    float texCoord[2];
+    float position[2] = {0};
+    float texCoord[2] = {0};
 
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
@@ -127,9 +137,9 @@ struct Vertex {
     }
 };
 
-struct Push {
-    float camera[2];
-    float cameraZoom[2];
+struct Camera {
+    float position[2];
+    float zoom[2];
 };
 
 struct SwapChainSupportDetails {
@@ -155,7 +165,7 @@ extern VkDevice device_;
 
 #ifdef ZENGINE_IMPLEMENTATION
 
-Push vertex; /* kinda just chillin ngl */
+Camera camera; /* kinda just chillin ngl */
 
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 bool ZEngineClose = false; /* flag to show when the engine is closing */
@@ -208,10 +218,12 @@ VkSwapchainKHR oldSwapChain;
 void ZEngineInit();
 void ZEngineRender();
 void ZEngineDeinit();
+
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
+void updateTexture(unsigned char index);
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
 inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model);
-void updateTexture(unsigned char index);
+
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties);
@@ -1388,7 +1400,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     VkPushConstantRange pushConstantRange{};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(Push);
+    pushConstantRange.size = sizeof(Camera);
 
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
@@ -1428,10 +1440,10 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     spriteDataBuffer = std::make_unique<Buffer>(bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     spriteDataBuffer->map();
     if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
-    vertex.camera[0] = 0.f;
-    vertex.camera[1] = 0.f;
-    vertex.cameraZoom[0] = 1.f;
-    vertex.cameraZoom[1] = 1.f;
+    camera.position[0] = 0.f;
+    camera.position[1] = 0.f;
+    camera.zoom[0] = 1.f;
+    camera.zoom[1] = 1.f;
 
     /* allocate info */
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -1440,7 +1452,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet) != VK_SUCCESS) { throw("failed to allocate descriptor set!"); }
+    vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet);
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
@@ -1529,7 +1541,7 @@ void ZEngineRender() {
     /* render sprites */
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, nullptr);
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Push), &vertex);
+    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Camera), &camera);
 
     std::shared_ptr<Model> lastModel = squareModel;
     unsigned int instance = 0;

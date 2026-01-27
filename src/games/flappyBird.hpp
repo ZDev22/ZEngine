@@ -15,7 +15,7 @@ int flappyBirdScore = 0;
 
 struct Game {
 public:
-    Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex) {
+    Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera) {
         loadFont("assets/fonts/Bullpen3D.ttf", 32.f);
         for (unsigned int i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
    
@@ -39,8 +39,8 @@ public:
                     playSound(&audio, "assets/sounds/chirp.mp3");
                     createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
                     sprites[sprites.size() - 1].setTexture(createText(0, "ZDEV", 32));
-                    vertex.cameraZoom[0] -= .025f;
-                    vertex.cameraZoom[1] -= .025f;
+                    camera.zoom[0] -= .025f;
+                    camera.zoom[1] -= .025f;
                 }
 
                 if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
@@ -82,5 +82,5 @@ public:
 private:
     ZWindow& zwindow;
     ma_engine& audio;
-    Push& vertex;
+    Camera& camera;
 };

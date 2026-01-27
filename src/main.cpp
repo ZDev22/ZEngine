@@ -57,7 +57,7 @@ int main() {
     ma_engine audio;
     ma_engine_init(nullptr, &audio);
 
-    Game game{zwindow, audio, vertex};
+    Game game{zwindow, audio, camera};
 
     while (true) {
         #ifdef FPS_CAP_SET

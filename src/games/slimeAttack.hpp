@@ -249,7 +249,7 @@ private:
 
 struct Game {
 public:
-    Game(ZWindow& zwindow, ma_engine& audio, Push& vertex)  : zwindow(zwindow), audio(audio), vertex(vertex), slimeAttackEnemies(*this) {
+    Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera), slimeAttackEnemies(*this) {
     sprites[0].scale[0] = .15f;
     sprites[0].scale[1] = .15f;
     createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
@@ -313,5 +313,5 @@ private:
     SlimeAttackEnemies slimeAttackEnemies;
     ZWindow& zwindow;
     ma_engine& audio;
-    Push& vertex;
+    Camera& camera;
 };
