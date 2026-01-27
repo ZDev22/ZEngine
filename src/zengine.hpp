@@ -214,7 +214,7 @@ VkSwapchainKHR oldSwapChain;
 
 #endif // ZENGINE_IMPLEMENTATION (variables)
 
-/* extern funcs */
+/* ZENGINE FORWARD-DECLARED FUNCTIONS */
 void ZEngineInit();
 void ZEngineRender();
 void ZEngineDeinit();
@@ -248,13 +248,13 @@ struct alignas(16) SpriteData {
     float rotation;
 
     constexpr void setRotationMatrix() {
-        rotationMatrix[0] = cos(rotation * .0174532925f);
-        rotationMatrix[2] = sin(rotation * .0174532925f);
+        rotationMatrix[0] = cos(rotation * .01745329f);
+        rotationMatrix[2] = sin(rotation * .01745329f);
         rotationMatrix[1] = -rotationMatrix[2];
         rotationMatrix[3] = rotationMatrix[0];
     }
-    void setTexture(std::unique_ptr<Texture> texture) {
-        spriteTextures[textureIndex] = std::move(std::move(texture));
+    inline void setTexture(std::unique_ptr<Texture> texture) {
+        spriteTextures[textureIndex] = std::move(texture);
         updateTexture(textureIndex);
     }
 };
@@ -271,70 +271,8 @@ extern std::vector<Sprite> spriteCPU;
 struct SwapChain {
 public:
     SwapChain() {
-        createSwapChain();
-        createImageViews();
-        createRenderPass();
-        createDepthResources();
-        createFramebuffers();
-        createSyncObjects();
-    }
-    ~SwapChain() {
-        ZENGINE_PRINT3(" - Destroying framebuffers\n"); for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
-        ZENGINE_PRINT3(" - Destroying depth data\n");
 
-        for (unsigned char i = 0; i < depthImages.size(); i++) {
-            vkDestroyImageView(device_, depthImageViews[i], nullptr);
-            vkDestroyImage(device_, depthImages[i], nullptr);
-            vkFreeMemory(device_, depthImageMemorys[i], nullptr);
-        }
-
-        ZENGINE_PRINT3(" - Destroying image views\n"); for (VkImageView imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
-        ZENGINE_PRINT3(" - Destroying render pass\n"); vkDestroyRenderPass(device_, renderPass, nullptr);
-        if (!ZEngineClose) { ZENGINE_PRINT3(" - Destroying swapchain KHR\n"); vkDestroySwapchainKHR(device_, swapChain, nullptr); }
-        ZENGINE_PRINT3(" - Destroying semaphores\n");
-        for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(device_, imageAvailableSemaphores[i], nullptr);
-            vkDestroySemaphore(device_, renderFinishedSemaphores[i], nullptr);
-            vkDestroyFence(device_, inFlightFences[i], nullptr);
-        }
-    }
-
-    inline VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
-    
-    VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
-        if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
-        imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
-
-        const VkSemaphore waitSemaphores[1] = { imageAvailableSemaphores[currentFrame] };
-        const VkPipelineStageFlags waitStages[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        const VkSemaphore signalSemaphores[1] = { renderFinishedSemaphores[currentFrame] };
-
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = buffers;
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        vkResetFences(device_, 1, &inFlightFences[currentFrame]);
-        vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences[currentFrame]);
-
-        VkPresentInfoKHR presentInfo{};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = &swapChain;
-        presentInfo.pImageIndices = imageIndex;
-
-        currentFrame = (currentFrame + 1) % ZENGINE_MAX_FRAMES_IN_FLIGHT;
-        return vkQueuePresentKHR(presentQueue_, &presentInfo);
-    }
-
-    void createSwapChain() {
+        /* create swapchain KHR */
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 
         VkSurfaceFormatKHR surfaceFormat; {
@@ -391,9 +329,8 @@ public:
         vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data());
 
         swapChainImageFormat = surfaceFormat.format;
-    }
 
-    void createImageViews() {
+        /* create swapchain image views*/
         swapChainImageViews.resize(swapChainImages.size());
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
             VkImageViewCreateInfo viewInfo{};
@@ -409,14 +346,12 @@ public:
 
             vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews[i]);
         }
-    }
 
-    void createRenderPass() {
+        /* create renderpass */
+        swapChainDepthFormat = findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
         VkAttachmentDescription depthAttachment{};
-
-        VkFormat depthFormat = findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-
-        depthAttachment.format = depthFormat;
+        depthAttachment.format = swapChainDepthFormat;
         depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -469,9 +404,46 @@ public:
         renderPassInfo.pDependencies = &dependency;
 
         vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass);
-    }
 
-    void createFramebuffers() {
+        /* create depth resources */
+        depthImages.resize(swapChainImages.size());
+        depthImageMemorys.resize(swapChainImages.size());
+        depthImageViews.resize(swapChainImages.size());
+
+        for (unsigned int i = 0; i < depthImages.size(); i++) {
+            VkImageCreateInfo imageInfo{};
+            imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+            imageInfo.imageType = VK_IMAGE_TYPE_2D;
+            imageInfo.extent.width = windowExtent.width;
+            imageInfo.extent.height = windowExtent.height;
+            imageInfo.extent.depth = 1;
+            imageInfo.mipLevels = 1;
+            imageInfo.arrayLayers = 1;
+            imageInfo.format = swapChainDepthFormat;
+            imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+            imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+            imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+            imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            imageInfo.flags = 0;
+
+            createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[i], depthImageMemorys[i]);
+
+            VkImageViewCreateInfo viewInfo{};
+            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            viewInfo.image = depthImages[i];
+            viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            viewInfo.format = swapChainDepthFormat;
+            viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            viewInfo.subresourceRange.baseMipLevel = 0;
+            viewInfo.subresourceRange.levelCount = 1;
+            viewInfo.subresourceRange.baseArrayLayer = 0;
+            viewInfo.subresourceRange.layerCount = 1;
+
+            vkCreateImageView(device_, &viewInfo, nullptr, &depthImageViews[i]);
+        }
+
+        /* create frame buffers*/
         swapChainFramebuffers.resize(swapChainImages.size());
 
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
@@ -488,52 +460,8 @@ public:
 
             vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
         }
-    }
 
-    void createDepthResources() {
-        VkFormat depthFormat = findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-
-        swapChainDepthFormat = depthFormat;
-
-        depthImages.resize(swapChainImages.size());
-        depthImageMemorys.resize(swapChainImages.size());
-        depthImageViews.resize(swapChainImages.size());
-
-        for (unsigned int i = 0; i < depthImages.size(); i++) {
-            VkImageCreateInfo imageInfo{};
-            imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-            imageInfo.imageType = VK_IMAGE_TYPE_2D;
-            imageInfo.extent.width = windowExtent.width;
-            imageInfo.extent.height = windowExtent.height;
-            imageInfo.extent.depth = 1;
-            imageInfo.mipLevels = 1;
-            imageInfo.arrayLayers = 1;
-            imageInfo.format = depthFormat;
-            imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-            imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-            imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-            imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            imageInfo.flags = 0;
-
-            createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[i], depthImageMemorys[i]);
-
-            VkImageViewCreateInfo viewInfo{};
-            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            viewInfo.image = depthImages[i];
-            viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            viewInfo.format = depthFormat;
-            viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-            viewInfo.subresourceRange.baseMipLevel = 0;
-            viewInfo.subresourceRange.levelCount = 1;
-            viewInfo.subresourceRange.baseArrayLayer = 0;
-            viewInfo.subresourceRange.layerCount = 1;
-
-            vkCreateImageView(device_, &viewInfo, nullptr, &depthImageViews[i]);
-        }
-    }
-
-    void createSyncObjects() {
+        /* create semaphores */
         imageAvailableSemaphores.resize(ZENGINE_MAX_FRAMES_IN_FLIGHT);
         renderFinishedSemaphores.resize(ZENGINE_MAX_FRAMES_IN_FLIGHT);
         inFlightFences.resize(ZENGINE_MAX_FRAMES_IN_FLIGHT);
@@ -552,7 +480,62 @@ public:
             vkCreateFence(device_, &fenceInfo, nullptr, &inFlightFences[i]);
         }
     }
+    ~SwapChain() {
+        ZENGINE_PRINT3(" - Destroying framebuffers\n"); for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
+        ZENGINE_PRINT3(" - Destroying depth data\n");
 
+        for (unsigned char i = 0; i < depthImages.size(); i++) {
+            vkDestroyImageView(device_, depthImageViews[i], nullptr);
+            vkDestroyImage(device_, depthImages[i], nullptr);
+            vkFreeMemory(device_, depthImageMemorys[i], nullptr);
+        }
+
+        ZENGINE_PRINT3(" - Destroying image views\n"); for (VkImageView imageView : swapChainImageViews) { vkDestroyImageView(device_, imageView, nullptr); }
+        ZENGINE_PRINT3(" - Destroying render pass\n"); vkDestroyRenderPass(device_, renderPass, nullptr);
+        if (!ZEngineClose) { ZENGINE_PRINT3(" - Destroying swapchain KHR\n"); vkDestroySwapchainKHR(device_, swapChain, nullptr); }
+        ZENGINE_PRINT3(" - Destroying semaphores\n");
+        for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroySemaphore(device_, imageAvailableSemaphores[i], nullptr);
+            vkDestroySemaphore(device_, renderFinishedSemaphores[i], nullptr);
+            vkDestroyFence(device_, inFlightFences[i], nullptr);
+        }
+    }
+
+    inline VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
+    
+    VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
+        if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
+        imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+
+        const VkSemaphore waitSemaphores[1] = { imageAvailableSemaphores[currentFrame] };
+        const VkPipelineStageFlags waitStages[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        const VkSemaphore signalSemaphores[1] = { renderFinishedSemaphores[currentFrame] };
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = buffers;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        vkResetFences(device_, 1, &inFlightFences[currentFrame]);
+        vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences[currentFrame]);
+
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = &swapChain;
+        presentInfo.pImageIndices = imageIndex;
+
+        currentFrame = (currentFrame + 1) % ZENGINE_MAX_FRAMES_IN_FLIGHT;
+        return vkQueuePresentKHR(presentQueue_, &presentInfo);
+    }
+ 
     inline VkFramebuffer getFrameBuffer(unsigned long index) const { return swapChainFramebuffers[index]; }
     inline VkImageView getImageView(int index) const { return swapChainImageViews[index]; }
     inline VkRenderPass getRenderPass() const { return renderPass; }
@@ -598,7 +581,6 @@ public:
 
     Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), arrayLayers(1) {
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        if (!pixels) { throw("failed to load texture"); }
 
         VkDeviceSize imageSize = texWidth * texHeight * 4;
 
@@ -699,7 +681,7 @@ public:
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(device_, &viewInfo, nullptr, &imageView) != VK_SUCCESS) { throw("failed to create font texture view"); }
+        vkCreateImageView(device_, &viewInfo, nullptr, &imageView);
 
         createTextureSampler();
     }
