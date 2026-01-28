@@ -687,7 +687,7 @@ public:
     }
 
     ~Texture() {
-        vkDeviceWaitIdle(device_);
+        if (!ZEngineClose) { vkDeviceWaitIdle(device_); }
         vkDestroySampler(device_, sampler, nullptr);
         vkDestroyImageView(device_, imageView, nullptr);
         vkDestroyImage(device_, image, nullptr);

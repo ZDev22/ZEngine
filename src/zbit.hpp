@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
 
-v3.3.2
+v3.3.3
 
 zbit.hpp is a lightweight cross-platform single-header cpp library for creating large vectors of 1's and 0's!
 Aims to be an alternative to <bitset> with more features and customizability to come!
@@ -58,21 +58,21 @@ bits.data[0]           - the value of the limb
 struct ZBit { /* the limbs of the bitset */
     ZBIT_VARIABLE_TYPE data = 0; /* the bits for the set */
 
-    void set(unsigned char pos) { data |= (1 << pos); } /* set a bit to 1 */
-    void reset(unsigned char pos) { data &= ~(1 << pos); } /* set a bit to 0 */
-    void flip(unsigned char pos) { data ^= (1 << pos); } /* flip a bit */
-    bool check(unsigned char pos) const { return data & (1 << pos); } /* check a bit's value */
+    inline void set(unsigned char pos) { data |= (1 << pos); } /* set a bit to 1 */
+    inline void reset(unsigned char pos) { data &= ~(1 << pos); } /* set a bit to 0 */
+    inline void flip(unsigned char pos) { data ^= (1 << pos); } /* flip a bit */
+    inline bool check(unsigned char pos) const { return data & (1 << pos); } /* check a bit's value */
 
-    void clearFirstSetBit() { data &= data - 1; } /* learned this trick in "The Advent of Compiler Optimizations" set the first 1 bit to 0*/
-    void setFirstUnsetBit() { data &= data + 1; } /* set the first 0 bit to 1*/
+    inline void clearFirstSetBit() { data &= data - 1; } /* learned this trick in "The Advent of Compiler Optimizations" set the first 1 bit to 0*/
+    inline void setFirstUnsetBit() { data &= data + 1; } /* set the first 0 bit to 1*/
 };
 
 struct ZBitset { /* the bitset */
     #if !defined(ZBIT_NO_INCLUDE) && defined(ZBIT_DYNAMIC_SIZE)
         std::vector<ZBit> data(ZBIT_SET_SIZE); /* vector to store the bitset */
 
-        void add() { data.emplace_back(0); } /* add more bits */
-        void remove() { data.erase(data.begin() + data.size()); } // remove bits
+        inline void add() { data.emplace_back(0); } /* add more bits */
+        inline void remove() { data.erase(data.begin() + data.size()); } // remove bits
         void on() { for (unsigned int i = 0; i < data.size(); i++) { data[i].data = (ZBIT_VARIABLE_TYPE)18446744073709551615ULL; }} /* turn all bits on */
         void off() { for (unsigned int i = 0; i < data.size(); i++) { data[i].data = 0; }}; /* turn all bits off */
 
