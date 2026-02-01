@@ -37,7 +37,7 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 #define ZENGINE_PRINT3(x)
 
 #ifdef ZENGINE_DEBUG
-    #include <iostream>
+    #include <iostream> 
     #if ZENGINE_DEBUG > 2
         #undef ZENGINE_PRINT3
         #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
@@ -345,7 +345,7 @@ public:
 
             vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews[i]);
         }
- 
+
         /* create renderpass */
         swapChainDepthFormat = findSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
@@ -391,7 +391,7 @@ public:
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
         dependency.srcAccessMask = 0;
         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
- 
+
         VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
         VkRenderPassCreateInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -401,14 +401,14 @@ public:
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
- 
+
         vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass);
- 
+
         /* create depth resources */
         depthImages.resize(swapChainImages.size());
         depthImageMemorys.resize(swapChainImages.size());
         depthImageViews.resize(swapChainImages.size());
- 
+
         for (unsigned int i = 0; i < depthImages.size(); i++) {
             VkImageCreateInfo imageInfo{};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -443,11 +443,11 @@ public:
         }
 
         /* create frame buffers*/
-        swapChainFramebuffers.resize(swapChainImages.size()); 
+        swapChainFramebuffers.resize(swapChainImages.size());
 
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
             const VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
- 
+
             VkFramebufferCreateInfo framebufferInfo{};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
@@ -456,7 +456,7 @@ public:
             framebufferInfo.width = windowExtent.width;
             framebufferInfo.height = windowExtent.height;
             framebufferInfo.layers = 1;
- 
+
             vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
         }
 
@@ -479,7 +479,6 @@ public:
             vkCreateFence(device_, &fenceInfo, nullptr, &inFlightFences[i]);
         }
     }
-
     ~SwapChain() {
         ZENGINE_PRINT3(" - Destroying framebuffers\n"); for (VkFramebuffer framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device_, framebuffer, nullptr); }
         ZENGINE_PRINT3(" - Destroying depth data\n");
@@ -1079,6 +1078,9 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
 
 /* ZENGINE */
 void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE */
+#ifdef ZENGINE_DEBUG
+    std::ios::sync_with_stdio(false);
+#endif
     ZENGINE_PRINT1("Compiling shaders\n"); //---------------------------------------------------------------------------------------------------------------
     {
     const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
@@ -1146,11 +1148,11 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     else if (deviceCount == 1) { ZENGINE_PRINT2("Found 1 GPU\n"); }
     else { ZENGINE_PRINT2("Found " << deviceCount << " GPUs\n"); }
 
-    std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    VkPhysicalDevice devices[deviceCount];
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
 
     short highScore = 0;
-    for (unsigned int i = 0; i < devices.size(); ++i) {
+    for (unsigned int i = 0; i < deviceCount; ++i) {
         /* check if device is suitable, and score it */
         short newScore = 0;
         QueueFamilyIndices indices = findQueueFamilies(devices[i]);
@@ -1159,8 +1161,8 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
 
         /* check if extensions are supported on the GPU: */
         vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, nullptr);
-        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, availableExtensions.data());
+        VkExtensionProperties availableExtensions[extensionCount];
+        vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, availableExtensions);
 
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(devices[i]);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
@@ -1220,9 +1222,9 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
         deviceInfo.pNext = &VKFeatures;
     #endif
 
-    std::vector<const char*> extension = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+    const char* extension[1] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     deviceInfo.enabledExtensionCount = 1;
-    deviceInfo.ppEnabledExtensionNames = extension.data();
+    deviceInfo.ppEnabledExtensionNames = extension;
     deviceInfo.enabledLayerCount = 0;
 
     if (vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }
@@ -1392,8 +1394,8 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     if (vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
 
     /* create texture array descriptor set */
-    std::vector<VkDescriptorImageInfo> imageInfos(ZENGINE_MAX_TEXTURES);
-    
+    VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
+ 
     ZENGINE_PRINT2("Initing sprites...\n");
     std::unique_ptr<Texture> texture = std::make_unique<Texture>("e.jpg");
     VkImageView textureImage = texture->getImageView();
@@ -1457,7 +1459,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     imageWrite.dstArrayElement = 0;
     imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     imageWrite.descriptorCount = ZENGINE_MAX_TEXTURES;
-    imageWrite.pImageInfo = imageInfos.data();
+    imageWrite.pImageInfo = imageInfos;
 
     VkWriteDescriptorSet descriptorWrites[2] = { bufferWrite, imageWrite };
     vkUpdateDescriptorSets(device_, 2, descriptorWrites, 0, nullptr);

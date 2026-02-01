@@ -26,6 +26,7 @@ public:
     }
 
     void tick() {
+        std::cout << zwindow.getMouseX() << " - " << zwindow.getMouseY();
         if (flappyBirdStarted) {
             flappyBirdSpeedY += 3.8f * deltaTime;
             sprites[0].position[1] += flappyBirdSpeedY * deltaTime;
