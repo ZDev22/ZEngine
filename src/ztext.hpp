@@ -1,4 +1,4 @@
-/* licensed under GPL v3.0 - see https://github.com/ZDev22/Vulkan-Engine/README.md for current license
+/* licensed under GPL v3.0 - see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
 v1.0.1
 

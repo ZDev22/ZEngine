@@ -1,6 +1,6 @@
-// licensed under GPL v3.0 see https://github.com/ZDev22/Vulkan-Engine/ for current license
+// licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-// A lighter miniaudio.h - see original here: https://github.com/mackron/miniaudio
+// A somewhat-lighter miniaudio.h - see original here: https://github.com/mackron/miniaudio
 
 #ifndef miniaudio_h
 #define miniaudio_h
