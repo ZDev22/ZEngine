@@ -65511,7 +65511,7 @@ MA_API void playSound(ma_engine* pEngine, const char* pFilePath) {
     ma_sound_inlined* pSound = NULL;
     ma_sound_inlined* pNextSound = NULL;
     ma_uint32 nodeInputBusIndex = 0;
-    ma_node* pNode = nullptr;
+    ma_node* pNode = NULL;
     pNode = &pEngine->nodeGraph.endpoint;
 
     ma_spinlock_lock(&pEngine->inlinedSoundLock); {

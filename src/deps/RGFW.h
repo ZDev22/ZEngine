@@ -371,7 +371,9 @@ int main() {
 	#endif
 #endif
 
+#if defined(__cplusplus) && !defined(__EMSCRIPTEN__)
 	extern "C" {
+#endif
 
 /* makes sure the header file part is only defined once by default */
 #ifndef RGFW_HEADER
@@ -15880,7 +15882,9 @@ void RGFW_load_Wayland(void) {
 
 #endif /* RGFW_IMPLEMENTATION */
 
+#if defined(__cplusplus) && !defined(__EMSCRIPTEN__)
 }
+#endif
 
 #if _MSC_VER
 	#pragma warning( pop )
