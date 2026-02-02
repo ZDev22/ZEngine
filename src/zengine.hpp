@@ -329,10 +329,10 @@ public:
             createInfo.presentMode = VK_PRESENT_MODE_MAILBOX_KHR;
         #endif
 
-        vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain);
-        vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr);
+        ZENGINE_THROW3(vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain));
+        ZENGINE_THROW3(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr));
         swapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data());
+        ZENGINE_THROW3(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data()));
         swapChainImageFormat = surfaceFormat.format;
 
         /* create image views*/
@@ -409,7 +409,7 @@ public:
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass);
+        ZENGINE_THROW2(vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass));
 
         /* create depth resources */
         depthImages.resize(swapChainImages.size());
@@ -1381,7 +1381,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    ZENGINE_THROW3(vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline));
+    ZENGINE_THROW2(vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline));
 
     vkDestroyShaderModule(device_, shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device_, shaderStages[1].module, nullptr);
@@ -1398,7 +1398,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-    ZENGINE_THROW3(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
+    ZENGINE_THROW2(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     /* create texture array descriptor set */
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
@@ -1442,7 +1442,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet);
+    ZENGINE_THROW3(vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet));
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
