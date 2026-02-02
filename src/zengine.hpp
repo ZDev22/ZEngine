@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
-#define ZENGINE_ZDEPS_DEFINED - if your using zdeps.c define this
+#define ZENGINE_DEPS_DEFINED - if your using zdeps.c define this
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
@@ -38,11 +38,11 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 #define ZENGINE_PRINT3(x)
 
 #ifdef ZENGINE_DEBUG
-    #include <iostream> 
+    #include <iostream>
     #if ZENGINE_DEBUG > 2
         #undef ZENGINE_PRINT3
         #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
-    #endif    
+    #endif
     #if ZENGINE_DEBUG > 1
         #undef ZENGINE_PRINT2
         #define ZENGINE_PRINT2(...) std::cout << __VA_ARGS__
@@ -53,17 +53,7 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
     #endif
 #endif
 
-#define RGFW_VULKAN
-
-#ifdef ZENGINE_ZDEPS_DEFINED
-
-#include "deps/RGFW.h" /* windowing */
-#include "deps/miniaudio.h" /* audio */
-#include "deps/stb_image.h" /* textures */
-
-#else
-
-#ifdef ZENGINE_IMPLEMENTATION
+#if defined(ZENGINE_IMPLEMENTATION) && !defined(ZENGINE_DEPS_DEFINED)
     #define MINIAUDIO_IMPLEMENTATION
 
     #define RGFW_IMPLEMENTATION
@@ -73,11 +63,12 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
     #define STB_IMAGE_IMPLEMENTATION
     #define STBI_ASSERT
 #endif
+#define RGFW_VULKAN
 
 /* dependencies */
-#include "deps/RGFW.h"
-#include "deps/miniaudio.h"
-#include "deps/stb_image.h"
+#include "deps/RGFW.h" /* window */
+#include "deps/miniaudio.h" /* audio */
+#include "deps/stb_image.h" /* image */
 
 /* undefine these so they don't get used later */
 #undef MINIAUDIO_IMPLEMENTATION
@@ -86,8 +77,6 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 #undef RGFW_ASSERT
 #undef STB_IMAGE_IMPLEMENTATION
 #undef STBI_ASSERT
-
-#endif // ZENGINE_ZDEPS_DEFINED
 
 /* vulkan */
 #if defined(__linux__)
@@ -1541,6 +1530,7 @@ void ZEngineRender() {
 
     for (unsigned int i = 0; i < spriteCPU.size(); ++i) {
         if (spriteCPU[i].visible) {
+            sprites[i].setRotationMatrix();
             if (spriteCPU[i].model == lastModel) { instanceCount++; } /* model is the same, add it to the instance */
             else { /* model changed, draw the batch and count again */
                 lastModel = spriteCPU[i].model;

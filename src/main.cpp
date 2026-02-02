@@ -9,18 +9,16 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #if true // render the screen and tick the game (disable if it's a terminal game)
 
 #define ZENGINE_IMPLEMENTATION
-#define ZENGINE_ZDEPS_DEFINED
+#define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
-#define ZENGINE_DEBUG 3 
+#define ZENGINE_DEBUG 0
 #define ZENGINE_MAX_SPRITES 1000
-#define ZENGINE_MAX_TEXTURES 10
+#define ZENGINE_MAX_TEXTURES 100
 #include "zengine.hpp"
 
 /* ZDEPS */
 #define ZCOLLIDE_IMPLEMENTATION
 #define ZTEXT_IMPLEMENTATION
-#define STB_TRUETYPE_IMPLEMENTATION
-#define STBTT_ASSERT
 #include "zcollide.hpp"
 #include "zwindow.hpp"
 #include "ztext.hpp"

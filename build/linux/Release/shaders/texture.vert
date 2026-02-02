@@ -23,8 +23,7 @@ layout(push_constant) uniform PushConstants {
 layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[]; };
 
 void main() {
-    float rotation = radians(sprites[gl_InstanceIndex].rotation);
-    gl_Position = vec4(rotationMatrix * ((inPosition * sprites[gl_InstanceIndex].scale) / camera.zoom) + ((sprites[gl_InstanceIndex].position + camera.position) / camera.zoom)), 0.0, 1.0);
+    gl_Position = vec4(sprites[gl_InstanceIndex].rotationMatrix * ((inPosition * sprites[gl_InstanceIndex].scale) / camera.zoom) + ((sprites[gl_InstanceIndex].position + camera.position) / camera.zoom), 0.0, 1.0);
     fragTexCoord = inTexCoord;
     fragTextureIndex = sprites[gl_InstanceIndex].textureIndex;
 }

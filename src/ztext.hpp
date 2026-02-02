@@ -17,6 +17,10 @@ TODO:
 
 #include "zengine.hpp"
 
+#if defined(ZTEXT_IMPLEMENTATION) && !defined(ZENGINE_DEPS_DEFINED)
+    #define STB_TRUETYPE_IMPLEMENTATION
+    #define STBTT_ASSERT
+#endif
 #include "deps/stb_truetype.h"
 
 struct ZText {
