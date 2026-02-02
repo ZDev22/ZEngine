@@ -36,20 +36,29 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 #define ZENGINE_PRINT1(x)
 #define ZENGINE_PRINT2(x)
 #define ZENGINE_PRINT3(x)
+#define ZENGINE_THROW1(x)
+#define ZENGINE_THROW2(x)
+#define ZENGINE_THROW3(x)
 
 #ifdef ZENGINE_DEBUG
     #include <iostream>
-    #if ZENGINE_DEBUG > 2
-        #undef ZENGINE_PRINT3
-        #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
+    #if ZENGINE_DEBUG > 0
+        #undef ZENGINE_PRINT1
+        #undef ZENGINE_THROW1
+        #define ZENGINE_PRINT1(...) std::cout << __VA_ARGS__
+        #define ZENGINE_THROW1(x) if((x) != VK_SUCCESS) throw;
     #endif
     #if ZENGINE_DEBUG > 1
         #undef ZENGINE_PRINT2
+        #undef ZENGINE_THROW2
         #define ZENGINE_PRINT2(...) std::cout << __VA_ARGS__
+        #define ZENGINE_THROW2(x) if((x) != VK_SUCCESS) throw;
     #endif
-    #if ZENGINE_DEBUG > 0
-        #undef ZENGINE_PRINT1
-        #define ZENGINE_PRINT1(...) std::cout << __VA_ARGS__
+    #if ZENGINE_DEBUG > 2
+        #undef ZENGINE_PRINT3
+        #undef ZENGINE_THROW3
+        #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
+        #define ZENGINE_THROW3(x) if((x) != VK_SUCCESS) throw;
     #endif
 #endif
 
@@ -1048,7 +1057,7 @@ VkShaderModule createShaderModule(const char* filepath) {
     createInfo.pCode = buffer;
 
     VkShaderModule shaderModule;
-    if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) { throw ("failed to create shader module"); }
+    ZENGINE_THROW1(vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule));
 
     return shaderModule;
 }
@@ -1224,7 +1233,8 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     deviceInfo.ppEnabledExtensionNames = extension;
     deviceInfo.enabledLayerCount = 0;
 
-    if (vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &device_) != VK_SUCCESS) { throw("Failed to create logical device"); }
+    ZENGINE_THROW1(vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &device_));
+
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 
@@ -1235,7 +1245,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     commandPoolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
     commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if (vkCreateCommandPool(device_, &commandPoolInfo, nullptr, &commandPool) != VK_SUCCESS) { throw("failed to create command pool"); }
+    ZENGINE_THROW1(vkCreateCommandPool(device_, &commandPoolInfo, nullptr, &commandPool));
 
     ZENGINE_PRINT1("Getting project ready...\n"); //---------------------------------------------------------------------------------------------------------------
     swapChain = std::make_unique<SwapChain>();
@@ -1330,7 +1340,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     layoutInfo.bindingCount = 2;
     layoutInfo.pBindings = layoutBindings;
 
-    if (vkCreateDescriptorSetLayout(device_, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) { throw("failed to create descriptor set layout!"); }
+    ZENGINE_THROW1(vkCreateDescriptorSetLayout(device_, &layoutInfo, nullptr, &descriptorSetLayout));
 
     VkDescriptorPoolSize poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
@@ -1343,7 +1353,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     descriptorPoolInfo.pPoolSizes = poolSizes;
     descriptorPoolInfo.maxSets = ZENGINE_MAX_TEXTURES + 1;
 
-    if (vkCreateDescriptorPool(device_, &descriptorPoolInfo, nullptr, &descriptorPool) != VK_SUCCESS) { throw("failed to create descriptor pool!"); }
+    ZENGINE_THROW2(vkCreateDescriptorPool(device_, &descriptorPoolInfo, nullptr, &descriptorPool));
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -1352,7 +1362,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
-    if (vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {  throw("failed to create pipeline layout!"); }
+    ZENGINE_THROW1(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -1371,7 +1381,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) { throw("failed to create graphics pipeline!"); }
+    ZENGINE_THROW3(vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline));
 
     vkDestroyShaderModule(device_, shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device_, shaderStages[1].module, nullptr);
@@ -1388,7 +1398,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-    if (vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) { throw("failed to create pipeline layout!"); }
+    ZENGINE_THROW3(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     /* create texture array descriptor set */
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
