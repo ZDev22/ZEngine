@@ -81,8 +81,8 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 /* vulkan */
 #if defined(__linux__)
     #define VK_USE_PLATFORM_XLIB_KHR
-#elif defined(_APPLE_)
-    #define VK_USE_PLATFORM_METAL_EXT
+#elif defined(__APPLE__)
+    #define VK_USE_PLATFORM_MACOS_MVK
 #elif defined(_WIN32)
     #define VK_USE_PLATFORM_WIN32_KHR
 #endif
@@ -1080,14 +1080,13 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     std::ios::sync_with_stdio(false);
 #endif
     ZENGINE_PRINT1("Compiling shaders\n"); //---------------------------------------------------------------------------------------------------------------
-    {
-    const char* extensions[4] = { ".vert", ".frag", ".comp", ".geom" };
+    const char* shaders[4] = { ".vert", ".frag", ".comp", ".geom" };
     const char* stages[4]     = { "vert",  "frag",  "comp",  "geom" };
 
     for (const auto& file : std::filesystem::directory_iterator("shaders")) {
         if (!file.is_regular_file()) { continue; }
         for (int i = 0; i < 4; ++i) {
-            if (file.path().extension().string() == extensions[i]) {
+            if (file.path().extension().string() == shaders[i]) {
                 std::string inputFile = file.path().string().c_str();
                 std::string outputFile = (file.path().string() + ".spv").c_str();
 
@@ -1099,7 +1098,6 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
             }
         }
     }
-    }
 
     ZENGINE_PRINT1("Creating instance...\n"); //---------------------------------------------------------------------------------------------------------------
     VkApplicationInfo appInfo{};
@@ -1108,7 +1106,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     appInfo.pEngineName = "ZEngine";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.engineVersion = VK_MAKE_VERSION(1, 11, 0);
-#ifdef _APPLE
+#ifdef __APPLE__
     appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 3, 0);
 #else
     appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 4, 0);
@@ -1135,7 +1133,8 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     instanceInfo.enabledExtensionCount = (unsigned int)extensions.size();
     instanceInfo.ppEnabledExtensionNames = extensions.data();
 
-    vkCreateInstance(&instanceInfo, nullptr, &instance);
+    VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
+    ZENGINE_PRINT2("Instance: " << result << std::endl; );
 
     ZENGINE_PRINT1("Creating surface...\n"); RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
 

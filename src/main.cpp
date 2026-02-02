@@ -11,7 +11,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
-#define ZENGINE_DEBUG 0
+#define ZENGINE_DEBUG 3
 #define ZENGINE_MAX_SPRITES 1000
 #define ZENGINE_MAX_TEXTURES 100
 #include "zengine.hpp"
