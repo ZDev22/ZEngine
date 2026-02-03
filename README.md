@@ -1,4 +1,5 @@
-# **ZENGINE - A SINGLE-HEADER C++ VULKAN ENGINE**
+![ZENGINE.HPP](ZENGINE.png "ZENGINE - THE 2D GAME ENGINE")
+# **THE SINGLE-HEADER C++ VULKAN ENGINE**
 # About:
 My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics with Vulkan and SPIR-V shaders.
 

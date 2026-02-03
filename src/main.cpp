@@ -6,12 +6,12 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP)
 */
 
-#if false // render the screen and tick the game (disable if it's a terminal game)
+#if true // render the screen and tick the game (disable if it's a terminal game)
 
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
-#define ZENGINE_DEBUG 3
+#define ZENGINE_DEBUG 0
 #define ZENGINE_MAX_SPRITES 1000
 #define ZENGINE_MAX_TEXTURES 100
 #include "zengine.hpp"
@@ -71,7 +71,7 @@ int main() {
 
         /* poll window events */
         switch(zwindow.pollEvents()) {
-        case 0: 
+        case 0:
             ZEngineDeinit();
             return 0;
         case 1:

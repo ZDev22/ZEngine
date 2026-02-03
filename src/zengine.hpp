@@ -36,9 +36,9 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 #define ZENGINE_PRINT1(x)
 #define ZENGINE_PRINT2(x)
 #define ZENGINE_PRINT3(x)
-#define ZENGINE_THROW1(x)
-#define ZENGINE_THROW2(x)
-#define ZENGINE_THROW3(x)
+#define ZENGINE_THROW1(x) (x)
+#define ZENGINE_THROW2(x) (x)
+#define ZENGINE_THROW3(x) (x)
 
 #ifdef ZENGINE_DEBUG
     #include <iostream>
