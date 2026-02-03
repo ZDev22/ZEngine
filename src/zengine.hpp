@@ -116,6 +116,7 @@ struct Buffer;
 struct Model;
 struct Texture;
 struct SwapChain;
+struct ma_engine;
 
 /* declare a few structs before creating variables about them */
 struct Vertex {
@@ -169,10 +170,13 @@ extern bool ZEngineClose;
 extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
 extern std::shared_ptr<Model> squareModel;
 extern VkDevice device_;
+extern ma_engine audio;
 
 #ifdef ZENGINE_IMPLEMENTATION
 
-Camera camera; /* kinda just chillin ngl */
+/* kinda just chillin ngl */
+Camera camera;
+ma_engine audio;
 
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 bool ZEngineClose = false; /* flag to show when the engine is closing */
@@ -1435,6 +1439,8 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     camera.zoom[0] = 1.f;
     camera.zoom[1] = 1.f;
 
+    ma_engine_init(nullptr, &audio); /* init audio */
+
     /* allocate info */
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -1593,6 +1599,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT3("Destroying device\n"); vkDestroyDevice(device_, nullptr);
     ZENGINE_PRINT3("Freeing window surface\n"); vkDestroySurfaceKHR(instance, surface_, nullptr);
     ZENGINE_PRINT1("Destroying instance\n"); vkDestroyInstance(instance, nullptr);
+    ZENGINE_PRINT3("Deiniting audio"); ma_engine_uninit(&audio);
 }
 
 #endif // ZENGINE_IMPLEMENTATION

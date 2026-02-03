@@ -6,7 +6,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP)
 */
 
-#if true // render the screen and tick the game (disable if it's a terminal game)
+#if false // render the screen and tick the game (disable if it's a terminal game)
 
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DEPS_DEFINED
@@ -29,8 +29,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 #include <thread>
 
-//#define FPS_CAP_SET
-#define FPS_CAP 180.f
+//#define FPS_CAP 180.f
 
 /* vars for calculating fps and deltaTime */
 int fps = 0;
@@ -42,24 +41,18 @@ std::chrono::high_resolution_clock::time_point fpsLastTime;
 void render();
 int main() {
     /* sanity check */
-    #ifndef FPS_CAP
-        #define FPS_CAP 60.f
-    #endif
-    #ifdef FPS_CAP_SET
+    #ifdef FPS_CAP
         deltaTime = 1.f / FPS_CAP;
     #endif
 
+    /* init engine */
     ZWindow zwindow{windowdata, 720, 480};
-
     ZEngineInit();
-
-    ma_engine audio;
-    ma_engine_init(nullptr, &audio);
-
     Game game{zwindow, audio, camera};
 
     while (true) {
-        #ifdef FPS_CAP_SET
+        /* calculate fps */
+        #ifdef FPS_CAP
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(((1.f / FPS_CAP) * 1000) - appWait)));
             fpsTime = std::chrono::high_resolution_clock::now();
             appTimer += 1.f / FPS_CAP;
@@ -76,9 +69,9 @@ int main() {
         }
         fps++;
 
+        /* poll window events */
         switch(zwindow.pollEvents()) {
-        case 0:
-            ma_engine_uninit(&audio);
+        case 0: 
             ZEngineDeinit();
             return 0;
         case 1:
@@ -90,7 +83,7 @@ int main() {
 
         zcollide_clearAABB();
 
-        #ifdef FPS_CAP_SET
+        #ifdef FPS_CAP
             fpsLastTime = std::chrono::high_resolution_clock::now();
             appWait = std::chrono::duration<float>(fpsLastTime - fpsTime).count();
         #endif
