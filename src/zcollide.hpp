@@ -3,7 +3,7 @@
 v2.2.6
 
 zcollide.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
-Uses the zcollide_AABB method to create a square around your object, more precise methods are planned.
+uses the AABB method to create a square hitbox around your object, more precise methods are planned.
 
 #define ZCOLLIDE_IMPLEMENTATION - define in MAIN.CPP ONLY
 

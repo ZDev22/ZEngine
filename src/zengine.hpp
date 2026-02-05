@@ -8,14 +8,9 @@
 #define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 #define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
 
-CREATE A SPRITE:
-createSprite(model, textureIndex, x, y, scalex, scaley, rotation);
-
-CREATE A TEXTURE:
-sprites[0].setTexture(std::make_unique<Texture>("texture.png")); - automatically assumes assets/images/texture.png
-
-CREATE A MODEL:
-std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); - see ZEngineInit for a real-world example
+CREATE A SPRITE:  createSprite(model, textureIndex, x, y, scalex, scaley, rotation);
+CREATE A TEXTURE: sprites[0].setTexture(std::make_unique<Texture>("texture.png")); - automatically assumes assets/images/texture.png
+CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); - see ZEngineInit for a real-world example
 */
 
 #ifndef ZENGINE_HPP
@@ -43,20 +38,14 @@ std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); 
 #ifdef ZENGINE_DEBUG
     #include <iostream>
     #if ZENGINE_DEBUG > 0
-        #undef ZENGINE_PRINT1
-        #undef ZENGINE_THROW1
         #define ZENGINE_PRINT1(...) std::cout << __VA_ARGS__
         #define ZENGINE_THROW1(x) if((x) != VK_SUCCESS) throw;
     #endif
     #if ZENGINE_DEBUG > 1
-        #undef ZENGINE_PRINT2
-        #undef ZENGINE_THROW2
         #define ZENGINE_PRINT2(...) std::cout << __VA_ARGS__
         #define ZENGINE_THROW2(x) if((x) != VK_SUCCESS) throw;
     #endif
     #if ZENGINE_DEBUG > 2
-        #undef ZENGINE_PRINT3
-        #undef ZENGINE_THROW3
         #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
         #define ZENGINE_THROW3(x) if((x) != VK_SUCCESS) throw;
     #endif
@@ -131,8 +120,8 @@ struct Vertex {
         return bindingDescription;
     }
 
-    static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() {
-        std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
+    static VkVertexInputAttributeDescription* getAttributeDescriptions() {
+        VkVertexInputAttributeDescription* attributeDescriptions = new VkVertexInputAttributeDescription[2];
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
         attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
@@ -235,18 +224,18 @@ void updateTexture(unsigned char index);
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
 inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model);
 
-SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties);
-VkCommandBuffer beginSingleTimeCommands();
-void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount);
-void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 void createCommandBuffers();
+VkCommandBuffer beginSingleTimeCommands();
 VkShaderModule createShaderModule(const char* filepath);
+void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties);
+void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount);
+VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 /* ZENGINE STRUCTS */
 struct alignas(16) SpriteData {
@@ -342,8 +331,8 @@ public:
         /* create image views*/
         swapChainImageViews.resize(swapChainImages.size());
 
+        VkImageViewCreateInfo viewInfo{};
         for (unsigned int i = 0; i < swapChainImages.size(); i++) {
-            VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             viewInfo.image = swapChainImages[i];
             viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -353,7 +342,6 @@ public:
             viewInfo.subresourceRange.levelCount = 1;
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
-
             vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews[i]);
         }
 
@@ -395,7 +383,6 @@ public:
         subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
         VkSubpassDependency dependency = {};
-
         dependency.dstSubpass = 0;
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -585,13 +572,11 @@ public:
         samplerInfo.compareEnable = VK_FALSE;
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-
         vkCreateSampler(device_, &samplerInfo, nullptr, &sampler);
     }
 
     Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE) {
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
         VkDeviceSize imageSize = texWidth * texHeight * 4;
 
         createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
@@ -600,7 +585,6 @@ public:
         vkMapMemory(device_, stagingBufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, imageSize);
         vkUnmapMemory(device_, stagingBufferMemory);
-
         stbi_image_free(pixels);
 
         VkImageCreateInfo imageInfo{};
@@ -764,7 +748,6 @@ public:
         bufferInfo.size = bufferSize;
         bufferInfo.usage = usageFlags;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
         vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
 
         VkMemoryRequirements memRequirements;
@@ -944,7 +927,6 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
 
     vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(graphicsQueue_);
-
     vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
 }
 
@@ -954,7 +936,6 @@ void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyF
     bufferInfo.size = size;
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
     vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer);
 
     VkMemoryRequirements memRequirements;
@@ -1266,13 +1247,12 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     shaderStages[1].pName = "main";
 
     VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
-    std::vector<VkVertexInputAttributeDescription> attributeDescriptions = Vertex::getAttributeDescriptions();
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-    vertexInputInfo.vertexAttributeDescriptionCount = (unsigned int)attributeDescriptions.size();
-    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = 2;
+    vertexInputInfo.pVertexAttributeDescriptions = Vertex::getAttributeDescriptions(); 
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -1289,7 +1269,6 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     rasterizer.depthClampEnable = VK_FALSE;
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.f;
     rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
@@ -1343,20 +1322,15 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = 2;
     layoutInfo.pBindings = layoutBindings;
-
     ZENGINE_THROW1(vkCreateDescriptorSetLayout(device_, &layoutInfo, nullptr, &descriptorSetLayout));
 
-    VkDescriptorPoolSize poolSizes[] = {
-        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
-        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZENGINE_MAX_TEXTURES * (ZENGINE_MAX_TEXTURES + 1) }
-    };
+    VkDescriptorPoolSize poolSizes[] = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZENGINE_MAX_TEXTURES * (ZENGINE_MAX_TEXTURES + 1)}};
 
     VkDescriptorPoolCreateInfo descriptorPoolInfo{};
     descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     descriptorPoolInfo.poolSizeCount = 2;
     descriptorPoolInfo.pPoolSizes = poolSizes;
     descriptorPoolInfo.maxSets = ZENGINE_MAX_TEXTURES + 1;
-
     ZENGINE_THROW2(vkCreateDescriptorPool(device_, &descriptorPoolInfo, nullptr, &descriptorPool));
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -1365,7 +1339,6 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
-
     ZENGINE_THROW1(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -1384,7 +1357,6 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineInfo.renderPass = swapChain->getRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-
     ZENGINE_THROW2(vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline));
 
     vkDestroyShaderModule(device_, shaderStages[0].module, nullptr);
@@ -1401,13 +1373,12 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-
     ZENGINE_THROW2(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     /* create texture array descriptor set */
-    VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
- 
     ZENGINE_PRINT2("Initing sprites...\n");
+
+    VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
     std::unique_ptr<Texture> texture = std::make_unique<Texture>("e.jpg");
     VkImageView textureImage = texture->getImageView();
     VkSampler textureSampler = texture->getSampler();
@@ -1419,7 +1390,9 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
         imageInfo.sampler = textureSampler;
     }
 
-     /* init sprites */
+    /* init sprites */
+    camera.zoom[0]     = 1.f; camera.zoom[1]     = 1.f;
+    camera.position[0] = 0.f; camera.position[1] = 0.f;
     float* positions = new float[8] {
         -.5f, -.5f, // Bottom-Left
         .5f, -.5f,  // Bottom-Right
@@ -1433,11 +1406,7 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     VkDeviceSize bufferSize = sizeof(SpriteData) * ZENGINE_MAX_SPRITES;
     spriteDataBuffer = std::make_unique<Buffer>(bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     spriteDataBuffer->map();
-    if (!sprites.empty()) { spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size()); }
-    camera.position[0] = 0.f;
-    camera.position[1] = 0.f;
-    camera.zoom[0] = 1.f;
-    camera.zoom[1] = 1.f;
+    spriteDataBuffer->writeToBuffer(sprites.data(), sizeof(SpriteData) * sprites.size());
 
     ma_engine_init(nullptr, &audio); /* init audio */
 
@@ -1447,7 +1416,6 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
-
     ZENGINE_THROW3(vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet));
 
     VkDescriptorBufferInfo bufferInfo{};
@@ -1509,30 +1477,20 @@ void ZEngineRender() {
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = swapChain->getRenderPass();
     renderPassInfo.framebuffer = swapChain->getFrameBuffer(currentImageIndex);
-    renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = windowExtent;
 
     VkClearValue clearValues[2] = {};
-    clearValues[0].color = VkClearColorValue{ .float32 = {.1f, .1f, .1f, 1.f} };
+    clearValues[0].color = VkClearColorValue{0.f, 0.f, 0.f, 0.f};
     clearValues[1].depthStencil = VkClearDepthStencilValue{ 1.f, 0 };
     renderPassInfo.clearValueCount = 2;
     renderPassInfo.pClearValues = clearValues;
 
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    VkViewport viewport{};
-    viewport.x = 0.f;
-    viewport.y = 0.f;
-    viewport.width = (float)windowExtent.width;
-    viewport.height = (float)windowExtent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-    VkRect2D scissor{};
-    scissor.offset = { 0, 0 };
-    scissor.extent = windowExtent;
+    VkRect2D scissor{{0, 0}, windowExtent};
+    VkViewport viewport{0.f, 0.f, (float)windowExtent.width, (float)windowExtent.height, 0.f, 1.f};
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     /* render sprites */
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);

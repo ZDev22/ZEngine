@@ -40,8 +40,8 @@ public:
                     playSound(&audio, "assets/sounds/chirp.mp3");
                     createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
                     sprites[sprites.size() - 1].setTexture(createText(0, "ZDEV", 32));
-                    camera.zoom[0] -= .025f;
-                    camera.zoom[1] -= .025f;
+                    camera.zoom[0] -= .007f;
+                    camera.zoom[1] -= .007f;
                 }
 
                 if (sprites[0].position[1] > 1.f || sprites[0].position[1] < -1.f) {
