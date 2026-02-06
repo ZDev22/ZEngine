@@ -310,8 +310,8 @@ public:
         }
     }
 private:
-    SlimeAttackEnemies slimeAttackEnemies;
     ZWindow& zwindow;
     ma_engine& audio;
     Camera& camera;
+    SlimeAttackEnemies slimeAttackEnemies;
 };

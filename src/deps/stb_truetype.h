@@ -1,5 +1,8 @@
 // stb_truetype.h - v1.26 - public domain
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+
 #ifdef STB_TRUETYPE_IMPLEMENTATION
    // #define your own (u)stbtt_int8/16/32 before including to override this
    #ifndef stbtt_uint8
@@ -4528,8 +4531,5 @@ STBTT_DEF int stbtt_CompareUTF8toUTF16_bigendian(const char *s1, int len1, const
    return stbtt_CompareUTF8toUTF16_bigendian_internal((char *) s1, len1, (char *) s2, len2);
 }
 
-#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
-#endif
-
 #endif // STB_TRUETYPE_IMPLEMENTATION

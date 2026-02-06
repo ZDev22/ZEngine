@@ -2,8 +2,7 @@
 
 An example implementation on how to init and use zengine, as well as a few zdeps!
 
-#define FPS_CAP_SET // set if the program will use the FPS cap
-#define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP)
+#define FPS_CAP 60.f // set the framerate (.5f / FPS_CAP) dont define for no FPS cap
 */
 
 #if true // render the screen and tick the game (disable if it's a terminal game)
@@ -12,7 +11,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
 #define ZENGINE_DEBUG 0
-#define ZENGINE_MAX_SPRITES 1000000
+#define ZENGINE_MAX_SPRITES 100000
 #define ZENGINE_MAX_TEXTURES 100
 #include "zengine.hpp"
 
@@ -24,14 +23,16 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "ztext.hpp"
 
 /* graphical applications */
-//#include "games/flappyBird.hpp"
+#include "games/flappyBird.hpp"
 //#include "games/slimeAttack.hpp"
-#include "games/stresstest.hpp"
+//#include "games/stresstest.hpp"
 
 #include <thread>
 
-//#define FPS_CAP 180.f
-
+#ifdef ZENGINE_DISABLE_VSYNC
+//  #define FPS_CAP 180.f
+#endif
+   
 /* vars for calculating fps and deltaTime */
 int fps = 0;
 float appTimer = 0.f;

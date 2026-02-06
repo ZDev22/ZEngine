@@ -9,6 +9,8 @@ extern "C" {
 #endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #define MA_STRINGIFY(x)     #x
 #define MA_XSTRINGIFY(x)    MA_STRINGIFY(x)
 #define MA_VERSION_MAJOR    0
@@ -11542,6 +11544,7 @@ MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src)
 
         return (double)(counter.QuadPart - pTimer->counter) / g_ma_TimerFrequency.QuadPart;
     }
+
 #elif defined(MA_APPLE) && (MAC_OS_X_VERSION_MIN_REQUIRED < 101200)
     static ma_uint64 g_ma_TimerFrequency = 0;
     static void ma_timer_init(ma_timer* pTimer)
@@ -11560,6 +11563,7 @@ MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src)
 
         return (newTimeCounter - oldTimeCounter) / g_ma_TimerFrequency;
     }
+
 #elif defined(MA_EMSCRIPTEN)
     static MA_INLINE void ma_timer_init(ma_timer* pTimer)
     {
@@ -11577,28 +11581,6 @@ MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src)
         #else
             #define MA_CLOCK_ID CLOCK_REALTIME
         #endif
-
-        static void ma_timer_init(ma_timer* pTimer)
-        {
-            struct timespec newTime;
-            clock_gettime(MA_CLOCK_ID, &newTime);
-
-            pTimer->counter = (newTime.tv_sec * 1000000000) + newTime.tv_nsec;
-        }
-
-        static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-        {
-            ma_uint64 newTimeCounter;
-            ma_uint64 oldTimeCounter;
-
-            struct timespec newTime;
-            clock_gettime(MA_CLOCK_ID, &newTime);
-
-            newTimeCounter = (newTime.tv_sec * 1000000000) + newTime.tv_nsec;
-            oldTimeCounter = pTimer->counter;
-
-            return (newTimeCounter - oldTimeCounter) / 1000000000.0;
-        }
     #else
         static void ma_timer_init(ma_timer* pTimer)
         {

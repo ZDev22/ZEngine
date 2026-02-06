@@ -4,6 +4,7 @@
 - **HUGE API IMPROVEMENTS**
 - **FIXED WAYLAND SUPPORT**
 - **ADDED ZTEXT.HPP**
+- Updated examples
 - Vulkan now required dependency on windows
 - MUCH more ZWindow functionality
 - Improved API and efficiency of zcollide & zbit
@@ -52,7 +53,6 @@
 
 ## v0.6 - 7/20/25
 - **ADDED STRING.HPP**
-- Added string.hpp
 - Removed validation layers
 - Removed a bunch of unused vulkan files
 - Added camera
@@ -75,7 +75,7 @@
 
 ## v0.3 - 6/24/25
 - **ADDED KEYBOARD.HPP**
-- Added math.hpp
+- **ADDED MATH.HPP**
 - Bugfixes
 
 ## v0.2 - 6/17/25
@@ -84,8 +84,8 @@
 
 # v0.1 - 6/4/25
 - **VULKAN SUPPORT**
-- **GLFW SUPPORT**
 - **SPRITE CREATION**
 - **TEXTURE LOADING**
 - **TEXTURE MAPPING**
+- GLFW support
 - Changable sprite transform

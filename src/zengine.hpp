@@ -55,13 +55,13 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
     #define MINIAUDIO_IMPLEMENTATION
 
     #define RGFW_IMPLEMENTATION
-    #define RGFW_EXPORT
     #define RGFW_ASSERT(x) (void)(x)
 
     #define STB_IMAGE_IMPLEMENTATION
     #define STBI_ASSERT
 #endif
 #define RGFW_VULKAN
+#define RGFW_EXPORT
 
 /* dependencies */
 #include "deps/RGFW.h" /* window */
@@ -222,7 +222,7 @@ void ZEngineDeinit();
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
 void updateTexture(unsigned char index);
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
-inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model);
+inline unsigned int getVerticySize(const std::shared_ptr<Model>& model);
 
 void createCommandBuffers();
 VkCommandBuffer beginSingleTimeCommands();
@@ -399,7 +399,6 @@ public:
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
-
         ZENGINE_THROW2(vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass));
 
         /* create depth resources */
@@ -423,7 +422,6 @@ public:
             imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
             imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
             imageInfo.flags = 0;
-
             createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[i], depthImageMemorys[i]);
 
             VkImageViewCreateInfo viewInfo{};
@@ -436,7 +434,6 @@ public:
             viewInfo.subresourceRange.levelCount = 1;
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
-
             vkCreateImageView(device_, &viewInfo, nullptr, &depthImageViews[i]);
         }
 
@@ -454,7 +451,6 @@ public:
             framebufferInfo.width = windowExtent.width;
             framebufferInfo.height = windowExtent.height;
             framebufferInfo.layers = 1;
-
             vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
         }
 
@@ -827,7 +823,7 @@ public:
 
     inline void draw(VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)verticySize, instanceCount, 0, firstInstance); }
     inline const Vertex* getVertices() const { return vertices; }
-    inline const unsigned int size() const { return verticySize; }
+    inline unsigned int size() const { return verticySize; }
 
 private:
     std::unique_ptr<Buffer> vertexBuffer;
@@ -993,7 +989,7 @@ void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFla
 
 /* ZENGINE HELPER FUNCTIONS */
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model) { return model->getVertices(); }
-inline const unsigned int getVerticySize(const std::shared_ptr<Model>& model) { return model->size(); }
+inline unsigned int getVerticySize(const std::shared_ptr<Model>& model) { return model->size(); }
 
 void updateTexture(unsigned char index) {
     Texture* texture = spriteTextures[index].get();
@@ -1010,7 +1006,6 @@ void updateTexture(unsigned char index) {
     imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     imageWrite.descriptorCount = 1;
     imageWrite.pImageInfo = &imageInfo;
-
     vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
 }
 
@@ -1022,7 +1017,6 @@ void createCommandBuffers() {
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandPool = commandPool;
     allocInfo.commandBufferCount = (unsigned int)commandBuffers.size();
-
     vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers.data());
 }
 
@@ -1127,8 +1121,12 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
     instanceInfo.enabledExtensionCount = (unsigned int)extensions.size();
     instanceInfo.ppEnabledExtensionNames = extensions.data();
 
-    VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
-    ZENGINE_PRINT2("Instance: " << result << std::endl; );
+    #if ZENGINE_DEBUG > 1
+        VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
+        ZENGINE_PRINT2("Instance: " << result << std::endl; );
+    #else
+        vkCreateInstance(&instanceInfo, nullptr, &instance);
+    #endif
 
     ZENGINE_PRINT1("Creating surface...\n"); RGFW_window_createSurface_Vulkan(windowdata, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
 
