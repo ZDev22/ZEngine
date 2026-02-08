@@ -494,6 +494,11 @@ public:
         }
     }
 
+    SwapChain(const SwapChain&) = delete;
+    SwapChain operator=(const SwapChain&) = delete;
+    SwapChain(SwapChain&&) = default;
+    SwapChain& operator=(SwapChain&&) = default;
+
     inline VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
     
     VkResult submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
