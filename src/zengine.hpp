@@ -764,11 +764,26 @@ public:
         memory = VK_NULL_HANDLE;
     }
 
-    void map() {
-        void* temp = nullptr;
-        vkMapMemory(device_, memory, 0, bufferSize, 0, &temp);
-        mapped = (char*)temp;
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+
+    Buffer(Buffer&& newBuffer) noexcept { *this = std::move(newBuffer); }
+
+    Buffer& operator=(Buffer&& other) noexcept {
+        if (this != &other) {
+            buffer = other.buffer;
+            memory = other.memory;
+            mapped = other.mapped;
+            bufferSize = other.bufferSize;
+
+            other.buffer = VK_NULL_HANDLE;
+            other.memory = VK_NULL_HANDLE;
+            other.mapped = nullptr;
+        }
+        return *this;
     }
+
+    inline void map() { vkMapMemory(device_, memory, 0, bufferSize, 0, &mapped); }
     void unmap() {
         if (mapped) {
             vkUnmapMemory(device_, memory);
@@ -815,7 +830,6 @@ public:
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     }
 
-    /* this fixes copying memory leak ig */
     Model(const Model&) = delete;
     Model& operator=(const Model&) = delete;
     Model(Model&&) = default;
