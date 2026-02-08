@@ -1,16 +1,21 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
-#define ZENGINE_DEPS_DEFINED - if your using zdeps.c define this
+#define ZENGINE_DEPS_DEFINED - if your using zdeps.c define this (disables IMPLEMENTATION defines)
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
-#define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info
+#define ZENGINE_FORCE_SHADER_RECOMPILATION - forces shaders to recompile no matter what (except ZENGINE_DONT_RECOMPILE_SHADERS)
+#define ZENGINE_NEVER_RECOMPILE_SHADERS - disables shader compilation, even with ZENGINE_FORCE_SHADER_RECOMPILATION
+
+#define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info (0, 1, 2, 3)
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
 #define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 #define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
 
+INIT WINDOWDATA:  ZWindow zwindow{windowdata, 1920, 1080};
+INIT WINDOWDATA:  windowdata = RGFW_createWindowPtr("ZEngine", 0, 0, 1920, 1080, 0, (RGFW_window*)RGFW_ALLOC(sizeof(RGFW_window));
 CREATE A SPRITE:  createSprite(model, textureIndex, x, y, scalex, scaley, rotation);
-CREATE A TEXTURE: sprites[0].setTexture(std::make_unique<Texture>("texture.png")); - automatically assumes assets/images/texture.png
-CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); - see ZEngineInit for a real-world example
+CREATE A TEXTURE: sprites[0].setTexture(std::make_unique<Texture>("texture.png")); - assumes assets/images/texture.png
+CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); - see ZEngineInit
 */
 
 #ifndef ZENGINE_HPP
@@ -51,6 +56,7 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
     #endif
 #endif
 
+/* dependencies */
 #if defined(ZENGINE_IMPLEMENTATION) && !defined(ZENGINE_DEPS_DEFINED)
     #define MINIAUDIO_IMPLEMENTATION
 
@@ -63,7 +69,6 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
 #define RGFW_VULKAN
 #define RGFW_EXPORT
 
-/* dependencies */
 #include "deps/RGFW.h" /* window */
 #include "deps/miniaudio.h" /* audio */
 #include "deps/stb_image.h" /* image */
@@ -1073,10 +1078,12 @@ void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float
 }
 
 /* ZENGINE */
-void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE */
+void ZEngineInit() {
 #ifdef ZENGINE_DEBUG
     std::ios::sync_with_stdio(false);
 #endif
+
+#ifndef ZENGINE_NEVER_RECOMPILE_SHADERS
     ZENGINE_PRINT1("Compiling shaders\n"); //---------------------------------------------------------------------------------------------------------------
     const char* shaders[4] = { ".vert", ".frag", ".comp", ".geom" };
     const char* stages[4]     = { "vert",  "frag",  "comp",  "geom" };
@@ -1088,14 +1095,19 @@ void ZEngineInit() { /* YOU MUST CREATE THE RGFW WINDOW BEFORE INITING ZENGINE *
                 std::string inputFile = file.path().string().c_str();
                 std::string outputFile = (file.path().string() + ".spv").c_str();
 
+#ifndef ZENGINE_FORCE_SHADER_RECOMPILATION
                 if (!(std::filesystem::exists(outputFile)  && std::filesystem::last_write_time(outputFile) >= std::filesystem::last_write_time(inputFile))) {
+#endif
                     int result = std::system(("glslc -fshader-stage=" + std::string(stages[i]) + " " + inputFile + " -o " + outputFile).c_str());
                     if (result != 0) { ZENGINE_PRINT1("Failed to compile " << inputFile << " (error: " << result << ")\n"); }
+#ifndef ZENGINE_FORCE_SHADER_RECOMPILATION
                 }
+#endif
                 break;
             }
         }
     }
+#endif // ZENGINE_NEVER_RECOMPILE_SHADERS
 
     ZENGINE_PRINT1("Creating instance...\n"); //---------------------------------------------------------------------------------------------------------------
     VkApplicationInfo appInfo{};

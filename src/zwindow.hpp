@@ -13,6 +13,7 @@ zwindow.keyHit(RGFW_a);
 #pragma once
 
 #define RGFW_VULKAN
+#define RGFW_EXPORT
 #include "deps/RGFW.h"
 
 #include <vector>
@@ -21,7 +22,7 @@ struct ZWindow {
 public:
     // ZWINDOW
     ZWindow(RGFW_window*& window, i32 windowWidth, i32 windowHeight) : window(window) {
-        window = RGFW_createWindow("loading...", 100, 100, windowWidth, windowHeight, (u64)0);
+        window = RGFW_createWindow("loading...", 0, 0, windowWidth, windowHeight, (u64)0);
         u8 icon[4 * 3 * 3] = {0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF};
         RGFW_window_setIcon(window, icon, 3, 3, 4);
         monitor = RGFW_window_getMonitor(window);
