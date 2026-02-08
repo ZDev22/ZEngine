@@ -684,6 +684,11 @@ public:
         vkFreeMemory(device_, imageMemory, nullptr);
     }
 
+    Texture(const Texture&) = delete;
+    Texture operator=(const Texture&) = delete;
+    Texture(Texture&&) = default;
+    Texture& operator=(Texture&&) = default;
+
     void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -765,23 +770,9 @@ public:
     }
 
     Buffer(const Buffer&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
-
-    Buffer(Buffer&& newBuffer) noexcept { *this = std::move(newBuffer); }
-
-    Buffer& operator=(Buffer&& other) noexcept {
-        if (this != &other) {
-            buffer = other.buffer;
-            memory = other.memory;
-            mapped = other.mapped;
-            bufferSize = other.bufferSize;
-
-            other.buffer = VK_NULL_HANDLE;
-            other.memory = VK_NULL_HANDLE;
-            other.mapped = nullptr;
-        }
-        return *this;
-    }
+    Buffer operator=(const Buffer&) = delete;
+    Buffer(Buffer&&) = default;
+    Buffer& operator=(Buffer&&) = default;
 
     inline void map() { vkMapMemory(device_, memory, 0, bufferSize, 0, &mapped); }
     void unmap() {
