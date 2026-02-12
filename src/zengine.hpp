@@ -1399,7 +1399,7 @@ void ZEngineInit() {
     ZENGINE_PRINT2("Initing sprites...\n");
 
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
-    std::unique_ptr<Texture> texture = std::make_unique<Texture>("e.jpg");
+    std::unique_ptr<Texture> texture = std::make_unique<Texture>("e.png");
     VkImageView textureImage = texture->getImageView();
     VkSampler textureSampler = texture->getSampler();
     for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
