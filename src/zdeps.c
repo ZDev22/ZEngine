@@ -27,6 +27,7 @@ To use along-side zengine.hpp, #define ZENGINE_DEPS_DEFINED */
 #endif
 /* disabled decoders */
 #define MA_NO_FLAC
+#define MA_NO_WAV
 
 /* STB_IMAGE */
 #define STB_IMAGE_IMPLEMENTATION

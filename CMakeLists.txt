@@ -28,6 +28,7 @@ elseif(APPLE)
    set(VULKAN_INCLUDE "${VULKAN_SDK_DIR}/include")
 
 elseif(WIN32)
+   set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/windows/Debug)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/windows/Release)
    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_SMOL ${CMAKE_SOURCE_DIR}/build/windows/Smol)

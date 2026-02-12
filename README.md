@@ -5,6 +5,8 @@ My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **
 
 It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDep modules** which are lightweight and super usefull for creating 2D games!
 
+Use ffmpeg to convert any .wav into .mp3 files. Use ```ffmpeg -i input.mp3 -c:a libmp3lame -q:a 5 output_low_q.mp3``` to compress them.
+
 Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
 
 *If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*
