@@ -11,7 +11,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
-//#define ZENGINE_FORCE_SHADER_RECOMPILATION
+#define ZENGINE_FORCE_SHADER_RECOMPILATION
 #define ZENGINE_DEBUG 0
 #define ZENGINE_MAX_SPRITES 100000
 #define ZENGINE_MAX_TEXTURES 100
@@ -31,8 +31,8 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 #include <thread>
 
-#ifdef ZENGINE_DISABLE_VSYNC
-//  #define FPS_CAP 180.f
+#ifndef ZENGINE_DISABLE_VSYNC
+    #define FPS_CAP 180.f
 #endif
    
 /* vars for calculating fps and deltaTime */

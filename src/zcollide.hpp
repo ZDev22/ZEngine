@@ -23,7 +23,7 @@ struct ZCOLLIDE_AABBS {
 };
 
 bool zcollide_checkSquareCollision(SpriteData& dataA, SpriteData& dataB);
-bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB);
+bool zcollide_checkCollision(const SpriteCPU& spriteA, SpriteData& dataA, const SpriteCPU& spriteB, SpriteData& dataB);
 void zcollide_clearAABB();
 
 #ifdef ZCOLLIDE_IMPLEMENTATION
@@ -38,7 +38,7 @@ bool zcollide_checkSquareCollision(SpriteData& dataA, SpriteData& dataB) {
     return abs(dataA.position[0] - dataB.position[0]) <= (abs(dataA.rotationMatrix[0]) * (dataA.scale[0] * .5f) + abs(dataA.rotationMatrix[1]) * (dataA.scale[1] * .5f) + abs(dataB.rotationMatrix[0]) * (dataB.scale[0] * .5f) + abs(dataB.rotationMatrix[1]) * (dataB.scale[1] * .5f)) && abs(dataA.position[1] - dataB.position[1]) <= (abs(dataA.rotationMatrix[2]) * (dataA.scale[0] * 0.5f) + abs(dataA.rotationMatrix[3]) * (dataA.scale[1] * .5f) + abs(dataB.rotationMatrix[2]) * (dataB.scale[0] * .5f) + abs(dataB.rotationMatrix[3]) * (dataB.scale[1] * .5f));
 }
 
-bool zcollide_checkCollision(const Sprite& spriteA, SpriteData& dataA, const Sprite& spriteB, SpriteData& dataB) {
+bool zcollide_checkCollision(const SpriteCPU& spriteA, SpriteData& dataA, const SpriteCPU& spriteB, SpriteData& dataB) {
     int usingAAABB = -1;
     int usingBAABB = -1;
 

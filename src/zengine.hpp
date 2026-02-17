@@ -103,7 +103,7 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
 
 /* forward declaration of a bunch of structs lol */
 struct SpriteData;
-struct Sprite;
+struct SpriteCPU;
 struct Buffer;
 struct Model;
 struct Texture;
@@ -175,7 +175,7 @@ bool ZEngineClose = false; /* flag to show when the engine is closing */
 
 /* sprite vecs */
 std::vector<SpriteData> sprites;
-std::vector<Sprite> spriteCPU;
+std::vector<SpriteCPU> spriteCPU;
 unsigned int spriteID = 0;
 
 /* texture vecs */
@@ -262,14 +262,14 @@ struct alignas(16) SpriteData {
     }
 };
 
-struct Sprite {
+struct SpriteCPU {
     std::shared_ptr<Model> model;
     Texture* texture;
     bool visible;
 };
 
 extern std::vector<SpriteData> sprites;
-extern std::vector<Sprite> spriteCPU;
+extern std::vector<SpriteCPU> spriteCPU;
 
 struct SwapChain {
 public:
@@ -1056,7 +1056,7 @@ VkShaderModule createShaderModule(const char* filepath) {
 
 void createSprite(std::shared_ptr<Model> model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
-    Sprite sprite;
+    SpriteCPU sprite;
     SpriteData spriteData;
 
     sprite.model = model;
