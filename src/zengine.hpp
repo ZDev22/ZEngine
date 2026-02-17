@@ -32,27 +32,25 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
     #define ZENGINE_MAX_TEXTURES 50
 #endif
 
-/* debugging printing */
+/* debugging */
 #define ZENGINE_PRINT1(x)
 #define ZENGINE_PRINT2(x)
 #define ZENGINE_PRINT3(x)
-#define ZENGINE_THROW1(x) (x)
-#define ZENGINE_THROW2(x) (x)
-#define ZENGINE_THROW3(x) (x)
+#define ZENGINE_THROW(x) (x)
 
 #ifdef ZENGINE_DEBUG
     #include <iostream>
+    #undef ZENGINE_THROW
+    #define ZENGINE_THROW(x) if((x) != VK_SUCCESS) throw;
+
     #if ZENGINE_DEBUG > 0
         #define ZENGINE_PRINT1(...) std::cout << __VA_ARGS__
-        #define ZENGINE_THROW1(x) if((x) != VK_SUCCESS) throw;
     #endif
     #if ZENGINE_DEBUG > 1
         #define ZENGINE_PRINT2(...) std::cout << __VA_ARGS__
-        #define ZENGINE_THROW2(x) if((x) != VK_SUCCESS) throw;
     #endif
     #if ZENGINE_DEBUG > 2
         #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
-        #define ZENGINE_THROW3(x) if((x) != VK_SUCCESS) throw;
     #endif
 #endif
 
@@ -327,10 +325,10 @@ public:
             createInfo.presentMode = VK_PRESENT_MODE_MAILBOX_KHR;
         #endif
 
-        ZENGINE_THROW3(vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain));
-        ZENGINE_THROW3(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr));
+        ZENGINE_THROW(vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain));
+        ZENGINE_THROW(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, nullptr));
         swapChainImages.resize(imageCount);
-        ZENGINE_THROW3(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data()));
+        ZENGINE_THROW(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, swapChainImages.data()));
         swapChainImageFormat = surfaceFormat.format;
 
         /* create image views*/
@@ -404,7 +402,7 @@ public:
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
-        ZENGINE_THROW2(vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass));
+        ZENGINE_THROW(vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass));
 
         /* create depth resources */
         depthImages.resize(swapChainImages.size());
@@ -1051,7 +1049,7 @@ VkShaderModule createShaderModule(const char* filepath) {
     createInfo.pCode = buffer;
 
     VkShaderModule shaderModule;
-    ZENGINE_THROW1(vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule));
+    ZENGINE_THROW(vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule));
 
     return shaderModule;
 }
@@ -1237,8 +1235,7 @@ void ZEngineInit() {
     deviceInfo.enabledExtensionCount = 1;
     deviceInfo.ppEnabledExtensionNames = extension;
     deviceInfo.enabledLayerCount = 0;
-
-    ZENGINE_THROW1(vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &device_));
+    ZENGINE_THROW(vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &device_));
 
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
@@ -1250,7 +1247,7 @@ void ZEngineInit() {
     commandPoolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
     commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    ZENGINE_THROW1(vkCreateCommandPool(device_, &commandPoolInfo, nullptr, &commandPool));
+    ZENGINE_THROW(vkCreateCommandPool(device_, &commandPoolInfo, nullptr, &commandPool));
 
     ZENGINE_PRINT1("Getting project ready...\n"); //---------------------------------------------------------------------------------------------------------------
     swapChain = std::make_unique<SwapChain>();
@@ -1342,7 +1339,7 @@ void ZEngineInit() {
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = 2;
     layoutInfo.pBindings = layoutBindings;
-    ZENGINE_THROW1(vkCreateDescriptorSetLayout(device_, &layoutInfo, nullptr, &descriptorSetLayout));
+    ZENGINE_THROW(vkCreateDescriptorSetLayout(device_, &layoutInfo, nullptr, &descriptorSetLayout));
 
     VkDescriptorPoolSize poolSizes[] = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZENGINE_MAX_TEXTURES * (ZENGINE_MAX_TEXTURES + 1)}};
 
@@ -1351,7 +1348,7 @@ void ZEngineInit() {
     descriptorPoolInfo.poolSizeCount = 2;
     descriptorPoolInfo.pPoolSizes = poolSizes;
     descriptorPoolInfo.maxSets = ZENGINE_MAX_TEXTURES + 1;
-    ZENGINE_THROW2(vkCreateDescriptorPool(device_, &descriptorPoolInfo, nullptr, &descriptorPool));
+    ZENGINE_THROW(vkCreateDescriptorPool(device_, &descriptorPoolInfo, nullptr, &descriptorPool));
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -1359,7 +1356,7 @@ void ZEngineInit() {
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
-    ZENGINE_THROW1(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
+    ZENGINE_THROW(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -1377,7 +1374,7 @@ void ZEngineInit() {
     pipelineInfo.renderPass = swapChain->getRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-    ZENGINE_THROW2(vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline));
+    ZENGINE_THROW(vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline));
 
     vkDestroyShaderModule(device_, shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device_, shaderStages[1].module, nullptr);
@@ -1393,7 +1390,7 @@ void ZEngineInit() {
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-    ZENGINE_THROW2(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
+    ZENGINE_THROW(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 
     /* create texture array descriptor set */
     ZENGINE_PRINT2("Initing sprites...\n");
@@ -1436,7 +1433,7 @@ void ZEngineInit() {
     allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
-    ZENGINE_THROW3(vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet));
+    ZENGINE_THROW(vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet));
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = spriteDataBuffer->getBuffer();
@@ -1557,7 +1554,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT3("Waiting for GPU...\n"); vkDeviceWaitIdle(device_);
 
     ZENGINE_PRINT2("Freeing command buffers\n"); vkFreeCommandBuffers(device_, commandPool, (unsigned int)commandBuffers.size(), commandBuffers.data());
-    commandBuffers.clear();
+    ZENGINE_PRINT3("Clearing command buffers\n"); commandBuffers.clear();
 
     ZENGINE_PRINT3("Freeing graphics pipeline\n"); vkDestroyPipeline(device_, graphicsPipeline, nullptr);
     ZENGINE_PRINT3("Freeing pipeline layout\n");   vkDestroyPipelineLayout(device_, pipelineLayout, nullptr);
@@ -1569,7 +1566,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT2("Freeing sprites\n"); sprites.clear();
     ZENGINE_PRINT3("Freeing sprite models\n"); spriteCPU.clear();
     ZENGINE_PRINT3("Freeing square model\n"); squareModel.reset();
-    ZENGINE_PRINT3("Freein swapchain\n"); swapChain.reset();
+    ZENGINE_PRINT3("Freeing swapchain\n"); swapChain.reset();
 
     ZENGINE_PRINT3("Freeing descriptor set layout\n"); vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, nullptr);
     ZENGINE_PRINT3("Freeing descriptor pool\n"); vkDestroyDescriptorPool(device_, descriptorPool, nullptr);
