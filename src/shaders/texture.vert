@@ -6,7 +6,7 @@ layout(location = 1) in vec2 inTexCoord;
 layout(location = 0) out vec2 fragTexCoord;
 layout(location = 1) flat out uint fragTextureIndex;
 
-struct SpriteData {
+struct Sprite {
     vec2 position;
     vec2 scale;
     mat2 rotationMatrix;
@@ -20,7 +20,7 @@ layout(push_constant) uniform PushConstants {
     vec2 zoom;
 } camera;
 
-layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { SpriteData sprites[]; };
+layout(set = 0, binding = 0) readonly buffer SpriteDataBuffer { Sprite sprites[]; };
 
 void main() {
     gl_Position = vec4(sprites[gl_InstanceIndex].rotationMatrix * ((inPosition * sprites[gl_InstanceIndex].scale) / camera.zoom) + ((sprites[gl_InstanceIndex].position + camera.position) / camera.zoom), 0.0, 1.0);
