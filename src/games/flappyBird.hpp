@@ -17,8 +17,8 @@ struct Game {
 public:
     Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera) {
         loadFont("assets/fonts/Bullpen3D.ttf", 32.f);
-        for (unsigned int i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
-   
+        for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
+
         sprites[0].position[0] = -.7f;
         sprites[0].position[1] = -.2f;
         sprites[0].setTexture(std::make_unique<Texture>("flappyBird.png"));

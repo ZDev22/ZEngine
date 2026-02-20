@@ -14,7 +14,7 @@ public:
     }
 
     void tick() {
-        createSprite(squareModel, 0, 0.f, 0.f, .5f, .2f, 0.f);
+        createSprite(squareModel, 0, 0.f, 0.f, .02f, .02f, 0.f);
         for (unsigned int i = 1; i < sprites.size(); i++) {
             sprites[i].position[0] += .0001f;
             sprites[i].position[1] += .0001f;

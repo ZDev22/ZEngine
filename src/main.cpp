@@ -12,6 +12,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
 #define ZENGINE_FORCE_SHADER_RECOMPILATION
+//#define ZENGINE_NEVER_RECOMPILE_SHADERS
 #define ZENGINE_DEBUG 0
 #define ZENGINE_MAX_SPRITES 100000
 #define ZENGINE_MAX_TEXTURES 100
@@ -24,11 +25,12 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "zwindow.hpp"
 #include "ztext.hpp"
 
-/* graphical applications */
-//#include "games/flappyBird.hpp"
+/* APPS */
+#include "games/flappyBird.hpp"
 //#include "games/slimeAttack.hpp"
-#include "games/stresstest.hpp"
+//#include "games/stresstest.hpp"
 
+/* STD */
 #include <thread>
 
 #ifndef ZENGINE_DISABLE_VSYNC
@@ -98,7 +100,7 @@ int main() {
 
 #else
 
-/* terminal applications */
+/* TERMINAL APPS */
 #include "games/terminalCalculator.hpp"
 
 int main() { Terminal(); }
