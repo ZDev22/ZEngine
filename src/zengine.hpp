@@ -225,7 +225,7 @@ void ZEngineDeinit();
 
 void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
 void createSprite(Sprite* sprite);
-void initSprite(Sprite& sprite);
+void initSprite(Sprite* sprite);
 void updateTexture(unsigned char index);
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
 inline unsigned int getVerticySize(const std::shared_ptr<Model>& model);
@@ -1480,9 +1480,10 @@ void ZEngineInit() {
 }
 
 void ZEngineRender() {
-    char spriteData[SIZEOF_SPRITE_DATA * sprites.size()];
-    for (size_t i = 0; i < sprites.size(); i++) { memcpy(spriteData + i * SIZEOF_SPRITE_DATA, sprites[i], SIZEOF_SPRITE_DATA); }
+    char* spriteData = (char*)malloc(SIZEOF_SPRITE_DATA * sprites.size());
+    for (unsigned int i = 0; i < sprites.size(); i++) memcpy(spriteData + i * SIZEOF_SPRITE_DATA, sprites[i], SIZEOF_SPRITE_DATA);
     spriteDataBuffer->writeToBuffer(spriteData, SIZEOF_SPRITE_DATA * sprites.size());
+    free(spriteData);
 
     /* resize window */
     if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {

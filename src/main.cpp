@@ -26,9 +26,9 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "ztext.hpp"
 
 /* APPS */
-//#include "games/flappyBird.hpp"
+#include "games/flappyBird.hpp"
 //#include "games/slimeAttack.hpp"
-#include "games/stresstest.hpp"
+//#include "games/stresstest.hpp"
 
 /* STD */
 #include <thread>
