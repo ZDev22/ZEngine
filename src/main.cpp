@@ -11,7 +11,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
-#define ZENGINE_FORCE_SHADER_RECOMPILATION
+//#define ZENGINE_FORCE_SHADER_RECOMPILATION
 //#define ZENGINE_NEVER_RECOMPILE_SHADERS
 #define ZENGINE_DEBUG 0
 #define ZENGINE_MAX_SPRITES 100000
@@ -26,15 +26,15 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "ztext.hpp"
 
 /* APPS */
-#include "games/flappyBird.hpp"
+//#include "games/flappyBird.hpp"
 //#include "games/slimeAttack.hpp"
-//#include "games/stresstest.hpp"
+#include "games/stresstest.hpp"
 
 /* STD */
 #include <thread>
 
 #ifndef ZENGINE_DISABLE_VSYNC
-    #define FPS_CAP 180.f
+    #define FPS_CAP 60.f
 #endif
    
 /* vars for calculating fps and deltaTime */

@@ -23,7 +23,7 @@ int health = 3;
 
 void knockback(float origin) {
     if (slimeAttackHitTimer > 1.f) {
-        slimeAttackSpeed[0] = origin >= sprites[0].position[0] ? -.5f : .5f;
+        slimeAttackSpeed[0] = origin >= sprites[0]->position[0] ? -.5f : .5f;
         slimeAttackSpeed[1] = 1.f;
         slimeAttackHitTimer = 0.f;
         health--;
@@ -162,22 +162,22 @@ public:
         for (unsigned int i = 0; i < sprites.size(); i++) {
             if (!enemies[i].skip) {
 
-                switch(sprites[i].textureIndex) {
+                switch(sprites[i]->textureIndex) {
 
                 case SLIMEATTACK_ENEMY_TYPE_SLIME:
                     enemies[i].cooldown += deltaTime;
                     if (enemies[i].cooldown > 2.5f) {
-                        enemies[i].speed[0] = sprites[0].position[0] >= sprites[i].position[0] ? .2f : -.2f;
+                        enemies[i].speed[0] = sprites[0]->position[0] >= sprites[i]->position[0] ? .2f : -.2f;
                         enemies[i].speed[1] = -10.f;
                         enemies[i].cooldown = 0.f;
                     }
                     enemies[i].speed[1] += 1.6f * deltaTime;
-                    sprites[i].position[0] += enemies[i].speed[0] * deltaTime;
-                    sprites[i].position[1] += enemies[i].speed[1] * deltaTime;
+                    sprites[i]->position[0] += enemies[i].speed[0] * deltaTime;
+                    sprites[i]->position[1] += enemies[i].speed[1] * deltaTime;
 
                     if (zcollide_checkSquareCollision(sprites[1], sprites[i])) {
-                        sprites[i].position[0] -= enemies[i].speed[0] * deltaTime;
-                        sprites[i].position[1] -= enemies[i].speed[1] * deltaTime;
+                        sprites[i]->position[0] -= enemies[i].speed[0] * deltaTime;
+                        sprites[i]->position[1] -= enemies[i].speed[1] * deltaTime;
                         enemies[i].speed[0] = 0.f;
                         enemies[i].speed[1] = 0.f;
                     }
@@ -186,17 +186,17 @@ public:
                 case SLIMEATTACK_ENEMY_TYPE_BAT:
                     enemies[i].cooldown += deltaTime;
                     if (enemies[i].cooldown > 2.f) {
-                        enemies[i].speed[0] = sprites[0].position[0] >= sprites[i].position[0] ? .5f : -.5f;
+                        enemies[i].speed[0] = sprites[0]->position[0] >= sprites[i]->position[0] ? .5f : -.5f;
                         enemies[i].speed[1] = 1.5f;
                         enemies[i].speed[1] -=  1.f * deltaTime;
-                        if (abs(sprites[i].position[0]) >= .9f) { enemies[i].speed[0] = 0.f; }
+                        if (abs(sprites[i]->position[0]) >= .9f) { enemies[i].speed[0] = 0.f; }
                     }
                     break;
 
                 case SLIMEATTACK_ENEMY_TYPE_OGRE:
                     enemies[i].cooldown += deltaTime;
-                    if (enemies[i].cooldown > 2.5f) { if (abs(sprites[0].position[0] - sprites[i].position[0]) <= .2f) { knockback(sprites[i].position[0]); }}
-                    enemies[i].speed[0] += (sprites[0].position[0] >= sprites[i].position[0] ? -.1f : .1f) * deltaTime;
+                    if (enemies[i].cooldown > 2.5f) { if (abs(sprites[0]->position[0] - sprites[i]->position[0]) <= .2f) { knockback(sprites[i]->position[0]); }}
+                    enemies[i].speed[0] += (sprites[0]->position[0] >= sprites[i]->position[0] ? -.1f : .1f) * deltaTime;
                     break;
 
                 case SLIMEATTACK_ENEMY_TYPE_BOSS:
@@ -210,7 +210,7 @@ public:
 
     bool isTouchingEnemies() {
         for (unsigned int i = 0; i < sprites.size(); i++) {
-            if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
+            if (sprites[i]->textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME) {
                 if (zcollide_checkSquareCollision(sprites[i], sprites[0])) { return true; }
             }
         }
@@ -219,12 +219,12 @@ public:
 
     void damageEnemies() {
         for (unsigned int i = 0; i < sprites.size(); i++) {
-            if (sprites[i].textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && zcollide_checkSquareCollision(sprites[i], sprites[0])) {
+            if (sprites[i]->textureIndex >= SLIMEATTACK_ENEMY_TYPE_SLIME && zcollide_checkSquareCollision(sprites[i], sprites[0])) {
                 enemies[i].health--;
                 if (enemies[i].health <= 0) {
                     enemies[i].skip = true;
-                    sprites[i].textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
-                    spriteCPU[i].visible = false;
+                    sprites[i]->textureIndex = SLIMEATTACK_ENEMY_TYPE_DEATH;
+                    sprites[i]->visible = false;
                     aliveEnemies--;
                     if (aliveEnemies == 0) { spawnNewWave(); }
                 }
@@ -250,8 +250,8 @@ private:
 struct Game {
 public:
     Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera), slimeAttackEnemies(*this) {
-    sprites[0].scale[0] = .15f;
-    sprites[0].scale[1] = .15f;
+    sprites[0]->scale[0] = .15f;
+    sprites[0]->scale[1] = .15f;
     createSprite(squareModel, 1, 0.f, .7f, 2.f, .15f, 0.f);
 }
 
@@ -265,8 +265,8 @@ public:
                 slimeAttackTimer = 0.f;
                 slimeAttackSpeed[0] = 0.f;
                 slimeAttackSpeed[1] = 0.f;
-                sprites[0].position[0] = 0.f;
-                sprites[0].position[1] = -.5f;
+                sprites[0]->position[0] = 0.f;
+                sprites[0]->position[1] = -.5f;
             }
         }
         else {
@@ -279,8 +279,8 @@ public:
                 slimeAttackIsDead = true;
                 slimeAttackSpeed[0] = 0.f;
                 slimeAttackSpeed[1] = .5f;
-                sprites[0].position[0] = 1.5f;
-                sprites[0].position[1] = 1.5f;
+                sprites[0]->position[0] = 1.5f;
+                sprites[0]->position[1] = 1.5f;
                 slimeAttackSpeed[0] = 0.f;
                 slimeAttackSpeed[1] = 0.f;
             }
@@ -298,12 +298,12 @@ public:
             else { slimeAttackSpeed[0] = 0.f; }
 
             slimeAttackSpeed[1] += 15.f * deltaTime;
-            sprites[0].position[0] += slimeAttackSpeed[0] * deltaTime;
-            sprites[0].position[1] += slimeAttackSpeed[1] * deltaTime;
+            sprites[0]->position[0] += slimeAttackSpeed[0] * deltaTime;
+            sprites[0]->position[1] += slimeAttackSpeed[1] * deltaTime;
 
             if (zcollide_checkSquareCollision(sprites[0], sprites[1])) {
                 slimeAttackTouchingGround = true;
-                sprites[0].position[1] -= slimeAttackSpeed[1] * deltaTime;
+                sprites[0]->position[1] -= slimeAttackSpeed[1] * deltaTime;
                 slimeAttackSpeed[1] = 0;
             }
             else { slimeAttackTouchingGround = false; }

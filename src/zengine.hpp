@@ -14,7 +14,7 @@
 INIT WINDOWDATA:  ZWindow zwindow{windowdata, 1920, 1080};
 INIT WINDOWDATA:  windowdata = RGFW_createWindowPtr("ZEngine", 0, 0, 1920, 1080, 0, (RGFW_window*)RGFW_ALLOC(sizeof(RGFW_window));
 CREATE A SPRITE:  createSprite(model, textureIndex, x, y, scalex, scaley, rotation);
-CREATE A TEXTURE: sprites[0].setTexture(std::make_unique<Texture>("texture.png")); - assumes assets/images/texture.png
+CREATE A TEXTURE: sprites[0]->setTexture(std::make_unique<Texture>("texture.png")); - assumes assets/images/texture.png
 CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_verticy_positions); - see ZEngineInit
 */
 
@@ -161,7 +161,7 @@ struct QueueFamilyIndices {
 extern float deltaTime;
 extern bool ZEngineClose;
 extern std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
-extern std::vector<Sprite> sprites;
+extern std::vector<Sprite*> sprites;
 extern std::shared_ptr<Model> squareModel;
 extern VkDevice device_;
 extern ma_engine audio;
@@ -176,7 +176,7 @@ float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in
 bool ZEngineClose = false; /* flag to show when the engine is closing */
 
 /* sprite vecs */
-std::vector<Sprite> sprites;
+std::vector<Sprite*> sprites;
 unsigned int spriteID = 0;
 
 /* texture vecs */
@@ -224,6 +224,7 @@ void ZEngineRender();
 void ZEngineDeinit();
 
 void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
+void createSprite(Sprite* sprite);
 void initSprite(Sprite& sprite);
 void updateTexture(unsigned char index);
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
@@ -243,7 +244,7 @@ void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFla
 void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 /* ZENGINE STRUCTS */
-struct Sprite {
+struct alignas(16) Sprite {
     float position[2];
     float scale[2];
     float rotationMatrix[4];
@@ -1057,36 +1058,37 @@ VkShaderModule createShaderModule(const char* filepath) {
 
 void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
-    Sprite sprite;
+    Sprite* sprite = new Sprite();
 
-    sprite.model = model;
-    sprite.visible = true;
+    sprite->model = model;
+    sprite->visible = true;
 
-    sprite.position[0] = positionx;
-    sprite.position[1] = positiony;
-    sprite.scale[0] = scalex;
-    sprite.scale[1] = scaley;
-    sprite.rotation = rotation;
-    sprite.textureIndex = textureIndex;
-    sprite.ID = spriteID++;
+    sprite->position[0] = positionx;
+    sprite->position[1] = positiony;
+    sprite->scale[0] = scalex;
+    sprite->scale[1] = scaley;
+    sprite->rotation = rotation;
+    sprite->textureIndex = textureIndex;
+    sprite->ID = spriteID++;
 
-    sprites.emplace_back(sprite);
+    sprites.push_back(sprite);
 }
 
-void initSprite(Sprite& sprite) {
+void createSprite(Sprite* sprite) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
+    sprites.push_back(sprite);
+}
 
-    sprite.model = squareModel;
-    sprite.visible = true;
-    sprite.position[0] = 0.f;
-    sprite.position[1] = 0.f;
-    sprite.scale[0] = .1f;
-    sprite.scale[1] = .1f;
-    sprite.rotation = 0.f;
-    sprite.textureIndex = 0;
-    sprite.ID = spriteID++;
-
-    sprites.emplace_back(sprite);
+void initSprite(Sprite* sprite) {
+    sprite->model = squareModel;
+    sprite->visible = true;
+    sprite->position[0] = 0.f;
+    sprite->position[1] = 0.f;
+    sprite->scale[0] = .1f;
+    sprite->scale[1] = .1f;
+    sprite->rotation = 0.f;
+    sprite->textureIndex = 0;
+    sprite->ID = spriteID++;
 }
 
 /* ZENGINE */
@@ -1478,7 +1480,9 @@ void ZEngineInit() {
 }
 
 void ZEngineRender() {
-    spriteDataBuffer->writeToBuffer(sprites.data(), SIZEOF_SPRITE_DATA * sprites.size()); /* update sprite position, rotation & other */
+    char spriteData[SIZEOF_SPRITE_DATA * sprites.size()];
+    for (size_t i = 0; i < sprites.size(); i++) { memcpy(spriteData + i * SIZEOF_SPRITE_DATA, sprites[i], SIZEOF_SPRITE_DATA); }
+    spriteDataBuffer->writeToBuffer(spriteData, SIZEOF_SPRITE_DATA * sprites.size());
 
     /* resize window */
     if (swapChain->acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {
@@ -1533,11 +1537,11 @@ void ZEngineRender() {
     unsigned int instanceCount = 0;
 
     for (unsigned int i = 0; i < sprites.size(); ++i) {
-        if (sprites[i].visible) {
-            sprites[i].setRotationMatrix();
-            if (sprites[i].model == lastModel) { instanceCount++; } /* model is the same, add it to the instance */
+        if (sprites[i]->visible) {
+            sprites[i]->setRotationMatrix();
+            if (sprites[i]->model == lastModel) { instanceCount++; } /* model is the same, add it to the instance */
             else { /* model changed, draw the batch and count again */
-                lastModel = sprites[i].model;
+                lastModel = sprites[i]->model;
                 if (instanceCount > 0) {
                     lastModel->bind(commandBuffer);
                     lastModel->draw(commandBuffer, instanceCount, instance);
@@ -1577,7 +1581,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT2("Freeing textures\n"); for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { spriteTextures[i].reset(); }
     ZENGINE_PRINT2("Unmaping sprite data buffer\n"); spriteDataBuffer->unmap();
     ZENGINE_PRINT3("Freeing sprite data buffer\n"); spriteDataBuffer.reset();
-    ZENGINE_PRINT2("Freeing sprites\n"); sprites.clear();
+    ZENGINE_PRINT2("Freeing sprites\n"); for (Sprite* sprite: sprites) delete sprite;
     ZENGINE_PRINT3("Freeing square model\n"); squareModel.reset();
     ZENGINE_PRINT3("Freeing swapchain\n"); swapChain.reset();
 
