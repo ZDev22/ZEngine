@@ -175,9 +175,8 @@ ma_engine audio;
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 bool ZEngineClose = false; /* flag to show when the engine is closing */
 
-/* sprite vecs */
+/* sprite var */
 std::vector<Sprite*> sprites;
-unsigned int spriteID = 0;
 
 /* texture vecs */
 std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
@@ -223,13 +222,21 @@ void ZEngineInit();
 void ZEngineRender();
 void ZEngineDeinit();
 
+/* sprite funcs */
 void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
 void createSprite(Sprite* sprite);
 void initSprite(Sprite* sprite);
+void deleteSprite(Sprite* sprite);
+void deleteSprite(unsigned int sprite);
+
+/* texture funcs*/
 void updateTexture(unsigned char index);
+
+/* model funcs*/
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
 inline unsigned int getVerticySize(const std::shared_ptr<Model>& model);
 
+/* engine funcs */
 void createCommandBuffers();
 VkCommandBuffer beginSingleTimeCommands();
 VkShaderModule createShaderModule(const char* filepath);
@@ -1056,27 +1063,27 @@ VkShaderModule createShaderModule(const char* filepath) {
     return shaderModule;
 }
 
-void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation) {
+void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
     Sprite* sprite = new Sprite();
 
     sprite->model = model;
     sprite->visible = true;
 
-    sprite->position[0] = positionx;
-    sprite->position[1] = positiony;
+    sprite->position[0] = posx;
+    sprite->position[1] = posy;
     sprite->scale[0] = scalex;
     sprite->scale[1] = scaley;
     sprite->rotation = rotation;
     sprite->textureIndex = textureIndex;
-    sprite->ID = spriteID++;
+    sprite->ID = sprites.size();
 
-    sprites.push_back(sprite);
+    sprites.emplace_back(sprite);
 }
 
 void createSprite(Sprite* sprite) {
     if (sprites.size() >= ZENGINE_MAX_SPRITES) { return; }
-    sprites.push_back(sprite);
+    sprites.emplace_back(sprite);
 }
 
 void initSprite(Sprite* sprite) {
@@ -1088,7 +1095,20 @@ void initSprite(Sprite* sprite) {
     sprite->scale[1] = .1f;
     sprite->rotation = 0.f;
     sprite->textureIndex = 0;
-    sprite->ID = spriteID++;
+    sprite->ID = sprites.size();
+}
+
+void deleteSprite(Sprite* sprite) {
+    unsigned int deleteID = sprite->ID;
+    delete sprite;
+    sprites.erase(sprites.begin() + deleteID);
+    for (unsigned int i = deleteID; i < sprites.size(); i++) sprites[i]->ID--;
+}
+
+void deleteSprite(unsigned int sprite) {
+    delete sprites[sprite];
+    sprites.erase(sprites.begin() + sprite);
+    for (unsigned int i = sprite; i < sprites.size(); i++) sprites[i]->ID--;
 }
 
 /* ZENGINE */
@@ -1100,7 +1120,7 @@ void ZEngineInit() {
 #ifndef ZENGINE_NEVER_RECOMPILE_SHADERS
     ZENGINE_PRINT1("Compiling shaders\n"); //---------------------------------------------------------------------------------------------------------------
     const char* shaders[4] = { ".vert", ".frag", ".comp", ".geom" };
-    const char* stages[4]     = { "vert",  "frag",  "comp",  "geom" };
+    const char* stages[4]  = {  "vert",  "frag",  "comp",  "geom" };
 
     for (const auto& file : std::filesystem::directory_iterator("shaders")) {
         if (!file.is_regular_file()) { continue; }
