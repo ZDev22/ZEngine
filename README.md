@@ -9,9 +9,16 @@ Use ffmpeg to convert any .wav into .mp3 files. Also use ffmpeg to compress them
 
 Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
 
+Licensed under the GNU GPL v3 license - please see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for more details
+
 *If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*
 
-# How to use:
+# Clone the repo:
+```bash
+git clone --depth=1 https://github.com/ZDev22/ZEngine
+cd ZEngine
+```
+# Dependencies:
 ## LINUX:
 #### Arch:
 ```bash
@@ -99,12 +106,13 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 - ZDeps documentation is inside their respective files
 - sprites[0] is the default sprite, you dont need to create it
 
-# Dependencies:
+# Included dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>
 [RGFW (Window)](https://github.com/ColleagueRiley/RGFW)</br>
 [MINIAUDIO (Audio) {Modified}](https://miniaud.io/)</br>
 [STB-IMAGE (Image loader) {Modified}](https://github.com/nothings/stb)</br>
 [STB-TRUETYPE (font text rasterizer) {Modified}](https://github.com/nothings/stb)
+
 # Build commands:
 ## Linux:
 ```bash
@@ -126,4 +134,21 @@ cmake --build --preset windowsrelease -j4
 linuxdebug    linuxrelease    linuxsmol
 macdebug      macrelease      macsmol
 windowsdebug  windowsrelease  windowssmol
+```
+
+# Run your games:
+## Linux:
+```bash
+cd build/linux/Release
+./main
+```
+## Mac:
+```bash
+cd build/mac/Release
+./main
+```
+## Windows:
+```bash
+cd build\windows\Release
+.\main
 ```
