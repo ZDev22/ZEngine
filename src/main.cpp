@@ -5,7 +5,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define FPS_CAP 60.f // set the framerate, dont define for no FPS cap
 */
 
-#if true // render the screen and tick the game (disable if it's a terminal game)
+#if 1 // render the screen and tick the game (disable if it's a terminal game)
 
 /* ZENGINE */
 #define ZENGINE_IMPLEMENTATION
