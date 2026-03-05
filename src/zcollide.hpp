@@ -44,14 +44,14 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
     int usingBAABB = -1;
 
     for (unsigned int i = 0; i < zcollide_AABB.size(); i++) {
-        if (zcollide_AABB[i].ID == spriteA->ID) { usingAAABB = i; }
-        else if (zcollide_AABB[i].ID == spriteB->ID) { usingBAABB = i; }
+        if (zcollide_AABB[i].ID == spriteA->depth) { usingAAABB = i; }
+        else if (zcollide_AABB[i].ID == spriteB->depth) { usingBAABB = i; }
     }
 
     if (usingAAABB != -1 && usingBAABB != -1) { return (zcollide_AABB[usingAAABB].pos[0] <= zcollide_AABB[usingBAABB].pos[2] && zcollide_AABB[usingAAABB].pos[2] >= zcollide_AABB[usingBAABB].pos[0]) && (zcollide_AABB[usingAAABB].pos[1] <= zcollide_AABB[usingBAABB].pos[3] && zcollide_AABB[usingAAABB].pos[3] >= zcollide_AABB[usingBAABB].pos[1]); }
     else if (usingAAABB != -1 && usingBAABB == -1) {
         ZCOLLIDE_AABBS b;
-        b.ID = spriteB->ID;
+        b.ID = spriteB->depth;
         const Vertex* verticesB = getVertices(spriteB->model);
 
         for (unsigned int i = 0; i < getVerticySize(spriteB->model); i++) {
@@ -71,7 +71,7 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
     }
     else if (usingAAABB == -1 && usingBAABB != -1) {
         ZCOLLIDE_AABBS a;
-        a.ID = spriteA->ID;
+        a.ID = spriteA->depth;
         const Vertex* verticesA = getVertices(spriteA->model);
 
         for (unsigned int i = 0; i < getVerticySize(spriteA->model); i++) {
@@ -94,9 +94,9 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
         spriteB->setRotationMatrix();
 
         ZCOLLIDE_AABBS a;
-        a.ID = spriteA->ID;
+        a.ID = spriteA->depth;
         ZCOLLIDE_AABBS b;
-        b.ID = spriteB->ID;
+        b.ID = spriteB->depth;
 
         const Vertex* verticesA = getVertices(spriteA->model);
         const Vertex* verticesB = getVertices(spriteB->model);

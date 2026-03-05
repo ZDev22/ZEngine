@@ -261,8 +261,8 @@ struct alignas(16) Sprite {
     float scale[2];
     float rotationMatrix[4];
 
+    unsigned int depth;
     unsigned int textureIndex;
-    unsigned int ID;
     float rotation;
 
     /* CPU-side only */
@@ -1088,7 +1088,7 @@ void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, floa
     sprites[spritesSize].scale[1] = scaley;
     sprites[spritesSize].rotation = rotation;
     sprites[spritesSize].textureIndex = textureIndex;
-    sprites[spritesSize].ID = spritesSize;
+    sprites[spritesSize].depth = spritesSize;
 
     spritesSize++;
 }
@@ -1109,15 +1109,15 @@ void initSprite(Sprite* sprite) {
     sprite->scale[1] = .1f;
     sprite->rotation = 0.f;
     sprite->textureIndex = 0;
-    sprite->ID = spritesSize - 1;
+    sprite->depth = spritesSize - 1;
 }
 
 void deleteSprite(Sprite* sprite) {
-    unsigned int deleteID = sprite->ID;
+    unsigned int deleteID = sprite->depth;
     delete sprite;
     for (unsigned int i = deleteID; i < spritesSize - 1; i++) {
         sprites[i] = sprites[i + 1];
-        sprites[i].ID--;
+        sprites[i].depth--;
     }
     spritesSize--;
     sprites[spritesSize].model.reset();
@@ -1126,7 +1126,7 @@ void deleteSprite(Sprite* sprite) {
 void deleteSprite(unsigned int sprite) {
     for (unsigned int i = sprite; i < spritesSize; i++) {
         sprites[i] = sprites[i + 1];
-        sprites[i].ID--;
+        sprites[i].depth--;
     }
     spritesSize--;
     sprites[spritesSize].model.reset();
@@ -1370,8 +1370,8 @@ void ZEngineInit() {
 
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    depthStencil.depthTestEnable = VK_FALSE;
-    depthStencil.depthWriteEnable = VK_FALSE;
+    depthStencil.depthTestEnable = VK_TRUE;
+    depthStencil.depthWriteEnable = VK_TRUE;
     depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
     depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.stencilTestEnable = VK_FALSE;
