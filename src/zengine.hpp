@@ -5,6 +5,7 @@
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_FORCE_SHADER_RECOMPILATION - forces shaders to recompile no matter what (except ZENGINE_DONT_RECOMPILE_SHADERS)
 #define ZENGINE_NEVER_RECOMPILE_SHADERS - disables shader compilation, even with ZENGINE_FORCE_SHADER_RECOMPILATION
+#define ZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
 
 #define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info (0, 1, 2, 3)
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
@@ -70,8 +71,14 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
 #define RGFW_EXPORT
 
 #include "deps/RGFW.h" /* window */
-#include "deps/miniaudio.h" /* audio */
 #include "deps/stb_image.h" /* image */
+
+#ifndef ZENGINE_DISABLE_AUDIO
+    #include "deps/miniaudio.h" /* audio */
+    #define ZENGINE_AUDIO ma_engine audio
+#else
+    #define ZENGINE_AUDIO unsigned char audio /* 1 byte to prevent errors */
+#endif
 
 /* undefine these so they don't get used later */
 #undef MINIAUDIO_IMPLEMENTATION
@@ -164,13 +171,13 @@ extern Sprite sprites[ZENGINE_MAX_SPRITES];
 extern unsigned int spritesSize;
 extern std::shared_ptr<Model> squareModel;
 extern VkDevice device_;
-extern ma_engine audio;
+extern ZENGINE_AUDIO;
 
 #ifdef ZENGINE_IMPLEMENTATION
 
 /* kinda just chillin ngl */
 Camera camera;
-ma_engine audio;
+ZENGINE_AUDIO;
 
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 bool ZEngineClose = false; /* flag to show when the engine is closing */
@@ -1472,7 +1479,9 @@ void ZEngineInit() {
     spriteDataBuffer->map();
     spriteDataBuffer->writeToBuffer(sprites, SIZEOF_SPRITE_DATA * spritesSize);
 
+#ifndef ZENGINE_DISABLE_AUDIO
     ma_engine_init(nullptr, &audio); /* init audio */
+#endif
 
     /* allocate info */
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -1623,7 +1632,9 @@ void ZEngineDeinit() {
     ZENGINE_PRINT3("Destroying device\n"); vkDestroyDevice(device_, nullptr);
     ZENGINE_PRINT3("Freeing window surface\n"); vkDestroySurfaceKHR(instance, surface_, nullptr);
     ZENGINE_PRINT1("Destroying instance\n"); vkDestroyInstance(instance, nullptr);
+#ifndef ZENGINE_DISABLE_AUDIO
     ZENGINE_PRINT3("Deiniting audio"); ma_engine_uninit(&audio);
+#endif
 }
 
 #endif // ZENGINE_IMPLEMENTATION

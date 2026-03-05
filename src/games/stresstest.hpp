@@ -6,7 +6,7 @@
 
 struct Game {
 public:
-    Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera) {
+    Game(ZWindow& zwindow, unsigned char& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera) {
         loadFont("assets/fonts/Bullpen3D.ttf", 64.f);
         sprites[0].position[0] = -.8f;
         sprites[0].position[1] = -.8f;
@@ -23,6 +23,6 @@ public:
     }
 private:
     ZWindow& zwindow;
-    ma_engine& audio;
+    unsigned char& audio;
     Camera& camera;
 };
