@@ -262,7 +262,7 @@ struct alignas(16) Sprite {
     float scale[2];
     float rotationMatrix[4];
 
-    unsigned int depth;
+    float depth;
     unsigned int textureIndex;
     float rotation;
 
@@ -1091,7 +1091,7 @@ void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, floa
     sprites[spritesSize].scale[1] = scaley;
     sprites[spritesSize].rotation = rotation;
     sprites[spritesSize].textureIndex = textureIndex;
-    sprites[spritesSize].depth = spritesSize;
+    sprites[spritesSize].depth = spritesSize / ZENGINE_MAX_SPRITES;
 
     spritesSize++;
 }
@@ -1118,7 +1118,7 @@ void deleteSprite(Sprite* sprite) {
     unsigned int deleteID = sprite->depth;
     for (unsigned int i = deleteID; i < spritesSize - 1; i++) {
         sprites[i] = sprites[i + 1];
-        sprites[i].depth--;
+        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
     }
     spritesSize--;
     sprites[spritesSize].model.reset();
@@ -1127,7 +1127,7 @@ void deleteSprite(Sprite* sprite) {
 void deleteSprite(unsigned int sprite) {
     for (unsigned int i = sprite; i < spritesSize; i++) {
         sprites[i] = sprites[i + 1];
-        sprites[i].depth--;
+        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
     }
     spritesSize--;
     sprites[spritesSize].model.reset();
