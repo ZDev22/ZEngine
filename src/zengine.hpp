@@ -6,6 +6,7 @@
 #define ZENGINE_FORCE_SHADER_RECOMPILATION - forces shaders to recompile no matter what (except ZENGINE_DONT_RECOMPILE_SHADERS)
 #define ZENGINE_NEVER_RECOMPILE_SHADERS - disables shader compilation, even with ZENGINE_FORCE_SHADER_RECOMPILATION
 #define ZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
+#define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 
 #define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info (0, 1, 2, 3)
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
@@ -174,6 +175,9 @@ extern unsigned int spritesSize;
 extern std::shared_ptr<Model> squareModel;
 extern VkDevice device_;
 extern ZENGINE_AUDIO;
+#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
+    extern bool ZEngineSpriteRemap;
+#endif
 
 #ifdef ZENGINE_IMPLEMENTATION
 
@@ -184,6 +188,9 @@ ZENGINE_AUDIO;
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 bool ZEngineClose = false; /* flag to show when the engine is closing */
 bool ZEngineUpdateSpriteMap = true; /* flag to update sprite instance data */
+#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
+    bool ZEngineSpriteRemap = true; /* flag to update sprite data */
+#endif
 
 /* texture vecs */
 std::unique_ptr<Texture> spriteTextures[ZENGINE_MAX_TEXTURES];
@@ -837,6 +844,7 @@ private:
 struct Model {
 public:
     Model(float* positions, const unsigned int verticySize) : verticySize(verticySize) { /* verticies are X and Y positions, verticy size is the size of the vector / 2 */
+        ZEngineUpdateSpriteMap = true;
         vertices = new Vertex[verticySize];
 
         unsigned int index = 0;
@@ -1591,8 +1599,8 @@ void ZEngineRender() {
         unsigned int instanceCount = 0;
 
         for (unsigned int i = 0; i < spritesSize; i++) {
-            memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
             sprites[i].setRotationMatrix();
+            memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
 
             if (sprites[i].model == lastModel) { instanceCount++; }
             else {
@@ -1623,18 +1631,25 @@ void ZEngineRender() {
         ZEngineUpdateSpriteMap = false;
     }
     else {
+#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
+    if (ZEngineSpriteRemap) {
+#endif
         for (unsigned int i = 0; i < spritesSize; i++) {
-            memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
             sprites[i].setRotationMatrix();
+            memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
         }
+#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
+        spriteDataBuffer->write(spriteData, SIZEOF_SPRITE_DATA * spritesSize);
+        ZEngineSpriteRemap = false;
+    }
+#else
+        spriteDataBuffer->write(spriteData, SIZEOF_SPRITE_DATA * spritesSize);
+#endif
         for (SpriteMap& map : spriteMap) {
             map.model->bind(commandBuffer);
             map.model->draw(commandBuffer, map.endID, map.startID);
         }
     }
-
-
-    spriteDataBuffer->write(spriteData, SIZEOF_SPRITE_DATA * spritesSize);
 
     /* end frame */
     vkCmdEndRenderPass(commandBuffer);
@@ -1657,7 +1672,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT2("Unmaping sprite data buffer\n"); spriteDataBuffer->unmap();
     ZENGINE_PRINT3("Freeing sprite data buffer\n"); spriteDataBuffer.reset();
     ZENGINE_PRINT2("Freeing sprite gpu buffer\n"); free(spriteData);
-    ZENGINE_PRINT3("Freeing models\n"); squareModel.reset();
+    ZENGINE_PRINT2("Freeing models\n"); squareModel.reset();
     for (unsigned int i = 0; i < spritesSize; i++) sprites[i].model.reset();
     for (SpriteMap& map : spriteMap) map.model.reset();
     ZENGINE_PRINT3("Freeing swapchain\n"); swapChain.reset();
