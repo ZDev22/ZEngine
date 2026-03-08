@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-v2.10.4
+v2.10.5
 
 zwindow.hpp is a lightweight cross-platform single-header cpp window abstraction library built off the latest RGFW
 works best with zengine, but can be a solo library
@@ -121,8 +121,20 @@ public:
     // Position
     inline void setMousePosition(i32 x, i32 y) { RGFW_window_moveMouse(window, x, y); }
     inline void getMousePosition(i32* x, i32* y) { RGFW_window_getMouse(window, x, y); }
-    inline i32 getMouseX() { i32 x = 0; RGFW_window_getMouse(window, &x, nullptr); return x; }
-    inline i32 getMouseY() { i32 y = 0; RGFW_window_getMouse(window, nullptr, &y); return y; }
+    float getMouseX() {
+        i32 x = 0;
+        i32 sizex = 0;
+        RGFW_window_getMouse(window, &x, nullptr);
+        RGFW_window_getSize(window, &sizex, nullptr);
+        return (float)x / sizex;
+    }
+    float getMouseY() {
+        i32 y = 0;
+        i32 sizey = 0;
+        RGFW_window_getMouse(window, nullptr, &y);
+        RGFW_window_getSize(window, nullptr, &sizey);
+        return (float)y / sizey;
+    }
 
     // Clicks
     inline bool LMBPressed() { return RGFW_isMouseDown(RGFW_mouseLeft); }
