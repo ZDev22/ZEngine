@@ -7,6 +7,8 @@
 #define ZENGINE_NEVER_RECOMPILE_SHADERS - disables shader compilation, even with ZENGINE_FORCE_SHADER_RECOMPILATION
 #define ZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
+#define ZENGINE_SPRITE_MATRIXMODE_MANUAL - manually call sprites[0].setRotationMatrix() for every sprite you need
+#define ZENGINE_DEFAULT_TEXTURE "bird.png" - change the default texture from "e.png" to whatever you want
 
 #define ZENGINE_DEBUG 2 - adds debug printing, the higher the number the more debug info (0, 1, 2, 3)
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
@@ -47,15 +49,22 @@ CREATE A MODEL:   std::shared_ptr<Model> model = make_shared<Model>(vector_of_ve
     #undef ZENGINE_THROW
     #define ZENGINE_THROW(x) if((x) != VK_SUCCESS) throw;
 
-    #if ZENGINE_DEBUG == 1
+    #if ZENGINE_DEBUG > 0
+        #undef ZENGINE_PRINT1
         #define ZENGINE_PRINT1(...) std::cout << __VA_ARGS__
     #endif
-    #if ZENGINE_DEBUG == 2
+    #if ZENGINE_DEBUG > 1
+        #undef ZENGINE_PRINT2
         #define ZENGINE_PRINT2(...) std::cout << __VA_ARGS__
     #endif
     #if ZENGINE_DEBUG > 2
+        #undef ZENGINE_PRINT3
         #define ZENGINE_PRINT3(...) std::cout << __VA_ARGS__
     #endif
+#endif
+
+#ifndef ZENGINE_DEFAULT_TEXTURE
+    #define ZENGINE_DEFAULT_TEXTURE "e.png"
 #endif
 
 /* dependencies */
@@ -175,6 +184,7 @@ extern unsigned int spritesSize;
 extern std::shared_ptr<Model> squareModel;
 extern VkDevice device_;
 extern ZENGINE_AUDIO;
+extern bool ZEngineUpdateSpriteMap;
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
     extern bool ZEngineSpriteRemap;
 #endif
@@ -187,9 +197,9 @@ ZENGINE_AUDIO;
 
 float deltaTime = 0.f; /* deltaTime, do what you will. Example implementation in main.cpp */
 bool ZEngineClose = false; /* flag to show when the engine is closing */
-bool ZEngineUpdateSpriteMap = true; /* flag to update sprite instance data */
+bool ZEngineUpdateSpriteMap = true; /* flag to update sprite data */
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-    bool ZEngineSpriteRemap = true; /* flag to update sprite data */
+    bool ZEngineSpriteRemap = true; /* flag to update sprite data buffer with ZENGINE_SPRITE_MAPMODE_MANUAL */
 #endif
 
 /* texture vecs */
@@ -1476,7 +1486,7 @@ void ZEngineInit() {
 
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES];
     for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
-        spriteTextures[i] = std::make_unique<Texture>("e.png");;
+        spriteTextures[i] = std::make_unique<Texture>(ZENGINE_DEFAULT_TEXTURE);
         VkDescriptorImageInfo& imageInfo = imageInfos[i];
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         imageInfo.imageView = spriteTextures[i]->getImageView();
@@ -1599,7 +1609,9 @@ void ZEngineRender() {
         unsigned int instanceCount = 0;
 
         for (unsigned int i = 0; i < spritesSize; i++) {
+#ifndef ZENGINE_SPRITE_MATRIXMODE_MANUAL
             sprites[i].setRotationMatrix();
+#endif
             memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
 
             if (sprites[i].model == lastModel) { instanceCount++; }
@@ -1635,15 +1647,15 @@ void ZEngineRender() {
     if (ZEngineSpriteRemap) {
 #endif
         for (unsigned int i = 0; i < spritesSize; i++) {
+#ifndef ZENGINE_SPRITE_MATRIXMODE_MANUAL
             sprites[i].setRotationMatrix();
+#endif
             memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
         }
-#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
         spriteDataBuffer->write(spriteData, SIZEOF_SPRITE_DATA * spritesSize);
+#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
         ZEngineSpriteRemap = false;
     }
-#else
-        spriteDataBuffer->write(spriteData, SIZEOF_SPRITE_DATA * spritesSize);
 #endif
         for (SpriteMap& map : spriteMap) {
             map.model->bind(commandBuffer);
