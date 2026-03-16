@@ -1204,11 +1204,7 @@ void ZEngineInit() {
     appInfo.pEngineName = "ZEngine";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.engineVersion = VK_MAKE_VERSION(1, 11, 0);
-#ifdef __APPLE__
     appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 3, 0);
-#else
-    appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 4, 0);
-#endif
 
     size_t rgfWExtensionCount = 0;
     const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
