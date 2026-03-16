@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-v2.2.8
+v2.2.9
 
 zcollide.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
 uses the AABB method to create a square hitbox around your object, more precise methods are planned.
@@ -19,7 +19,7 @@ zcollide_clearAABB() - reset AABB cache if sprites are moving
 
 struct ZCOLLIDE_AABBS {
     float pos[4] = {3.402823466e+38f, 3.402823466e+38f, -3.402823466e+38f, -3.402823466e+38f};
-    unsigned int ID;
+    float ID;
 };
 
 bool zcollide_checkSquareCollision(Sprite* spriteA, Sprite* spriteB);

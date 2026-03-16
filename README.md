@@ -104,7 +104,6 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 - Delete the tick() implementation and replace it with your own
 - In main.cpp make sure to include your game instead of the example
 - ZDeps documentation is inside their respective files
-- sprites[0] is the default sprite, you dont need to create it
 
 # Included dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>

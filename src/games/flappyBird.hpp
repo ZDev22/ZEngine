@@ -19,13 +19,13 @@ struct Game {
 public:
     Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera) {
         loadFont("assets/fonts/Bullpen3D.ttf", 32.f);
-        for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
-
-        bird = &sprites[0];
-
+ 
+        bird = createSprite();
         bird->position[0] = -.7f;
         bird->position[1] = -.2f;
         bird->setTexture(std::make_unique<Texture>("flappyBird.png"));
+
+        for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
         sprites[1].setTexture(std::make_unique<Texture>("pipe.png"));
     }
 

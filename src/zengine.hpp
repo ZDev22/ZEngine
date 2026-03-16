@@ -250,7 +250,7 @@ void ZEngineDeinit();
 
 /* sprite funcs */
 void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-void createSprite(Sprite* sprite);
+Sprite* createSprite();
 void initSprite(Sprite* sprite);
 void deleteSprite(Sprite* sprite);
 void deleteSprite(unsigned int sprite);
@@ -310,13 +310,12 @@ struct SpriteMap {
     std::shared_ptr<Model> model;
 };
 
-#ifdef ZENGINE_IMPLEMENTATION /* sprite vars */
+#ifdef ZENGINE_IMPLEMENTATION
 
+/* sprite vars */
 Sprite sprites[ZENGINE_MAX_SPRITES];
 std::vector<SpriteMap> spriteMap;
 unsigned int spritesSize = 0;
-
-#endif
 
 struct SwapChain {
 public:
@@ -611,6 +610,8 @@ private:
     unsigned int currentFrame = 0;
     unsigned int imageCount = 0;
 };
+
+#endif
 
 struct Texture {
 public:
@@ -1124,12 +1125,11 @@ void createSprite(std::shared_ptr<Model>& model, unsigned int textureIndex, floa
     spritesSize++;
 }
 
-void createSprite(Sprite* sprite) {
-    if (spritesSize >= ZENGINE_MAX_SPRITES) { return; }
+Sprite* createSprite() {
+    if (spritesSize >= ZENGINE_MAX_SPRITES) { return nullptr; }
     createSprite(squareModel, 0, 0.f, 0.f, .1f, .1f, 0);
-    sprite = &sprites[spritesSize - 1];
     ZEngineUpdateSpriteMap = true;
-    spritesSize++;
+    return &sprites[spritesSize - 1];
 }
 
 void initSprite(Sprite* sprite) {
@@ -1144,13 +1144,13 @@ void initSprite(Sprite* sprite) {
 }
 
 void deleteSprite(Sprite* sprite) {
-    unsigned int deleteID = sprite->depth;
-    for (unsigned int i = deleteID; i < spritesSize - 1; i++) {
+    for (unsigned int i = (unsigned int)(sprite->depth * ZENGINE_MAX_SPRITES); i < spritesSize - 1; i++) {
         sprites[i] = sprites[i + 1];
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
     }
+
+    sprites[spritesSize - 1].model.reset();
     spritesSize--;
-    sprites[spritesSize].model.reset();
     ZEngineUpdateSpriteMap = true;
 }
 
@@ -1159,8 +1159,9 @@ void deleteSprite(unsigned int sprite) {
         sprites[i] = sprites[i + 1];
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
     }
+
+    sprites[spritesSize - 1].model.reset();
     spritesSize--;
-    sprites[spritesSize].model.reset();
     ZEngineUpdateSpriteMap = true;
 }
 
@@ -1504,11 +1505,9 @@ void ZEngineInit() {
     };
     spriteData = (char*)malloc(SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES);
     squareModel = std::make_shared<Model>(positions, 8);
-    createSprite(squareModel, 0, 0.f, 0.f, .1f, .1f, 0.f);
     delete[] positions;
 
-    VkDeviceSize bufferSize = SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES;
-    spriteDataBuffer = std::make_unique<Buffer>(bufferSize, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    spriteDataBuffer = std::make_unique<Buffer>(SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     spriteDataBuffer->map();
 
 #ifndef ZENGINE_DISABLE_AUDIO
