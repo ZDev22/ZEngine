@@ -131,8 +131,8 @@ struct ma_engine;
 
 /* declare a few structs before creating variables about them */
 struct Vertex {
-    float position[2] = {0};
-    float texCoord[2] = {0};
+    float pos[2] = {0};
+    float cord[2] = {0};
 
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
@@ -147,11 +147,11 @@ struct Vertex {
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
         attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex, position);
+        attributeDescriptions[0].offset = offsetof(Vertex, pos);
         attributeDescriptions[1].binding = 0;
         attributeDescriptions[1].location = 1;
         attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[1].offset = offsetof(Vertex, texCoord);
+        attributeDescriptions[1].offset = offsetof(Vertex, cord);
         return attributeDescriptions;
     }
 };
@@ -631,23 +631,23 @@ public:
         vkCreateSampler(device_, &samplerInfo, nullptr, &sampler);
     }
 
-    Texture(const std::string& filepath) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE) {
-        stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        VkDeviceSize imageSize = texWidth * texHeight * 4;
+    Texture(const std::string& filepath) {
+        stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &width, &height, &channels, STBI_rgb_alpha);
+        VkDeviceSize imageSize = width * height * 4;
 
-        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
 
         void* data;
-        vkMapMemory(device_, stagingBufferMemory, 0, imageSize, 0, &data);
+        vkMapMemory(device_, bufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, imageSize);
-        vkUnmapMemory(device_, stagingBufferMemory);
+        vkUnmapMemory(device_, bufferMemory);
         stbi_image_free(pixels);
 
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
-        imageInfo.extent.width = texWidth;
-        imageInfo.extent.height = texHeight;
+        imageInfo.extent.width = width;
+        imageInfo.extent.height = height;
         imageInfo.extent.depth = 1;
         imageInfo.mipLevels = 1;
         imageInfo.arrayLayers = 1;
@@ -658,13 +658,13 @@ public:
         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
-        createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
+        createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, memory);
         transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        copyBufferToImage(stagingBuffer, image, texWidth, texHeight, 1);
+        copyBufferToImage(buffer, image, width, height, 1);
         transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        vkDestroyBuffer(device_, stagingBuffer, nullptr);
-        vkFreeMemory(device_, stagingBufferMemory, nullptr);
+        vkDestroyBuffer(device_, buffer, nullptr);
+        vkFreeMemory(device_, bufferMemory, nullptr);
 
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -677,25 +677,25 @@ public:
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        vkCreateImageView(device_, &viewInfo, nullptr, &imageView);
+        vkCreateImageView(device_, &viewInfo, nullptr, &view);
         createTextureSampler();
     }
 
-    Texture(const unsigned char* pixelData, const unsigned int size) : imageLayout(VK_IMAGE_LAYOUT_UNDEFINED), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE), sampler(VK_NULL_HANDLE), texChannels(1) {
-        texWidth = size;
-        texHeight = size;
+    Texture(const unsigned char* pixelData, const unsigned int size) {
+        width = size;
+        height = size;
         VkDeviceSize imageSize = size * size * 4;
 
-        unsigned char* rgbaPixels = (unsigned char*)malloc(imageSize);
-        memset(rgbaPixels, 0xFF, imageSize);
-        for (unsigned int i = 0; i < size * size; ++i) { rgbaPixels[i * 4 + 3] = pixelData[i]; }
+        unsigned char* pixels = (unsigned char*)malloc(imageSize);
+        memset(pixels, 0xFF, imageSize);
+        for (unsigned int i = 0; i < size * size; i++) { pixels[i * 4 + 3] = pixelData[i]; }
 
-        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
 
         void* data;
-        vkMapMemory(device_, stagingBufferMemory, 0, imageSize, 0, &data);
-        memcpy(data, rgbaPixels, imageSize);
-        vkUnmapMemory(device_, stagingBufferMemory);
+        vkMapMemory(device_, bufferMemory, 0, imageSize, 0, &data);
+        memcpy(data, pixels, imageSize);
+        vkUnmapMemory(device_, bufferMemory);
 
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -712,13 +712,13 @@ public:
         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
-        createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
+        createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, memory);
         transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        copyBufferToImage(stagingBuffer, image, size, size, 1);
+        copyBufferToImage(buffer, image, size, size, 1);
         transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        vkDestroyBuffer(device_, stagingBuffer, nullptr);
-        vkFreeMemory(device_, stagingBufferMemory, nullptr);
+        vkDestroyBuffer(device_, buffer, nullptr);
+        vkFreeMemory(device_, bufferMemory, nullptr);
 
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -731,17 +731,17 @@ public:
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        free(rgbaPixels);
-        vkCreateImageView(device_, &viewInfo, nullptr, &imageView);
+        free(pixels);
+        vkCreateImageView(device_, &viewInfo, nullptr, &view);
         createTextureSampler();
     }
 
     ~Texture() {
         if (!ZEngineClose) { vkDeviceWaitIdle(device_); }
         vkDestroySampler(device_, sampler, nullptr);
-        vkDestroyImageView(device_, imageView, nullptr);
+        vkDestroyImageView(device_, view, nullptr);
         vkDestroyImage(device_, image, nullptr);
-        vkFreeMemory(device_, imageMemory, nullptr);
+        vkFreeMemory(device_, memory, nullptr);
     }
 
     Texture(const Texture&) = delete;
@@ -783,21 +783,21 @@ public:
 
         vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
         endSingleTimeCommands(commandBuffer);
-        imageLayout = newLayout;
+        layout = newLayout;
     }
 
-    inline VkImageView getImageView() const { return imageView; }
+    inline VkImageView getImageView() const { return view; }
     inline VkSampler getSampler() const { return sampler; }
 
 private:
-    VkImageLayout imageLayout;
+    VkImageLayout layout;
     VkImage image;
-    VkDeviceMemory imageMemory;
-    VkImageView imageView;
+    VkDeviceMemory memory;
+    VkImageView view;
     VkSampler sampler;
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    int texWidth, texHeight, texChannels;
+    VkBuffer buffer;
+    VkDeviceMemory bufferMemory;
+    int width, height, channels;
 };
 
 struct Buffer {
@@ -862,10 +862,10 @@ public:
         for (unsigned int i = 0; i < verticySize; ++i) {
             Vertex v{};
             index = i << 1; /* << 1 is * 2 lol*/
-            v.position[0] = positions[index];
-            v.position[1] = positions[index + 1];
-            v.texCoord[0] = positions[index] + 0.5f;
-            v.texCoord[1] = positions[index + 1] + 0.5f;
+            v.pos[0] = positions[index];
+            v.pos[1] = positions[index + 1];
+            v.cord[0] = positions[index] + 0.5f;
+            v.cord[1] = positions[index + 1] + 0.5f;
             vertices[i] = v;
         }
 

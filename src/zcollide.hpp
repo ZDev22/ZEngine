@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-v2.2.9
+v2.2.10
 
 zcollide.hpp is a lightweight cross-platform sigle-header cpp library for checking if two 2D objects are colliding!
 uses the AABB method to create a square hitbox around your object, more precise methods are planned.
@@ -55,8 +55,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
         const Vertex* verticesB = getVertices(spriteB->model);
 
         for (unsigned int i = 0; i < getVerticySize(spriteB->model); i++) {
-            const float pxB = verticesB[i].position[0] * spriteB->scale[0];
-            const float pyB = verticesB[i].position[1] * spriteB->scale[1];
+            const float pxB = verticesB[i].pos[0] * spriteB->scale[0];
+            const float pyB = verticesB[i].pos[1] * spriteB->scale[1];
             float transformedB[2] = { spriteB->rotationMatrix[0] * pxB + spriteB->rotationMatrix[1] * pyB, spriteB->rotationMatrix[2] * pxB + spriteB->rotationMatrix[3] * pyB};
             transformedB[0] += spriteB->position[0];
             transformedB[1] += spriteB->position[1];
@@ -75,8 +75,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
         const Vertex* verticesA = getVertices(spriteA->model);
 
         for (unsigned int i = 0; i < getVerticySize(spriteA->model); i++) {
-            const float pxA = verticesA[i].position[0] * spriteA->scale[0];
-            const float pyA = verticesA[i].position[1] * spriteA->scale[1];
+            const float pxA = verticesA[i].pos[0] * spriteA->scale[0];
+            const float pyA = verticesA[i].pos[1] * spriteA->scale[1];
             float transformedA[2] = { spriteA->rotationMatrix[0] * pxA + spriteA->rotationMatrix[1] * pyA, spriteA->rotationMatrix[2] * pxA + spriteA->rotationMatrix[3] * pyA};
             transformedA[0] += spriteA->position[0];
             transformedA[1] += spriteA->position[1];
@@ -105,8 +105,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
 
         if (verticesAsize > verticesBsize) {
             for (unsigned int i = 0; i < verticesAsize; i++) {
-                const float pxA = verticesA[i].position[0] * spriteA->scale[0];
-                const float pyA = verticesA[i].position[1] * spriteA->scale[1];
+                const float pxA = verticesA[i].pos[0] * spriteA->scale[0];
+                const float pyA = verticesA[i].pos[1] * spriteA->scale[1];
                 float transformedA[2] = { spriteA->rotationMatrix[0] * pxA + spriteA->rotationMatrix[1] * pyA, spriteA->rotationMatrix[2] * pxA + spriteA->rotationMatrix[3] * pyA};
                 transformedA[0] += spriteA->position[0];
                 transformedA[1] += spriteA->position[1];
@@ -116,8 +116,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
                 if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
                 if (i < verticesBsize) {
-                    const float pxB = verticesB[i].position[0] * spriteB->scale[0];
-                    const float pyB = verticesB[i].position[1] * spriteB->scale[1];
+                    const float pxB = verticesB[i].pos[0] * spriteB->scale[0];
+                    const float pyB = verticesB[i].pos[1] * spriteB->scale[1];
                     float transformedB[2] = { spriteB->rotationMatrix[0] * pxB + spriteB->rotationMatrix[1] * pyB, spriteB->rotationMatrix[2] * pxB + spriteB->rotationMatrix[3] * pyB};
                     transformedB[0] += spriteB->position[0];
                     transformedB[1] += spriteB->position[1];
@@ -130,8 +130,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
         }
         else if (verticesAsize < verticesBsize) {
             for (unsigned int i = 0; i < verticesBsize; i++) {
-                const float pxB = verticesB[i].position[0] * spriteB->scale[0];
-                const float pyB = verticesB[i].position[1] * spriteB->scale[1];
+                const float pxB = verticesB[i].pos[0] * spriteB->scale[0];
+                const float pyB = verticesB[i].pos[1] * spriteB->scale[1];
                 float transformedB[2] = { spriteB->rotationMatrix[0] * pxB + spriteB->rotationMatrix[1] * pyB, spriteB->rotationMatrix[2] * pxB + spriteB->rotationMatrix[3] * pyB };
                 transformedB[0] += spriteB->position[0];
                 transformedB[1] += spriteB->position[1];
@@ -141,8 +141,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
                 if (transformedB[1] > b.pos[3]) b.pos[3] = transformedB[1];
 
                 if (i < verticesAsize) {
-                    const float pxA = verticesA[i].position[0] * spriteA->scale[0];
-                    const float pyA = verticesA[i].position[1] * spriteA->scale[1];
+                    const float pxA = verticesA[i].pos[0] * spriteA->scale[0];
+                    const float pyA = verticesA[i].pos[1] * spriteA->scale[1];
                     float transformedA[2] = { spriteA->rotationMatrix[0] * pxA + spriteA->rotationMatrix[1] * pyA, spriteA->rotationMatrix[2] * pxA + spriteA->rotationMatrix[3] * pyA};
                     transformedA[0] += spriteA->position[0];
                     transformedA[1] += spriteA->position[1];
@@ -155,8 +155,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
         }
         else {
             for (unsigned int i = 0; i < verticesAsize; i++) {
-                const float pxA = verticesA[i].position[0] * spriteA->scale[0];
-                const float pyA = verticesA[i].position[1] * spriteA->scale[1];
+                const float pxA = verticesA[i].pos[0] * spriteA->scale[0];
+                const float pyA = verticesA[i].pos[1] * spriteA->scale[1];
                 float transformedA[2] = { spriteA->rotationMatrix[0] * pxA + spriteA->rotationMatrix[1] * pyA, spriteA->rotationMatrix[2] * pxA + spriteA->rotationMatrix[3] * pyA};
                 transformedA[0] += spriteA->position[0];
                 transformedA[1] += spriteA->position[1];
@@ -165,8 +165,8 @@ bool zcollide_checkCollision(Sprite* spriteA, Sprite* spriteB) {
                 if (transformedA[0] > a.pos[2]) a.pos[2] = transformedA[0];
                 if (transformedA[1] > a.pos[3]) a.pos[3] = transformedA[1];
 
-                const float pxB = verticesB[i].position[0] * spriteB->scale[0];
-                const float pyB = verticesB[i].position[1] * spriteB->scale[1];
+                const float pxB = verticesB[i].pos[0] * spriteB->scale[0];
+                const float pyB = verticesB[i].pos[1] * spriteB->scale[1];
                 float transformedB[2] = { spriteB->rotationMatrix[0] * pxB + spriteB->rotationMatrix[1] * pyB, spriteB->rotationMatrix[2] * pxB + spriteB->rotationMatrix[3] * pyB};
                 transformedB[0] += spriteB->position[0];
                 transformedB[1] += spriteB->position[1];
