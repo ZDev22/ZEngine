@@ -159,6 +159,7 @@ struct Vertex {
 struct Camera {
     float position[2];
     float zoom[2];
+    float aspect;
 };
 
 struct SwapChainSupportDetails {
@@ -1490,6 +1491,7 @@ void ZEngineInit() {
     /* init sprites */
     camera.zoom[0]     = 1.f; camera.zoom[1]     = 1.f;
     camera.position[0] = 0.f; camera.position[1] = 0.f;
+    camera.aspect      = (float)windowExtent.width / (float)windowExtent.height;
     float* positions = new float[8] {
         -.5f, -.5f, // Bottom-Left
         .5f, -.5f,  // Bottom-Right
@@ -1557,6 +1559,7 @@ void ZEngineRender() {
         }
 
         framebufferResized = false;
+        camera.aspect = (float)windowExtent.width / (float)windowExtent.height;
         return;
     }
 
