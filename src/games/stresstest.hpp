@@ -16,10 +16,10 @@ public:
     void tick() {
         createSprite(squareModel, 0, 0.f, 0.f, .02f, .02f, 0.f);
         for (unsigned int i = 1; i < spritesSize; i++) {
-	    sprites[i].position[0] += .0001f;
+	        sprites[i].position[0] += .0001f;
             sprites[i].position[1] += .0001f;
         }
-        sprites[0].setTexture(createText(0, std::to_string(spritesSize).c_str(), 64));
+        updateTexture(0, createText(0, std::to_string(spritesSize).c_str(), 64));
     }
 private:
     ZWindow& zwindow;

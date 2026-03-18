@@ -256,7 +256,7 @@ void deleteSprite(Sprite* sprite);
 void deleteSprite(unsigned int sprite);
 
 /* texture funcs*/
-void updateTexture(unsigned int index);
+void updateTexture(unsigned int index, std::unique_ptr<Texture>&& texture);
 
 /* model funcs*/
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model);
@@ -297,10 +297,6 @@ struct alignas(16) Sprite {
         rotationMatrix[2] = sin(rotation * .01745329f);
         rotationMatrix[1] = -rotationMatrix[2];
         rotationMatrix[3] = rotationMatrix[0];
-    }
-    inline void setTexture(std::unique_ptr<Texture> texture) {
-        spriteTextures[textureIndex] = std::move(texture);
-        updateTexture(textureIndex);
     }
 };
 
@@ -1057,24 +1053,6 @@ void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFla
 inline const Vertex* getVertices(const std::shared_ptr<Model>& model) { return model->getVertices(); }
 inline unsigned int getVerticySize(const std::shared_ptr<Model>& model) { return model->size(); }
 
-void updateTexture(unsigned int index) {
-    Texture* texture = spriteTextures[index].get();
-    VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = texture->getImageView();
-    imageInfo.sampler = texture->getSampler();
-
-    VkWriteDescriptorSet imageWrite{};
-    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    imageWrite.dstSet = spriteDataDescriptorSet;
-    imageWrite.dstBinding = 1;
-    imageWrite.dstArrayElement = index;
-    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = 1;
-    imageWrite.pImageInfo = &imageInfo;
-    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
-}
-
 void createCommandBuffers() {
     commandBufferSize = (unsigned int)swapChain->getSwapChainImageSize();
     commandBuffers = (VkCommandBuffer*)malloc(commandBufferSize * sizeof(VkCommandBuffer));
@@ -1163,6 +1141,25 @@ void deleteSprite(unsigned int sprite) {
     sprites[spritesSize - 1].model.reset();
     spritesSize--;
     ZEngineUpdateSpriteMap = true;
+}
+
+void updateTexture(unsigned int index, std::unique_ptr<Texture>&& texture) {
+    spriteTextures[index] = std::move(texture);
+
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = spriteTextures[index]->getImageView();
+    imageInfo.sampler = spriteTextures[index]->getSampler();
+
+    VkWriteDescriptorSet imageWrite{};
+    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    imageWrite.dstSet = spriteDataDescriptorSet;
+    imageWrite.dstBinding = 1;
+    imageWrite.dstArrayElement = index;
+    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    imageWrite.descriptorCount = 1;
+    imageWrite.pImageInfo = &imageInfo;
+    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, nullptr);
 }
 
 /* ZENGINE */

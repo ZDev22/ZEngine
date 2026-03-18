@@ -23,10 +23,10 @@ public:
         bird = createSprite();
         bird->position[0] = -.7f;
         bird->position[1] = -.2f;
-        bird->setTexture(std::make_unique<Texture>("flappyBird.png"));
+        updateTexture(bird->textureIndex, std::make_unique<Texture>("flappyBird.png"));
 
         for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
-        sprites[1].setTexture(std::make_unique<Texture>("pipe.png"));
+        updateTexture(1, std::make_unique<Texture>("pipe.png"));
     }
 
     void tick() {
@@ -42,7 +42,7 @@ public:
 
                     playSound(&audio, "assets/sounds/chirp.mp3");
                     createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
-                    sprites[spritesSize - 1].setTexture(createText(0, "ZDEV", 32));
+                    updateTexture(3, createText(0, "ZDEV", 32));
                     camera.zoom[0] -= .007f;
                     camera.zoom[1] -= .007f;
                 }
@@ -50,7 +50,7 @@ public:
                 if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
                     flappyBirdDead = true;
                     playSound(&audio, "assets/sounds/hit.mp3");
-                    sprites[spritesSize - 1].setTexture(createText(0, "something", 32));
+                    updateTexture(3, createText(0, "something", 32));
                 }
             }
             else if (bird->position[1] > 2.5f) {
