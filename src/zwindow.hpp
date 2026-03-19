@@ -134,7 +134,7 @@ public:
         i32 sizey = 0;
         RGFW_window_getMouse(window, nullptr, &y);
         RGFW_window_getSize(window, nullptr, &sizey);
-        return (((float)y / sizey) * 2.f) - 1.f;
+        return (float)y / sizey;
     }
 
     // Clicks
