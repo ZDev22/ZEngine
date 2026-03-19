@@ -121,20 +121,19 @@ public:
     // Position
     inline void setMousePosition(i32 x, i32 y) { RGFW_window_moveMouse(window, x, y); }
     inline void getMousePosition(i32* x, i32* y) { RGFW_window_getMouse(window, x, y); }
-    float getMouseX() {
+    float getMouseX(float aspect) {
         i32 x = 0;
         i32 sizex = 0;
-        i32 sizey = 0;
         RGFW_window_getMouse(window, &x, nullptr);
-        RGFW_window_getSize(window, &sizex, &sizey);
-        return ((((float)x / sizex ) * 2.f) - 1.f) * ((float)sizex / (float)sizey);
+        RGFW_window_getSize(window, &sizex, nullptr);
+        return ((((float)x / sizex) * 2.f) - 1.f) * aspect;
     }
     float getMouseY() {
         i32 y = 0;
         i32 sizey = 0;
         RGFW_window_getMouse(window, nullptr, &y);
         RGFW_window_getSize(window, nullptr, &sizey);
-        return (float)y / sizey;
+        return (((float)y / sizey) * 2.f) - 1.f;
     }
 
     // Clicks
