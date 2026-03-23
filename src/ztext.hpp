@@ -14,26 +14,24 @@ HOW TO USE:
 
 #include "zengine.hpp"
 
-#if defined(ZTEXT_IMPLEMENTATION) && !defined(ZENGINE_DEPS_DEFINED)
-    #define STB_TRUETYPE_IMPLEMENTATION
-    #define STBTT_ASSERT
-#endif
 #include "deps/stb_truetype.h"
+
+extern std::vector<stbtt_fontinfo> fonts;
+
+void loadFont(const char* font);
+std::unique_ptr<Texture> createText(const char* word);
 
 #ifdef ZTEXT_IMPLEMENTATION
 
-/* thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation! */
-std::unique_ptr<Texture> createText(const char* word) {
-    /* load font */
-    long size = 0;
-    unsigned char* fontBuffer;
+std::vector<stbtt_fontinfo> fonts;
 
-    FILE* fontFile = fopen("assets/fonts/Bullpen3D.ttf", "rb");
+void loadFont(const char* font) {
+    FILE* fontFile = fopen(font, "rb");
     fseek(fontFile, 0, SEEK_END);
-    size = ftell(fontFile);
+    unsigned int size = ftell(fontFile);
     fseek(fontFile, 0, SEEK_SET);
 
-    fontBuffer = (unsigned char*)malloc(size);
+    unsigned char* fontBuffer = (unsigned char*)malloc(size);
 
     fread(fontBuffer, size, 1, fontFile);
     fclose(fontFile);
@@ -41,39 +39,43 @@ std::unique_ptr<Texture> createText(const char* word) {
     stbtt_fontinfo info;
     stbtt_InitFont(&info, fontBuffer, 0);
 
-    int b_w = 512;
-    int b_h = 128;
-    int l_h = 64;
+    fonts.push_back(info);
+}
 
+/* thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation! */
+std::unique_ptr<Texture> createText(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w = 512, const unsigned int b_h = 128) {
     unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h, 1);
 
-    float scale = stbtt_ScaleForPixelHeight(&info, l_h);
+    float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
 
-    int x = 0; int ascent = 0; int descent = 0; int lineGap = 0;
+    unsigned int x = 0;
+    int ascent  = 0;
+    int descent = 0;
+    int lineGap = 0;
 
-    stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
+    stbtt_GetFontVMetrics(&fonts[index], &ascent, &descent, &lineGap);
 
-    ascent = roundf(ascent * scale);
-    descent = roundf(descent * scale);
+    ascent = (int)((float)ascent * scale);
+    descent = (int)((float)descent * scale);
  
     for (unsigned int i = 0; i < strlen(word); ++i) {
         /* characer width */
         int ax = 0; int lsb = 0;
-        stbtt_GetCodepointHMetrics(&info, word[i], &ax, &lsb);
+        stbtt_GetCodepointHMetrics(&fonts[index], word[i], &ax, &lsb);
 
         /* get bounding box */
         int c_x1, c_y1, c_x2, c_y2;
-        stbtt_GetCodepointBitmapBox(&info, word[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+        stbtt_GetCodepointBitmapBox(&fonts[index], word[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
         /* get y */
         int y = ascent + c_y1;
 
         /* render character */
-        int byteOffset = x + roundf(lsb * scale) + (y * b_w);
-        stbtt_MakeCodepointBitmap(&info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, word[i]);
+        int byteOffset = x + (int)((float)lsb * scale) + (y * b_w);
+        stbtt_MakeCodepointBitmap(&fonts[index], bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, word[i]);
 
         /* advance & kerning */
-        x += roundf(ax * scale) + roundf(stbtt_GetCodepointKernAdvance(&info, word[i], word[i + 1]) * scale);
+        x += (unsigned int)((float)ax * scale) + (int)((float)stbtt_GetCodepointKernAdvance(&fonts[index], word[i], word[i + 1]) * scale);
     }
 
     return std::make_unique<Texture>(bitmap, b_w, b_h);

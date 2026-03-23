@@ -18,6 +18,8 @@ Sprite* bird;
 struct Game {
 public:
     Game(ZWindow& zwindow, ma_engine& audio, Camera& camera)  : zwindow(zwindow), audio(audio), camera(camera) {
+        loadFont("assets/fonts/Bullpen3D.ttf");
+
         bird = createSprite();
         bird->position[0] = -.7f;
         bird->position[1] = -.2f;
@@ -40,7 +42,7 @@ public:
 
                     playSound(&audio, "assets/sounds/chirp.mp3");
                     createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
-                    updateTexture(3, createText("ZDev"));
+                    updateTexture(3, createText("ZDev", 0, 64));
                     camera.zoom[0] -= .007f;
                     camera.zoom[1] -= .007f;
                 }
@@ -48,7 +50,7 @@ public:
                 if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
                     flappyBirdDead = true;
                     playSound(&audio, "assets/sounds/hit.mp3");
-                    updateTexture(3, createText("Something"));
+                    updateTexture(3, createText("Something", 0, 64));
                 }
             }
             else if (bird->position[1] > 2.5f) {
