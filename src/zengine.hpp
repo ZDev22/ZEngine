@@ -629,6 +629,7 @@ public:
     }
 
     Texture(const std::string& filepath) {
+        int width = 0; int height = 0;
         stbi_uc* pixels = stbi_load(("assets/images/" + filepath).c_str(), &width, &height, &channels, STBI_rgb_alpha);
         VkDeviceSize imageSize = width * height * 4;
 
@@ -678,14 +679,12 @@ public:
         createTextureSampler();
     }
 
-    Texture(const unsigned char* pixelData, const unsigned int size) {
-        width = size;
-        height = size;
-        VkDeviceSize imageSize = size * size * 4;
+    Texture(const unsigned char* pixelData, const unsigned short width, const unsigned short height) {
+        VkDeviceSize imageSize = width * height * 4;
 
         unsigned char* pixels = (unsigned char*)malloc(imageSize);
         memset(pixels, 0xFF, imageSize);
-        for (unsigned int i = 0; i < size * size; i++) { pixels[i * 4 + 3] = pixelData[i]; }
+        for (unsigned int i = 0; i < width * height; i++) { pixels[i * 4 + 3] = pixelData[i]; }
 
         createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
 
@@ -697,8 +696,8 @@ public:
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
-        imageInfo.extent.width = size;
-        imageInfo.extent.height = size;
+        imageInfo.extent.width = width;
+        imageInfo.extent.height = height;
         imageInfo.extent.depth = 1;
         imageInfo.mipLevels = 1;
         imageInfo.arrayLayers = 1;
@@ -711,7 +710,7 @@ public:
 
         createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, memory);
         transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        copyBufferToImage(buffer, image, size, size, 1);
+        copyBufferToImage(buffer, image, width, height, 1);
         transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         vkDestroyBuffer(device_, buffer, nullptr);
@@ -794,7 +793,7 @@ private:
     VkSampler sampler;
     VkBuffer buffer;
     VkDeviceMemory bufferMemory;
-    int width, height, channels;
+    int channels;
 };
 
 struct Buffer {
