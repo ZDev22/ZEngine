@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-v2.0.1
+v2.1.1
 
 ztext.hpp is a lightweight cross-platform single-header cpp font-text rasterizer built off stb_truetype
 
@@ -19,7 +19,8 @@ HOW TO USE:
 extern std::vector<stbtt_fontinfo> fonts;
 
 void loadFont(const char* font);
-std::unique_ptr<Texture> createText(const char* word);
+std::unique_ptr<Texture> createText(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h);
+std::unique_ptr<Texture> createText(const char* word, unsigned char index, const unsigned int l_h);
 
 #ifdef ZTEXT_IMPLEMENTATION
 
@@ -43,7 +44,7 @@ void loadFont(const char* font) {
 }
 
 /* thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation! */
-std::unique_ptr<Texture> createText(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w = 512, const unsigned int b_h = 128) {
+std::unique_ptr<Texture> createText(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h) {
     unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h, 1);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
@@ -59,7 +60,7 @@ std::unique_ptr<Texture> createText(const char* word, unsigned char index, const
     descent = (int)((float)descent * scale);
  
     for (unsigned int i = 0; i < strlen(word); ++i) {
-        /* characer width */
+        /* char width */
         int ax = 0; int lsb = 0;
         stbtt_GetCodepointHMetrics(&fonts[index], word[i], &ax, &lsb);
 
@@ -67,11 +68,8 @@ std::unique_ptr<Texture> createText(const char* word, unsigned char index, const
         int c_x1, c_y1, c_x2, c_y2;
         stbtt_GetCodepointBitmapBox(&fonts[index], word[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
-        /* get y */
-        int y = ascent + c_y1;
-
-        /* render character */
-        int byteOffset = x + (int)((float)lsb * scale) + (y * b_w);
+        /* render char */
+        int byteOffset = x + (int)((float)lsb * scale) + ((ascent + c_y1) * b_w);
         stbtt_MakeCodepointBitmap(&fonts[index], bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, word[i]);
 
         /* advance & kerning */
@@ -80,6 +78,8 @@ std::unique_ptr<Texture> createText(const char* word, unsigned char index, const
 
     return std::make_unique<Texture>(bitmap, b_w, b_h);
 }
+
+std::unique_ptr<Texture> createText(const char* word, unsigned char index, const unsigned int l_h) { return createText(word, index, l_h, 512, 256); }
 
 #undef ZTEXT_IMPLEMENTATION
 #undef STB_TRUETYPE_IMPLEMENTATION
