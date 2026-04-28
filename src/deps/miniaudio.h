@@ -11519,122 +11519,8 @@ MA_API int ma_strcpy_s_WCHAR(WCHAR* dst, size_t dstCap, const WCHAR* src)
 }
 #endif
 #define MA_DEFAULT_PLAYBACK_DEVICE_NAME    "Default Playback Device"
-#define MA_DEFAULT_CAPTURE_DEVICE_NAME     "Default Capture Device"
+#define MA_DEFAULT_CAPTURE_DEVICE_NAME     "Default Capture Device"    
 
-#if defined(MA_WIN32) && !defined(MA_POSIX)
-    static LARGE_INTEGER g_ma_TimerFrequency;
-    static void ma_timer_init(ma_timer* pTimer)
-    {
-        LARGE_INTEGER counter;
-
-        if (g_ma_TimerFrequency.QuadPart == 0) {
-            QueryPerformanceFrequency(&g_ma_TimerFrequency);
-        }
-
-        QueryPerformanceCounter(&counter);
-        pTimer->counter = counter.QuadPart;
-    }
-
-    static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-    {
-        LARGE_INTEGER counter;
-        if (!QueryPerformanceCounter(&counter)) {
-            return 0;
-        }
-
-        return (double)(counter.QuadPart - pTimer->counter) / g_ma_TimerFrequency.QuadPart;
-    }
-
-#elif defined(MA_APPLE) && (MAC_OS_X_VERSION_MIN_REQUIRED < 101200)
-    static ma_uint64 g_ma_TimerFrequency = 0;
-    static void ma_timer_init(ma_timer* pTimer)
-    {
-        mach_timebase_info_data_t baseTime;
-        mach_timebase_info(&baseTime);
-        g_ma_TimerFrequency = (baseTime.denom * 1e9) / baseTime.numer;
-
-        pTimer->counter = mach_absolute_time();
-    }
-
-    static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-    {
-        ma_uint64 newTimeCounter = mach_absolute_time();
-        ma_uint64 oldTimeCounter = pTimer->counter;
-
-        return (newTimeCounter - oldTimeCounter) / g_ma_TimerFrequency;
-    }
-
-#elif defined(MA_EMSCRIPTEN)
-    static MA_INLINE void ma_timer_init(ma_timer* pTimer)
-    {
-        pTimer->counterD = emscripten_get_now();
-    }
-
-    static MA_INLINE double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-    {
-        return (emscripten_get_now() - pTimer->counterD) / 1000;
-    }
-#else
-    #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L
-        #if defined(CLOCK_MONOTONIC)
-            #define MA_CLOCK_ID CLOCK_MONOTONIC
-        #else
-            #define MA_CLOCK_ID CLOCK_REALTIME
-        #endif
-    #else
-        static void ma_timer_init(ma_timer* pTimer)
-        {
-            struct timeval newTime;
-            gettimeofday(&newTime, NULL);
-
-            pTimer->counter = (newTime.tv_sec * 1000000) + newTime.tv_usec;
-        }
-
-        static double ma_timer_get_time_in_seconds(ma_timer* pTimer)
-        {
-            ma_uint64 newTimeCounter;
-            ma_uint64 oldTimeCounter;
-
-            struct timeval newTime;
-            gettimeofday(&newTime, NULL);
-
-            newTimeCounter = (newTime.tv_sec * 1000000) + newTime.tv_usec;
-            oldTimeCounter = pTimer->counter;
-
-            return (newTimeCounter - oldTimeCounter) / 1000000.0;
-        }
-    #endif
-#endif
-#if 0
-static ma_uint32 ma_get_closest_standard_sample_rate(ma_uint32 sampleRateIn)
-{
-    ma_uint32 closestRate = 0;
-    ma_uint32 closestDiff = 0xFFFFFFFF;
-    size_t iStandardRate;
-
-    for (iStandardRate = 0; iStandardRate < ma_countof(g_maStandardSampleRatePriorities); ++iStandardRate) {
-        ma_uint32 standardRate = g_maStandardSampleRatePriorities[iStandardRate];
-        ma_uint32 diff;
-
-        if (sampleRateIn > standardRate) {
-            diff = sampleRateIn - standardRate;
-        } else {
-            diff = standardRate - sampleRateIn;
-        }
-
-        if (diff == 0) {
-            return standardRate;
-        }
-
-        if (closestDiff > diff) {
-            closestDiff = diff;
-            closestRate = standardRate;
-        }
-    }
-
-    return closestRate;
-}
-#endif
 static MA_INLINE unsigned int ma_device_disable_denormals(ma_device* pDevice)
 {
 
@@ -11690,13 +11576,6 @@ static void ma_device__on_notification_stopped(ma_device* pDevice)
     ma_device__on_notification(ma_device_notification_init(pDevice, ma_device_notification_type_stopped));
 }
 
-
-#if !defined(MA_EMSCRIPTEN)
-static void ma_device__on_notification_rerouted(ma_device* pDevice)
-{
-    ma_device__on_notification(ma_device_notification_init(pDevice, ma_device_notification_type_rerouted));
-}
-#endif
 
 #if defined(MA_EMSCRIPTEN)
 #ifdef __cplusplus

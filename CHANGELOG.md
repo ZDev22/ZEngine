@@ -1,16 +1,16 @@
 # v1.11 - DEV
+- **CONVERTED ENGINE TO C**
 - **MADE ENGINE SINGLE-HEADER**
-- **ADDED NEW ZENGINE MACROS: ZENGINE_DEPS_DEFINED, ZENGINE_DISABLE_VSYNC, ZENGINE_FORCE_SHADER_RECOMPILATION, ZENGINE_NEVER_RECOMPILE_SHADERS, ZENGINE_DISABLE_AUDIO, ZENGINE_SPRITE_MAPMODE_MANUAL**
+- **ADDED NEW ZENGINE MACROS: ZENGINE_DEPS_DEFINED, ZENGINE_DISABLE_VSYNC, ZENGINE_DISABLE_AUDIO**
 - **BINARY CAN NOW BE RUN WITHOUT DEBUGGER**
 - **ZENGINE INIT/RENDER/DEINIT API**
 - **SPRITE INIT/DEINIT API**
 - **ADDED DEPTH BUFFER**
-- **FIXED WAYLAND SUPPORT**
-- **ADDED ZTEXT.HPP**
-- Updated examples
+- **ADDED ASPECT RATIO**
+- **ADDED ZTEXT.H**
 - Vulkan now required dependency on windows
-- MUCH more ZWindow functionality
-- Improved API and efficiency of zcollide & zbit
+- Improved API and efficiency of zcollide
+- Removed zbit, zint & zwindow
 - Removed hundreds of warnings
 - Mac improvements
 - Optimizations

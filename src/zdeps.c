@@ -14,8 +14,6 @@ To use along-side zengine.hpp, use #define ZENGINE_DEPS_DEFINED */
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS /* only enable certain audio backends */
 #if defined(__linux__)
     #define MA_ENABLE_ALSA
-    #define MA_ENABLE_PULSEAUDIO
-    #define MA_ENABLE_JACK
 #elif defined(_APPLE_)
     #define MA_ENABLE_COREAUDIO
 #elif defined(_WIN32_)
@@ -27,6 +25,8 @@ To use along-side zengine.hpp, use #define ZENGINE_DEPS_DEFINED */
 /* disabled decoders */
 #define MA_NO_FLAC
 #define MA_NO_WAV
+#define MA_NO_VORBIS
+#define MA_NO_OPUS
 
 /* STB_IMAGE */
 #define STB_IMAGE_IMPLEMENTATION
@@ -41,3 +41,20 @@ To use along-side zengine.hpp, use #define ZENGINE_DEPS_DEFINED */
 #include "deps/miniaudio.h"
 #include "deps/stb_image.h"
 #include "deps/stb_truetype.h"
+
+#undef RGFW_IMPLEMENTATION
+#undef MINIAUDIO_IMPLEMENTATION
+#undef ZCOLLIDE_IMPLEMENTATION
+#undef ZMATH_IMPLEMENTATION
+#undef ZTEXT_IMPLEMENTATION
+#undef STB_IMAGE_IMPLEMENTATION
+#undef STB_TRUETYPE_IMPLEMENTATION
+
+/* ZDEPS */
+#define ZCOLLIDE_IMPLEMENTATION
+#define ZMATH_IMPLEMENTATION
+#define ZTEXT_IMPLEMENTATION
+#include "zcollide.h"
+#include "zmath.h"
+#include "ztext.h"
+
