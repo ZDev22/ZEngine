@@ -28,6 +28,11 @@
     #define ZENGINE_MAX_TEXTURES 50
 #endif
 
+#if ZENGINE_MAX_SPRITES > 4096 && defined(__APPLE__)
+    #undef ZENGINE_MAX_SPRITES
+    #define ZENGINE_MAX_SPRITES 4096
+#endif
+
 #define SIZEOF_SPRITE_DATA 48 /* the bytes of the Sprite struct sent to the gpu, stays constant */
 
 /* debugging */
@@ -81,6 +86,8 @@
 /* vulkan */
 #if defined(__linux__)
     #define VK_USE_PLATFORM_XLIB_KHR
+#elif defined(__APPLE__)
+    #define VK_USE_PLATFORM_MACOS_MVK
 #elif defined(_WIN32)
     #define VK_USE_PLATFORM_WIN32_KHR
 #endif
@@ -1145,8 +1152,23 @@ void ZEngineInit() {
     appInfo.pEngineName = "ZEngine";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.engineVersion = VK_MAKE_VERSION(1, 11, 0);
-    appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 3, 0);
+    appInfo.apiVersion =  VK_API_VERSION_1_2;
 
+    VkInstanceCreateInfo instanceInfo = {0};
+    instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instanceInfo.pApplicationInfo = &appInfo;
+
+#ifdef __APPLE__
+    const char* instanceExtensions[] = {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        "VK_MVK_macos_surface",
+        VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+    };
+
+    instanceInfo.enabledExtensionCount = 3;
+    instanceInfo.ppEnabledExtensionNames = instanceExtensions;
+    instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#else
     size_t rgfWExtensionCount = 0;
     const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
     if (!rgfWExtensions || rgfWExtensionCount == 0) {
@@ -1157,18 +1179,16 @@ void ZEngineInit() {
     ZENGINE_PRINT("Enabling extensions:\n");
     for (size_t i = 0; i < rgfWExtensionCount; i++) { ZENGINE_PRINT("     - %s\n", rgfWExtensions[i]); }
 
-    VkInstanceCreateInfo instanceInfo = {0};
-    instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instanceInfo.pApplicationInfo = &appInfo;
     instanceInfo.enabledExtensionCount = rgfWExtensionCount;
     instanceInfo.ppEnabledExtensionNames = rgfWExtensions;
+#endif
 
-    #if ZENGINE_DEBUG > 1
-        VkResult result = vkCreateInstance(&instanceInfo, NULL, &instance);
-        ZENGINE_PRINT("Instance: %d\n", result );
-    #else
-        vkCreateInstance(&instanceInfo, NULL, &instance);
-    #endif
+#ifdef ZENGINE_DEBUG
+    VkResult result = vkCreateInstance(&instanceInfo, NULL, &instance);
+    ZENGINE_PRINT("Instance: %d\n", result );
+#else
+    vkCreateInstance(&instanceInfo, NULL, &instance);
+#endif
 
     ZENGINE_PRINT("Creating surface...\n"); RGFW_window_createSurface_Vulkan(zwindow, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
 
@@ -1250,8 +1270,16 @@ void ZEngineInit() {
     deviceInfo.pQueueCreateInfos = queueCreateInfos;
     deviceInfo.queueCreateInfoCount = queueFamilySize;
 
+#ifdef __APPLE__
+    const char* extension[2] = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        "VK_KHR_portability_subset"
+    };
+    deviceInfo.enabledExtensionCount = 2;
+#else
     const char* extension[1] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     deviceInfo.enabledExtensionCount = 1;
+#endif
     deviceInfo.ppEnabledExtensionNames = extension;
     deviceInfo.enabledLayerCount = 0;
     ZENGINE_THROW(vkCreateDevice(physicalDevice, &deviceInfo, NULL, &device_));
@@ -1345,7 +1373,11 @@ void ZEngineInit() {
 
     VkDescriptorSetLayoutBinding layoutBindings[2] = {0};
     layoutBindings[0].binding = 0;
+#ifdef __APPLE__
+    layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+#else
     layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+#endif
     layoutBindings[0].descriptorCount = 1;
     layoutBindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     layoutBindings[1].binding = 1;
@@ -1439,7 +1471,12 @@ void ZEngineInit() {
     createModel(squareModel, positions, 8);
     free(positions);
 
+#ifdef __APPLE__
+    createBuffer(spriteDataBuffer, SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+#else
     createBuffer(spriteDataBuffer, SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+#endif
+
     map(spriteDataBuffer);
 
 #ifndef ZENGINE_DISABLE_AUDIO
@@ -1465,7 +1502,11 @@ void ZEngineInit() {
     bufferWrite.dstSet = spriteDataDescriptorSet;
     bufferWrite.dstBinding = 0;
     bufferWrite.dstArrayElement = 0;
+#ifdef __APPLE__
+    bufferWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+#else
     bufferWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+#endif
     bufferWrite.descriptorCount = 1;
     bufferWrite.pBufferInfo = &bufferInfo;
 

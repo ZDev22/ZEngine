@@ -1,20 +1,25 @@
 CC = gcc
-GLSLC = glslc
-
-#CFLAGS = -march=westmere -O3 -Weverything -Wno-maybe-uninitialized -Wno-declaration-after-statement -Wno-poison-system-directories -Wno-padded -Wno-missing-noreturn -Wno-bad-function-cast -Wno-float-conversion -Wno-double-promotion -Wno-pedantic -std=c99
+#CFLAGS = -Og -Weverything -Wno-maybe-uninitialized -Wno-declaration-after-statement -Wno-poison-system-directories -Wno-padded -Wno-missing-noreturn -Wno-bad-function-cast -Wno-float-conversion -Wno-double-promotion -Wno-pedantic -std=c99
 CFLAGS = -march=westmere -O3 -Wall -Wextra -Wno-maybe-uninitialized -std=c99 -flto
-LDFLAGS = -lvulkan -lm -lpthread
+LDFLAGS = -lm -lpthread
 
 BIN := build/main
 
 UNAME_S := $(shell uname -s)
 
+ifeq ($(UNAME_S),Windows_NT)
+	LDFLAGS += -lvulkan
+endif
+
 ifeq ($(UNAME_S),Linux)
-    LDFLAGS += -lX11 -lXrandr
+    LDFLAGS += -lX11 -lXrandr -lvulkan
 endif
 
 ifeq ($(UNAME_S),Darwin)
-    LDFLAGS += -lCocoa -lMetal
+	VULKANSDK ?= $(HOME)/VulkanSDK/current/macOS
+	export VK_ICD_FILENAMES := $(VULKANSDK)/share/vulkan/icd.d/MoltenVK_icd.json
+	CFLAGS += -I$(VULKANSDK)/include
+	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC
 endif
 
 MAKEFLAGS += -j$(shell nproc)
@@ -31,7 +36,6 @@ FRAG_SPV := $(patsubst src/shaders/%.frag,build/shaders/%.frag.spv,$(FRAG_SHADER
 SPV_FILES := $(VERT_SPV) $(FRAG_SPV)
 
 
-# NEW FUNCTIONS GO HERE ----
 all: $(BIN) $(SPV_FILES) copyAssets
 
 
@@ -45,10 +49,10 @@ build/obj/%.o: %.c
 
 build/shaders/%.vert.spv: src/shaders/%.vert
 	@mkdir -p build/shaders
-	$(GLSLC) $< -o $@
+	glslc $< -o $@
 build/shaders/%.frag.spv: src/shaders/%.frag
 	@mkdir -p build/shaders
-	$(GLSLC) $< -o $@
+	glslc $< -o $@
 
 copyAssets:
 	@mkdir -p build/assets
