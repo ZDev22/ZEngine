@@ -1,16 +1,2 @@
-# I dont really like to remove stuff, but these are so annoying
+/build/obj
 
-/build/linux/*
-#!build/linux/Debug/
-!build/linux/Release/
-#!build/linux/Smol/
-
-/build/mac/*
-#!build/mac/Debug/
-!build/mac/Release/
-#!build/mac/Smol/
-
-/build/windows/*
-#!build/windows/Debug/
-!build/windows/Release/
-#!build/windows/Smol/
