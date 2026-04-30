@@ -7,19 +7,15 @@ BIN := build/main
 
 UNAME_S := $(shell uname -s)
 
-ifeq ($(UNAME_S),Windows_NT)
-	LDFLAGS += -lvulkan
-endif
-
 ifeq ($(UNAME_S),Linux)
     LDFLAGS += -lX11 -lXrandr -lvulkan
-endif
-
-ifeq ($(UNAME_S),Darwin)
+else ifeq ($(UNAME_S),Darwin)
 	VULKANSDK ?= $(HOME)/VulkanSDK/current/macOS
 	export VK_ICD_FILENAMES := $(VULKANSDK)/share/vulkan/icd.d/MoltenVK_icd.json
 	CFLAGS += -I$(VULKANSDK)/include
 	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC
+else
+	LDFLAGS += -lvulkan-1 -lgdi32
 endif
 
 MAKEFLAGS += -j$(shell nproc)

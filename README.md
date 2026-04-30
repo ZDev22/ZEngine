@@ -82,17 +82,18 @@ brew install vulkan-tools vulkan-headers molten-vk #Vulkan
 ## WINDOWS:
 - Download the **Windows Installer** from [https://cmake.org/download/](https://cmake.org/download/)
 - Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
-- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
-- Launch MSYS2 MSYS (the purple one)
+- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/)
+- Launch MSYS2 UCRT64 (the yellow one)
 - Run the following commands to download a C compiler:
 ```bash
 pacman -Syu
-pacman -S base-devel mingw-w64-x86_64-toolchain
+pacman -S mingw-w64-ucrt-x86_64-gcc
+pacman -S mingw-w64-ucrt-x86_64-make
+pacman -S mingw-w64-ucrt-x86_64-vulkan-headers
+pacman -S mingw-w64-ucrt-x86_64-vulkan-loader
+pacman -S mingw-w64-ucrt-x86_64-shaderc
 ```
-- In the windows search bar, look up "Edit environment variables"
-- Add C:\msys64\ucrt64\bin to your user (or system) PATH
-- Add C:\msys64\mingw64\bin to your user (or system) PATH
-- Restart your terminal
+- Make sure to compile through the MSYS2 UCRT64 terminal
 
 # How do make your own games:
 - Duplicate flappybird.h as a good base for your game
