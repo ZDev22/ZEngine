@@ -74,10 +74,11 @@ sudo apk add vulkan-headers vulkan-tools vulkan-loader-dev #Vulkan
 # AMD GPU: sudo apk add vulkan-radeon
 ```
 ## MAC (beta):
-- Install XCode from the app store
-- Install the lldb extension
+- Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
+- Move vulkan into your home folder
+- Run the following command to install moltenVK:
 ```bash
-brew install vulkan-tools vulkan-headers molten-vk #Vulkan
+brew install molten-vk
 ```
 ## WINDOWS:
 - Download the **Windows Installer** from [https://cmake.org/download/](https://cmake.org/download/)

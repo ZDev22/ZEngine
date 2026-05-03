@@ -22,7 +22,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 /* games */
 #include "examples/flappybird.h"
-   
+ 
 #include <time.h>
 
 unsigned int fps = 0;

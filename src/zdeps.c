@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-This file is designed to take the weight of compiling all dependencies away from main.cpp
-To use along-side zengine.hpp, use #define ZENGINE_DEPS_DEFINED */
+This file is designed to take the weight of compiling all dependencies away from main.c
+To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* RGFW */
 #define RGFW_IMPLEMENTATION
@@ -11,7 +11,7 @@ To use along-side zengine.hpp, use #define ZENGINE_DEPS_DEFINED */
 
 /* MINIAUDIO */
 #define MINIAUDIO_IMPLEMENTATION
-#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS /* only enable certain audio backends */
+#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
 #if defined(__linux__)
     #define MA_ENABLE_ALSA
 #elif defined(_APPLE_)
