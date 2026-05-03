@@ -12,6 +12,7 @@
 - Improved API and efficiency of zcollide
 - Removed zbit, zint & zwindow
 - Removed hundreds of warnings
+- Added custom sprite data
 - Mac improvements
 - Optimizations
 - Bugfixes

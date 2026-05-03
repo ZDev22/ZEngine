@@ -131,6 +131,7 @@ typedef struct __attribute__((aligned(16))) Sprite {
 
     /* CPU-side only */
     Model* model;
+    unsigned char* data;
 } Sprite;
 
 typedef struct Camera {
@@ -1067,8 +1068,6 @@ VkShaderModule createShaderModule(const char* filepath) {
 void createSprite(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
     if (spritesSize >= ZENGINE_MAX_SPRITES) { return; }
 
-    sprites[spritesSize].model = model;
-
     sprites[spritesSize].position[0] = posx;
     sprites[spritesSize].position[1] = posy;
     sprites[spritesSize].scale[0] = scalex;
@@ -1076,6 +1075,8 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
     sprites[spritesSize].rotation = rotation;
     sprites[spritesSize].textureIndex = textureIndex;
     sprites[spritesSize].depth = spritesSize / ZENGINE_MAX_SPRITES;
+    sprites[spritesSize].model = model;
+    sprites[spritesSize].data = NULL;
 
     spritesSize++;
 }
@@ -1095,6 +1096,7 @@ void initSprite(Sprite* sprite) {
     sprite->textureIndex = 0;
     sprite->depth = spritesSize - 1;
     sprite->model = squareModel;
+    sprite->data = NULL;
 }
 
 void deleteSpritePointer(Sprite* sprite) {
@@ -1102,9 +1104,9 @@ void deleteSpritePointer(Sprite* sprite) {
         sprites[i] = sprites[i + 1];
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
     }
-
-    deleteModel(sprites[spritesSize - 1].model);
     spritesSize--;
+    deleteModel(sprites[spritesSize].model);
+    sprites[spritesSize].data = NULL;
 }
 
 void deleteSprite(unsigned int sprite) {
@@ -1113,8 +1115,9 @@ void deleteSprite(unsigned int sprite) {
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
     }
 
-    deleteModel(sprites[spritesSize - 1].model);
     spritesSize--;
+    deleteModel(sprites[spritesSize].model);
+    sprites[spritesSize].data = NULL;
 }
 
 void setRotationMatrix(Sprite* sprite) {
