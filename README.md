@@ -5,7 +5,7 @@ My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **
 
 It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDep modules** which are lightweight and super usefull for creating 2D games!
 
-Use ffmpeg to convert any .wav into .mp3 files. Also use ffmpeg to compress them:<\br> ```ffmpeg -i input.mp3 -c:a libmp3lame -q:a 9 output.mp3```
+Use ffmpeg to convert any .wav into .mp3 files. Also use ffmpeg to compress them: ```ffmpeg -i input.mp3 -c:a libmp3lame -q:a 9 output.mp3```
 
 Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
 
@@ -81,7 +81,6 @@ sudo apk add vulkan-headers vulkan-tools vulkan-loader-dev #Vulkan
 brew install molten-vk
 ```
 ## WINDOWS:
-- Download the **Windows Installer** from [https://cmake.org/download/](https://cmake.org/download/)
 - Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
 - Download msys2 from [https://www.msys2.org/](https://www.msys2.org/)
 - Launch MSYS2 UCRT64 (the yellow one)
