@@ -1074,7 +1074,7 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
     sprites[spritesSize].scale[1] = scaley;
     sprites[spritesSize].rotation = rotation;
     sprites[spritesSize].textureIndex = textureIndex;
-    sprites[spritesSize].depth = spritesSize / ZENGINE_MAX_SPRITES;
+    sprites[spritesSize].depth = 1.f - ((float)spritesSize / (float)ZENGINE_MAX_SPRITES); 
     sprites[spritesSize].model = model;
     sprites[spritesSize].data = NULL;
 
