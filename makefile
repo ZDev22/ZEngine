@@ -16,6 +16,7 @@ else ifeq ($(UNAME_S),Darwin)
 	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC
 else
 	LDFLAGS += -lvulkan-1 -lgdi32
+	CFLAGS += -I/ucrt64/include
 endif
 
 MAKEFLAGS += -j$(shell nproc)

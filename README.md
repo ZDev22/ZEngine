@@ -87,8 +87,8 @@ brew install molten-vk
 - Run the following commands to download a C compiler:
 ```bash
 pacman -Syu
-pacman -S mingw-w64-ucrt-x86_64-gcc
-pacman -S mingw-w64-ucrt-x86_64-make
+pacman -S gcc
+pacman -S make
 pacman -S mingw-w64-ucrt-x86_64-vulkan-headers
 pacman -S mingw-w64-ucrt-x86_64-vulkan-loader
 pacman -S mingw-w64-ucrt-x86_64-shaderc
