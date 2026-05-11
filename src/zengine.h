@@ -788,7 +788,7 @@ void unmap(Buffer* buffer) {
     }
 }
 
-void write(Buffer* buffer, const void* data, unsigned int size) { memcpy(buffer->mapped, data, size); }
+void writeBuffer(Buffer* buffer, const void* data, unsigned int size) { memcpy(buffer->mapped, data, size); }
 
 /* ZENIGNE HELPER FUNCTIONS */
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -999,7 +999,7 @@ void createModel(Model* model, float* positions, const unsigned int verticySize)
 
     createBuffer(model->vertexBuffer, sizeof(Vertex) * verticySize, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     map(model->vertexBuffer);
-    write(model->vertexBuffer, (const void*)model->vertices, (unsigned int)(sizeof(Vertex) * verticySize));
+    writeBuffer(model->vertexBuffer, (const void*)model->vertices, (unsigned int)(sizeof(Vertex) * verticySize));
     unmap(model->vertexBuffer);
 }
 
@@ -1074,7 +1074,7 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
     sprites[spritesSize].scale[1] = scaley;
     sprites[spritesSize].rotation = rotation;
     sprites[spritesSize].textureIndex = textureIndex;
-    sprites[spritesSize].depth = 1.f - ((float)spritesSize / (float)ZENGINE_MAX_SPRITES); 
+    sprites[spritesSize].depth = 1.f - ((float)spritesSize / (float)ZENGINE_MAX_SPRITES);
     sprites[spritesSize].model = model;
     sprites[spritesSize].data = NULL;
 
@@ -1100,24 +1100,17 @@ void initSprite(Sprite* sprite) {
 }
 
 void deleteSpritePointer(Sprite* sprite) {
-    for (unsigned int i = (unsigned int)(sprite->depth * ZENGINE_MAX_SPRITES); i < spritesSize - 1; i++) {
-        sprites[i] = sprites[i + 1];
-        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
-    }
-    spritesSize--;
-    deleteModel(sprites[spritesSize].model);
-    sprites[spritesSize].data = NULL;
+    deleteSprite(sprite - sprites);
 }
 
 void deleteSprite(unsigned int sprite) {
-    for (unsigned int i = sprite; i < spritesSize; i++) {
+    for (unsigned int i = sprite; i < spritesSize - 1; i++) {
         sprites[i] = sprites[i + 1];
-        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
+        sprites[i].depth = 1.f - ((float)i / (float)ZENGINE_MAX_SPRITES);
     }
 
+    sprites[spritesSize - 1].data = NULL;
     spritesSize--;
-    deleteModel(sprites[spritesSize].model);
-    sprites[spritesSize].data = NULL;
 }
 
 void setRotationMatrix(Sprite* sprite) {
