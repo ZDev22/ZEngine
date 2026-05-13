@@ -1092,21 +1092,18 @@ Sprite* createSpritePtr() {
 }
 
 void deleteSpritePointer(Sprite* sprite) {
-    deleteSprite(sprite - sprites); 
+    deleteSprite(sprite - sprites);
 }
 
 void deleteSprite(unsigned int sprite) {
-#ifdef ZENGINE_DEPTHMODE_FIRST
-    for (unsigned int i = sprite; i < spritesSize; i++) {
-        sprites[i] = sprites[i + 1];
-        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
-    }
-#else
     for (unsigned int i = sprite; i < spritesSize - 1; i++) {
         sprites[i] = sprites[i + 1];
+#ifdef ZENGINE_DEPTHMODE_FIRST
+        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
+#else
         sprites[i].depth = 1.f - ((float)i / (float)ZENGINE_MAX_SPRITES);
-    }
 #endif
+    }
 
     sprites[spritesSize - 1].data = NULL;
     spritesSize--;
