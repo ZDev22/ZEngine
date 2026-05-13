@@ -6,6 +6,7 @@
 #define ZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 #define ZENGINE_SPRITE_MATRIXMODE_MANUAL - manually call sprites[0].setRotationMatrix() for every sprite you need
+#define ZENGINE_DEPTHMODE_FIRST - makes it so the first created sprites get layered on top of new ones
 #define ZENGINE_DEFAULT_TEXTURE "bird.png" - change the default texture from "e.png" to whatever you want
 
 #define ZENGINE_DEBUG - adds debug printing for debugging
@@ -258,7 +259,6 @@ void ZEngineDeinit();
 /* sprite funcs */
 void createSprite(Model* model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
 Sprite* createSpritePtr();
-void initSprite(Sprite* sprite);
 void deleteSpritePointer(Sprite* sprite);
 void deleteSprite(unsigned int sprite);
 void setRotationMatrix(Sprite* sprite);
@@ -1074,7 +1074,11 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
     sprites[spritesSize].scale[1] = scaley;
     sprites[spritesSize].rotation = rotation;
     sprites[spritesSize].textureIndex = textureIndex;
+#ifdef ZENGINE_DEPTHMODE_FIRST
+    sprites[spritesSize].depth = spritesSize / ZENGINE_MAX_SPRITES;
+#else
     sprites[spritesSize].depth = 1.f - ((float)spritesSize / (float)ZENGINE_MAX_SPRITES);
+#endif
     sprites[spritesSize].model = model;
     sprites[spritesSize].data = NULL;
 
@@ -1087,27 +1091,22 @@ Sprite* createSpritePtr() {
     return &sprites[spritesSize - 1];
 }
 
-void initSprite(Sprite* sprite) {
-    sprite->position[0] = 0.f;
-    sprite->position[1] = 0.f;
-    sprite->scale[0] = .1f;
-    sprite->scale[1] = .1f;
-    sprite->rotation = 0.f;
-    sprite->textureIndex = 0;
-    sprite->depth = spritesSize - 1;
-    sprite->model = squareModel;
-    sprite->data = NULL;
-}
-
 void deleteSpritePointer(Sprite* sprite) {
-    deleteSprite(sprite - sprites);
+    deleteSprite(sprite - sprites); 
 }
 
 void deleteSprite(unsigned int sprite) {
+#ifdef ZENGINE_DEPTHMODE_FIRST
+    for (unsigned int i = sprite; i < spritesSize; i++) {
+        sprites[i] = sprites[i + 1];
+        sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
+    }
+#else
     for (unsigned int i = sprite; i < spritesSize - 1; i++) {
         sprites[i] = sprites[i + 1];
         sprites[i].depth = 1.f - ((float)i / (float)ZENGINE_MAX_SPRITES);
     }
+#endif
 
     sprites[spritesSize - 1].data = NULL;
     spritesSize--;
