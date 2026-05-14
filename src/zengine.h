@@ -18,6 +18,7 @@
 #ifndef ZENGINE_H
 #define ZENGINE_H
 
+#ifdef ZENGINE_IMPLEMENTATION
 /* define a few necissary macros if not already defined */
 #ifndef ZENGINE_MAX_FRAMES_IN_FLIGHT
     #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2
@@ -32,6 +33,11 @@
 #if ZENGINE_MAX_SPRITES > 4096 && defined(__APPLE__)
     #undef ZENGINE_MAX_SPRITES
     #define ZENGINE_MAX_SPRITES 4096
+#endif
+
+#if ZENGINE_MAX_TEXTURES < 25
+    #undef ZENGINE_MAX_TEXTURES
+    #define ZENGINE_MAX_TEXTURES 25
 #endif
 
 #define SIZEOF_SPRITE_DATA 48 /* the bytes of the Sprite struct sent to the gpu, stays constant */
@@ -52,6 +58,8 @@
 #ifndef ZENGINE_DEFAULT_TEXTURE
     #define ZENGINE_DEFAULT_TEXTURE "e.png"
 #endif
+
+#endif // ZENGINE_IMPLEMENTATION
 
 /* dependencies */
 #if defined(ZENGINE_IMPLEMENTATION) && !defined(ZENGINE_DEPS_DEFINED)
@@ -811,7 +819,6 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
             indices.presentFamilyHasValue = 1;
         }
         if (indices.graphicsFamilyHasValue && indices.presentFamilyHasValue) { break; }
-        i++;
     }
     return indices;
 }
@@ -1453,15 +1460,15 @@ void ZEngineInit() {
     camera.position[0] = 0.f; camera.position[1] = 0.f;
     camera.aspect      = (float)windowExtent.width / (float)windowExtent.height;
 
-    float* positions = (float*)malloc(8 * 4);
-    positions[0] = -.5f; positions[1] = -.5f; // Bottom left
-    positions[2] =  .5f; positions[3] = -.5f; // Bottom right
-    positions[4] = -.5f; positions[5] =  .5f; // Top right
-    positions[6] =  .5f; positions[7] =  .5f; // Top left
+    float positions[8] = {
+        -.5f, -.5f, // Bottom left
+        .5f, -.5f, // Bottom right
+        -.5f, .5f, // Top right
+        .5f, .5f, // Top left
+    };
  
     squareModel = (Model*)malloc(sizeof(Model));
-    createModel(squareModel, positions, 8);
-    free(positions);
+    createModel(squareModel, positions, 4);
 
 #ifdef __APPLE__
     createBuffer(spriteDataBuffer, SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -1622,7 +1629,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Freeing window surface\n"); vkDestroySurfaceKHR(instance, surface_, NULL);
     ZENGINE_PRINT("Destroying instance\n"); vkDestroyInstance(instance, NULL);
 #ifndef ZENGINE_DISABLE_AUDIO
-    ZENGINE_PRINT("Deiniting audio"); ma_engine_uninit(&audio);
+    ZENGINE_PRINT("Deiniting audio\n"); ma_engine_uninit(&audio);
 #endif
 }
 

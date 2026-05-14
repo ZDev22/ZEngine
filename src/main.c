@@ -5,6 +5,9 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define FPS_CAP 60.f // set the framerate, dont define for no FPS cap
 */
 
+#define _DEFAULT_SOURCE
+#define _POSIX_C_SOURCE 199309L
+
 /* ZENGINE */
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DEPS_DEFINED
@@ -13,7 +16,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2
 #define ZENGINE_DEBUG
 #define ZENGINE_MAX_SPRITES 100000
-#define ZENGINE_MAX_TEXTURES 100
+#define ZENGINE_MAX_TEXTURES 1
 #include "zengine.h"
 
 #ifndef ZENGINE_DISABLE_VSYNC
