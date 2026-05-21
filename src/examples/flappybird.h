@@ -17,18 +17,16 @@ Sprite* bird;
 
 void initGame() {
     sRandom();
-    loadFont("assets/fonts/Bullpen3D.ttf");
+    loadFont("assets/fonts/Bullpen3D.ttf"); 
 
-    printf("creating sprite\n");
-    bird = createSpritePtr();
-    bird->position[0] = -.7f;
-    bird->position[1] = -.2f;
+    Texture texture;
+    createTexture(&texture, "flappyBird.png");
+    updateTexture(0, &texture);
+    createTexture(&texture, "pipe.png");
+    updateTexture(1, &texture);
 
-    Texture newTexture;
-    createTexture(&newTexture, "flappyBird.png");
-    updateTexture(bird->textureIndex, &newTexture);
-    createTexture(&newTexture, "pipe.png");
-    updateTexture(1, &newTexture);
+    createSprite(squareModel, 1, 0.f, 0.f, .1f, .1f, 0.f);
+    bird = &sprites[spritesSize - 1];
  
     for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
 }
@@ -39,7 +37,7 @@ void tickGame() {
         bird->position[1] += flappyBirdSpeedY * deltaTime;
         bird->rotation -= 90.f * deltaTime;
         if (!flappyBirdDead) {
-            if (RGFW_isKeyPressed(RGFW_space)) {
+            if (RGFW_isKeyPressed(RGFW_keySpace)) {
                 flappyBirdSpeedY = -1.3f;
                 bird->rotation = 60.f;
                 bird->textureIndex = 0;
@@ -85,7 +83,7 @@ void tickGame() {
             }
         }
     }
-    else { if (RGFW_isKeyPressed(RGFW_space)) { flappyBirdStarted = 1; }}
+    else { if (RGFW_isKeyPressed(RGFW_keySpace)) { flappyBirdStarted = 1; }}
 }
 
 #endif // FLAPPYBIRD_H

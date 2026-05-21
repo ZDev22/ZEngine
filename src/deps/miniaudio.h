@@ -2,6 +2,8 @@
 
 // A somewhat-lighter miniaudio.h - see original here: https://github.com/mackron/miniaudio
 
+#ifndef ZENGINE_DISABLE_AUDIO
+
 #ifndef miniaudio_h
 #define miniaudio_h
 #ifdef __cplusplus
@@ -81509,4 +81511,7 @@ MA_API void ma_dr_mp3_free(void* p, const ma_allocation_callbacks* pAllocationCa
     #pragma warning(pop)
 #endif
 #endif
+#endif
+#else
+void playSound(unsigned char* temp, const char* temp2) { return; }
 #endif

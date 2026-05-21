@@ -266,7 +266,7 @@ void ZEngineDeinit();
 
 /* sprite funcs */
 void createSprite(Model* model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-Sprite* createSpritePtr();
+Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation);
 void deleteSpritePointer(Sprite* sprite);
 void deleteSprite(unsigned int sprite);
 void setRotationMatrix(Sprite* sprite);
@@ -1092,9 +1092,9 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
     spritesSize++;
 }
 
-Sprite* createSpritePtr() {
+Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
     if (spritesSize >= ZENGINE_MAX_SPRITES) { return NULL; }
-    createSprite(squareModel, 0, 0.f, 0.f, .1f, .1f, 0);
+    createSprite(model, textureIndex, posx, posy, scalex, scaley, rotation);
     return &sprites[spritesSize - 1];
 }
 
