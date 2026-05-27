@@ -1065,7 +1065,7 @@ VkShaderModule createShaderModule(const char* filepath) {
     VkShaderModule shaderModule;
     if (vkCreateShaderModule(device_, &createInfo, NULL, &shaderModule) != VK_SUCCESS) {
         free(buffer);
-        printf("Failed to create shader module!");
+        ZENGINE_PRINT("Failed to create shader module!");
         exit(1);
     }
 
@@ -1085,7 +1085,7 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
 #ifdef ZENGINE_DEPTHMODE_FIRST
     sprites[spritesSize].depth = spritesSize / ZENGINE_MAX_SPRITES;
 #else
-    sprites[spritesSize].depth = ((float)spritesSize * 0.00001f);
+    sprites[spritesSize].depth = .999f - ((float)spritesSize * 0.00001f);
 #endif
     sprites[spritesSize].model = model;
     sprites[spritesSize].data = NULL;
@@ -1109,7 +1109,7 @@ void deleteSprite(unsigned int sprite) {
 #ifdef ZENGINE_DEPTHMODE_FIRST
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
 #else
-        sprites[i].depth = ((float)i * 0.00001f);
+        sprites[i].depth = .999f - ((float)i * 0.00001f);
 #endif
     }
 
