@@ -13,6 +13,7 @@ struct Sprite {
     float depth;
     uint textureIndex;
     float rotation;
+    float padding;
 };
 
 layout(push_constant) uniform Push {

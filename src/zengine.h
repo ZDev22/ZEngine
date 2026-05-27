@@ -137,6 +137,7 @@ typedef struct __attribute__((aligned(16))) Sprite {
     float depth;
     unsigned int textureIndex;
     float rotation;
+    float padding;
 
     /* CPU-side only */
     Model* model;
@@ -1084,7 +1085,7 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
 #ifdef ZENGINE_DEPTHMODE_FIRST
     sprites[spritesSize].depth = spritesSize / ZENGINE_MAX_SPRITES;
 #else
-    sprites[spritesSize].depth = 1.f - ((float)spritesSize / (float)ZENGINE_MAX_SPRITES);
+    sprites[spritesSize].depth = ((float)spritesSize * 0.00001f);
 #endif
     sprites[spritesSize].model = model;
     sprites[spritesSize].data = NULL;
@@ -1108,7 +1109,7 @@ void deleteSprite(unsigned int sprite) {
 #ifdef ZENGINE_DEPTHMODE_FIRST
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
 #else
-        sprites[i].depth = 1.f - ((float)i / (float)ZENGINE_MAX_SPRITES);
+        sprites[i].depth = ((float)i * 0.00001f);
 #endif
     }
 

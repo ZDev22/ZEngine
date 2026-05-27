@@ -25,10 +25,10 @@ void initGame() {
     createTexture(&texture, "pipe.png");
     updateTexture(1, &texture);
 
-    createSprite(squareModel, 1, 0.f, 0.f, .1f, .1f, 0.f);
+    createSprite(squareModel, 0, -.7f, 0.f, .1f, .1f, 0.f);
     bird = &sprites[spritesSize - 1];
  
-    for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.2f, .1f, .1f, 0.f); }
+    for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.3f, .1f, .1f, 0.f); }
 }
 
 void tickGame() {
@@ -83,7 +83,13 @@ void tickGame() {
             }
         }
     }
-    else { if (RGFW_isKeyPressed(RGFW_keySpace)) { flappyBirdStarted = 1; }}
+    else {
+        if (RGFW_isKeyPressed(RGFW_keySpace)) {
+            flappyBirdStarted = 1;
+            flappyBirdSpeedY = -1.3f;
+            bird->rotation = 60.f;
+        }
+    }
 }
 
 #endif // FLAPPYBIRD_H
