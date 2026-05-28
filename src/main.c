@@ -15,8 +15,8 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 //#define ZENGINE_DISABLE_AUDIO
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2
 #define ZENGINE_DEBUG
-#define ZENGINE_MAX_SPRITES 1000000
-#define ZENGINE_MAX_TEXTURES 100
+#define ZENGINE_MAX_SPRITES 10000
+#define ZENGINE_MAX_TEXTURES 25
 #include "zengine.h"
 
 //#define FPS_CAP 180.f
@@ -35,6 +35,9 @@ struct timespec ts;
 
 int main() {
     /* init engine */
+    setenv("__GL_YIELD", "USLEEP", 1);
+    setenv("MESA_NO_ERROR", "1", 1);
+
     zwindow = RGFW_createWindow("loading...", 0, 0, 720, 480, (u64)0);
     ZEngineInit();
     initGame();
@@ -43,7 +46,7 @@ int main() {
     while (!RGFW_window_shouldClose(zwindow)) {
         /* calculate fps */
         #ifdef FPS_CAP
-            usleep((int)((1.0 / FPS_CAP) * 1000000.0));
+            usleep((int)((1.0 / FPS_CAP) * 1000000.0)); 
         #endif
 
         fpsTime = clock();
@@ -53,7 +56,7 @@ int main() {
 
         if (appTimer > 1.f) {
             char name[32];
-            snprintf(name, 32, "fps: %d", fps);
+            snprintf(name, 64, "fps: %d", fps);
             RGFW_window_setName(zwindow, name);
             appTimer = 0.f;
             fps = 0;
