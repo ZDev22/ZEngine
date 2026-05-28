@@ -7,6 +7,7 @@
 - **SPRITE INIT/DEINIT API**
 - **ADDED DEPTH BUFFER**
 - **ADDED ASPECT RATIO**
+- **ADDED OPACITY**
 - **ADDED ZTEXT.H**
 - Vulkan now required dependency on windows
 - Improved API and efficiency of zcollide

@@ -1,7 +1,7 @@
 CC = gcc
 #CFLAGS = -Og -Wall -Wextra -std=c99
 CFLAGS = -march=westmere -O3 -Wall -Wextra -Wno-maybe-uninitialized -std=c99 -flto -DZENGINE_DISABLE_AUDIO
-LDFLAGS = -lm -lpthread
+LDFLAGS = -lm
 
 BIN := build/main
 
@@ -14,9 +14,6 @@ else ifeq ($(UNAME_S),Darwin)
 	export VK_ICD_FILENAMES := $(VULKANSDK)/share/vulkan/icd.d/MoltenVK_icd.json
 	CFLAGS += -I$(VULKANSDK)/include
 	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC
-else
-	LDFLAGS += -lvulkan-1 -lgdi32
-	CFLAGS += -I/ucrt64/include
 endif
 
 MAKEFLAGS += -j$(shell nproc)
@@ -46,10 +43,10 @@ build/obj/%.o: %.c
 
 build/shaders/%.vert.spv: src/shaders/%.vert
 	@mkdir -p build/shaders
-	glslc $< -o $@
+	glslc -O --target-env=vulkan1.2 $< -o $@
 build/shaders/%.frag.spv: src/shaders/%.frag
 	@mkdir -p build/shaders
-	glslc $< -o $@
+	glslc -O --target-env=vulkan1.2 $< -o $@
 
 copyAssets:
 	@mkdir -p build/assets

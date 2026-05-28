@@ -137,7 +137,7 @@ typedef struct __attribute__((aligned(16))) Sprite {
     float depth;
     unsigned int textureIndex;
     float rotation;
-    float padding;
+    float opacity;
 
     /* CPU-side only */
     Model* model;
@@ -196,8 +196,8 @@ void ZEngineRender();
 void ZEngineDeinit();
 
 /* sprite funcs */
-void createSprite(Model* model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation);
+void createSprite(Model* model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation, float opacity);
+Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation, float opacity);
 void deleteSpritePointer(Sprite* sprite);
 void deleteSprite(unsigned int sprite);
 void setRotationMatrix(Sprite* sprite);
@@ -1085,7 +1085,7 @@ VkShaderModule createShaderModule(const char* filepath) {
     return shaderModule;
 }
 
-void createSprite(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
+void createSprite(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation, float opacity) {
     if (spritesSize >= ZENGINE_MAX_SPRITES) { return; }
 
     sprites[spritesSize].position[0] = posx;
@@ -1099,15 +1099,16 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
 #else
     sprites[spritesSize].depth = .999f - ((float)spritesSize * 0.00001f);
 #endif
+    sprites[spritesSize].opacity = opacity;
     sprites[spritesSize].model = model;
     sprites[spritesSize].data = NULL;
 
     spritesSize++;
 }
 
-Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
+Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation, float opacity) {
     if (spritesSize >= ZENGINE_MAX_SPRITES) { return NULL; }
-    createSprite(model, textureIndex, posx, posy, scalex, scaley, rotation);
+    createSprite(model, textureIndex, posx, posy, scalex, scaley, rotation, opacity);
     return &sprites[spritesSize - 1];
 }
 
