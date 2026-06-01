@@ -29,9 +29,8 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 unsigned int fps = 0;
 float appTimer = 0.f;
-clock_t fpsTime;
-clock_t fpsLastTime;
-struct timespec ts;
+struct timespec fpsTime;
+struct timespec fpsLastTime;
 
 int main() {
     /* init engine */
@@ -42,16 +41,17 @@ int main() {
     ZEngineInit();
     initGame();
 
-    fpsLastTime = clock();
+    clock_gettime(CLOCK_MONOTONIC, &fpsLastTime);
     while (!RGFW_window_shouldClose(zwindow)) {
         /* calculate fps */
         #ifdef FPS_CAP
             usleep((int)((1.0 / FPS_CAP) * 1000000.0));
         #endif
 
-        fpsTime = clock();
-        deltaTime = (double)(fpsTime - fpsLastTime) / CLOCKS_PER_SEC;
-        fpsLastTime = fpsTime;
+        clock_gettime(CLOCK_MONOTONIC, &fpsTime);
+        deltaTime = (double)(fpsTime.tv_sec - fpsLastTime.tv_sec) + (double)(fpsTime.tv_nsec - fpsLastTime.tv_nsec) / 1000000000.0;
+        fpsLastTime.tv_nsec = fpsTime.tv_nsec;
+        fpsLastTime.tv_sec = fpsTime.tv_sec;
         appTimer += deltaTime;
 
         if (appTimer > 1.f) {
