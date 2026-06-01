@@ -13,7 +13,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define MINIAUDIO_IMPLEMENTATION
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
 #if defined(__linux__)
-    #define MA_ENABLE_ALSA
     #define MA_ENABLE_PULSEAUDIO
 #elif defined(_APPLE_)
     #define MA_ENABLE_COREAUDIO
@@ -39,7 +38,7 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* DEPENDENCIES */
 #include "deps/RGFW.h"
-//#include "deps/miniaudio.h"
+#include "deps/miniaudio.h"
 #include "deps/stb_image.h"
 #include "deps/stb_truetype.h"
 

@@ -42,7 +42,7 @@ void tickGame() {
                 bird->rotation = 60.f;
                 bird->textureIndex = 0;
 
-                playSound(&audio, "assets/sounds/chirp.mp3");
+                ma_engine_play_sound(&audio, "assets/sounds/chirp.mp3", NULL);
                 createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
                 updateTexture(3, createText("ZDev", 0, 128));
                 camera.zoom[0] -= .007f;
@@ -51,7 +51,7 @@ void tickGame() {
 
             if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
                 flappyBirdDead = 1;
-                playSound(&audio, "assets/sounds/hit.mp3");
+                ma_engine_play_sound(&audio, "assets/sounds/hit.mp3", NULL);
                 updateTexture(3, createText("Something", 0, 128));
             }
         }
@@ -79,7 +79,7 @@ void tickGame() {
                 bird->rotation = 60.f;
                 bird->textureIndex = 1;
 
-                playSound(&audio, "assets/sounds/hit.mp3");
+                ma_engine_play_sound(&audio, "assets/sounds/hit.mp3", NULL);
             }
         }
     }

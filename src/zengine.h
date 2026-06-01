@@ -3,7 +3,7 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
 #define ZENGINE_DEPS_DEFINED - if your using zdeps.c define this (disables IMPLEMENTATION defines)
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
-#define ZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
+#define -DZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it. THIS IS A COMPILER FLAG
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 #define ZENGINE_SPRITE_MATRIXMODE_MANUAL - manually call sprites[0].setRotationMatrix() for every sprite you need
 #define ZENGINE_DEPTHMODE_FIRST - makes it so the first created sprites get layered on top of new ones
@@ -77,11 +77,11 @@
 #include "deps/RGFW.h" /* window */
 #include "deps/stb_image.h" /* image */
 
-#ifndef ZENGINE_DISABLE_AUDIO
+#ifdef ZENGINE_DISABLE_AUDIO
+    #define ZENGINE_AUDIO unsigned char audio /* 1 byte to prevent errors */
+#else
     #include "deps/miniaudio.h" /* audio */
     #define ZENGINE_AUDIO ma_engine audio
-#else
-    #define ZENGINE_AUDIO unsigned char audio /* 1 byte to prevent errors */
 #endif
 
 /* undefine these so they don't get used later */
@@ -1138,7 +1138,7 @@ void deleteSpritePtr(Sprite* sprite) {
 
 void deleteSprite(unsigned int sprite) {
     spritesSize--;
-    sprites[i] = sprites[spritesSize];
+    sprites[sprite] = sprites[spritesSize];
     sprites[spritesSize].data = NULL;
     for (unsigned int i = sprite; i < spritesSize - 1; i++) {
 #ifdef ZENGINE_DEPTHMODE_FIRST

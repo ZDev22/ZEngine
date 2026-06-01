@@ -1,6 +1,6 @@
 CC = gcc
 #CFLAGS = -Og -Wall -Wextra -std=c99
-CFLAGS = -march=westmere -O3 -Wall -Wextra -Wno-maybe-uninitialized -std=c99 -flto -DZENGINE_DISABLE_AUDIO
+CFLAGS = -march=westmere -O3 -Wall -Wextra -Wno-maybe-uninitialized -std=c99 -flto
 LDFLAGS = -lm
 
 BIN := build/main
