@@ -24,7 +24,7 @@ cd ZEngine
 ```bash
 sudo pacman -Syu --noconfirm
 sudo pacman -S gcc --noconfirm #C
-sudo pacman -S libx11 libxrandr libxcursor xkbcommon mesa --noconfirm #X11
+sudo pacman -S libx11 libxrandr libxcursor mesa --noconfirm #X11
 sudo pacman -S vulkan-headers vulkan-tools vulkan-icd-loader --noconfirm #Vulkan
 # Intel GPU: sudo pacman -S vulkan-intel --noconfirm
 # AMD GPU: sudo pacman -S vulkan-radeon --noconfirm
@@ -48,9 +48,9 @@ sudo dnf install vulkan-headers vulkan-tools vulkan-loader-devel -y #Vulkan
 #### Gentoo:
 ```bash
 root # emerge --sync
-sudo emerge --ask sys-devel/gcc -y #C
-sudo emerge --ask x11-libs/libX11 x11-libs/libXrandr x11-libs/libXi x11-libs/libXcursor x11-libs/libxkbcommon mesa-libs/mesa -y #X11
-sudo emerge --ask media-libs/vulkan-loader dev-util/vulkan-headers media-libs/vulkan-tools -y #Vulkan
+sudo emerge --ask sys-devel/gcc #C
+sudo emerge --ask x11-libs/libX11 x11-libs/libXrandr x11-libs/libXi x11-libs/libXcursor x11-libs/libxkbcommon mesa-libs/mesa #X11
+sudo emerge --ask media-libs/vulkan-loader dev-util/vulkan-headers media-libs/vulkan-tools #Vulkan
 # Intel GPU: sudo emerge --ask media-libs/vulkan-intel
 # AMD GPU: sudo emerge --ask media-libs/vulkan-radeon
 ```
