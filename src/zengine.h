@@ -124,7 +124,7 @@ typedef struct Buffer {
 } Buffer;
 
 typedef struct Model {
-    Buffer* vertexBuffer; 
+    Buffer* vertexBuffer;
     Vertex* vertices;
     unsigned int verticySize;
 } Model;
@@ -234,11 +234,11 @@ void drawModel(Model* model, VkCommandBuffer commandBuffer, unsigned int instanc
 
 void createSwapChain();
 void deleteSwapChain();
-VkResult acquireNextImage(unsigned int* imageIndex);    
+VkResult acquireNextImage(unsigned int* imageIndex);
 void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex);
 
 void createTextureSampler(Texture* texture);
-void createTexture(Texture* texture, const char* filepath);
+void createTexture(Texture* texture, const char* filepath, float opacity);
 void createTextureFromData(Texture* texture, const unsigned char* pixelData, const unsigned short width, const unsigned short height);
 void deleteTexture(Texture* texture);
 void transitionImageLayout(Texture* texture, VkImageLayout oldLayout, VkImageLayout newLayout);
@@ -532,7 +532,7 @@ void createSwapChain() {
 }
 
 void deleteSwapChain() {
-    for (unsigned char i = 0; i < imageCount; i++) { 
+    for (unsigned char i = 0; i < imageCount; i++) {
         vkDestroyFramebuffer(device_, swapChainFramebuffers[i], NULL);
         vkDestroyImageView(device_, depthImageViews[i], NULL);
         vkDestroyImage(device_, depthImages[i], NULL);
@@ -560,7 +560,7 @@ void deleteSwapChain() {
 }
 
 VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
-    
+
 void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
     if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
     imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
@@ -611,11 +611,32 @@ void createTextureSampler(Texture* texture) {
     vkCreateSampler(device_, &samplerInfo, NULL, &texture->sampler);
 }
 
-void createTexture(Texture* texture, const char* filepath) {
+void updateTexture(unsigned int index, Texture* texture) {
+    spriteTextures[index] = *texture;
+
+    VkDescriptorImageInfo imageInfo = {0};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = spriteTextures[index].view;
+    imageInfo.sampler = spriteTextures[index].sampler;
+
+    VkWriteDescriptorSet imageWrite = {0};
+    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    imageWrite.dstSet = spriteDataDescriptorSet;
+    imageWrite.dstBinding = 1;
+    imageWrite.dstArrayElement = index;
+    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    imageWrite.descriptorCount = 1;
+    imageWrite.pImageInfo = &imageInfo;
+    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, NULL);
+}
+
+void createTexture(Texture* texture, const char* filepath, float opacity) {
     int width = 0; int height = 0;
     char name[64];
     snprintf(name, 64, "assets/images/%s", filepath);
     stbi_uc* pixels = stbi_load(name, &width, &height, &texture->channels, STBI_rgb_alpha);
+    for (unsigned int i = 3; i < width * height * 4; i += 4) { pixels[i] *= opacity; }
+
     VkDeviceSize imageSize = width * height * 4;
 
     createImageBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &texture->buffer, &texture->bufferMemory);
@@ -1137,25 +1158,6 @@ void setRotationMatrix(Sprite* sprite) {
     sprite->rotationMatrix[3] = sprite->rotationMatrix[0];
 }
 
-void updateTexture(unsigned int index, Texture* texture) {
-    spriteTextures[index] = *texture;
-
-    VkDescriptorImageInfo imageInfo = {0};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = spriteTextures[index].view;
-    imageInfo.sampler = spriteTextures[index].sampler;
-
-    VkWriteDescriptorSet imageWrite = {0};
-    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    imageWrite.dstSet = spriteDataDescriptorSet;
-    imageWrite.dstBinding = 1;
-    imageWrite.dstArrayElement = index;
-    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = 1;
-    imageWrite.pImageInfo = &imageInfo;
-    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, NULL);
-}
-
 /* ZENGINE */
 void ZEngineInit() {
     ZENGINE_PRINT("Creating instance...\n"); //---------------------------------------------------------------------------------------------------------------
@@ -1208,7 +1210,7 @@ void ZEngineInit() {
     ZENGINE_PRINT("Creating physical device...\n"); //---------------------------------------------------------------------------------------------------------------
     unsigned int deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
-    if (deviceCount == 0) { 
+    if (deviceCount == 0) {
         printf("No Vulkan-compatible GPUs found");
         exit(1);
     }
@@ -1263,7 +1265,7 @@ void ZEngineInit() {
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     float queuePriority = 1.0f;
- 
+
     unsigned char queueFamilySize = 1;
     if (indices.presentFamily != indices.graphicsFamily) { queueFamilySize = 2; }
 
@@ -1272,7 +1274,7 @@ void ZEngineInit() {
     if (queueFamilySize == 2) { uniqueQueueFamilies[1] = indices.presentFamily; }
 
     VkDeviceQueueCreateInfo* queueCreateInfos = (VkDeviceQueueCreateInfo*)malloc(queueFamilySize * sizeof(VkDeviceQueueCreateInfo));
- 
+
     for (unsigned char i = 0; i < queueFamilySize; i++) {
         VkDeviceQueueCreateInfo queueCreateInfo = {0};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -1465,7 +1467,7 @@ void ZEngineInit() {
     spriteTextures = (Texture*)calloc(1, ZENGINE_MAX_TEXTURES * sizeof(Texture));
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES] = {0};
     for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
-        createTexture(&spriteTextures[i], ZENGINE_DEFAULT_TEXTURE);
+        createTexture(&spriteTextures[i], ZENGINE_DEFAULT_TEXTURE, 1.f);
         imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         imageInfos[i].imageView = spriteTextures[i].view;
         imageInfos[i].sampler = spriteTextures[i].sampler;
@@ -1486,7 +1488,7 @@ void ZEngineInit() {
         -.5f, .5f, // Top right
         .5f, .5f, // Top left
     };
- 
+
     squareModel = (Model*)malloc(sizeof(Model));
     createModel(squareModel, positions, 4);
 
@@ -1603,7 +1605,7 @@ void ZEngineRender() {
 #endif
             memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
         }
-        memcpy(spriteDataBuffer->mapped, spriteData, SIZEOF_SPRITE_DATA * spritesSize); 
+        memcpy(spriteDataBuffer->mapped, spriteData, SIZEOF_SPRITE_DATA * spritesSize);
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
         ZEngineSpriteRemap = 0;
     }
@@ -1634,7 +1636,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Unmaping sprite data buffer\n"); unmap(spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite data buffer\n"); deleteBuffer(spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite gpu buffer\n"); free(spriteData);
-    ZENGINE_PRINT("Freeing models\n"); deleteModel(squareModel); 
+    ZENGINE_PRINT("Freeing models\n"); deleteModel(squareModel);
     ZENGINE_PRINT("Freeing sprites\n"); free(sprites);
     ZENGINE_PRINT("Freeing swapchain\n"); deleteSwapChain();
 

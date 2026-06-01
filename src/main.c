@@ -5,7 +5,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define FPS_CAP 60.f // set the framerate, dont define for no FPS cap
 */
 
-#define _DEFAULT_SOURCE
+#define _GNU_SOURCE
 #define _POSIX_C_SOURCE 199309L
 
 /* ZENGINE */
@@ -46,7 +46,7 @@ int main() {
     while (!RGFW_window_shouldClose(zwindow)) {
         /* calculate fps */
         #ifdef FPS_CAP
-            usleep((int)((1.0 / FPS_CAP) * 1000000.0)); 
+            usleep((int)((1.0 / FPS_CAP) * 1000000.0));
         #endif
 
         fpsTime = clock();
@@ -56,7 +56,7 @@ int main() {
 
         if (appTimer > 1.f) {
             char name[32];
-            snprintf(name, 64, "fps: %d", fps);
+            snprintf(name, 32, "fps: %d", fps);
             RGFW_window_setName(zwindow, name);
             appTimer = 0.f;
             fps = 0;

@@ -42,7 +42,7 @@ void loadFont(const char* font) {
 
     stbtt_fontinfo* oldInfo = (stbtt_fontinfo*)malloc(fontSize * sizeof(stbtt_fontinfo));
     memcpy(oldInfo, fonts, fontSize * sizeof(stbtt_fontinfo));
-    
+
     free(fonts);
     fonts = (stbtt_fontinfo*)malloc((fontSize + 1) * sizeof(stbtt_fontinfo));
     memcpy(fonts, oldInfo, fontSize * sizeof(stbtt_fontinfo));
@@ -52,7 +52,7 @@ void loadFont(const char* font) {
 
 /* thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation! */
 Texture* createTextPtr(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h) {
-    unsigned char* bitmap = (unsigned char*)calloc(b_w * b_h, 1);
+    unsigned char* bitmap = (unsigned char*)calloc(1, b_w * b_h);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
 
@@ -65,7 +65,7 @@ Texture* createTextPtr(const char* word, unsigned char index, const unsigned int
 
     ascent = (int)((float)ascent * scale);
     descent = (int)((float)descent * scale);
- 
+
     for (unsigned int i = 0; i < strlen(word); ++i) {
         /* char width */
         int ax = 0; int lsb = 0;

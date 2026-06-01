@@ -5,7 +5,6 @@ layout(location = 1) in vec2 inTexCoord;
 
 layout(location = 0) out vec2 fragTexCoord;
 layout(location = 1) flat out uint fragTextureIndex;
-layout(location = 2) out float fragOpacity;
 
 struct Sprite {
     vec2 position;
@@ -30,5 +29,4 @@ void main() {
     gl_Position[0] /= camera.aspect;
     fragTexCoord = inTexCoord;
     fragTextureIndex = sprites[gl_InstanceIndex].textureIndex;
-    fragOpacity = sprites[gl_InstanceIndex].opacity;
 }

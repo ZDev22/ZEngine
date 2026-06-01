@@ -17,17 +17,17 @@ Sprite* bird;
 
 void initGame() {
     sRandom();
-    loadFont("assets/fonts/Bullpen3D.ttf"); 
+    loadFont("assets/fonts/Bullpen3D.ttf");
 
     Texture texture;
-    createTexture(&texture, "flappyBird.png");
+    createTexture(&texture, "flappyBird.png", .5f);
     updateTexture(0, &texture);
-    createTexture(&texture, "pipe.png");
+    createTexture(&texture, "pipe.png", 1.f);
     updateTexture(1, &texture);
 
     createSprite(squareModel, 0, -.7f, 0.f, .1f, .1f, 0.f, .1f);
     bird = &sprites[spritesSize - 1];
- 
+
     for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.3f, .1f, .1f, 0.f, 1.f); }
 }
 
