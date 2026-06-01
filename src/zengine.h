@@ -1137,17 +1137,16 @@ void deleteSpritePtr(Sprite* sprite) {
 }
 
 void deleteSprite(unsigned int sprite) {
+    spritesSize--;
+    sprites[i] = sprites[spritesSize];
+    sprites[spritesSize].data = NULL;
     for (unsigned int i = sprite; i < spritesSize - 1; i++) {
-        sprites[i] = sprites[i + 1];
 #ifdef ZENGINE_DEPTHMODE_FIRST
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
 #else
         sprites[i].depth = .999f - ((float)i * 0.00001f);
 #endif
     }
-
-    sprites[spritesSize - 1].data = NULL;
-    spritesSize--;
 }
 
 void setRotationMatrix(Sprite* sprite) {
