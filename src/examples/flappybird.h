@@ -25,10 +25,10 @@ void initGame() {
     createTexture(&texture, "pipe.png", 1.f);
     updateTexture(1, &texture);
 
-    createSprite(squareModel, 0, -.7f, 0.f, .1f, .1f, 0.f, .1f);
+    createSprite(squareModel, 0, -.7f, 0.f, .1f, .1f, 0.f);
     bird = &sprites[spritesSize - 1];
 
-    for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.3f, .1f, .1f, 0.f, 1.f); }
+    for (unsigned char i = 0; i < 10; i++) { createSprite(squareModel, 1, -.7f, -.3f, .1f, .1f, 0.f); }
 }
 
 void tickGame() {
@@ -43,7 +43,7 @@ void tickGame() {
                 bird->textureIndex = 0;
 
                 playSound(&audio, "assets/sounds/chirp.mp3");
-                createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f, 1.f);
+                createSprite(squareModel, 3, 0.f, 0.f, .5f, .2f, 0.f);
                 updateTexture(3, createText("ZDev", 0, 128));
                 camera.zoom[0] -= .007f;
                 camera.zoom[1] -= .007f;
