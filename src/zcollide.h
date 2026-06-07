@@ -1,6 +1,6 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-v3.2.10
+v3.2.11
 
 zcollide.h is a lightweight cross-platform sigle-header c library for checking if 2D objects are colliding!
 
@@ -30,12 +30,8 @@ _Bool zcollide_squareCollision(Sprite* spriteA, Sprite* spriteB) {
 
 /* thanks to MidnightHammer for these collision functions! */
 _Bool zcollide_circleCollision(Sprite* spriteA, float radiusA, Sprite* spriteB, float radiusB) {
-    float dx = spriteA->position[0] - spriteB->position[0];
-    float dy = spriteA->position[1] - spriteB->position[1];
-
-    int radiusSum = (radiusA + radiusB);
-
-    return (dx * dx) + (dy * dy) <= (radiusSum * radiusSum);
+    float distance = sqrt((spriteA->position[0] - spriteB->position[0]) * (spriteA->position[0] - spriteB->position[0]) + (spriteA->position[1] - spriteB->position[1]) * (spriteA->position[1] - spriteB->position[1]));
+    return distance < radiusA + radiusB;
 }
 
 #endif // ZCOLLIDE_IMPLEMENTATION
