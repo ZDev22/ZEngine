@@ -830,7 +830,10 @@ void unmap(Buffer* buffer) {
     }
 }
 
-void writeBuffer(Buffer* buffer, const void* data, unsigned int size) { memcpy(buffer->mapped, data, size); }
+void writeBuffer(Buffer* buffer, const void* data, unsigned int size) {
+    if (size > buffer->bufferSize) { return; }
+    memcpy(buffer->mapped, data, size);
+}
 
 /* ZENIGNE HELPER FUNCTIONS */
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
