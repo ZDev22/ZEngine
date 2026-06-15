@@ -9,6 +9,7 @@
 - **ADDED ASPECT RATIO**
 - **ADDED OPACITY**
 - **ADDED ZTEXT.H**
+- Removed custom model
 - Vulkan now required dependency on windows
 - Improved API and efficiency of zcollide
 - Removed zbit, zint & zwindow

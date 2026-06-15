@@ -815,8 +815,6 @@ void unmap(Buffer* buffer) {
     }
 }
 
-void writeBuffer(Buffer* buffer, const void* data, unsigned int size) { memcpy(buffer->mapped, data, size); }
-
 /* ZENIGNE HELPER FUNCTIONS */
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
@@ -1450,7 +1448,7 @@ void ZEngineInit() {
 
     createBuffer(zmodel->vertexBuffer, sizeof(Vertex) * 4, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     map(zmodel->vertexBuffer);
-    writeBuffer(zmodel->vertexBuffer, (const void*)zmodel->vertices, (unsigned int)(sizeof(Vertex) * 4));
+    memcpy(zmodel->vertexBuffer->mapped, (const void*)zmodel->vertices, (unsigned int)(sizeof(Vertex) * 4));
     unmap(zmodel->vertexBuffer);
 
     if (uniformBuffer) { createBuffer(spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
