@@ -9,7 +9,7 @@
 #define ZENGINE_DEPTHMODE_FIRST - makes it so the first created sprites get layered on top of new ones
 #define ZENGINE_DEFAULT_TEXTURE "bird.png" - change the default texture from "e.png" to whatever you want
 
-#define ZENGINE_DEBUG - adds debug printing for debugging
+#define -DZENGINE_DEBUG - adds debug printing for debugging. THIS IS A COMPILER FLAG
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
 #define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 #define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
