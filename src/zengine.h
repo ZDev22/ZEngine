@@ -40,8 +40,6 @@
     #define ZENGINE_MAX_TEXTURES 25
 #endif
 
-#define SIZEOF_SPRITE_DATA 48 /* the bytes of the Sprite struct sent to the gpu, stays constant */
-
 /* debugging */
 #define ZENGINE_PRINT(x, ...)
 #define ZENGINE_THROW(x) (x)
@@ -126,7 +124,6 @@ typedef struct Buffer {
 typedef struct Model {
     Buffer* vertexBuffer;
     Vertex* vertices;
-    unsigned int verticySize;
 } Model;
 
 typedef struct __attribute__((aligned(16))) Sprite {
@@ -138,10 +135,6 @@ typedef struct __attribute__((aligned(16))) Sprite {
     unsigned int textureIndex;
     float rotation;
     float padding;
-
-    /* CPU-side only */
-    Model* model;
-    unsigned char* data;
 } Sprite;
 
 typedef struct Camera {
@@ -181,7 +174,7 @@ extern double deltaTime;
 extern struct Texture* spriteTextures;
 extern struct Sprite* sprites;
 extern unsigned int spritesSize;
-extern struct Model* squareModel;
+extern struct Model* zmodel;
 extern ZENGINE_AUDIO;
 extern Camera camera;
 extern _Bool framebufferResized;
@@ -196,18 +189,11 @@ void ZEngineRender();
 void ZEngineDeinit();
 
 /* sprite funcs */
-void createSprite(Model* model, unsigned int textureIndex, float positionx, float positiony, float scalex, float scaley, float rotation);
-Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation);
+void createSprite(float positionx, float positiony, float scalex, float scaley, float rotation, unsigned int textureIndex);
+Sprite* createSpritePtr(float posx, float posy, float scalex, float scaley, float rotation, unsigned int textureIndex);
 void deleteSpritePtr(Sprite* sprite);
 void deleteSprite(unsigned int sprite);
 void setRotationMatrix(Sprite* sprite);
-
-/* texture funcs*/
-void updateTexture(unsigned int index, Texture* texture);
-
-/* model funcs*/
-const Vertex* getVertices(const Model* model);
-unsigned int getVerticySize(const Model* model);
 
 /* engine funcs */
 void createCommandBuffers();
@@ -227,22 +213,21 @@ void createImageBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryProp
 VkVertexInputBindingDescription getBindingDescription();
 VkVertexInputAttributeDescription* getAttributeDescriptions();
 
-void createModel(Model* model, float* positions, const unsigned int verticySize);
-void deleteModel(Model* model);
-void bindModel(Model* model, VkCommandBuffer commandBuffer);
-void drawModel(Model* model, VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance);
-
+/* swapchain funcs */
 void createSwapChain();
 void deleteSwapChain();
 VkResult acquireNextImage(unsigned int* imageIndex);
 void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex);
 
+/* texture funcs*/
+void updateTexture(unsigned int index, Texture* texture);
 void createTextureSampler(Texture* texture);
 void createTexture(Texture* texture, const char* filepath, float opacity);
 void createTextureFromData(Texture* texture, const unsigned char* pixelData, const unsigned short width, const unsigned short height);
 void deleteTexture(Texture* texture);
 void transitionImageLayout(Texture* texture, VkImageLayout oldLayout, VkImageLayout newLayout);
 
+/* buffer funcs */
 void createBuffer(Buffer* buffer, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
 
 #ifdef ZENGINE_IMPLEMENTATION
@@ -291,7 +276,7 @@ VkPipeline graphicsPipeline;
 VkPipelineLayout pipelineLayout;
 VkDescriptorSetLayout descriptorSetLayout;
 VkDescriptorPool descriptorPool;
-struct Model* squareModel = NULL;
+struct Model* zmodel = NULL;
 
 /* rendersystem vars */
 VkDescriptorSet spriteDataDescriptorSet;
@@ -1018,45 +1003,6 @@ void createImageWithInfo(const VkImageCreateInfo* imageInfo, VkMemoryPropertyFla
 }
 
 /* ZENGINE HELPER FUNCTIONS */
-void createModel(Model* model, float* positions, const unsigned int verticySize) { /* verticies are X and Y positions, verticy size is the size of the array / 2 */
-    /* INIT YOUR MODEL:
-        model = (Model*)malloc(sizeof(Model));
-    */
-
-    model->vertexBuffer = (Buffer*)calloc(1, sizeof(Buffer));
-    model->vertices = (Vertex*)calloc(1, verticySize * sizeof(Vertex));
-    model->verticySize = verticySize;
-
-    unsigned int index = 0;
-    for (unsigned int i = 0; i < verticySize; ++i) {
-        Vertex v;
-        index = i << 1; /* << 1 is * 2 lol*/
-        v.pos[0] = positions[index];
-        v.pos[1] = positions[index + 1];
-        v.cord[0] = positions[index] + 0.5f;
-        v.cord[1] = positions[index + 1] + 0.5f;
-        model->vertices[i] = v;
-    }
-
-    createBuffer(model->vertexBuffer, sizeof(Vertex) * verticySize, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    map(model->vertexBuffer);
-    writeBuffer(model->vertexBuffer, (const void*)model->vertices, (unsigned int)(sizeof(Vertex) * verticySize));
-    unmap(model->vertexBuffer);
-}
-
-void deleteModel(Model* model) {
-    free(model->vertices);
-}
-
-void bindModel(Model* model, VkCommandBuffer commandBuffer) {
-    static VkBuffer buffers[1] = {0};
-    buffers[0] = model->vertexBuffer->buffer;
-    static VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-}
-
-void drawModel(Model* model, VkCommandBuffer commandBuffer, unsigned int instanceCount, unsigned int firstInstance) { vkCmdDraw(commandBuffer, (unsigned int)model->verticySize, instanceCount, 0, firstInstance); }
-
 void createCommandBuffers() {
     oldImageCount = imageCount;
     commandBuffers = (VkCommandBuffer*)malloc(imageCount * sizeof(VkCommandBuffer));
@@ -1106,7 +1052,7 @@ VkShaderModule createShaderModule(const char* filepath) {
     return shaderModule;
 }
 
-void createSprite(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
+void createSprite(float posx, float posy, float scalex, float scaley, float rotation, unsigned int textureIndex) {
     if (spritesSize >= ZENGINE_MAX_SPRITES) { return; }
 
     sprites[spritesSize].position[0] = posx;
@@ -1120,15 +1066,12 @@ void createSprite(Model* model, unsigned int textureIndex, float posx, float pos
 #else
     sprites[spritesSize].depth = .999f - ((float)spritesSize * 0.00001f);
 #endif
-    sprites[spritesSize].model = model;
-    sprites[spritesSize].data = NULL;
-
     spritesSize++;
 }
 
-Sprite* createSpritePtr(Model* model, unsigned int textureIndex, float posx, float posy, float scalex, float scaley, float rotation) {
+Sprite* createSpritePtr(float posx, float posy, float scalex, float scaley, float rotation, unsigned int textureIndex) {
     if (spritesSize >= ZENGINE_MAX_SPRITES) { return NULL; }
-    createSprite(model, textureIndex, posx, posy, scalex, scaley, rotation);
+    createSprite(posx, posy, scalex, scaley, rotation, textureIndex);
     return &sprites[spritesSize - 1];
 }
 
@@ -1139,7 +1082,6 @@ void deleteSpritePtr(Sprite* sprite) {
 void deleteSprite(unsigned int sprite) {
     spritesSize--;
     sprites[sprite] = sprites[spritesSize];
-    sprites[spritesSize].data = NULL;
     for (unsigned int i = sprite; i < spritesSize - 1; i++) {
 #ifdef ZENGINE_DEPTHMODE_FIRST
         sprites[i].depth -= 1 / ZENGINE_MAX_SPRITES;
@@ -1410,7 +1352,10 @@ void ZEngineInit() {
     layoutInfo.pBindings = layoutBindings;
     ZENGINE_THROW(vkCreateDescriptorSetLayout(device_, &layoutInfo, NULL, &descriptorSetLayout));
 
-    VkDescriptorPoolSize poolSizes[2] = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZENGINE_MAX_TEXTURES * (ZENGINE_MAX_TEXTURES + 1)}};
+    VkDescriptorPoolSize poolSizes[2] = {
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ZENGINE_MAX_TEXTURES * (ZENGINE_MAX_TEXTURES + 1)}
+    };
 
     VkDescriptorPoolCreateInfo descriptorPoolInfo = {0};
     descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -1473,13 +1418,14 @@ void ZEngineInit() {
 
     ZENGINE_PRINT("Initing sprites...\n");
     sprites = (Sprite*)malloc(ZENGINE_MAX_SPRITES * sizeof(Sprite));
-    spriteData = (char*)malloc(SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES);
+    spriteData = (char*)malloc(sizeof(Sprite) * ZENGINE_MAX_SPRITES);
     spriteDataBuffer = (Buffer*)calloc(1, sizeof(Buffer));
 
     camera.zoom[0]     = 1.f; camera.zoom[1]     = 1.f;
     camera.position[0] = 0.f; camera.position[1] = 0.f;
     camera.aspect      = (float)windowExtent.width / (float)windowExtent.height;
 
+    /* load zmodel */
     float positions[8] = {
         -.5f, -.5f, // Bottom left
         .5f, -.5f, // Bottom right
@@ -1487,11 +1433,28 @@ void ZEngineInit() {
         .5f, .5f, // Top left
     };
 
-    squareModel = (Model*)malloc(sizeof(Model));
-    createModel(squareModel, positions, 4);
+    zmodel = (Model*)malloc(sizeof(Model));
+    zmodel->vertexBuffer = (Buffer*)calloc(1, sizeof(Buffer));
+    zmodel->vertices = (Vertex*)calloc(1, 4 * sizeof(Vertex));
 
-    if (uniformBuffer) { createBuffer(spriteDataBuffer, SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
-    else { createBuffer(spriteDataBuffer, SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
+    unsigned int index = 0;
+    for (unsigned int i = 0; i < 4; ++i) {
+        Vertex v;
+        index = i << 1; /* << 1 is * 2 lol*/
+        v.pos[0] = positions[index];
+        v.pos[1] = positions[index + 1];
+        v.cord[0] = positions[index] + 0.5f;
+        v.cord[1] = positions[index + 1] + 0.5f;
+        zmodel->vertices[i] = v;
+    }
+
+    createBuffer(zmodel->vertexBuffer, sizeof(Vertex) * 4, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    map(zmodel->vertexBuffer);
+    writeBuffer(zmodel->vertexBuffer, (const void*)zmodel->vertices, (unsigned int)(sizeof(Vertex) * 4));
+    unmap(zmodel->vertexBuffer);
+
+    if (uniformBuffer) { createBuffer(spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
+    else { createBuffer(spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
 
     map(spriteDataBuffer);
 
@@ -1510,7 +1473,7 @@ void ZEngineInit() {
     VkDescriptorBufferInfo bufferInfo = {0};
     bufferInfo.buffer = spriteDataBuffer->buffer;
     bufferInfo.offset = 0;
-    bufferInfo.range = SIZEOF_SPRITE_DATA * ZENGINE_MAX_SPRITES;
+    bufferInfo.range = sizeof(Sprite) * ZENGINE_MAX_SPRITES;
 
     ZENGINE_PRINT("Writing sprite descriptor sets...\n");
     VkWriteDescriptorSet bufferWrite = {0};
@@ -1597,20 +1560,22 @@ void ZEngineRender() {
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
     if (ZEngineSpriteRemap) {
 #endif
-        for (unsigned int i = 0; i < spritesSize; i++) {
 #ifndef ZENGINE_SPRITE_MATRIXMODE_MANUAL
+        for (unsigned int i = 0; i < spritesSize; i++) {
             setRotationMatrix(&sprites[i]);
-#endif
-            memcpy(spriteData + i * SIZEOF_SPRITE_DATA, &sprites[i], SIZEOF_SPRITE_DATA);
         }
-        memcpy(spriteDataBuffer->mapped, spriteData, SIZEOF_SPRITE_DATA * spritesSize);
+#endif
+        memcpy(spriteDataBuffer->mapped, sprites, sizeof(Sprite) * spritesSize);
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
         ZEngineSpriteRemap = 0;
     }
 #endif
 
-    bindModel(squareModel, commandBuffer);
-    drawModel(squareModel, commandBuffer, spritesSize, 0);
+    static VkBuffer buffers[1] = {0};
+    buffers[0] = zmodel->vertexBuffer->buffer;
+    static VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+    vkCmdDraw(commandBuffer, 4, spritesSize, 0, 0);
 
     /* end frame */
     vkCmdEndRenderPass(commandBuffer);
@@ -1634,7 +1599,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Unmaping sprite data buffer\n"); unmap(spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite data buffer\n"); deleteBuffer(spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite gpu buffer\n"); free(spriteData);
-    ZENGINE_PRINT("Freeing models\n"); deleteModel(squareModel);
+    ZENGINE_PRINT("Freeing models\n"); free(zmodel->vertices);
     ZENGINE_PRINT("Freeing sprites\n"); free(sprites);
     ZENGINE_PRINT("Freeing swapchain\n"); deleteSwapChain();
 

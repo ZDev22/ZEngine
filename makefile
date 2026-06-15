@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -march=westmere -O3 -Wall -Wextra -Wno-maybe-uninitialized -std=c99 -flto
 LDFLAGS = -lm
 
-BIN := build/main
+BIN := bin/main
 
 UNAME_S := $(shell uname -s)
 
@@ -19,13 +19,13 @@ endif
 MAKEFLAGS += -j$(shell nproc)
 
 SRC := $(shell find . -name '*.c')
-OBJ := $(patsubst %.c,build/obj/%.o,$(SRC))
+OBJ := $(patsubst %.c,bin/obj/%.o,$(SRC))
 
 VERT_SHADERS := $(wildcard src/shaders/*.vert)
 FRAG_SHADERS := $(wildcard src/shaders/*.frag)
 
-VERT_SPV := $(patsubst src/shaders/%.vert,build/shaders/%.vert.spv,$(VERT_SHADERS))
-FRAG_SPV := $(patsubst src/shaders/%.frag,build/shaders/%.frag.spv,$(FRAG_SHADERS))
+VERT_SPV := $(patsubst src/shaders/%.vert,bin/shaders/%.vert.spv,$(VERT_SHADERS))
+FRAG_SPV := $(patsubst src/shaders/%.frag,bin/shaders/%.frag.spv,$(FRAG_SHADERS))
 
 SPV_FILES := $(VERT_SPV) $(FRAG_SPV)
 
@@ -34,21 +34,21 @@ all: $(BIN) $(SPV_FILES) copyAssets
 
 
 $(BIN): $(OBJ)
-	@mkdir -p build
+	@mkdir -p bin
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-build/obj/%.o: %.c
+bin/obj/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-build/shaders/%.vert.spv: src/shaders/%.vert
-	@mkdir -p build/shaders
+bin/shaders/%.vert.spv: src/shaders/%.vert
+	@mkdir -p bin/shaders
 	glslc -O --target-env=vulkan1.2 $< -o $@
-build/shaders/%.frag.spv: src/shaders/%.frag
-	@mkdir -p build/shaders
+bin/shaders/%.frag.spv: src/shaders/%.frag
+	@mkdir -p bin/shaders
 	glslc -O --target-env=vulkan1.2 $< -o $@
 
 copyAssets:
-	@mkdir -p build/assets
-	cp -r src/assets/. build/assets/
+	@mkdir -p bin/assets
+	cp -r src/assets/. bin/assets/
 
