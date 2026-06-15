@@ -1435,16 +1435,22 @@ void ZEngineInit() {
     zmodel->vertexBuffer = (Buffer*)calloc(1, sizeof(Buffer));
     zmodel->vertices = (Vertex*)calloc(1, 4 * sizeof(Vertex));
 
-    unsigned int index = 0;
-    for (unsigned int i = 0; i < 4; ++i) {
-        Vertex v;
-        index = i << 1; /* << 1 is * 2 lol*/
-        v.pos[0] = positions[index];
-        v.pos[1] = positions[index + 1];
-        v.cord[0] = positions[index] + 0.5f;
-        v.cord[1] = positions[index + 1] + 0.5f;
-        zmodel->vertices[i] = v;
-    }
+    zmodel->vertices[0].pos[0] = -.5f;
+    zmodel->vertices[0].pos[1] = -.5f;
+    zmodel->vertices[0].cord[0] = 0.f;
+    zmodel->vertices[0].cord[1] = 0.f;
+    zmodel->vertices[1].pos[0] = .5f;
+    zmodel->vertices[1].pos[1] = -.5f;
+    zmodel->vertices[1].cord[0] = 1.f;
+    zmodel->vertices[1].cord[1] = 0.f;
+    zmodel->vertices[2].pos[0] = -.5f;
+    zmodel->vertices[2].pos[1] = .5f;
+    zmodel->vertices[2].cord[0] = 0.f;
+    zmodel->vertices[2].cord[1] = 1.f;
+    zmodel->vertices[3].pos[0] = .5f;
+    zmodel->vertices[3].pos[1] = .5f;
+    zmodel->vertices[3].cord[0] = 1.f;
+    zmodel->vertices[3].cord[1] = 1.f;
 
     createBuffer(zmodel->vertexBuffer, sizeof(Vertex) * 4, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     map(zmodel->vertexBuffer);
@@ -1569,7 +1575,7 @@ void ZEngineRender() {
     }
 #endif
 
-    static VkBuffer buffers[1] = {0};
+    static VkBuffer buffers[1];
     buffers[0] = zmodel->vertexBuffer->buffer;
     static VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
