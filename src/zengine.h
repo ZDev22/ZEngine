@@ -7,7 +7,7 @@
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 #define ZENGINE_SPRITE_MATRIXMODE_MANUAL - manually call sprites[0].setRotationMatrix() for every sprite you need
 #define ZENGINE_DEPTHMODE_FIRST - makes it so the first created sprites get layered on top of new ones
-#define ZENGINE_DEFAULT_TEXTURE "bird.png" - change the default texture from "e.png" to whatever you want
+#define ZENGINE_DEFAULT_TEXTURE "assets/images/bird.png" - change the default texture from "e.png" to whatever you want
 
 #define -DZENGINE_DEBUG - adds debug printing for debugging. THIS IS A COMPILER FLAG
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
@@ -54,7 +54,7 @@
 #endif
 
 #ifndef ZENGINE_DEFAULT_TEXTURE
-    #define ZENGINE_DEFAULT_TEXTURE "e.png"
+    #define ZENGINE_DEFAULT_TEXTURE "assets/images/e.png"
 #endif
 
 #endif // ZENGINE_IMPLEMENTATION
@@ -617,13 +617,13 @@ void updateTexture(unsigned int index, Texture* texture) {
 
 void createTexture(Texture* texture, const char* filepath, float opacity) {
     int width = 0; int height = 0;
-    char name[64];
-    snprintf(name, 64, "assets/images/%s", filepath);
-    stbi_uc* pixels = stbi_load(name, &width, &height, &texture->channels, STBI_rgb_alpha);
-    for (unsigned int i = 3; i < width * height * 4; i += 4) { pixels[i] *= opacity; }
+    stbi_uc* pixels = stbi_load(filepath, &width, &height, &texture->channels, STBI_rgb_alpha);
+
+    if (opacity != 1.f) {
+        for (unsigned int i = 3; i < width * height * 4; i += 4) { pixels[i] *= opacity; }
+    }
 
     VkDeviceSize imageSize = width * height * 4;
-
     createImageBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &texture->buffer, &texture->bufferMemory);
 
     void* data;
@@ -1407,11 +1407,15 @@ void ZEngineInit() {
     ZENGINE_PRINT("Initing textures...\n");
     spriteTextures = (Texture*)calloc(1, ZENGINE_MAX_TEXTURES * sizeof(Texture));
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES] = {0};
-    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) {
-        createTexture(&spriteTextures[i], ZENGINE_DEFAULT_TEXTURE, 1.f);
-        imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfos[i].imageView = spriteTextures[i].view;
-        imageInfos[i].sampler = spriteTextures[i].sampler;
+
+    createTexture(&spriteTextures[0], ZENGINE_DEFAULT_TEXTURE, 1.f);
+    imageInfos[0].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfos[0].imageView = spriteTextures[0].view;
+    imageInfos[0].sampler = spriteTextures[0].sampler;
+
+    for (unsigned int i = 1; i < ZENGINE_MAX_TEXTURES; i++) {
+        spriteTextures[i] = spriteTextures[0];
+        imageInfos[i] = imageInfos[0];
     }
 
     ZENGINE_PRINT("Initing sprites...\n");
@@ -1424,13 +1428,6 @@ void ZEngineInit() {
     camera.aspect      = (float)windowExtent.width / (float)windowExtent.height;
 
     /* load zmodel */
-    float positions[8] = {
-        -.5f, -.5f, // Bottom left
-        .5f, -.5f, // Bottom right
-        -.5f, .5f, // Top right
-        .5f, .5f, // Top left
-    };
-
     zmodel = (Model*)malloc(sizeof(Model));
     zmodel->vertexBuffer = (Buffer*)calloc(1, sizeof(Buffer));
     zmodel->vertices = (Vertex*)calloc(1, 4 * sizeof(Vertex));
@@ -1598,8 +1595,7 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Freeing pipeline layout\n");   vkDestroyPipelineLayout(device_, pipelineLayout, NULL);
     ZENGINE_PRINT("Freeing discriptor pool\n");   vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
 
-    ZENGINE_PRINT("Freeing textures\n"); for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { deleteTexture(&spriteTextures[i]); }
-    free(spriteTextures);
+    ZENGINE_PRINT("Freeing textures\n"); free(spriteTextures);
     ZENGINE_PRINT("Unmaping sprite data buffer\n"); unmap(spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite data buffer\n"); deleteBuffer(spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite gpu buffer\n"); free(spriteData);

@@ -20,9 +20,9 @@ void initGame() {
     loadFont("assets/fonts/Bullpen3D.ttf");
 
     Texture texture;
-    createTexture(&texture, "flappyBird.png", .5f);
+    createTexture(&texture, "assets/images/flappyBird.png", .5f);
     updateTexture(0, &texture);
-    createTexture(&texture, "pipe.png", 1.f);
+    createTexture(&texture, "assets/images/pipe.png", 1.f);
     updateTexture(1, &texture);
 
     createSprite(-.7f, 0.f, .1f, .1f, 0.f, 0);
