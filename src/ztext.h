@@ -16,7 +16,7 @@ HOW TO USE:
 #include "zengine.h"
 
 void loadFont(const char* font);
-Texture* createTextPtr(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h);
+Texture* createTextPtr(const char* word, unsigned char index, const unsigned int l_h, const size_t b_w, const size_t b_h);
 Texture* createText(const char* word, unsigned char index, const unsigned int l_h);
 
 #ifdef ZTEXT_IMPLEMENTATION
@@ -51,7 +51,7 @@ void loadFont(const char* font) {
 }
 
 /* thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation! */
-Texture* createTextPtr(const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h) {
+Texture* createTextPtr(const char* word, unsigned char index, const unsigned int l_h, const size_t b_w, const size_t b_h) {
     unsigned char* bitmap = (unsigned char*)calloc(1, b_w * b_h);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);

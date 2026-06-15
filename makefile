@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99
-#CFLAGS = -Og -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address
+#CFLAGS = -Og -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG
 LDFLAGS = -lm
 
 BIN := bin/main

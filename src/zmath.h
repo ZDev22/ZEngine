@@ -228,7 +228,7 @@ const char* findFactor(signed char add, signed char multiply) {
         return "none";
     }
     else {
-        for (signed char i = add; i <= -add * 3; i++) {
+        for (signed char i = add; i <= (signed char)(-add * 3); i++) {
             x = i;
             y = add - i;
             if (x + y == add && x * y == multiply) { goto factor; }

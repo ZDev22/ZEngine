@@ -376,7 +376,7 @@ void createSwapChain() {
     ZENGINE_PRINT("  - Creating image views\n");
     swapChainImageViews = (VkImageView*)malloc(imageCount * sizeof(VkImageView));
 
-    for (unsigned char i = 0; i < imageCount; i++) {
+    for (unsigned char i = 0; i < (unsigned char)imageCount; i++) {
         VkImageViewCreateInfo viewInfo = {0};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         viewInfo.image = swapChainImages[i];
@@ -452,7 +452,7 @@ void createSwapChain() {
     depthImageMemorys = (VkDeviceMemory*)malloc(imageCount * sizeof(VkDeviceMemory));
     depthImageViews = (VkImageView*)malloc(imageCount * sizeof(VkImageView));
 
-    for (unsigned char i = 0; i < imageCount; i++) {
+    for (unsigned char i = 0; i < (unsigned char)imageCount; i++) {
         VkImageCreateInfo imageInfo = {0};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -487,7 +487,7 @@ void createSwapChain() {
     imagesInFlight = (VkFence*)malloc(imageCount * sizeof(VkFence));
     swapChainFramebuffers = (VkFramebuffer*)malloc(imageCount * sizeof(VkFramebuffer));
 
-    for (unsigned char i = 0; i < imageCount; i++) {
+    for (unsigned char i = 0; i < (unsigned char)imageCount; i++) {
         imagesInFlight[i] = VK_NULL_HANDLE;
         const VkImageView attachments[2] = { swapChainImageViews[i], depthImageViews[i]};
 
@@ -517,7 +517,7 @@ void createSwapChain() {
 }
 
 void deleteSwapChain() {
-    for (unsigned char i = 0; i < imageCount; i++) {
+    for (unsigned char i = 0; i < (unsigned char)imageCount; i++) {
         vkDestroyFramebuffer(device_, swapChainFramebuffers[i], NULL);
         vkDestroyImageView(device_, depthImageViews[i], NULL);
         vkDestroyImage(device_, depthImages[i], NULL);
@@ -1159,7 +1159,7 @@ void ZEngineInit() {
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
 
     short highScore = 0;
-    for (unsigned char i = 0; i < deviceCount; ++i) {
+    for (unsigned char i = 0; i < (unsigned char)deviceCount; ++i) {
         /* check if device is suitable, and score it */
         unsigned short newScore = 0;
         QueueFamilyIndices indices = findQueueFamilies(devices[i]);
@@ -1175,7 +1175,7 @@ void ZEngineInit() {
         querySwapChainSupport(&swapChainSupport, devices[i]);
         swapChainAdequate = !swapChainSupport.formatsSize == 0 && !swapChainSupport.presentModeSize == 0;
         ZENGINE_PRINT("SwapChain formats: %u, presentmodes: %u\n", swapChainSupport.formatsSize, swapChainSupport.presentModeSize);
-        for (unsigned char i = 0; i < swapChainSupport.presentModeSize; i++) {
+        for (unsigned char i = 0; i < (unsigned char)swapChainSupport.presentModeSize; i++) {
             if (swapChainSupport.presentModes[i] == 0) { ZENGINE_PRINT("    - GPU supports VSync\n"); }
             else if (swapChainSupport.presentModes[i] == 2) { ZENGINE_PRINT("    - GPU can disable VSync\n"); }
         }
