@@ -82,18 +82,23 @@ brew install molten-vk
 ```
 ## WINDOWS:
 - Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
-- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/)
-- Launch MSYS2 UCRT64 (the yellow one)
+- Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
+- Launch MSYS2 MSYS (the purple one)
 - Run the following commands to download a C compiler:
 ```bash
 pacman -Syu
-pacman -S gcc
-pacman -S make
-pacman -S mingw-w64-ucrt-x86_64-vulkan-headers
-pacman -S mingw-w64-ucrt-x86_64-vulkan-loader
-pacman -S mingw-w64-ucrt-x86_64-shaderc
+pacman -S base-devel mingw-w64-x86_64-toolchain
 ```
-- Make sure to compile through the MSYS2 UCRT64 terminal
+- Download ninja by running the following command in powershell:
+```bash
+winget install Ninja-build.Ninja
+```
+- Download VS from: [https://visualstudio.microsoft.com](https://visualstudio.microsoft.com)
+- Tick the C/C++ option when installing
+- In the windows search bar, look up "Edit environment variables"
+- Add C:\msys64\ucrt64\bin to your user (or system) PATH
+- Add C:\msys64\mingw64\bin to your user (or system) PATH
+- Restart your IDE (or terminal)
 
 # How do make your own games:
 - Duplicate flappybird.h as a good base for your game
@@ -109,13 +114,23 @@ pacman -S mingw-w64-ucrt-x86_64-shaderc
 [STB-TRUETYPE (font text rasterizer) {Modified}](https://github.com/nothings/stb)
 
 # Build:
+## Linux/MacOS:
 ```bash
 make
 ```
-
-# Run:
+## Windows:
 ```bash
-cd build
+cmake -G Ninja -B bin -S .
+cmake --build bin
+```
+# Run:
+## Linux/MacOS:
+```bash
+cd bin
 ./main
 ```
-
+## Windows:
+```bash
+cd bin
+.\main.exe
+```
