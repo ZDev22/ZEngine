@@ -25,7 +25,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include <time.h>
 #include <unistd.h>
 
-unsigned int fps = 0;
+unsigned short fps = 0;
 float appTimer = 0.f;
 struct timespec fpsTime;
 struct timespec fpsLastTime;
@@ -35,7 +35,7 @@ int main() {
     setenv("__GL_YIELD", "USLEEP", 1);
     setenv("MESA_NO_ERROR", "1", 1);
 
-    zwindow = RGFW_createWindow("loading...", 0, 0, 720, 480, (u64)0);
+    zwindow = RGFW_createWindow("...", 0, 0, 720, 480, (u64)0);
     ZEngineInit();
     initGame();
 
@@ -53,8 +53,8 @@ int main() {
         appTimer += deltaTime;
 
         if (appTimer > 1.f) {
-            char name[32];
-            snprintf(name, 32, "fps: %d", fps);
+            char name[6];
+            snprintf(name, 6, "%hu", fps);
             RGFW_window_setName(zwindow, name);
             appTimer = 0.f;
             fps = 0;
