@@ -73,7 +73,7 @@ void tickGame() {
             sprites[index + 1].position[0] = sprites[index].position[0];
             sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;
 
-            if (flappyBirdStarted && !flappyBirdDead && (zcollide_squareCollision(&sprites[index], bird) || zcollide_squareCollision(&sprites[index + 1], bird))) {
+            if (flappyBirdStarted && !flappyBirdDead && (zcollide_squareCollision(sprites[index].position[0], sprites[index].position[1], sprites[index].scale[0], sprites[index].scale[1], bird->position[0], bird->position[1], bird->scale[0], bird->scale[1]) || zcollide_squareCollision(sprites[index + 1].position[0], sprites[index + 1].position[1], sprites[index + 1].scale[0], sprites[index + 1].scale[1], bird->position[0], bird->position[1], bird->scale[0], bird->scale[1]))) {
                 flappyBirdDead = 1;
                 flappyBirdSpeedY = -1.5f;
                 bird->rotation = 60.f;
