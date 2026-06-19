@@ -618,12 +618,12 @@ void updateTexture(unsigned int index, Texture* texture) {
 void createTexture(Texture* texture, const char* filepath, float opacity) {
     int width = 0; int height = 0;
     stbi_uc* pixels = stbi_load(filepath, &width, &height, &texture->channels, STBI_rgb_alpha);
+    VkDeviceSize imageSize = width * height * 4;
 
     if (opacity != 1.f) {
-        for (unsigned int i = 3; i < width * height * 4; i += 4) { pixels[i] *= opacity; }
+        for (unsigned int i = 3; i < (unsigned int)(imageSize); i += 4) { pixels[i] *= opacity; }
     }
 
-    VkDeviceSize imageSize = width * height * 4;
     createImageBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &texture->buffer, &texture->bufferMemory);
 
     void* data;
