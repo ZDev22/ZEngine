@@ -93,8 +93,6 @@ pacman -S base-devel mingw-w64-x86_64-toolchain
 ```bash
 winget install Ninja-build.Ninja
 ```
-- Download VS from: [https://visualstudio.microsoft.com](https://visualstudio.microsoft.com)
-- Tick the C/C++ option when installing
 - In the windows search bar, look up "Edit environment variables"
 - Add C:\msys64\ucrt64\bin to your user (or system) PATH
 - Add C:\msys64\mingw64\bin to your user (or system) PATH

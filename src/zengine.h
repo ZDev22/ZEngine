@@ -621,7 +621,7 @@ void createTexture(Texture* texture, const char* filepath, float opacity) {
     VkDeviceSize imageSize = width * height * 4;
 
     if (opacity != 1.f) {
-        for (unsigned int i = 3; i < (unsigned int)(imageSize); i += 4) { pixels[i] *= opacity; }
+        for (unsigned int i = 3; i < (unsigned int)imageSize; i += 4) { pixels[i] *= opacity; }
     }
 
     createImageBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &texture->buffer, &texture->bufferMemory);
