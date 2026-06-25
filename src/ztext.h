@@ -27,6 +27,7 @@ void createText(const char* word, const size_t width, const size_t height, const
     #define ZTEXT_MAX_FONTS 1
 #endif
 
+#include "deps/stb_image.h"
 #include "deps/stb_truetype.h"
 #include "deps/stb_image_write.h"
 

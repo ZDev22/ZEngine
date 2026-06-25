@@ -31,10 +31,20 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 /* STB_IMAGE */
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ASSERT(x)
+/* disable a bunch of random image types (supported image types are png and jpg) */
+#define STBI_NO_GIF
+#define STBI_NO_HDR
+#define STBI_NO_BMP
+#define STBI_NO_PSD
+#define STBI_NO_TGA
+#define STBI_NO_PIC
+#define STBI_NO_PNM
 
 /* STB_IMAGE_WRITE */
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBIW_ASSERT(x)
+#define _CRT_SECURE_NO_WARNINGS
+#define STBTT_MAX_OVERSAMPLE 1
 
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION
