@@ -1087,7 +1087,7 @@ void ZEngineInit() {
     unsigned int deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
     if (deviceCount == 0) {
-        printf("No Vulkan-compatible GPUs found");
+        ZENGINE_PRINT("No Vulkan-compatible GPUs found!\nPlease install vulkan drivers: Intel: sudo pacman -S vulkan-intel || AMD: sudo pacman -S vulkan-radeon || If you are not on arch linux, please follow the guide in https://github.com/ZDev22/ZEngine/blob/main/README.md\n");
         exit(1);
     }
     else if (deviceCount == 1) { ZENGINE_PRINT("Found 1 GPU\n"); }
