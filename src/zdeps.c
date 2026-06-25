@@ -30,16 +30,21 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* STB_IMAGE */
 #define STB_IMAGE_IMPLEMENTATION
-#define STBI_ASSERT
+#define STBI_ASSERT(x)
+
+/* STB_IMAGE_WRITE */
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STBIW_ASSERT(x)
 
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION
-#define STBTT_ASSERT
+#define STBTT_ASSERT(x)
 
 /* DEPENDENCIES */
 #include "deps/RGFW.h"
 #include "deps/miniaudio.h"
 #include "deps/stb_image.h"
+#include "deps/stb_image_write.h"
 #include "deps/stb_truetype.h"
 
 #undef RGFW_IMPLEMENTATION
@@ -48,6 +53,7 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #undef ZMATH_IMPLEMENTATION
 #undef ZTEXT_IMPLEMENTATION
 #undef STB_IMAGE_IMPLEMENTATION
+#undef STB_IMAGE_WRITE_IMPLEMENTATION
 #undef STB_TRUETYPE_IMPLEMENTATION
 
 /* ZDEPS */

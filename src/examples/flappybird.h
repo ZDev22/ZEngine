@@ -2,6 +2,7 @@
 #define FLAPPYBIRD_H
 
 #include "../deps/miniaudio.h"
+#include "../deps/stb_image_write.h"
 
 #include "../zengine.h"
 #include "../zcollide.h"
@@ -16,14 +17,12 @@ int flappyBirdScore = 0;
 Sprite* bird;
 
 void initGame() {
+    stbi_write_png_compression_level = 0;
     sRandom();
-    loadFont("assets/fonts/Bullpen3D.ttf");
+    loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
-    Texture texture;
-    createTexture(&texture, "assets/images/flappyBird.png", .5f);
-    updateTexture(0, &texture);
-    createTexture(&texture, "assets/images/pipe.png", 1.f);
-    updateTexture(1, &texture);
+    createTexture("assets/images/flappyBird.png", .5f, 0);
+    createTexture("assets/images/pipe.png", 1.f, 1);
 
     createSprite(-.7f, 0.f, .1f, .1f, 0.f, 0);
     bird = &sprites[spritesSize - 1];
@@ -44,7 +43,7 @@ void tickGame() {
 
                 ma_engine_play_sound(&audio, "assets/sounds/chirp.mp3", NULL);
                 createSprite(0.f, 0.f, .5f, .2f, 0.f, 3);
-                updateTexture(3, createText("ZDev", 0, 128));
+                createText("ZDev", 150, 64, 64, 0, 3);
                 camera.zoom[0] -= .007f;
                 camera.zoom[1] -= .007f;
             }
@@ -52,7 +51,7 @@ void tickGame() {
             if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
                 flappyBirdDead = 1;
                 ma_engine_play_sound(&audio, "assets/sounds/hit.mp3", NULL);
-                updateTexture(3, createText("Something", 0, 128));
+                createText("Something", 128, 64, 64, 0, 3);
             }
         }
         else if (bird->position[1] > 2.5f) {

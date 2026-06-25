@@ -132,3 +132,9 @@ cd bin
 cd bin
 .\main.exe
 ```
+
+# Notes:
+- RGFW.h and stb_write.h are required dependencies
+- miniaudio.h is required unless the #define ZENGINE_DISABLE_AUDIO and remove it out of zdeps.c
+- stb_image_write.h is required if you are using ztext.h and remove it out of zdeps.c
+- stb_truetype.h is required if you are using ztext.h and remove it out of zdeps.c
