@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -ffast-math
 #CFLAGS = -O0 -g -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG
-LDFLAGS = -lm
+LDFLAGS = -lm -lpulse
 
 BIN := bin/main
 

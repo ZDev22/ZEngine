@@ -11,6 +11,9 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* MINIAUDIO */
 #define MINIAUDIO_IMPLEMENTATION
+#define MA_NO_RUNTIME_LINKING
+#define MA_64BIT
+/* disable decoders */
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
 #if defined(__linux__)
     #define MA_ENABLE_PULSEAUDIO
@@ -22,7 +25,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #else
     #define MA_NULL
 #endif
-/* disabled decoders */
 #define MA_NO_FLAC
 #define MA_NO_WAV
 #define MA_NO_VORBIS
