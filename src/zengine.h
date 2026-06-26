@@ -364,6 +364,8 @@ void createSwapChain() {
 #endif
     }
     createInfo.presentMode = presentMode;
+    free(swapChainSupport.formats);
+    free(swapChainSupport.presentModes);
 
     ZENGINE_THROW(vkCreateSwapchainKHR(device_, &createInfo, NULL, &swapChain));
     ZENGINE_THROW(vkGetSwapchainImagesKHR(device_, swapChain, &imageCount, NULL));
@@ -1129,6 +1131,8 @@ void ZEngineInit() {
             physicalDevice = devices[i];
             break;
         }
+        free(swapChainSupport.formats);
+        free(swapChainSupport.presentModes);
     }
 
     if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; ZENGINE_PRINT("Selected GPU is unsupported! Expect bugs!\n"); }
@@ -1147,11 +1151,11 @@ void ZEngineInit() {
     unsigned char queueFamilySize = 1;
     if (indices.presentFamily != indices.graphicsFamily) { queueFamilySize = 2; }
 
-    unsigned int* uniqueQueueFamilies = (unsigned int*)malloc(queueFamilySize * 4);
+    unsigned int uniqueQueueFamilies[queueFamilySize];
     uniqueQueueFamilies[0] = indices.graphicsFamily;
     if (queueFamilySize == 2) { uniqueQueueFamilies[1] = indices.presentFamily; }
 
-    VkDeviceQueueCreateInfo* queueCreateInfos = (VkDeviceQueueCreateInfo*)malloc(queueFamilySize * sizeof(VkDeviceQueueCreateInfo));
+    VkDeviceQueueCreateInfo queueCreateInfos[queueFamilySize];
 
     for (unsigned char i = 0; i < queueFamilySize; i++) {
         VkDeviceQueueCreateInfo queueCreateInfo = {0};
