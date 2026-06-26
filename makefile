@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -ffast-math
-#CFLAGS = -O0 -g -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG
+#CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -ffast-math -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
+CFLAGS = -O0 -g -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
 LDFLAGS = -lm -lpulse
 
 BIN := bin/main

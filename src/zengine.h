@@ -3,16 +3,17 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
 #define ZENGINE_DEPS_DEFINED - if your using zdeps.c define this (disables IMPLEMENTATION defines)
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
-#define -DZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it. THIS IS A COMPILER FLAG
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 #define ZENGINE_SPRITE_MATRIXMODE_MANUAL - manually call sprites[0].setRotationMatrix() for every sprite you need
 #define ZENGINE_DEPTHMODE_FIRST - makes it so the first created sprites get layered on top of new ones
 #define ZENGINE_DEFAULT_TEXTURE "assets/images/bird.png" - change the default texture from "e.png" to whatever you want
 
-#define -DZENGINE_DEBUG - adds debug printing for debugging. THIS IS A COMPILER FLAG
-#define ZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
-#define ZENGINE_MAX_SPRITES 100000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
-#define ZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
+COMPILER FLAGS:
+-DZENGINE_DEBUG - adds debug printing for debugging.
+-DZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
+-DZENGINE_MAX_SPRITES 10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
+-DZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
+-DZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
 */
 
 #ifndef ZENGINE_H
@@ -57,10 +58,7 @@
     #define ZENGINE_DEFAULT_TEXTURE "assets/images/e.png"
 #endif
 
-#endif // ZENGINE_IMPLEMENTATION
-
-/* dependencies */
-#if defined(ZENGINE_IMPLEMENTATION) && !defined(ZENGINE_DEPS_DEFINED)
+#if !defined(ZENGINE_DEPS_DEFINED)
     #define MINIAUDIO_IMPLEMENTATION
 
     #define RGFW_IMPLEMENTATION
@@ -69,6 +67,10 @@
     #define STB_IMAGE_IMPLEMENTATION
     #define STBI_ASSERT
 #endif
+
+#endif // ZENGINE_IMPLEMENTATION
+
+/* dependencies */
 #define RGFW_VULKAN
 #define RGFW_EXPORT
 
@@ -122,8 +124,8 @@ typedef struct Buffer {
 } Buffer;
 
 typedef struct Model {
-    Buffer* vertexBuffer;
-    Vertex* vertices;
+    Buffer vertexBuffer;
+    Vertex vertices[4];
 } Model;
 
 typedef struct __attribute__((aligned(16))) Sprite {
@@ -171,10 +173,10 @@ typedef struct Texture {
 
 /* extern vars */
 extern double deltaTime;
-extern struct Texture* spriteTextures;
-extern struct Sprite* sprites;
+extern struct Texture spriteTextures[ZENGINE_MAX_TEXTURES];
+extern struct Sprite sprites[ZENGINE_MAX_SPRITES];
 extern unsigned int spritesSize;
-extern struct Model* zmodel;
+extern struct Model zmodel;
 extern ZENGINE_AUDIO;
 extern Camera camera;
 extern _Bool framebufferResized;
@@ -240,7 +242,7 @@ _Bool ZEngineClose = 0; /* flag to show when the engine is closing */
 #endif
 
 /* texture vecs */
-struct Texture* spriteTextures = NULL;
+struct Texture spriteTextures[ZENGINE_MAX_TEXTURES];
 char* spriteData;
 
 /* window vars */
@@ -249,7 +251,7 @@ RGFW_window* zwindow = NULL;
 VkExtent2D windowExtent;
 
 /* sprite vars */
-struct Sprite* sprites = NULL;
+struct Sprite sprites[ZENGINE_MAX_SPRITES];
 unsigned int spritesSize = 0;
 
 /* device vars */
@@ -272,11 +274,11 @@ VkPipeline graphicsPipeline;
 VkPipelineLayout pipelineLayout;
 VkDescriptorSetLayout descriptorSetLayout;
 VkDescriptorPool descriptorPool;
-struct Model* zmodel = NULL;
+struct Model zmodel;
 
 /* rendersystem vars */
 VkDescriptorSet spriteDataDescriptorSet;
-struct Buffer* spriteDataBuffer = NULL;
+struct Buffer spriteDataBuffer;
 
 /* swapchain vars */
 VkSwapchainKHR swapChain;
@@ -1343,7 +1345,6 @@ void ZEngineInit() {
     ZENGINE_THROW(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, NULL, &pipelineLayout));
 
     ZENGINE_PRINT("Initing textures...\n");
-    spriteTextures = (Texture*)calloc(1, ZENGINE_MAX_TEXTURES * sizeof(Texture));
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES] = {0};
 
     VkDescriptorSetAllocateInfo allocInfo = {0};
@@ -1366,45 +1367,37 @@ void ZEngineInit() {
     spriteTextures[0].loaded = 1;
 
     ZENGINE_PRINT("Initing sprites...\n");
-    sprites = (Sprite*)malloc(ZENGINE_MAX_SPRITES * sizeof(Sprite));
-    spriteData = (char*)malloc(sizeof(Sprite) * ZENGINE_MAX_SPRITES);
-    spriteDataBuffer = (Buffer*)calloc(1, sizeof(Buffer));
-
     camera.zoom[0]     = 1.f; camera.zoom[1]     = 1.f;
     camera.position[0] = 0.f; camera.position[1] = 0.f;
     camera.aspect      = (float)windowExtent.width / (float)windowExtent.height;
 
     /* load zmodel */
-    zmodel = (Model*)malloc(sizeof(Model));
-    zmodel->vertexBuffer = (Buffer*)calloc(1, sizeof(Buffer));
-    zmodel->vertices = (Vertex*)calloc(1, 4 * sizeof(Vertex));
+    zmodel.vertices[0].pos[0] = -.5f;
+    zmodel.vertices[0].pos[1] = -.5f;
+    zmodel.vertices[0].cord[0] = 0.f;
+    zmodel.vertices[0].cord[1] = 0.f;
+    zmodel.vertices[1].pos[0] = .5f;
+    zmodel.vertices[1].pos[1] = -.5f;
+    zmodel.vertices[1].cord[0] = 1.f;
+    zmodel.vertices[1].cord[1] = 0.f;
+    zmodel.vertices[2].pos[0] = -.5f;
+    zmodel.vertices[2].pos[1] = .5f;
+    zmodel.vertices[2].cord[0] = 0.f;
+    zmodel.vertices[2].cord[1] = 1.f;
+    zmodel.vertices[3].pos[0] = .5f;
+    zmodel.vertices[3].pos[1] = .5f;
+    zmodel.vertices[3].cord[0] = 1.f;
+    zmodel.vertices[3].cord[1] = 1.f;
 
-    zmodel->vertices[0].pos[0] = -.5f;
-    zmodel->vertices[0].pos[1] = -.5f;
-    zmodel->vertices[0].cord[0] = 0.f;
-    zmodel->vertices[0].cord[1] = 0.f;
-    zmodel->vertices[1].pos[0] = .5f;
-    zmodel->vertices[1].pos[1] = -.5f;
-    zmodel->vertices[1].cord[0] = 1.f;
-    zmodel->vertices[1].cord[1] = 0.f;
-    zmodel->vertices[2].pos[0] = -.5f;
-    zmodel->vertices[2].pos[1] = .5f;
-    zmodel->vertices[2].cord[0] = 0.f;
-    zmodel->vertices[2].cord[1] = 1.f;
-    zmodel->vertices[3].pos[0] = .5f;
-    zmodel->vertices[3].pos[1] = .5f;
-    zmodel->vertices[3].cord[0] = 1.f;
-    zmodel->vertices[3].cord[1] = 1.f;
+    createBuffer(&zmodel.vertexBuffer, sizeof(Vertex) * 4, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    map(&zmodel.vertexBuffer);
+    memcpy(zmodel.vertexBuffer.mapped, (const void*)zmodel.vertices, (unsigned int)(sizeof(Vertex) * 4));
+    unmap(&zmodel.vertexBuffer);
 
-    createBuffer(zmodel->vertexBuffer, sizeof(Vertex) * 4, 1, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    map(zmodel->vertexBuffer);
-    memcpy(zmodel->vertexBuffer->mapped, (const void*)zmodel->vertices, (unsigned int)(sizeof(Vertex) * 4));
-    unmap(zmodel->vertexBuffer);
+    if (uniformBuffer) { createBuffer(&spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
+    else { createBuffer(&spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
 
-    if (uniformBuffer) { createBuffer(spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
-    else { createBuffer(spriteDataBuffer, sizeof(Sprite) * ZENGINE_MAX_SPRITES, 1, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); }
-
-    map(spriteDataBuffer);
+    map(&spriteDataBuffer);
 
 #ifndef ZENGINE_DISABLE_AUDIO
     ma_engine_init(NULL, &audio); /* init audio */
@@ -1412,7 +1405,7 @@ void ZEngineInit() {
 
     /* allocate info */
     VkDescriptorBufferInfo bufferInfo = {0};
-    bufferInfo.buffer = spriteDataBuffer->buffer;
+    bufferInfo.buffer = spriteDataBuffer.buffer;
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(Sprite) * ZENGINE_MAX_SPRITES;
 
@@ -1506,14 +1499,14 @@ void ZEngineRender() {
             setRotationMatrix(&sprites[i]);
         }
 #endif
-        memcpy(spriteDataBuffer->mapped, sprites, sizeof(Sprite) * spritesSize);
+        memcpy(spriteDataBuffer.mapped, sprites, sizeof(Sprite) * spritesSize);
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
         ZEngineSpriteRemap = 0;
     }
 #endif
 
     static VkBuffer buffers[1];
-    buffers[0] = zmodel->vertexBuffer->buffer;
+    buffers[0] = zmodel.vertexBuffer.buffer;
     static VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
     vkCmdDraw(commandBuffer, 4, spritesSize, 0, 0);
@@ -1536,12 +1529,8 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Freeing discriptor pool\n");   vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
 
     ZENGINE_PRINT("Freeing textures\n"); for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { deleteTexture(i); }
-    free(spriteTextures);
-    ZENGINE_PRINT("Unmaping sprite data buffer\n"); unmap(spriteDataBuffer);
-    ZENGINE_PRINT("Freeing sprite data buffer\n"); deleteBuffer(spriteDataBuffer);
-    ZENGINE_PRINT("Freeing sprite gpu buffer\n"); free(spriteData);
-    ZENGINE_PRINT("Freeing models\n"); free(zmodel->vertices);
-    ZENGINE_PRINT("Freeing sprites\n"); free(sprites);
+    ZENGINE_PRINT("Unmaping sprite data buffer\n"); unmap(&spriteDataBuffer);
+    ZENGINE_PRINT("Freeing sprite data buffer\n"); deleteBuffer(&spriteDataBuffer);
     ZENGINE_PRINT("Freeing swapchain\n"); deleteSwapChain();
 
     ZENGINE_PRINT("Freeing descriptor set layout\n"); vkDestroyDescriptorSetLayout(device_, descriptorSetLayout, NULL);

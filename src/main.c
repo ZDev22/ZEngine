@@ -13,8 +13,6 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
 #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2
-#define ZENGINE_MAX_SPRITES 10000
-#define ZENGINE_MAX_TEXTURES 25
 #include "zengine.h"
 
 //#define FPS_CAP 180.f
