@@ -37,7 +37,8 @@ int main() {
     setenv("__GL_YIELD", "USLEEP", 1);
     setenv("MESA_NO_ERROR", "1", 1);
 
-    zwindow = RGFW_createWindow("...", 0, 0, 720, 480, (u64)0);
+    RGFW_init("zengine", 0);
+    zwindow = RGFW_createWindow("...", 0, 0, 720, 480, 0);
     ZEngineInit();
     initGame();
 
@@ -84,5 +85,6 @@ int main() {
     RGFW_window_close(zwindow);
     zwindow = NULL;
     ZEngineDeinit();
+    RGFW_deinit();
 }
 
