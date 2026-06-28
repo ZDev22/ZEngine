@@ -1056,11 +1056,10 @@ void ZEngineInit() {
 #ifdef __APPLE__
     const char* instanceExtensions[] = {
         VK_KHR_SURFACE_EXTENSION_NAME,
-        "VK_MVK_macos_surface",
-        VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+        "VK_MVK_macos_surface"
     };
 
-    instanceInfo.enabledExtensionCount = 3;
+    instanceInfo.enabledExtensionCount = 2;
     instanceInfo.ppEnabledExtensionNames = instanceExtensions;
     instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #else
@@ -1115,7 +1114,7 @@ void ZEngineInit() {
 
         SwapChainSupportDetails swapChainSupport;
         querySwapChainSupport(&swapChainSupport, devices[i]);
-        swapChainAdequate = !swapChainSupport.formatsSize == 0 && !swapChainSupport.presentModeSize == 0;
+        swapChainAdequate = !(swapChainSupport.formatsSize == 0) && !(swapChainSupport.presentModeSize == 0);
         ZENGINE_PRINT("SwapChain formats: %u, presentmodes: %u\n", swapChainSupport.formatsSize, swapChainSupport.presentModeSize);
         for (unsigned char i = 0; i < (unsigned char)swapChainSupport.presentModeSize; i++) {
             if (swapChainSupport.presentModes[i] == 0) { ZENGINE_PRINT("    - GPU supports VSync\n"); }

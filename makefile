@@ -1,19 +1,18 @@
 CC = gcc
 #CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -ffast-math -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
-CFLAGS = -O0 -g -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
-LDFLAGS = -lm -lpulse
+CFLAGS = -O0 -g -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_MAX_SPRITES=1000 -DZENGINE_MAX_TEXTURES=10
+LDFLAGS = -lm
 
 BIN := bin/main
 
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
-    LDFLAGS += -lX11 -lXrandr -lvulkan
+    LDFLAGS += -lX11 -lXrandr -lvulkan -lpulse
 else ifeq ($(UNAME_S),Darwin)
-	VULKANSDK ?= $(HOME)/VulkanSDK/current/macOS
-	export VK_ICD_FILENAMES := $(VULKANSDK)/share/vulkan/icd.d/MoltenVK_icd.json
+	VULKANSDK ?= $(shell ls -d $(HOME)/VulkanSDK/*/macOS)
 	CFLAGS += -I$(VULKANSDK)/include
-	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC
+	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC -framework CoreAudio -framework AudioToolbox
 endif
 
 MAKEFLAGS += -j$(shell nproc)

@@ -17,9 +17,9 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
 #if defined(__linux__)
     #define MA_ENABLE_PULSEAUDIO
-#elif defined(_APPLE_)
+#elif defined(__APPLE__)
     #define MA_ENABLE_COREAUDIO
-#elif defined(_WIN32_)
+#elif defined(_WIN32)
     #define MA_ENABLE_WINMM
     #define MA_ENABLE_WASAPI
 #else

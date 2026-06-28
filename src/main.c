@@ -16,6 +16,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "zengine.h"
 
 //#define FPS_CAP 180.f
+//#define TRACK_FPS
 
 /* games */
 #include "examples/flappybird.h"
@@ -23,10 +24,13 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include <time.h>
 #include <unistd.h>
 
-unsigned short fps = 0;
-float appTimer = 0.f;
-struct timespec fpsTime;
-struct timespec fpsLastTime;
+#ifdef TRACK_FPS
+    #include <stdio.h>
+    unsigned short fps = 0;
+    float appTimer = 0.f;
+    struct timespec fpsTime;
+    struct timespec fpsLastTime;
+#endif
 
 int main() {
     /* init engine */
@@ -37,13 +41,16 @@ int main() {
     ZEngineInit();
     initGame();
 
+#ifdef TRACK_FPS
     clock_gettime(CLOCK_MONOTONIC, &fpsLastTime);
+#endif
     while (!RGFW_window_shouldClose(zwindow)) {
         /* calculate fps */
         #ifdef FPS_CAP
             usleep((int)((1.0 / FPS_CAP) * 1000000.0));
         #endif
 
+#ifdef TRACK_FPS
         clock_gettime(CLOCK_MONOTONIC, &fpsTime);
         deltaTime = (double)(fpsTime.tv_sec - fpsLastTime.tv_sec) + (double)(fpsTime.tv_nsec - fpsLastTime.tv_nsec) / 1000000000.0;
         fpsLastTime.tv_nsec = fpsTime.tv_nsec;
@@ -58,6 +65,7 @@ int main() {
             fps = 0;
         }
         fps++;
+#endif
 
         /* poll window events */
         RGFW_event event;
