@@ -38,7 +38,7 @@ int main() {
     setenv("__GL_YIELD", "USLEEP", 1);
     setenv("MESA_NO_ERROR", "1", 1);
 
-    RGFW_init();
+    RGFW_init("z", RGFW_initVulkan);
     zwindow = RGFW_createWindow("...", 0, 0, 720, 480, 0);
     ZEngineInit();
     initGame();
