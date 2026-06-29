@@ -26,18 +26,19 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 #ifdef TRACK_FPS
     #include <stdio.h>
-    unsigned short fps = 0;
-    float appTimer = 0.f;
-    struct timespec fpsTime;
-    struct timespec fpsLastTime;
 #endif
+
+unsigned short fps = 0;
+float appTimer = 0.f;
+struct timespec fpsTime;
+struct timespec fpsLastTime;
 
 int main() {
     /* init engine */
     setenv("__GL_YIELD", "USLEEP", 1);
     setenv("MESA_NO_ERROR", "1", 1);
 
-    RGFW_init("zengine", 0);
+    RGFW_init();
     zwindow = RGFW_createWindow("...", 0, 0, 720, 480, 0);
     ZEngineInit();
     initGame();
@@ -51,13 +52,13 @@ int main() {
             usleep((int)((1.0 / FPS_CAP) * 1000000.0));
         #endif
 
-#ifdef TRACK_FPS
         clock_gettime(CLOCK_MONOTONIC, &fpsTime);
         deltaTime = (double)(fpsTime.tv_sec - fpsLastTime.tv_sec) + (double)(fpsTime.tv_nsec - fpsLastTime.tv_nsec) / 1000000000.0;
         fpsLastTime.tv_nsec = fpsTime.tv_nsec;
         fpsLastTime.tv_sec = fpsTime.tv_sec;
         appTimer += deltaTime;
 
+    #ifdef TRACK_FPS
         if (appTimer > 1.f) {
             char name[6];
             snprintf(name, 6, "%hu", fps);
