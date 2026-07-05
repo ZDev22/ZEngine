@@ -1139,8 +1139,8 @@ void ZEngineInit() {
 
     if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) {
 	    uniformBuffer = 1;
-	    ZENGINE_PRINT("Integrated graphics detected!\n");
     }
+    ZENGINE_PRINT("Selected GPU: %s\n", properties.deviceName);
 
     ZENGINE_PRINT("Creating logical device...\n"); //---------------------------------------------------------------------------------------------------------------
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
