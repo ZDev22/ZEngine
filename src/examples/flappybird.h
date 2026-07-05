@@ -21,8 +21,8 @@ void initGame() {
     sRandom();
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
-    createTexture("assets/images/flappyBird.png", .5f, 0);
-    createTexture("assets/images/pipe.png", 1.f, 1);
+    createTexture("assets/img/flappyBird.png", .5f, 0);
+    createTexture("assets/img/pipe.png", 1.f, 1);
 
     createSprite(-.7f, 0.f, .1f, .1f, 0.f, 0);
     bird = &sprites[spritesSize - 1];

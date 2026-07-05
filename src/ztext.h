@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation!
 
-v4.1.1
+v4.1.2
 
 ztext.h is a lightweight cross-platform single-header c font-text rasterizer built off stb_truetype
 it is recommended to set stbi_write_png_compression_level = 0
@@ -11,6 +11,7 @@ HOW TO USE:
 #define STB_IMAGE_WRITE_IMPLEMENTATION - define this in one c file
 #define ZTEXT_IMPLEMENTATION - define this in the same c file
 #define ZTEXT_MAX_FONTS 5 - define this to decide how many max fonts to load (max: 255)
+#define ZTEXT_OUTPUT_DIR "assets/img/text.png" - set the image output directory of the text to whatever you want
 */
 
 #ifndef ZTEXT_H
@@ -25,6 +26,9 @@ void createText(const char* word, const size_t width, const size_t height, const
 
 #ifndef ZTEXT_MAX_FONTS
     #define ZTEXT_MAX_FONTS 1
+#endif
+#ifndef ZTEXT_OUTPUT_DIR
+    #define ZTEXT_OUTPUT_DIR "assets/img/temptext.png"
 #endif
 
 #include "deps/stb_image.h"
@@ -79,8 +83,8 @@ void createText(const char* word, const size_t width, const size_t height, const
         x += (unsigned int)((float)ax * scale) + (int)((float)stbtt_GetCodepointKernAdvance(&fonts[fontIndex], word[i], word[i + 1]) * scale);
     }
 
-    stbi_write_png("assets/images/temp.png", width, height, 1, bitmap, width);
-    createTexture("assets/images/temp.png", 1.f, textureIndex);
+    stbi_write_png(ZTEXT_OUTPUT_DIR, width, height, 1, bitmap, width);
+    createTexture(ZTEXT_OUTPUT_DIR, 1.f, textureIndex);
     free(bitmap);
 }
 
