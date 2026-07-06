@@ -10,7 +10,6 @@
 
 COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
--DZENGINE_MAX_FRAMES_IN_FLIGHT 2 - max amount of frames being processed at once
 -DZENGINE_MAX_SPRITES 10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 -DZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
 -DZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
@@ -21,9 +20,6 @@ COMPILER FLAGS:
 
 #ifdef ZENGINE_IMPLEMENTATION
 /* define a few necissary macros if not already defined */
-#ifndef ZENGINE_MAX_FRAMES_IN_FLIGHT
-    #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2
-#endif
 #ifndef ZENGINE_MAX_SPRITES
     #define ZENGINE_MAX_SPRITES 100000
 #endif
@@ -204,12 +200,9 @@ VkShaderModule createShaderModule(const char* filepath);
 void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 void querySwapChainSupport(SwapChainSupportDetails* details, VkPhysicalDevice device);
-void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties);
 void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount);
-VkFormat findSupportedFormat(const VkFormat candidate1, const VkFormat candidate2, const VkFormat canditate3, VkImageTiling tiling, VkFormatFeatureFlags features);
 void createImageWithInfo(const VkImageCreateInfo* imageInfo, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory);
-void createImageBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
 
 /* struct funcs */
 VkVertexInputBindingDescription getBindingDescription();
@@ -242,7 +235,7 @@ _Bool ZEngineClose = 0; /* flag to show when the engine is closing */
 #endif
 
 /* texture vecs */
-struct Texture spriteTextures[ZENGINE_MAX_TEXTURES];
+struct Texture spriteTextures[ZENGINE_MAX_TEXTURES] = {0};
 char* spriteData;
 
 /* window vars */
@@ -251,7 +244,7 @@ RGFW_window* zwindow = NULL;
 VkExtent2D windowExtent;
 
 /* sprite vars */
-struct Sprite sprites[ZENGINE_MAX_SPRITES];
+struct Sprite sprites[ZENGINE_MAX_SPRITES] = {0};
 unsigned int spritesSize = 0;
 
 /* device vars */
@@ -284,7 +277,6 @@ struct Buffer spriteDataBuffer;
 VkSwapchainKHR swapChain;
 VkSwapchainKHR oldSwapChain;
 VkFormat swapChainImageFormat;
-VkFormat swapChainDepthFormat;
 VkRenderPass renderPass;
 VkFramebuffer* swapChainFramebuffers = NULL;
 VkImage* depthImages = NULL;
@@ -292,11 +284,10 @@ VkDeviceMemory* depthImageMemorys = NULL;
 VkImageView* depthImageViews = NULL;
 VkImage* swapChainImages = NULL;
 VkImageView* swapChainImageViews = NULL;
-VkSemaphore imageAvailableSemaphores[ZENGINE_MAX_FRAMES_IN_FLIGHT];
-VkSemaphore renderFinishedSemaphores[ZENGINE_MAX_FRAMES_IN_FLIGHT];
-VkFence inFlightFences[ZENGINE_MAX_FRAMES_IN_FLIGHT];
+VkSemaphore imageAvailableSemaphores;
+VkSemaphore renderFinishedSemaphores;
+VkFence inFlightFences;
 VkFence* imagesInFlight = NULL;
-unsigned int currentFrame;
 unsigned int imageCount;
 unsigned int oldImageCount;
 
@@ -306,13 +297,11 @@ void createSwapChain() {
     SwapChainSupportDetails swapChainSupport;
     querySwapChainSupport(&swapChainSupport, physicalDevice);
 
-    VkSurfaceFormatKHR surfaceFormat; {
-        surfaceFormat = swapChainSupport.formats[0];
-        for (unsigned int i = 0; i < swapChainSupport.formatsSize; i++) {
-            if (swapChainSupport.formats[i].format == VK_FORMAT_B8G8R8A8_SRGB && swapChainSupport.formats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                surfaceFormat = swapChainSupport.formats[i];
-                break;
-            }
+    VkSurfaceFormatKHR surfaceFormat = swapChainSupport.formats[0];
+    for (unsigned int i = 0; i < swapChainSupport.formatsSize; i++) {
+        if (swapChainSupport.formats[i].format == VK_FORMAT_B8G8R8A8_SRGB && swapChainSupport.formats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            surfaceFormat = swapChainSupport.formats[i];
+            break;
         }
     }
 
@@ -391,10 +380,8 @@ void createSwapChain() {
     }
 
     ZENGINE_PRINT("  - Creating renderpass\n");
-    swapChainDepthFormat = findSupportedFormat(VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-
     VkAttachmentDescription depthAttachment = {0};
-    depthAttachment.format = swapChainDepthFormat;
+    depthAttachment.format = VK_FORMAT_D32_SFLOAT;
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -461,7 +448,7 @@ void createSwapChain() {
         imageInfo.extent.depth = 1;
         imageInfo.mipLevels = 1;
         imageInfo.arrayLayers = 1;
-        imageInfo.format = swapChainDepthFormat;
+        imageInfo.format = VK_FORMAT_D32_SFLOAT;
         imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
         imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -474,7 +461,7 @@ void createSwapChain() {
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         viewInfo.image = depthImages[i];
         viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format = swapChainDepthFormat;
+        viewInfo.format = VK_FORMAT_D32_SFLOAT;
         viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
         viewInfo.subresourceRange.baseMipLevel = 0;
         viewInfo.subresourceRange.levelCount = 1;
@@ -509,11 +496,9 @@ void createSwapChain() {
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
-        vkCreateSemaphore(device_, &semaphoreInfo, NULL, &imageAvailableSemaphores[i]);
-        vkCreateSemaphore(device_, &semaphoreInfo, NULL, &renderFinishedSemaphores[i]);
-        vkCreateFence(device_, &fenceInfo, NULL, &inFlightFences[i]);
-    }
+    vkCreateSemaphore(device_, &semaphoreInfo, NULL, &imageAvailableSemaphores);
+    vkCreateSemaphore(device_, &semaphoreInfo, NULL, &renderFinishedSemaphores);
+    vkCreateFence(device_, &fenceInfo, NULL, &inFlightFences);
 }
 
 void deleteSwapChain() {
@@ -528,11 +513,9 @@ void deleteSwapChain() {
     vkDestroyRenderPass(device_, renderPass, NULL);
     if (!ZEngineClose) vkDestroySwapchainKHR(device_, swapChain, NULL);
 
-    for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroySemaphore(device_, imageAvailableSemaphores[i], NULL);
-        vkDestroySemaphore(device_, renderFinishedSemaphores[i], NULL);
-        vkDestroyFence(device_, inFlightFences[i], NULL);
-    }
+    vkDestroySemaphore(device_, imageAvailableSemaphores, NULL);
+    vkDestroySemaphore(device_, renderFinishedSemaphores, NULL);
+    vkDestroyFence(device_, inFlightFences, NULL);
 
     oldSwapChain = VK_NULL_HANDLE;
     free(swapChainImages);
@@ -544,15 +527,15 @@ void deleteSwapChain() {
     free(imagesInFlight);
 }
 
-VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, imageIndex); }
+VkResult acquireNextImage(unsigned int* imageIndex) { return vkAcquireNextImageKHR(device_, swapChain, 18446744073709551615ULL, imageAvailableSemaphores, VK_NULL_HANDLE, imageIndex); }
 
 void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageIndex) {
     if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) { vkWaitForFences(device_, 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX); }
-    imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+    imagesInFlight[*imageIndex] = inFlightFences;
 
-    const VkSemaphore waitSemaphores[1] = { imageAvailableSemaphores[currentFrame] };
+    const VkSemaphore waitSemaphores[1] = { imageAvailableSemaphores };
     const VkPipelineStageFlags waitStages[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    const VkSemaphore signalSemaphores[1] = { renderFinishedSemaphores[currentFrame] };
+    const VkSemaphore signalSemaphores[1] = { renderFinishedSemaphores };
 
     VkSubmitInfo submitInfo = {0};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -564,8 +547,8 @@ void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageInd
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    vkResetFences(device_, 1, &inFlightFences[currentFrame]);
-    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences[currentFrame]);
+    vkResetFences(device_, 1, &inFlightFences);
+    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences);
 
     VkPresentInfoKHR presentInfo = {0};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -575,7 +558,6 @@ void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageInd
     presentInfo.pSwapchains = &swapChain;
     presentInfo.pImageIndices = imageIndex;
 
-    currentFrame = (currentFrame + 1) % ZENGINE_MAX_FRAMES_IN_FLIGHT;
     vkQueuePresentKHR(presentQueue_, &presentInfo);
 }
 
@@ -600,7 +582,23 @@ void createTexture(const char* filepath, float opacity, unsigned int index) {
         for (unsigned int i = 3; i < (unsigned int)imageSize; i += 4) { pixels[i] *= opacity; }
     }
 
-    createImageBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &spriteTextures[index].buffer, &spriteTextures[index].bufferMemory);
+    VkBufferCreateInfo bufferInfo = {0};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = imageSize;
+    bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    vkCreateBuffer(device_, &bufferInfo, NULL, &spriteTextures[index].buffer);
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device_, spriteTextures[index].buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo = {0};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    vkAllocateMemory(device_, &allocInfo, NULL, &spriteTextures[index].bufferMemory);
+    vkBindBufferMemory(device_, spriteTextures[index].buffer, spriteTextures[index].bufferMemory, 0);
 
     void* data;
     vkMapMemory(device_, spriteTextures[index].bufferMemory, 0, imageSize, 0, &data);
@@ -797,25 +795,6 @@ void querySwapChainSupport(SwapChainSupportDetails* details, VkPhysicalDevice de
     }
 }
 
-VkFormat findSupportedFormat(const VkFormat candidate1, const VkFormat candidate2, const VkFormat candidate3, VkImageTiling tiling, VkFormatFeatureFlags features) {
-    VkFormatProperties props;
-    VkFormat format;
-    for (unsigned char i = 0; i < 3; i++) {
-        switch(i) {
-        case 0: format = candidate1; break;
-        case 1: format = candidate2; break;
-        case 2: format = candidate3; break;
-        default: break;
-        }
-
-        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
-        if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
-    }
-    printf("failed to find supported format");
-    exit(1);
-}
-
 VkVertexInputBindingDescription getBindingDescription() {
     VkVertexInputBindingDescription bindingDescription = {0};
     bindingDescription.binding = 0;
@@ -845,8 +824,7 @@ unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags prope
         if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }
     }
 
-    printf("failed to find suitable memory type\n");
-    exit(1);
+    return 0;
 }
 
 VkCommandBuffer beginSingleTimeCommands() {
@@ -878,36 +856,6 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(graphicsQueue_);
     vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
-}
-
-void createImageBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {
-    VkBufferCreateInfo bufferInfo = {0};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    vkCreateBuffer(device_, &bufferInfo, NULL, buffer);
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device_, *buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = {0};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-
-    vkAllocateMemory(device_, &allocInfo, NULL, bufferMemory);
-    vkBindBufferMemory(device_, *buffer, *bufferMemory, 0);
-}
-
-void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    VkBufferCopy copyRegion = {0};
-    copyRegion.srcOffset = 0;
-    copyRegion.dstOffset = 0;
-    copyRegion.size = size;
-    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-    endSingleTimeCommands(commandBuffer);
 }
 
 void copyBufferToImage(VkBuffer buffer, VkImage image, unsigned int width, unsigned int height, unsigned int layerCount) {
@@ -1079,7 +1027,9 @@ void ZEngineInit() {
 
 #ifdef ZENGINE_DEBUG
     VkResult result = vkCreateInstance(&instanceInfo, NULL, &instance);
-    ZENGINE_PRINT("Instance: %d\n", result );
+    if  (result != 0) {
+        ZENGINE_PRINT("Instance creation failed - error code: %d\n", result);
+    }
 #else
     vkCreateInstance(&instanceInfo, NULL, &instance);
 #endif
@@ -1093,48 +1043,58 @@ void ZEngineInit() {
         ZENGINE_PRINT("No Vulkan-compatible GPUs found!\nPlease install vulkan drivers: Intel: sudo pacman -S vulkan-intel || AMD: sudo pacman -S vulkan-radeon || If you are not on arch linux, please follow the guide in https://github.com/ZDev22/ZEngine/blob/main/README.md\n");
         exit(1);
     }
-    else if (deviceCount == 1) { ZENGINE_PRINT("Found 1 GPU\n"); }
-    else { ZENGINE_PRINT("Found %u GPUs\n", deviceCount); }
+    else if (deviceCount == 1) {
+        VkPhysicalDevice devices[1];
+        vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
+        physicalDevice = devices[0];
+    }
+    else {
+        ZENGINE_PRINT("Found %u GPUs\n", deviceCount);
 
-    VkPhysicalDevice devices[deviceCount];
-    vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
+        VkPhysicalDevice devices[deviceCount];
+        vkEnumeratePhysicalDevices(instance, &deviceCount, devices);
 
-    short highScore = 0;
-    for (unsigned char i = 0; i < (unsigned char)deviceCount; ++i) {
-        /* check if device is suitable, and score it */
-        unsigned short newScore = 0;
-        QueueFamilyIndices indices = findQueueFamilies(devices[i]);
-        unsigned int extensionCount = 0;
-        _Bool swapChainAdequate = 0;
+        short highScore = -1;
+        for (unsigned char i = 0; i < (unsigned char)deviceCount; ++i) {
+            /* check if device is suitable, and score it */
+            unsigned short newScore = 0;
+            QueueFamilyIndices indices = findQueueFamilies(devices[i]);
+            unsigned int extensionCount = 0;
 
-        /* check if extensions are supported on the GPU: */
-        vkEnumerateDeviceExtensionProperties(devices[i], NULL, &extensionCount, NULL);
-        VkExtensionProperties availableExtensions[extensionCount];
-        vkEnumerateDeviceExtensionProperties(devices[i], NULL, &extensionCount, availableExtensions);
+            /* check if extensions are supported on the GPU: */
+            vkEnumerateDeviceExtensionProperties(devices[i], NULL, &extensionCount, NULL);
+            VkExtensionProperties availableExtensions[extensionCount];
+            vkEnumerateDeviceExtensionProperties(devices[i], NULL, &extensionCount, availableExtensions);
 
-        SwapChainSupportDetails swapChainSupport;
-        querySwapChainSupport(&swapChainSupport, devices[i]);
-        swapChainAdequate = !(swapChainSupport.formatsSize == 0) && !(swapChainSupport.presentModeSize == 0);
-        ZENGINE_PRINT("SwapChain formats: %u, presentmodes: %u\n", swapChainSupport.formatsSize, swapChainSupport.presentModeSize);
-        for (unsigned char i = 0; i < (unsigned char)swapChainSupport.presentModeSize; i++) {
-            if (swapChainSupport.presentModes[i] == 0) { ZENGINE_PRINT("    - GPU supports VSync\n"); }
-            else if (swapChainSupport.presentModes[i] == 2) { ZENGINE_PRINT("    - GPU can disable VSync\n"); }
+            SwapChainSupportDetails swapChainSupport;
+    #ifdef ZENGINE_DEBUG
+            querySwapChainSupport(&swapChainSupport, devices[i]);
+            ZENGINE_PRINT("GPU %hhu:\nSwapchain formats: %u, presentmodes: %u\n", i, swapChainSupport.formatsSize, swapChainSupport.presentModeSize);
+            for (unsigned char i = 0; i < (unsigned char)swapChainSupport.presentModeSize; i++) {
+                if (swapChainSupport.presentModes[i] == 0) { ZENGINE_PRINT("    - GPU supports VSync\n"); }
+                else if (swapChainSupport.presentModes[i] == 2) { ZENGINE_PRINT("    - GPU can disable VSync\n"); }
+            }
+            free(swapChainSupport.formats);
+            free(swapChainSupport.presentModes);
+    #else
+            vkGetPhysicalDeviceSurfaceCapabilitiesKHR(devices[i], surface_, &swapChainSupport.capabilities);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(devices[i], surface_, &swapChainSupport.formatsSize, NULL);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(devices[i], surface_, &swapChainSupport.presentModeSize, NULL);
+    #endif
+
+            newScore += swapChainSupport.formatsSize * swapChainSupport.presentModeSize;
+
+            VkPhysicalDeviceFeatures supportedFeatures;
+            vkGetPhysicalDeviceFeatures(devices[i], &supportedFeatures);
+            if (!(indices.graphicsFamilyHasValue && indices.presentFamilyHasValue && !(swapChainSupport.formatsSize == 0) && !(swapChainSupport.presentModeSize == 0))) { newScore = 0; }
+            else if (newScore > highScore) {
+                highScore = newScore;
+                physicalDevice = devices[i];
+                break;
+            }
         }
-        newScore += swapChainSupport.formatsSize * swapChainSupport.presentModeSize;
-
-        VkPhysicalDeviceFeatures supportedFeatures;
-        vkGetPhysicalDeviceFeatures(devices[i], &supportedFeatures);
-        if (!(indices.graphicsFamilyHasValue && indices.presentFamilyHasValue && swapChainAdequate)) { newScore = 0; }
-        else if (newScore > highScore) {
-            highScore = newScore;
-            physicalDevice = devices[i];
-            break;
-        }
-        free(swapChainSupport.formats);
-        free(swapChainSupport.presentModes);
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) { physicalDevice = devices[0]; ZENGINE_PRINT("Selected GPU is unsupported! Expect bugs!\n"); }
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
 
     if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) {
@@ -1144,8 +1104,6 @@ void ZEngineInit() {
 
     ZENGINE_PRINT("Creating logical device...\n"); //---------------------------------------------------------------------------------------------------------------
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-
-    float queuePriority = 1.0f;
 
     unsigned char queueFamilySize = 1;
     if (indices.presentFamily != indices.graphicsFamily) { queueFamilySize = 2; }
@@ -1161,7 +1119,7 @@ void ZEngineInit() {
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = uniqueQueueFamilies[i];
         queueCreateInfo.queueCount = 1;
-        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfo.pQueuePriorities = NULL;
         queueCreateInfos[i] = queueCreateInfo;
     }
 
@@ -1335,18 +1293,6 @@ void ZEngineInit() {
     vkDestroyShaderModule(device_, shaderStages[1].module, NULL);
     free(inputAttributes);
 
-    VkPushConstantRange pushConstantRange = {0};
-    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(Camera);
-
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-    pipelineLayoutInfo.pushConstantRangeCount = 1;
-    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-    ZENGINE_THROW(vkCreatePipelineLayout(device_, &pipelineLayoutInfo, NULL, &pipelineLayout));
-
     ZENGINE_PRINT("Initing textures...\n");
     VkDescriptorImageInfo imageInfos[ZENGINE_MAX_TEXTURES] = {0};
 
@@ -1439,7 +1385,7 @@ void ZEngineInit() {
 }
 
 void ZEngineRender() {
-    vkWaitForFences(device_, 1, &inFlightFences[currentFrame], VK_TRUE, 0xFFFFFFFFFFFFFFFF);
+    vkWaitForFences(device_, 1, &inFlightFences, VK_TRUE, 0xFFFFFFFFFFFFFFFF);
     /* resize window */
     if (acquireNextImage(&currentImageIndex) == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized) {
         /* recreate swapchain */
