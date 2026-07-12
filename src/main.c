@@ -61,7 +61,7 @@ int main() {
 #ifdef TRACK_FPS
         if (appTimer > 1.f) {
             char name[6];
-            sprintf(name, "%hu", fps);
+            snprintf(name, sizeof(name), "%hu", fps);
             RGFW_window_setName(zwindow, name);
             appTimer = 0.f;
             fps = 0;
