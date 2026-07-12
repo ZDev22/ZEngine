@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 - see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 thanks to https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c for (the base of) this implementation!
 
-v4.1.2
+v4.2.2
 
 ztext.h is a lightweight cross-platform single-header c font-text rasterizer built off stb_truetype
 it is recommended to set stbi_write_png_compression_level = 0
@@ -11,7 +11,6 @@ HOW TO USE:
 #define STB_IMAGE_WRITE_IMPLEMENTATION - define this in one c file
 #define ZTEXT_IMPLEMENTATION - define this in the same c file
 #define ZTEXT_MAX_FONTS 5 - define this to decide how many max fonts to load (max: 255)
-#define ZTEXT_OUTPUT_DIR "assets/img/text.png" - set the image output directory of the text to whatever you want
 */
 
 #ifndef ZTEXT_H
@@ -27,13 +26,8 @@ void createText(const char* word, const size_t width, const size_t height, const
 #ifndef ZTEXT_MAX_FONTS
     #define ZTEXT_MAX_FONTS 1
 #endif
-#ifndef ZTEXT_OUTPUT_DIR
-    #define ZTEXT_OUTPUT_DIR "assets/img/temptext.png"
-#endif
 
-#include "deps/stb_image.h"
 #include "deps/stb_truetype.h"
-#include "deps/stb_image_write.h"
 
 stbtt_fontinfo fonts[ZTEXT_MAX_FONTS];
 
@@ -83,9 +77,20 @@ void createText(const char* word, const size_t width, const size_t height, const
         x += (unsigned int)((float)ax * scale) + (int)((float)stbtt_GetCodepointKernAdvance(&fonts[fontIndex], word[i], word[i + 1]) * scale);
     }
 
-    stbi_write_png(ZTEXT_OUTPUT_DIR, width, height, 1, bitmap, width);
-    createTexture(ZTEXT_OUTPUT_DIR, 1.f, textureIndex);
+    unsigned int imageSize = width * height * 4;
+    unsigned char* pixels = (unsigned char*)malloc(imageSize);
+    unsigned int j = 0;
+    for (unsigned int i = 0; i < imageSize; i += 4) {
+        pixels[i] = bitmap[j];
+        pixels[i + 1] = bitmap[j];
+        pixels[i + 2] = bitmap[j];
+        pixels[i + 3] = bitmap[j];
+        j++;
+    }
+
+    createTextureExt(pixels, textureIndex, width, height, imageSize, VK_FORMAT_R8G8B8A8_SRGB);
     free(bitmap);
+    free(pixels);
 }
 
 #endif // ZTEXT_IMPLEMENTATION

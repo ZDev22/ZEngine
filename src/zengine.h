@@ -216,6 +216,7 @@ void submitCommandBuffers(const VkCommandBuffer* buffers, unsigned int* imageInd
 
 /* texture funcs*/
 void createTexture(const char* filepath, float opacity, unsigned int index);
+void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkDeviceSize imageSize, VkFormat format);
 void transitionImageLayout(unsigned int index, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 /* buffer funcs */
@@ -570,17 +571,24 @@ void deleteTexture(unsigned int index) {
         vkDestroyImage(device_, spriteTextures[index].image, NULL);
         vkFreeMemory(device_, spriteTextures[index].memory, NULL);
     }
-    else { spriteTextures[index].loaded = 1; }
 }
+
 void createTexture(const char* filepath, float opacity, unsigned int index) {
-    deleteTexture(index);
     int width = 0; int height = 0;
-    stbi_uc* pixels = stbi_load(filepath, &width, &height, NULL, STBI_rgb_alpha);
+    unsigned char* pixels = stbi_load(filepath, &width, &height, NULL, STBI_rgb_alpha);
     VkDeviceSize imageSize = width * height * 4;
 
     if (opacity != 1.f) {
         for (unsigned int i = 3; i < (unsigned int)imageSize; i += 4) { pixels[i] *= opacity; }
     }
+
+    createTextureExt(pixels, index, width, height, imageSize, VK_FORMAT_R8G8B8A8_SRGB);
+    stbi_image_free(pixels);
+}
+
+void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkDeviceSize imageSize, VkFormat format) {
+    deleteTexture(index);
+    spriteTextures[index].loaded = 1;
 
     VkBufferCreateInfo bufferInfo = {0};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -600,11 +608,10 @@ void createTexture(const char* filepath, float opacity, unsigned int index) {
     vkAllocateMemory(device_, &allocInfo, NULL, &spriteTextures[index].bufferMemory);
     vkBindBufferMemory(device_, spriteTextures[index].buffer, spriteTextures[index].bufferMemory, 0);
 
-    void* data;
-    vkMapMemory(device_, spriteTextures[index].bufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, pixels, imageSize);
+    void* a;
+    vkMapMemory(device_, spriteTextures[index].bufferMemory, 0, imageSize, 0, &a);
+    memcpy(a, data, imageSize);
     vkUnmapMemory(device_, spriteTextures[index].bufferMemory);
-    stbi_image_free(pixels);
 
     VkImageCreateInfo imageInfo = {0};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -614,7 +621,7 @@ void createTexture(const char* filepath, float opacity, unsigned int index) {
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
-    imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+    imageInfo.format = format;
     imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
     imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
@@ -633,7 +640,7 @@ void createTexture(const char* filepath, float opacity, unsigned int index) {
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = spriteTextures[index].image;
     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    viewInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+    viewInfo.format = format;
     viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     viewInfo.subresourceRange.baseMipLevel = 0;
     viewInfo.subresourceRange.levelCount = 1;

@@ -2,7 +2,6 @@
 #define FLAPPYBIRD_H
 
 #include "../deps/miniaudio.h"
-#include "../deps/stb_image_write.h"
 
 #include "../zengine.h"
 #include "../zcollide.h"
@@ -17,7 +16,6 @@ int flappyBirdScore = 0;
 Sprite* bird;
 
 void initGame() {
-    stbi_write_png_compression_level = 0;
     sRandom();
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 

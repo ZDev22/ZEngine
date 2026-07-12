@@ -1,10 +1,9 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
 An example implementation on how to init and use zengine, as well as a few zdeps!
-
-#define FPS_CAP 60.f // set the framerate, dont define for no FPS cap
 */
 
+#define _DEFAULT_SOURCE
 #define _POSIX_C_SOURCE 200809L
 
 /* ZENGINE */
@@ -13,10 +12,13 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_DISABLE_VSYNC
 #include "zengine.h"
 
-//#define FPS_CAP 180.f
+#define FPS_CAP 60.f
+#define TRACK_FPS
 
 #ifdef ZENGINE_DEBUG
     #define TRACK_FPS
+#endif
+#ifdef TRACK_FPS
     #include <stdio.h>
 #endif
 
@@ -41,7 +43,7 @@ int main() {
     ZEngineInit();
     initGame();
 
-#ifdef TRACK_FPS
+#if defined(TRACK_FPS) || defined(FPS_CAP)
     clock_gettime(CLOCK_MONOTONIC, &fpsLastTime);
 #endif
     while (!RGFW_window_shouldClose(zwindow)) {

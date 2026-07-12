@@ -6,7 +6,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 /* RGFW */
 #define RGFW_IMPLEMENTATION
 #define RGFW_VULKAN
-#define RGFW_USE_INT
 #define RGFW_EXPORT
 #define RGFW_ASSERT(x) (void)(x)
 
@@ -18,9 +17,9 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
 #if defined(__linux__)
     #define MA_ENABLE_PULSEAUDIO
-#elif defined(__APPLE__)
+#elif defined(_APPLE_)
     #define MA_ENABLE_COREAUDIO
-#elif defined(_WIN32)
+#elif defined(_WIN32_)
     #define MA_ENABLE_WINMM
     #define MA_ENABLE_WASAPI
 #else
@@ -43,12 +42,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define STBI_NO_PIC
 #define STBI_NO_PNM
 
-/* STB_IMAGE_WRITE */
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define STBIW_ASSERT(x)
-#define _CRT_SECURE_NO_WARNINGS
-#define STBTT_MAX_OVERSAMPLE 1
-
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_ASSERT(x)
@@ -57,7 +50,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #include "deps/RGFW.h"
 #include "deps/miniaudio.h"
 #include "deps/stb_image.h"
-#include "deps/stb_image_write.h"
 #include "deps/stb_truetype.h"
 
 #undef RGFW_IMPLEMENTATION
@@ -66,7 +58,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #undef ZMATH_IMPLEMENTATION
 #undef ZTEXT_IMPLEMENTATION
 #undef STB_IMAGE_IMPLEMENTATION
-#undef STB_IMAGE_WRITE_IMPLEMENTATION
 #undef STB_TRUETYPE_IMPLEMENTATION
 
 /* ZDEPS */
