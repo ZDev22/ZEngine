@@ -5,6 +5,7 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* RGFW */
 #define RGFW_IMPLEMENTATION
+#define RGFW_USE_INT
 #define RGFW_VULKAN
 #define RGFW_EXPORT
 #define RGFW_ASSERT(x) (void)(x)
@@ -41,6 +42,7 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define STBI_NO_TGA
 #define STBI_NO_PIC
 #define STBI_NO_PNM
+#define STBI_NO_LINEAR
 
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION

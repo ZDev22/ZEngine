@@ -608,9 +608,9 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
     vkAllocateMemory(device_, &allocInfo, NULL, &spriteTextures[index].bufferMemory);
     vkBindBufferMemory(device_, spriteTextures[index].buffer, spriteTextures[index].bufferMemory, 0);
 
-    void* a;
-    vkMapMemory(device_, spriteTextures[index].bufferMemory, 0, imageSize, 0, &a);
-    memcpy(a, data, imageSize);
+    void* mem;
+    vkMapMemory(device_, spriteTextures[index].bufferMemory, 0, imageSize, 0, &mem);
+    memcpy(mem, data, imageSize);
     vkUnmapMemory(device_, spriteTextures[index].bufferMemory);
 
     VkImageCreateInfo imageInfo = {0};
