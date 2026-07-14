@@ -6,6 +6,9 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 /* RGFW */
 #define RGFW_IMPLEMENTATION
 #define RGFW_USE_INT
+#define RGFW_NO_X11_CURSOR_PRELOAD
+#define RGFW_NO_X11_EXT_PRELOAD
+#define RGFW_NO_X11_XI_PRELOAD
 #define RGFW_VULKAN
 #define RGFW_EXPORT
 #define RGFW_ASSERT(x) (void)(x)

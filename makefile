@@ -9,7 +9,7 @@ BIN := bin/main
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
-    LDFLAGS += /usr/lib/libX11.so /usr/lib/libXrandr.so /usr/lib/libvulkan.so /usr/lib/libpulse.so
+    LDFLAGS += /usr/lib/libX11.so /usr/lib/libXrandr.so /usr/lib/libXext.so /usr/lib/libXcursor.so /usr/lib/libXi.so /usr/lib/libvulkan.so /usr/lib/libpulse.so
 else ifeq ($(UNAME_S),Darwin)
 	VULKANSDK ?= $(shell ls -d $(HOME)/VulkanSDK/*/macOS)
 	CFLAGS += -I$(VULKANSDK)/include
