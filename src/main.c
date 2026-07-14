@@ -12,7 +12,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_DISABLE_VSYNC
 #include "zengine.h"
 
-#define FPS_CAP 60.f
+//#define FPS_CAP 60.f
 #define TRACK_FPS
 
 #ifdef ZENGINE_DEBUG
