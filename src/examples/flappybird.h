@@ -15,8 +15,11 @@ int flappyBirdScore = 0;
 
 Sprite* bird;
 
+ma_engine audio;
+
 void initGame() {
     sRandom();
+    ma_engine_init(NULL, &audio);
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
     createTexture("assets/img/flappyBird.png", .5f, 0);
@@ -87,6 +90,10 @@ void tickGame() {
             bird->rotation = 60.f;
         }
     }
+}
+
+void deinitGame(void) {
+    ma_engine_uninit(&audio);
 }
 
 #endif // FLAPPYBIRD_H

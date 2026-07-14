@@ -1,5 +1,5 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
- * RGFW, stb_image and miniaudio (if not defining ZENGINE_DISABLE_AUDIO) must be initialized.
+ * RGFW and stb_image MUST be initialized. See zdeps.c for an example implementation, or just use it.
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
@@ -12,7 +12,6 @@ COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
 -DZENGINE_MAX_SPRITES 10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 -DZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
--DZENGINE_DISABLE_AUDIO - completely disables miniaudio integration in zengine
 */
 
 #ifndef ZENGINE_H
@@ -62,13 +61,6 @@ COMPILER FLAGS:
 
 #include "deps/RGFW.h" /* window */
 #include "deps/stb_image.h" /* image */
-
-#ifdef ZENGINE_DISABLE_AUDIO
-    #define ZENGINE_AUDIO unsigned char audio /* 1 byte to prevent errors */
-#else
-    #include "deps/miniaudio.h" /* audio */
-    #define ZENGINE_AUDIO ma_engine audio
-#endif
 
 /* vulkan */
 #include <vulkan/vulkan.h>
@@ -148,7 +140,6 @@ extern struct Texture spriteTextures[ZENGINE_MAX_TEXTURES];
 extern struct Sprite sprites[ZENGINE_MAX_SPRITES];
 extern unsigned int spritesSize;
 extern struct Model zmodel;
-extern ZENGINE_AUDIO;
 extern Camera camera;
 extern _Bool framebufferResized;
 extern RGFW_window* zwindow;
@@ -189,11 +180,8 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
 void createBuffer(Buffer* buffer, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
 
 #ifdef ZENGINE_IMPLEMENTATION
-/* PRIVATE VARS */
-
-/* kinda just chillin ngl */
+/* PRIVATE VARS/EXTERN DEFINITIONS */
 Camera camera;
-ZENGINE_AUDIO;
 
 double deltaTime = 0.0; /* deltaTime, do what you will. Example implementation in main.cpp */
 _Bool ZEngineClose = 0; /* flag to show when the engine is closing */
@@ -1207,10 +1195,6 @@ void ZEngineInit() {
 
     map(&spriteDataBuffer);
 
-#ifndef ZENGINE_DISABLE_AUDIO
-    ma_engine_init(NULL, &audio); /* init audio */
-#endif
-
     /* allocate info */
     VkDescriptorBufferInfo bufferInfo = {0};
     bufferInfo.buffer = spriteDataBuffer.buffer;
@@ -1378,9 +1362,6 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Destroying device\n"); vkDestroyDevice(device_, NULL);
     ZENGINE_PRINT("Freeing window surface\n"); vkDestroySurfaceKHR(instance, surface_, NULL);
     ZENGINE_PRINT("Destroying instance\n"); vkDestroyInstance(instance, NULL);
-#ifndef ZENGINE_DISABLE_AUDIO
-    ZENGINE_PRINT("Deiniting audio\n"); ma_engine_uninit(&audio);
-#endif
 }
 
 #undef ZENGINE_IMPLEMENTATION
