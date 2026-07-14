@@ -1,17 +1,12 @@
 ![ZENGINE.H](ZENGINE.png "ZENGINE - THE 2D GAME ENGINE")
 # **THE SINGLE-HEADER C 2D VULKAN ENGINE**
 # About:
-My goal for this engine is to be **THE FASTEST** *2D game engine*, aiming for **thousands of FPS** on lower-end devices, as well as utilizing GPU accelerated graphics with Vulkan and SPIR-V shaders.
-
-It has features like *sprite creation* and *texture loading* and *(beta) font rendering* that all run **REALTIME**, as well as the **ZDep modules** which are lightweight and super usefull for creating 2D games!
-
-Use ffmpeg to convert any .wav into .mp3 files. Also use ffmpeg to compress them: ```ffmpeg -i input.mp3 -c:a libmp3lame -q:a 9 output.mp3```
-
-Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4``` *and does none of this nonsense:* ```1.8.0 -> 1.8.5```
-
-Licensed under the GNU GPL v3 license - please see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for more details
-
-*If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*
+ZEngine's goal is to be **THE FASTEST** *2D game engine*, utilizing GPU accelerated graphics with Vulkan and SPIR-V shaders and using lightweight libraries.</br>
+ZEngine's features include *vulkan initialization*, *sprite creation* and *texture loading*.
+ZDep libraries are included for additional features for creating games, such as *font loading* and *collision detection*.</br>
+Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4```</br>
+Licensed under the GNU GPL v3 license - please see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for more details</br>
+*If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*</br>
 
 # Clone the repo:
 ```bash
