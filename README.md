@@ -15,7 +15,7 @@ Licensed under the GNU GPL v3 license - please see https://github.com/ZDev22/ZEn
 
 # Clone the repo:
 ```bash
-git clone --depth=1 https://github.com/ZDev22/ZEngine
+git clone https://github.com/ZDev22/ZEngine
 cd ZEngine
 ```
 # Dependencies:
@@ -24,7 +24,7 @@ cd ZEngine
 ```bash
 sudo pacman -Syu --noconfirm
 sudo pacman -S gcc --noconfirm #C
-sudo pacman -S libx11 libxrandr libxcursor mesa --noconfirm #X11
+sudo pacman -S libx11 libxrandr libxcursor --noconfirm #X11
 sudo pacman -S vulkan-headers vulkan-tools vulkan-icd-loader --noconfirm #Vulkan
 # Intel GPU: sudo pacman -S vulkan-intel --noconfirm
 # AMD GPU: sudo pacman -S vulkan-radeon --noconfirm
@@ -104,12 +104,12 @@ winget install Ninja-build.Ninja
 - In main.c make sure to include your game instead of the example
 - ZDeps documentation is inside their respective files
 
-# Included dependencies:
+# Dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>
 [RGFW (Window)](https://github.com/ColleagueRiley/RGFW)</br>
-[MINIAUDIO (Audio) {Modified}](https://miniaud.io/)</br>
-[STB-IMAGE (Image loader) {Modified}](https://github.com/nothings/stb)</br>
-[STB-TRUETYPE (font text rasterizer) {Modified}](https://github.com/nothings/stb)
+[MINIAUDIO (Audio)](https://miniaud.io/)</br>
+[STB-IMAGE (Image loader)](https://github.com/nothings/stb)</br>
+[STB-TRUETYPE (font text rasterizer)](https://github.com/nothings/stb)
 
 # Build:
 ## Linux/MacOS:
