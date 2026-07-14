@@ -8,7 +8,6 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 /* ZENGINE */
 #define ZENGINE_IMPLEMENTATION
-#define ZENGINE_DEPS_DEFINED
 #define ZENGINE_DISABLE_VSYNC
 #include "zengine.h"
 

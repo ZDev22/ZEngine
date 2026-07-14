@@ -1,7 +1,7 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
+ * RGFW, stb_image and miniaudio (if not defining ZENGINE_DISABLE_AUDIO) must be initialized.
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.CPP ONLY
-#define ZENGINE_DEPS_DEFINED - if your using zdeps.c define this (disables IMPLEMENTATION defines)
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 #define ZENGINE_SPRITE_MATRIXMODE_MANUAL - manually call sprites[0].setRotationMatrix() for every sprite you need
@@ -12,7 +12,7 @@ COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
 -DZENGINE_MAX_SPRITES 10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 -DZENGINE_MAX_TEXTURES 50 - the maximum amount of texture the engine can load at once
--DZENGINE_DISABLE_AUDIO - disables audio, and dosen't include miniaudio.h or init it.
+-DZENGINE_DISABLE_AUDIO - completely disables miniaudio integration in zengine
 */
 
 #ifndef ZENGINE_H
@@ -54,16 +54,6 @@ COMPILER FLAGS:
     #define ZENGINE_DEFAULT_TEXTURE "assets/img/e.png"
 #endif
 
-#if !defined(ZENGINE_DEPS_DEFINED)
-    #define MINIAUDIO_IMPLEMENTATION
-
-    #define RGFW_IMPLEMENTATION
-    #define RGFW_ASSERT(x) (void)(x)
-
-    #define STB_IMAGE_IMPLEMENTATION
-    #define STBI_ASSERT
-#endif
-
 #endif // ZENGINE_IMPLEMENTATION
 
 /* dependencies */
@@ -80,22 +70,7 @@ COMPILER FLAGS:
     #define ZENGINE_AUDIO ma_engine audio
 #endif
 
-/* undefine these so they don't get used later */
-#undef MINIAUDIO_IMPLEMENTATION
-#undef RGFW_IMPLEMENTATION
-#undef RGFW_EXPORT
-#undef RGFW_ASSERT
-#undef STB_IMAGE_IMPLEMENTATION
-#undef STBI_ASSERT
-
 /* vulkan */
-#if defined(__linux__)
-    #define VK_USE_PLATFORM_XLIB_KHR
-#elif defined(__APPLE__)
-    #define VK_USE_PLATFORM_MACOS_MVK
-#elif defined(_WIN32)
-    #define VK_USE_PLATFORM_WIN32_KHR
-#endif
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
