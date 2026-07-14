@@ -161,9 +161,7 @@ void setRotationMatrix(Sprite* sprite);
 
 /* engine funcs */
 void createCommandBuffers();
-VkCommandBuffer beginSingleTimeCommands();
 VkShaderModule createShaderModule(const char* filepath);
-void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties);
 void createImageWithInfo(const VkImageCreateInfo* imageInfo, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory);
@@ -207,6 +205,7 @@ VkInstance instance;
 VkCommandPool commandPool;
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 VkPhysicalDeviceProperties properties;
+VkPhysicalDeviceMemoryProperties memProperties;
 VkDevice device_;
 VkQueue presentQueue_;
 VkSurfaceKHR surface_;
@@ -245,7 +244,6 @@ VkSemaphore renderFinishedSemaphores;
 VkFence inFlightFences;
 VkFence* imagesInFlight = NULL;
 unsigned int imageCount;
-unsigned int oldImageCount;
 
 /* SWAP CHAIN FUNCTIONS */
 void createSwapChain() {
@@ -546,10 +544,33 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
     region.imageExtent.depth = 1;
 
     createImageWithInfo(&imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &spriteTextures[index].image, &spriteTextures[index].memory);
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    vkCmdCopyBufferToImage(commandBuffer, spriteTextures[index].buffer, spriteTextures[index].image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-    endSingleTimeCommands(commandBuffer);
 
+    VkCommandBufferAllocateInfo moreAllocInfo = {0};
+    moreAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    moreAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    moreAllocInfo.commandPool = commandPool;
+    moreAllocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer = {0};
+    vkAllocateCommandBuffers(device_, &moreAllocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo = {0};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    vkCmdCopyBufferToImage(commandBuffer, spriteTextures[index].buffer, spriteTextures[index].image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo = {0};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(graphicsQueue_);
+
+    vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
     vkDestroyBuffer(device_, spriteTextures[index].buffer, NULL);
     vkFreeMemory(device_, spriteTextures[index].bufferMemory, NULL);
 
@@ -668,45 +689,11 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
 }
 
 unsigned int findMemoryType(unsigned int typeFilter, VkMemoryPropertyFlags properties) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-
     for (unsigned int i = 0; i < memProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) { return i; }
     }
 
     return 0;
-}
-
-VkCommandBuffer beginSingleTimeCommands() {
-    VkCommandBufferAllocateInfo allocInfo = {0};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer commandBuffer = {0};
-    vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
-
-    VkCommandBufferBeginInfo beginInfo = {0};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    return commandBuffer;
-}
-
-void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-    vkEndCommandBuffer(commandBuffer);
-
-    VkSubmitInfo submitInfo = {0};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(graphicsQueue_);
-    vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
 }
 
 void createImageWithInfo(const VkImageCreateInfo* imageInfo, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory) {
@@ -726,7 +713,6 @@ void createImageWithInfo(const VkImageCreateInfo* imageInfo, VkMemoryPropertyFla
 
 /* ZENGINE HELPER FUNCTIONS */
 void createCommandBuffers() {
-    oldImageCount = imageCount;
     commandBuffers = (VkCommandBuffer*)malloc(imageCount * sizeof(VkCommandBuffer));
 
     VkCommandBufferAllocateInfo allocInfo = {0};
@@ -976,6 +962,7 @@ void ZEngineInit() {
     deviceInfo.ppEnabledExtensionNames = extension;
     deviceInfo.enabledLayerCount = 0;
     ZENGINE_THROW(vkCreateDevice(physicalDevice, &deviceInfo, NULL, &device_));
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
@@ -1236,11 +1223,6 @@ void ZEngineRender() {
         oldSwapChain = swapChain;
         deleteSwapChain();
         createSwapChain();
-        if (imageCount != oldImageCount) {
-            vkFreeCommandBuffers(device_, commandPool, oldImageCount, commandBuffers);
-            free(commandBuffers);
-            createCommandBuffers();
-        }
 
         framebufferResized = 0;
         camera.aspect = (float)windowExtent.width / (float)windowExtent.height;
