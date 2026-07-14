@@ -81,9 +81,7 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* zdeps */
 #define ZCOLLIDE_IMPLEMENTATION
-#define ZMATH_IMPLEMENTATION
 #define ZTEXT_IMPLEMENTATION
 
 #include "zcollide.h"
-#include "zmath.h"
 #include "ztext.h"

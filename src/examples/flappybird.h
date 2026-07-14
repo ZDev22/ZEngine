@@ -5,7 +5,6 @@
 
 #include "../zengine.h"
 #include "../zcollide.h"
-#include "../zmath.h"
 #include "../ztext.h"
 
 float flappyBirdSpeedY = 0.f;
@@ -18,7 +17,7 @@ Sprite* bird;
 ma_engine audio;
 
 void initGame() {
-    sRandom();
+    srand(100);
     ma_engine_init(NULL, &audio);
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
@@ -68,7 +67,7 @@ void tickGame() {
             sprites[index].position[0] -= .5f * deltaTime;
             if (sprites[index].position[0] < -1.5f) {
                 sprites[index].position[0] = 1.5f;
-                sprites[index].position[1] = randomNum(4, 14) / 10.f;
+                sprites[index].position[1] = (float)((rand() % 10) + 4) / 10.f;
             }
             sprites[index + 1].position[0] = sprites[index].position[0];
             sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;
