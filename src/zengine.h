@@ -189,7 +189,17 @@ _Bool ZEngineClose = 0; /* flag to show when the engine is closing */
 
 /* texture vecs */
 struct Texture spriteTextures[ZENGINE_MAX_TEXTURES] = {0};
-char* spriteData;
+VkCommandBuffer textureCommandBuffer;
+VkCommandBufferAllocateInfo textureAllocInfo = {0};
+VkMemoryAllocateInfo textureMoreAllocInfo = {0};
+VkCommandBufferBeginInfo textureBeginInfo = {0};
+VkImageCreateInfo textureImageInfo = {0};
+VkBufferImageCopy textureRegion = {0};
+VkSubmitInfo textureSubmitInfo = {0};
+VkBufferCreateInfo textureBufferInfo = {0};
+VkImageViewCreateInfo textureViewInfo = {0};
+VkDescriptorImageInfo textureMoreImageInfo = {0};
+VkWriteDescriptorSet textureImageWrite = {0};
 
 /* window vars */
 _Bool framebufferResized = 0;
@@ -469,7 +479,6 @@ void deleteSwapChain() {
 void deleteTexture(unsigned int index) {
     if (spriteTextures[index].loaded) {
         vkDeviceWaitIdle(device_);
-        vkDestroySampler(device_, spriteTextures[index].sampler, NULL);
         vkDestroyImageView(device_, spriteTextures[index].view, NULL);
         vkDestroyImage(device_, spriteTextures[index].image, NULL);
         vkFreeMemory(device_, spriteTextures[index].memory, NULL);
@@ -493,22 +502,16 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
     deleteTexture(index);
     spriteTextures[index].loaded = 1;
 
-    VkBufferCreateInfo bufferInfo = {0};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = imageSize;
-    bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    vkCreateBuffer(device_, &bufferInfo, NULL, &spriteTextures[index].buffer);
+    textureBufferInfo.size = imageSize;
+    vkCreateBuffer(device_, &textureBufferInfo, NULL, &spriteTextures[index].buffer);
 
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(device_, spriteTextures[index].buffer, &memRequirements);
 
-    VkMemoryAllocateInfo allocInfo = {0};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    textureMoreAllocInfo.allocationSize = memRequirements.size;
+    textureMoreAllocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    vkAllocateMemory(device_, &allocInfo, NULL, &spriteTextures[index].bufferMemory);
+    vkAllocateMemory(device_, &textureMoreAllocInfo, NULL, &spriteTextures[index].bufferMemory);
     vkBindBufferMemory(device_, spriteTextures[index].buffer, spriteTextures[index].bufferMemory, 0);
 
     void* mem;
@@ -516,104 +519,32 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
     memcpy(mem, data, imageSize);
     vkUnmapMemory(device_, spriteTextures[index].bufferMemory);
 
-    VkImageCreateInfo imageInfo = {0};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = width;
-    imageInfo.extent.height = height;
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = 1;
-    imageInfo.arrayLayers = 1;
-    imageInfo.format = format;
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    textureImageInfo.extent.width = width;
+    textureImageInfo.extent.height = height;
+    textureImageInfo.format = format;
 
-    VkBufferImageCopy region = {0};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = 1;
-    region.imageExtent.width = width;
-    region.imageExtent.height = height;
-    region.imageExtent.depth = 1;
+    textureRegion.imageExtent.width = width;
+    textureRegion.imageExtent.height = height;
 
-    createImageWithInfo(&imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &spriteTextures[index].image, &spriteTextures[index].memory);
+    createImageWithInfo(&textureImageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &spriteTextures[index].image, &spriteTextures[index].memory);
 
-    VkCommandBufferAllocateInfo moreAllocInfo = {0};
-    moreAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    moreAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    moreAllocInfo.commandPool = commandPool;
-    moreAllocInfo.commandBufferCount = 1;
+    vkBeginCommandBuffer(textureCommandBuffer, &textureBeginInfo);
+    vkCmdCopyBufferToImage(textureCommandBuffer, spriteTextures[index].buffer, spriteTextures[index].image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &textureRegion);
+    vkEndCommandBuffer(textureCommandBuffer);
 
-    VkCommandBuffer commandBuffer = {0};
-    vkAllocateCommandBuffers(device_, &moreAllocInfo, &commandBuffer);
-
-    VkCommandBufferBeginInfo beginInfo = {0};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    vkCmdCopyBufferToImage(commandBuffer, spriteTextures[index].buffer, spriteTextures[index].image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-    vkEndCommandBuffer(commandBuffer);
-
-    VkSubmitInfo submitInfo = {0};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueSubmit(graphicsQueue_, 1, &textureSubmitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(graphicsQueue_);
 
-    vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
     vkDestroyBuffer(device_, spriteTextures[index].buffer, NULL);
     vkFreeMemory(device_, spriteTextures[index].bufferMemory, NULL);
 
-    VkImageViewCreateInfo viewInfo = {0};
-    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    viewInfo.image = spriteTextures[index].image;
-    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    viewInfo.format = format;
-    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    viewInfo.subresourceRange.baseMipLevel = 0;
-    viewInfo.subresourceRange.levelCount = 1;
-    viewInfo.subresourceRange.baseArrayLayer = 0;
-    viewInfo.subresourceRange.layerCount = 1;
-    vkCreateImageView(device_, &viewInfo, NULL, &spriteTextures[index].view);
+    textureViewInfo.image = spriteTextures[index].image;
+    textureViewInfo.format = format;
+    vkCreateImageView(device_, &textureViewInfo, NULL, &spriteTextures[index].view);
 
-    VkSamplerCreateInfo samplerInfo = {0};
-    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_NEAREST;
-    samplerInfo.minFilter = VK_FILTER_NEAREST;
-    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.anisotropyEnable = VK_FALSE;
-    samplerInfo.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
-    samplerInfo.unnormalizedCoordinates = VK_FALSE;
-    samplerInfo.compareEnable = VK_FALSE;
-    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-    vkCreateSampler(device_, &samplerInfo, NULL, &spriteTextures[index].sampler);
-
-    VkDescriptorImageInfo moreImageInfo = {0};
-    moreImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    moreImageInfo.imageView = spriteTextures[index].view;
-    moreImageInfo.sampler = spriteTextures[index].sampler;
-
-    VkWriteDescriptorSet imageWrite = {0};
-    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    imageWrite.dstSet = spriteDataDescriptorSet;
-    imageWrite.dstBinding = 1;
-    imageWrite.dstArrayElement = index;
-    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    imageWrite.descriptorCount = 1;
-    imageWrite.pImageInfo = &moreImageInfo;
-    vkUpdateDescriptorSets(device_, 1, &imageWrite, 0, NULL);
+    textureMoreImageInfo.imageView = spriteTextures[index].view;
+    textureImageWrite.dstArrayElement = index;
+    vkUpdateDescriptorSets(device_, 1, &textureImageWrite, 0, NULL);
 }
 
 /* BUFFER FUNCS */
@@ -1137,6 +1068,77 @@ void ZEngineInit() {
     allocInfo.pSetLayouts = &descriptorSetLayout;
     ZENGINE_THROW(vkAllocateDescriptorSets(device_, &allocInfo, &spriteDataDescriptorSet));
 
+    textureBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    textureBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    textureBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    textureAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    textureAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    textureAllocInfo.commandPool = commandPool;
+    textureAllocInfo.commandBufferCount = 1;
+    vkAllocateCommandBuffers(device_, &textureAllocInfo, &textureCommandBuffer);
+
+    textureMoreAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+
+    textureImageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    textureImageInfo.imageType = VK_IMAGE_TYPE_2D;
+    textureImageInfo.extent.depth = 1;
+    textureImageInfo.mipLevels = 1;
+    textureImageInfo.arrayLayers = 1;
+    textureImageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    textureImageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    textureImageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    textureImageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    textureImageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+
+    textureRegion.bufferOffset = 0;
+    textureRegion.bufferRowLength = 0;
+    textureRegion.bufferImageHeight = 0;
+    textureRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    textureRegion.imageSubresource.mipLevel = 0;
+    textureRegion.imageSubresource.baseArrayLayer = 0;
+    textureRegion.imageSubresource.layerCount = 1;
+    textureRegion.imageExtent.depth = 1;
+
+    textureBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    textureBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    textureSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    textureSubmitInfo.commandBufferCount = 1;
+    textureSubmitInfo.pCommandBuffers = &textureCommandBuffer;
+
+    textureViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    textureViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    textureViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    textureViewInfo.subresourceRange.baseMipLevel = 0;
+    textureViewInfo.subresourceRange.levelCount = 1;
+    textureViewInfo.subresourceRange.baseArrayLayer = 0;
+    textureViewInfo.subresourceRange.layerCount = 1;
+
+    VkSamplerCreateInfo textureSamplerInfo = {0};
+    textureSamplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    textureSamplerInfo.magFilter = VK_FILTER_NEAREST;
+    textureSamplerInfo.minFilter = VK_FILTER_NEAREST;
+    textureSamplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    textureSamplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    textureSamplerInfo.anisotropyEnable = VK_FALSE;
+    textureSamplerInfo.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+    textureSamplerInfo.unnormalizedCoordinates = VK_FALSE;
+    textureSamplerInfo.compareEnable = VK_FALSE;
+    textureSamplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    textureSamplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    vkCreateSampler(device_, &textureSamplerInfo, NULL, &spriteTextures[0].sampler);
+
+    textureMoreImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    textureMoreImageInfo.sampler = spriteTextures[0].sampler;
+
+    textureImageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    textureImageWrite.dstSet = spriteDataDescriptorSet;
+    textureImageWrite.dstBinding = 1;
+    textureImageWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    textureImageWrite.descriptorCount = 1;
+    textureImageWrite.pImageInfo = &textureMoreImageInfo;
+
     createTexture(ZENGINE_DEFAULT_TEXTURE, 1.f, 0);
     imageInfos[0].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     imageInfos[0].imageView = spriteTextures[0].view;
@@ -1331,7 +1333,11 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Freeing pipeline layout\n");   vkDestroyPipelineLayout(device_, pipelineLayout, NULL);
     ZENGINE_PRINT("Freeing discriptor pool\n");   vkFreeDescriptorSets(device_, descriptorPool, 1, &spriteDataDescriptorSet);
 
-    ZENGINE_PRINT("Freeing textures\n"); for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { deleteTexture(i); }
+    ZENGINE_PRINT("Freeing textures\n");
+    for (unsigned int i = 0; i < ZENGINE_MAX_TEXTURES; i++) { deleteTexture(i); }
+    vkDestroySampler(device_, spriteTextures[0].sampler, NULL);
+    vkFreeCommandBuffers(device_, commandPool, 1, &textureCommandBuffer);
+
     ZENGINE_PRINT("Unmaping sprite data buffer\n"); unmap(&spriteDataBuffer);
     ZENGINE_PRINT("Freeing sprite data buffer\n"); deleteBuffer(&spriteDataBuffer);
     ZENGINE_PRINT("Freeing swapchain\n"); deleteSwapChain();
