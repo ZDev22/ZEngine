@@ -31,6 +31,7 @@ unsigned short fps = 0;
 float appTimer = 0.f;
 struct timespec fpsTime;
 struct timespec fpsLastTime;
+_Bool resizingWindow = 0;
 
 int main() {
     /* init engine */
@@ -69,13 +70,17 @@ int main() {
 #endif
 
         /* poll window events */
+        /* poll window events */
         RGFW_event event;
+        resizingWindow = 0;
         while (RGFW_window_checkEvent(zwindow, &event)) {
             if (event.type == RGFW_windowResized) {
+                resizingWindow = 1;
                 framebufferResized = 1;
                 break;
             }
         }
+        if (resizingWindow) { framebufferResized = 0; }
 
         tickGame();
 
