@@ -54,7 +54,8 @@ int main() {
         appTimer += deltaTime;
 
 #ifdef FPS_CAP
-        usleep((int)(((1.f / FPS_CAP) * 1000000.f) - (deltaTime * 100000.f)));
+        float sleep = ((1.f / FPS_CAP) * 1000000.f) - (deltaTime * 100000.f);
+        if (sleep > 0.f) { usleep((useconds_t)sleep); }
 #endif
 
 #ifdef TRACK_FPS

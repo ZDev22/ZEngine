@@ -10,7 +10,8 @@ HOW TO USE:
 #define STB_TRUETYPE_IMPLEMENTATION - define this in one c file
 #define STB_IMAGE_WRITE_IMPLEMENTATION - define this in one c file
 #define ZTEXT_IMPLEMENTATION - define this in the same c file
-#define ZTEXT_MAX_FONTS 5 - define this to decide how many max fonts to load (max: 255)
+#define -DZTEXT_MAX_FONTS 5 - define this to decide how many max fonts to load (max: 255)
+#define -DZTEXT_CUSTOM_RGB - createText now takes R, G and B parameters
 */
 
 #ifndef ZTEXT_H
@@ -19,7 +20,12 @@ HOW TO USE:
 #include "zengine.h"
 
 void loadFont(const char* font, const unsigned char index);
-void createText(const char* word, const size_t width, const size_t height, const unsigned int resolution, const unsigned char fontIndex, const unsigned int textureIndex);
+
+#ifndef ZTEXT_CUSTOM_RGB
+    void createText(const char* word, const size_t width, const size_t height, const unsigned int resolution, const unsigned char fontIndex, const unsigned int textureIndex);
+#else
+    void createText(const char* word, const size_t width, const size_t height, const unsigned int resolution, const unsigned char fontIndex, const unsigned int textureIndex, unsigned char R, unsigned char G, unsigned char B);
+#endif
 
 #ifdef ZTEXT_IMPLEMENTATION
 
@@ -45,7 +51,12 @@ void loadFont(const char* font, const unsigned char index) {
     stbtt_InitFont(&fonts[index], fontBuffer, 0);
 }
 
+#ifndef ZTEXT_CUSTOM_RGB
 void createText(const char* word, const size_t width, const size_t height, const unsigned int resolution, const unsigned char fontIndex, const unsigned int textureIndex) {
+#else
+void createText(const char* word, const size_t width, const size_t height, const unsigned int resolution, const unsigned char fontIndex, const unsigned int textureIndex, unsigned char R, unsigned char G, unsigned char B) {
+#endif
+
     unsigned char* bitmap = (unsigned char*)calloc(1, width * height);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[fontIndex], resolution);
@@ -80,11 +91,24 @@ void createText(const char* word, const size_t width, const size_t height, const
     unsigned int imageSize = width * height * 4;
     unsigned char* pixels = (unsigned char*)malloc(imageSize);
     unsigned int j = 0;
+
     for (unsigned int i = 0; i < imageSize; i += 4) {
-        pixels[i] = bitmap[j];
-        pixels[i + 1] = bitmap[j];
-        pixels[i + 2] = bitmap[j];
-        pixels[i + 3] = bitmap[j];
+#ifdef ZTEXT_CUSTOM_RGB
+        if (bitmap[j] != 0) {
+            pixels[i] = R;
+            pixels[i + 1] = G;
+            pixels[i + 2] = B;
+            pixels[i + 3] = 255;
+        }
+        else {
+#endif
+            pixels[i] = bitmap[j];
+            pixels[i + 1] = bitmap[j];
+            pixels[i + 2] = bitmap[j];
+            pixels[i + 3] = bitmap[j];
+#ifdef ZTEXT_CUSTOM_RGB
+        }
+#endif
         j++;
     }
 
@@ -95,4 +119,3 @@ void createText(const char* word, const size_t width, const size_t height, const
 
 #endif // ZTEXT_IMPLEMENTATION
 #endif // ZTEXT_H
-
