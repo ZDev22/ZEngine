@@ -25,7 +25,9 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* MINIAUDIO */
 #define MINIAUDIO_IMPLEMENTATION
-#define MA_NO_RUNTIME_LINKING
+#ifndef _WIN32
+    #define MA_NO_RUNTIME_LINKING
+#endif
 #define MA_64BIT
 /* disable decoders */
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS

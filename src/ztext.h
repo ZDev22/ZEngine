@@ -17,6 +17,12 @@ HOW TO USE:
 #ifndef ZTEXT_H
 #define ZTEXT_H
 
+#ifdef __cplusplus
+    extern "C" {
+#else
+    #include <stdbool.h>
+#endif
+
 #include "zengine.h"
 
 void loadFont(const char* font, const unsigned char index);
@@ -118,4 +124,9 @@ void createText(const char* word, const size_t width, const size_t height, const
 }
 
 #endif // ZTEXT_IMPLEMENTATION
+
+#ifdef __cplusplus
+    }
+#endif
+
 #endif // ZTEXT_H

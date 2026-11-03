@@ -7,9 +7,11 @@
 #include "../zcollide.h"
 #include "../ztext.h"
 
+#include <stdbool.h>
+
 float flappyBirdSpeedY = 0.f;
-_Bool flappyBirdDead = 0;
-_Bool flappyBirdStarted = 0;
+bool flappyBirdDead = 0;
+bool flappyBirdStarted = 0;
 int flappyBirdScore = 0;
 
 Sprite* bird;

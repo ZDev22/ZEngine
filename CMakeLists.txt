@@ -3,7 +3,7 @@ project(ZEngine)
 
 find_package(Vulkan REQUIRED)
 
-set(CMAKE_C_FLAGS  "-march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99")
+set(CMAKE_C_FLAGS  "-O0 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100 -DZENGINE_DEBUG")
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 

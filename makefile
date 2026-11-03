@@ -1,7 +1,7 @@
 CC = gcc
 #CC = musl-gcc
-CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -ffast-math -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
-#CFLAGS = -O0 -g3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_MAX_SPRITES=1000 -DZENGINE_MAX_TEXTURES=10
+CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -std=c99 -ffast-math -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
+#CFLAGS = -O0 -g3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
 LDFLAGS = -lm
 
 BIN := bin/main
@@ -19,6 +19,7 @@ endif
 MAKEFLAGS += -j$(shell nproc)
 
 SRC := $(shell find . -name '*.c')
+SRC += $(shell find . -name '*.cpp')
 OBJ := $(patsubst %.c,bin/obj/%.o,$(SRC))
 
 VERT_SHADERS := $(wildcard src/shaders/*.vert)

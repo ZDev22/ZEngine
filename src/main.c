@@ -34,8 +34,10 @@ struct timespec fpsLastTime;
 
 int main() {
     /* init engine */
+#ifndef _WIN32
     setenv("__GL_YIELD", "USLEEP", 1);
     setenv("MESA_NO_ERROR", "1", 1);
+#endif
 
     RGFW_init("z", RGFW_initVulkan);
     zwindow = RGFW_createWindow("...", 0, 0, 720, 480, 0);
