@@ -20,7 +20,7 @@ cd ZEngine
 sudo pacman -Syu --noconfirm
 sudo pacman -S gcc --noconfirm #C
 sudo pacman -S libx11 libxrandr libxcursor --noconfirm #X11
-sudo pacman -S vulkan-headers vulkan-tools vulkan-icd-loader --noconfirm #Vulkan
+sudo pacman -S vulkan-headers vulkan-tools vulkan-icd-loader shaderc --noconfirm #Vulkan
 # Intel GPU: sudo pacman -S vulkan-intel --noconfirm
 # AMD GPU: sudo pacman -S vulkan-radeon --noconfirm
 ```
@@ -29,14 +29,14 @@ sudo pacman -S vulkan-headers vulkan-tools vulkan-icd-loader --noconfirm #Vulkan
 sudo apt update
 sudo apt install build-essential -y #C
 sudo apt install libx11-dev libxrandr-dev libxkbcommon-dev libegl1-mesa-dev libxcursor-dev libxi-dev -y #X11
-sudo apt install libvulkan-dev libvulkan1 mesa-vulkan-drivers vulkan-tools -y #Vulkan
+sudo apt install libvulkan-dev libvulkan1 mesa-vulkan-drivers vulkan-tools glslc -y #Vulkan
 ```
 #### Fedora:
 ```bash
 sudo dnf update -y
 sudo dnf install gcc -y #C
 sudo dnf install libX11-devel libXrandr-devel libxkbcommon-devel mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
-sudo dnf install vulkan-headers vulkan-tools vulkan-loader-devel -y #Vulkan
+sudo dnf install vulkan-headers vulkan-tools vulkan-loader-devel shaderc -y #Vulkan
 # Intel GPU: sudo dnf install vulkan-intel -y
 # AMD GPU: sudo dnf install vulkan-radeon -y
 ```
@@ -45,7 +45,7 @@ sudo dnf install vulkan-headers vulkan-tools vulkan-loader-devel -y #Vulkan
 root # emerge --sync
 sudo emerge --ask sys-devel/gcc #C
 sudo emerge --ask x11-libs/libX11 x11-libs/libXrandr x11-libs/libXi x11-libs/libXcursor x11-libs/libxkbcommon mesa-libs/mesa #X11
-sudo emerge --ask media-libs/vulkan-loader dev-util/vulkan-headers media-libs/vulkan-tools #Vulkan
+sudo emerge --ask media-libs/vulkan-loader dev-util/vulkan-headers media-libs/vulkan-tools media-libs/shaderc #Vulkan
 # Intel GPU: sudo emerge --ask media-libs/vulkan-intel
 # AMD GPU: sudo emerge --ask media-libs/vulkan-radeon
 ```
@@ -55,7 +55,7 @@ sudo zypper refresh
 sudo zypper update -y
 sudo zypper install -t pattern devel_C -y #C
 sudo zypper install libX11-devel libXrandr-devel libxkbcommon-devel Mesa-libEGL-devel libXi-devel libXcursor-devel -y #X11
-sudo zypper install vulkan-headers vulkan-loader-devel vulkan-tools -y #Vulkan
+sudo zypper install vulkan-headers vulkan-loader-devel vulkan-tools shaderc -y #Vulkan
 # Intel GPU: sudo zypper install vulkan-intel -y
 # AMD GPU: sudo zypper install vulkan-radeon -y
 ```
@@ -64,7 +64,7 @@ sudo zypper install vulkan-headers vulkan-loader-devel vulkan-tools -y #Vulkan
 sudo apk update
 sudo apk add build-base #C
 sudo apk add libx11-dev libxrandr-dev libxkbcommon-dev libxi-dev libxcursor-dev mesa-egl-dev #X11
-sudo apk add vulkan-headers vulkan-tools vulkan-loader-dev #Vulkan
+sudo apk add vulkan-headers vulkan-tools vulkan-loader-dev shaderc #Vulkan
 # Intel GPU: sudo apk add vulkan-intel
 # AMD GPU: sudo apk add vulkan-radeon
 ```
