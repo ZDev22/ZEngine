@@ -16,6 +16,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 
 #ifdef ZENGINE_DEBUG
     #define TRACK_FPS
+    #define ZENGINE_ENABLE_VALIDATION_LAYERS
 #endif
 #ifdef TRACK_FPS
     #include <stdio.h>
