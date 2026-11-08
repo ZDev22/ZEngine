@@ -12,12 +12,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #include "zengine.h"
 
 //#define FPS_CAP 60.f
-#define TRACK_FPS
 
-#ifdef ZENGINE_DEBUG
-    #define TRACK_FPS
-    #define ZENGINE_ENABLE_VALIDATION_LAYERS
-#endif
 #ifdef TRACK_FPS
     #include <stdio.h>
 #endif

@@ -4,7 +4,7 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.C ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
-#define ZENGINE_ENABLE_VALIDATION_LAYERS - enable vulkan validation layers, validation messages print to stderr (define BEFORE including zengine.h)
+#define ZENGINE_ENABLE_VALIDATION_LAYERS - enable vulkan validation layers, validation messages print to stderr
 
 COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
@@ -39,10 +39,6 @@ COMPILER FLAGS:
     #undef ZENGINE_MAX_TEXTURES
     #define ZENGINE_MAX_TEXTURES 25
 #endif
-
-/* vulkan validation layers - disabled by default, uncomment here or define ZENGINE_ENABLE_VALIDATION_LAYERS
-   in your game file (before including zengine.h) to enable them */
-/* #define ZENGINE_ENABLE_VALIDATION_LAYERS */
 
 /* debugging */
 #define ZENGINE_PRINT(x, ...)
@@ -226,7 +222,7 @@ VkSurfaceKHR surface_;
 VkQueue graphicsQueue_;
 bool uniformBuffer = 0;
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
-VkDebugUtilsMessengerEXT debugMessenger; /* outputs vulkan validation messages */
+VkDebugUtilsMessengerEXT debugMessenger;
 #endif
 
 /* renderer vars */
