@@ -4,6 +4,7 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.C ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
+#define ZENGINE_ENABLE_VALIDATION_LAYERS - enable vulkan validation layers, validation messages print to stderr (define BEFORE including zengine.h)
 
 COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
@@ -38,6 +39,10 @@ COMPILER FLAGS:
     #undef ZENGINE_MAX_TEXTURES
     #define ZENGINE_MAX_TEXTURES 25
 #endif
+
+/* vulkan validation layers - disabled by default, uncomment here or define ZENGINE_ENABLE_VALIDATION_LAYERS
+   in your game file (before including zengine.h) to enable them */
+/* #define ZENGINE_ENABLE_VALIDATION_LAYERS */
 
 /* debugging */
 #define ZENGINE_PRINT(x, ...)
@@ -220,6 +225,9 @@ VkQueue presentQueue_;
 VkSurfaceKHR surface_;
 VkQueue graphicsQueue_;
 bool uniformBuffer = 0;
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+VkDebugUtilsMessengerEXT debugMessenger; /* outputs vulkan validation messages */
+#endif
 
 /* renderer vars */
 VkCommandBuffer* commandBuffers = NULL;
@@ -708,6 +716,22 @@ void rotateSprite(Sprite* sprite, float rotation) {
     sprite->rotationMatrix[3] = sprite->rotationMatrix[0];
 }
 
+/* vulkan validation layers */
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+static const char* validationLayers[] = {"VK_LAYER_KHRONOS_validation"};
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData) {
+    (void)messageSeverity;
+    (void)messageType;
+    (void)userData;
+
+    if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) { fprintf(stderr, "Vulkan validation error: %s\n", callbackData->pMessage); }
+    else { fprintf(stderr, "Vulkan validation: %s\n", callbackData->pMessage); }
+
+    return VK_FALSE;
+}
+#endif
+
 /* ZENGINE */
 void ZEngineInit() {
     ZENGINE_PRINT("Creating instance...\n"); //---------------------------------------------------------------------------------------------------------------
@@ -727,9 +751,12 @@ void ZEngineInit() {
     const char* instanceExtensions[] = {
         VK_KHR_SURFACE_EXTENSION_NAME,
         "VK_MVK_macos_surface"
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+        , VK_EXT_DEBUG_UTILS_EXTENSION_NAME /* extra extension for vulkan validation output */
+#endif
     };
 
-    instanceInfo.enabledExtensionCount = 2;
+    instanceInfo.enabledExtensionCount = sizeof(instanceExtensions) / sizeof(instanceExtensions[0]);
     instanceInfo.ppEnabledExtensionNames = instanceExtensions;
     instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #else
@@ -743,8 +770,33 @@ void ZEngineInit() {
     ZENGINE_PRINT("Enabling extensions:\n");
     for (size_t i = 0; i < rgfWExtensionCount; i++) { ZENGINE_PRINT("     - %s\n", rgfWExtensions[i]); }
 
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+    /* add an extra extension for vulkan validation output */
+    size_t instanceExtensionCount = rgfWExtensionCount + 1;
+    const char* instanceExtensions[instanceExtensionCount];
+    for (size_t i = 0; i < rgfWExtensionCount; i++) { instanceExtensions[i] = rgfWExtensions[i]; }
+    instanceExtensions[rgfWExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+
+    instanceInfo.enabledExtensionCount = instanceExtensionCount;
+    instanceInfo.ppEnabledExtensionNames = instanceExtensions;
+#else
     instanceInfo.enabledExtensionCount = rgfWExtensionCount;
     instanceInfo.ppEnabledExtensionNames = rgfWExtensions;
+#endif
+#endif
+
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+    /* enable the vulkan validation layers */
+    instanceInfo.enabledLayerCount = sizeof(validationLayers) / sizeof(validationLayers[0]);
+    instanceInfo.ppEnabledLayerNames = validationLayers;
+
+    /* attach a debug messenger to the instance creation info, to also validate instance creation/destruction */
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo = {(VkStructureType)0};
+    debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    debugInfo.pfnUserCallback = debugCallback;
+    instanceInfo.pNext = &debugInfo;
 #endif
 
 #ifdef ZENGINE_DEBUG
@@ -754,6 +806,17 @@ void ZEngineInit() {
     }
 #else
     vkCreateInstance(&instanceInfo, NULL, &instance);
+#endif
+
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+    /* create a debug messenger to validate the engine during its entire lifetime */
+    PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessenger = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    if (vkCreateDebugUtilsMessenger == NULL) {
+        fprintf(stderr, "Failed to load vkCreateDebugUtilsMessengerEXT..\n");
+        exit(1);
+    }
+
+    ZENGINE_THROW(vkCreateDebugUtilsMessenger(instance, &debugInfo, NULL, &debugMessenger));
 #endif
 
     ZENGINE_PRINT("Creating surface...\n"); RGFW_window_createSurface_Vulkan(zwindow, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
@@ -1309,6 +1372,11 @@ void ZEngineDeinit() {
     ZENGINE_PRINT("Freeing command pool\n");          vkDestroyCommandPool(device_, commandPool, NULL);
     ZENGINE_PRINT("Destroying device\n");             vkDestroyDevice(device_, NULL);
     ZENGINE_PRINT("Freeing window surface\n");        vkDestroySurfaceKHR(instance, surface_, NULL);
+#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+    ZENGINE_PRINT("Destroying debug messenger\n");
+    PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessenger = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (vkDestroyDebugUtilsMessenger != NULL) { vkDestroyDebugUtilsMessenger(instance, debugMessenger, NULL); }
+#endif
     ZENGINE_PRINT("Destroying instance\n");           vkDestroyInstance(instance, NULL);
 }
 
