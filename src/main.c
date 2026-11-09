@@ -66,7 +66,6 @@ int main() {
         }
         fps++;
 #endif
-
         /* poll window events */
         RGFW_event event;
         while (RGFW_window_checkEvent(zwindow, &event)) {
