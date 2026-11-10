@@ -845,41 +845,31 @@ void ZEngineInit() {
         ZENGINE_PRINT("No Vulkan-compatible GPUs found!\nPlease install vulkan drivers: Intel: sudo pacman -S vulkan-intel || AMD: sudo pacman -S vulkan-radeon || If you are not on arch linux, please follow the guide in https://github.com/ZDev22/ZEngine/blob/main/README.md\n");
         exit(1);
     }
-    else if (deviceCount == 1) { physicalDevice = devices[0]; }
+    else if (deviceCount == 1) {
+        physicalDevice = devices[0];
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &swapChainSupport.formatsSize, NULL);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &swapChainSupport.presentModeSize, NULL);
+    }
     else {
         ZENGINE_PRINT("Found %u GPUs\n", deviceCount);
         short highScore = -1;
         for (unsigned char i = 0; i < (unsigned char)deviceCount; ++i) {
-            /* check if device is suitable, and score it */
-            QueueFamilyIndices indices = findQueueFamilies(devices[i]);
-            unsigned int extensionCount = 0;
+            SwapChainSupportDetails swapChainCheck;
+            vkGetPhysicalDeviceSurfaceFormatsKHR(devices[i], surface_, &swapChainCheck.formatsSize, NULL);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(devices[i], surface_, &swapChainCheck.presentModeSize, NULL);
 
-            /* check if extensions are supported on the GPU: */
-            vkEnumerateDeviceExtensionProperties(devices[i], NULL, &extensionCount, NULL);
-            VkExtensionProperties availableExtensions[extensionCount];
-            vkEnumerateDeviceExtensionProperties(devices[i], NULL, &extensionCount, availableExtensions);
-
-            SwapChainSupportDetails swapChainSupport;
-            vkGetPhysicalDeviceSurfaceCapabilitiesKHR(devices[i], surface_, &swapChainSupport.capabilities);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(devices[i], surface_, &swapChainSupport.formatsSize, NULL);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(devices[i], surface_, &swapChainSupport.presentModeSize, NULL);
-
-            unsigned short newScore = swapChainSupport.formatsSize * swapChainSupport.presentModeSize;
-            VkPhysicalDeviceFeatures supportedFeatures;
-            vkGetPhysicalDeviceFeatures(devices[i], &supportedFeatures);
-            if (!(indices.graphicsFamilyHasValue && indices.presentFamilyHasValue && !(swapChainSupport.formatsSize == 0) && !(swapChainSupport.presentModeSize == 0))) { newScore = 0; }
-            else if (newScore > highScore) {
+            unsigned short newScore = swapChainCheck.formatsSize * swapChainCheck.presentModeSize;
+            if (newScore > highScore) {
                 highScore = newScore;
                 physicalDevice = devices[i];
+                swapChainSupport.formatsSize = swapChainCheck.formatsSize;
+                swapChainSupport.presentModeSize = swapChainCheck.presentModeSize;
                 break;
             }
         }
     }
 
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface_, &swapChainSupport.capabilities);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &swapChainSupport.formatsSize, NULL);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &swapChainSupport.presentModeSize, NULL);
     if (swapChainSupport.formatsSize != 0) {
         swapChainSupport.formats = (VkSurfaceFormatKHR*)malloc(swapChainSupport.formatsSize * sizeof(VkSurfaceFormatKHR));
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &swapChainSupport.formatsSize, swapChainSupport.formats);
@@ -889,17 +879,11 @@ void ZEngineInit() {
         vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &swapChainSupport.presentModeSize, swapChainSupport.presentModes);
     }
 
-    if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) {
-	    uniformBuffer = 1;
-    }
+    if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) { uniformBuffer = 1; }
 
 #ifdef ZENGINE_DEBUG
     ZENGINE_PRINT("Selected GPU: %s\n", properties.deviceName);
-    ZENGINE_PRINT("  - Swapchain formats: %u, presentmodes: %u\n", swapChainSupport.formatsSize, swapChainSupport.presentModeSize);
-    for (unsigned char i = 0; i < (unsigned char)swapChainSupport.presentModeSize; i++) {
-        if (swapChainSupport.presentModes[i] == 0) { ZENGINE_PRINT("  - GPU supports VSync\n"); }
-        else if (swapChainSupport.presentModes[i] == 2) { ZENGINE_PRINT("  - GPU can disable VSync\n"); }
-    }
+    ZENGINE_PRINT("  - Swapchain formats: %u | Present modes: %u\n", swapChainSupport.formatsSize, swapChainSupport.presentModeSize);
 #endif
 
     ZENGINE_PRINT("Creating logical device...\n"); //---------------------------------------------------------------------------------------------------------------
