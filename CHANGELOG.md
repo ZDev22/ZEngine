@@ -7,10 +7,10 @@
 - **ADDED ASPECT RATIO**
 - **ADDED OPACITY**
 - **ADDED ZTEXT.H**
-- **NEW BUILD SYSTEM**
+- **NEW BUILD SYSTEM (FOR LINUX)**
+- **VULKAN VALIDATION LAYERS**
 - Removed zbit, zint & zwindow
-- Removed hundreds of warnings
-- Mac improvements
+- Removed warnings, memory leaks and Vulkan validation issues
 - Optimizations
 - Bugfixes
 

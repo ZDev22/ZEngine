@@ -37,6 +37,9 @@ int main() {
 
     RGFW_init("z", RGFW_initVulkan);
     zwindow = RGFW_createWindow("...", 0, 0, 720, 480, 0);
+#ifdef _WIN32
+    RGFW_window_maximize(zwindow);
+#endif
     ZEngineInit();
     initGame();
 

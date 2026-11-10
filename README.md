@@ -68,13 +68,6 @@ sudo apk add vulkan-headers vulkan-tools vulkan-loader-dev shaderc #Vulkan
 # Intel GPU: sudo apk add vulkan-intel
 # AMD GPU: sudo apk add vulkan-radeon
 ```
-## MAC (beta):
-- Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
-- Move vulkan into your home folder
-- Run the following command to install moltenVK:
-```bash
-brew install molten-vk
-```
 ## WINDOWS:
 - Download vulkan from: [https://vulkan.lunarg.com/sdk/home](https://vulkan.lunarg.com/sdk/home)
 - Download msys2 from [https://www.msys2.org/](https://www.msys2.org/) **CLOSE THE TERMINAL**
@@ -93,40 +86,28 @@ winget install Ninja-build.Ninja
 - Add C:\msys64\mingw64\bin to your user (or system) PATH
 - Restart your IDE (or terminal)
 
-# How do make your own games:
-- Duplicate flappybird.h as a good base for your game
-- Delete the tickGame() implementation and replace it with your own
-- In main.c make sure to include your game instead of the example
-- ZDeps documentation is inside their respective files
-
+# Build:
+## Linux:
+```bash
+make
+cd bin
+./main
+```
+## Windows:
+```bash
+cmake -G Ninja -B bin -S .
+cmake --build bin
+glslc -O --target-env=vulkan1.2 shaders\z.frag -o shaders\z.frag.spv
+glslc -O --target-env=vulkan1.2 shaders\z.vert -o shaders\z.vert.spv
+cd bin
+.\main.exe
+```
 # Dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>
 [RGFW (Window)](https://github.com/ColleagueRiley/RGFW)</br>
 [MINIAUDIO (Audio)](https://miniaud.io/)</br>
 [STB-IMAGE (Image loader)](https://github.com/nothings/stb)</br>
 [STB-TRUETYPE (font text rasterizer)](https://github.com/nothings/stb)
-
-# Build:
-## Linux/MacOS:
-```bash
-make
-```
-## Windows:
-```bash
-cmake -G Ninja -B bin -S .
-cmake --build bin
-```
-# Run:
-## Linux/MacOS:
-```bash
-cd bin
-./main
-```
-## Windows:
-```bash
-cd bin
-.\main.exe
-```
 
 # Notes:
 - RGFW.h and stb_image.h are required dependencies

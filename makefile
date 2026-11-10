@@ -1,21 +1,11 @@
 CC = gcc
-#CC = musl-gcc
-CFLAGS = -march=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -std=c99 -ffast-math -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100 -DTRACK_FPS
+#CC = clang
+CFLAGS = -march=native -mtune=native -Ofast -flto -fomit-frame-pointer -fprefetch-loop-arrays -fno-semantic-interposition -fno-plt -fipa-pta -fipa-icf -fira-loop-pressure -fira-region=all -fwhole-program -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -fvect-cost-model=unlimited -fsimd-cost-model=unlimited -std=c99 -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100 -DTRACK_FPS
 #CFLAGS = -O0 -g3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_ENABLE_VALIDATION_LAYERS -DTRACK_FPS -DZENGINE_MAX_SPRITES=10000 -DZENGINE_MAX_TEXTURES=100
 LDFLAGS = -lm
 
 BIN := bin/main
-
-UNAME_S := $(shell uname -s)
-
-ifeq ($(UNAME_S),Linux)
-    LDFLAGS += -lX11 -lXrandr -lXext -lXcursor -lXi -lvulkan -lpulse
-else ifeq ($(UNAME_S),Darwin)
-	VULKANSDK ?= $(shell ls -d $(HOME)/VulkanSDK/*/macOS)
-	CFLAGS += -I$(VULKANSDK)/include
-	LDFLAGS += -L$(VULKANSDK)/lib -Wl,-rpath,$(VULKANSDK)/lib -lMoltenVK -lc++ -framework Cocoa -framework Metal -ObjC -framework CoreAudio -framework AudioToolbox
-endif
-
+LDFLAGS += -lX11 -lXrandr -lXext -lXcursor -lXi -lvulkan -lpulse
 MAKEFLAGS += -j$(shell nproc)
 
 SRC := $(shell find . -name '*.c')
@@ -24,10 +14,8 @@ OBJ := $(patsubst %.c,bin/obj/%.o,$(SRC))
 
 VERT_SHADERS := $(wildcard src/shaders/*.vert)
 FRAG_SHADERS := $(wildcard src/shaders/*.frag)
-
 VERT_SPV := $(patsubst src/shaders/%.vert,bin/shaders/%.vert.spv,$(VERT_SHADERS))
 FRAG_SPV := $(patsubst src/shaders/%.frag,bin/shaders/%.frag.spv,$(FRAG_SHADERS))
-
 SPV_FILES := $(VERT_SPV) $(FRAG_SPV)
 
 
@@ -52,4 +40,3 @@ bin/shaders/%.frag.spv: src/shaders/%.frag
 copyAssets:
 	@mkdir -p bin/assets
 	cp -r src/assets/. bin/assets/
-

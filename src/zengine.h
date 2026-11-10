@@ -31,11 +31,6 @@ COMPILER FLAGS:
     #define ZENGINE_MAX_TEXTURES 50
 #endif
 
-#if ZENGINE_MAX_SPRITES > 4096 && defined(__APPLE__)
-    #undef ZENGINE_MAX_SPRITES
-    #define ZENGINE_MAX_SPRITES 4096
-#endif
-
 #if ZENGINE_MAX_TEXTURES < 25
     #undef ZENGINE_MAX_TEXTURES
     #define ZENGINE_MAX_TEXTURES 25
@@ -761,19 +756,6 @@ void ZEngineInit() {
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceInfo.pApplicationInfo = &appInfo;
 
-#ifdef __APPLE__
-    const char* instanceExtensions[] = {
-        VK_KHR_SURFACE_EXTENSION_NAME,
-        "VK_MVK_macos_surface"
-#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
-        , VK_EXT_DEBUG_UTILS_EXTENSION_NAME /* extra extension for vulkan validation output */
-#endif
-    };
-
-    instanceInfo.enabledExtensionCount = sizeof(instanceExtensions) / sizeof(instanceExtensions[0]);
-    instanceInfo.ppEnabledExtensionNames = instanceExtensions;
-    instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-#else
     size_t rgfWExtensionCount = 0;
     const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
     if (!rgfWExtensions || rgfWExtensionCount == 0) {
@@ -796,7 +778,6 @@ void ZEngineInit() {
 #else
     instanceInfo.enabledExtensionCount = rgfWExtensionCount;
     instanceInfo.ppEnabledExtensionNames = rgfWExtensions;
-#endif
 #endif
 
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
@@ -918,16 +899,8 @@ void ZEngineInit() {
     deviceInfo.pQueueCreateInfos = queueCreateInfos;
     deviceInfo.queueCreateInfoCount = queueFamilySize;
 
-#ifdef __APPLE__
-    const char* extension[2] = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        "VK_KHR_portability_subset"
-    };
-    deviceInfo.enabledExtensionCount = 2;
-#else
     const char* extension[1] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     deviceInfo.enabledExtensionCount = 1;
-#endif
     deviceInfo.ppEnabledExtensionNames = extension;
     deviceInfo.enabledLayerCount = 0;
     ZENGINE_THROW(vkCreateDevice(physicalDevice, &deviceInfo, NULL, &device_));
@@ -958,7 +931,7 @@ void ZEngineInit() {
     vkAllocateCommandBuffers(device_, &commandBufferInfo, commandBuffers);
 
     ZENGINE_PRINT("Initializing shaders...\n");
-    VkPipelineShaderStageCreateInfo shaderStages[2] = {(VkStructureType)0};
+    VkPipelineShaderStageCreateInfo shaderStages[2] = {{(VkStructureType)0}};
     shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
     shaderStages[0].module = createShaderModule("shaders/z.vert.spv");
@@ -1046,7 +1019,7 @@ void ZEngineInit() {
     dynamicState.pDynamicStates = dynamicStates;
 
     ZENGINE_PRINT("Creating pipeline layout...\n");
-    VkDescriptorSetLayoutBinding layoutBindings[2] = {(VkStructureType)0};
+    VkDescriptorSetLayoutBinding layoutBindings[2] = {{(VkStructureType)0}};
     layoutBindings[0].binding = 0;
     if (uniformBuffer) { layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; }
     else { layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; }
