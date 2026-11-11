@@ -97,8 +97,6 @@ cd bin
 ```bash
 cmake -G Ninja -B bin -S .
 cmake --build bin
-glslc -O --target-env=vulkan1.2 shaders\z.frag -o shaders\z.frag.spv
-glslc -O --target-env=vulkan1.2 shaders\z.vert -o shaders\z.vert.spv
 cd bin
 .\main.exe
 ```

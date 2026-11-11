@@ -170,7 +170,7 @@ void createSwapChain();
 void deleteSwapChain();
 
 /* texture funcs*/
-void createTexture(const char* filepath, float opacity, unsigned int index);
+void createTexture(const char* filepath, unsigned int index);
 void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkDeviceSize imageSize, VkFormat format);
 
 /* buffer funcs */
@@ -497,14 +497,10 @@ void deleteTexture(unsigned int index) {
     }
 }
 
-void createTexture(const char* filepath, float opacity, unsigned int index) {
+void createTexture(const char* filepath, unsigned int index) {
     int width = 0; int height = 0;
     unsigned char* pixels = stbi_load(filepath, &width, &height, NULL, STBI_rgb_alpha);
     VkDeviceSize imageSize = width * height * 4;
-
-    if (opacity != 1.f) {
-        for (unsigned int i = 3; i < (unsigned int)imageSize; i += 4) { pixels[i] *= opacity; }
-    }
 
     createTextureExt(pixels, index, width, height, imageSize, VK_FORMAT_R8G8B8A8_SRGB);
     stbi_image_free(pixels);
@@ -687,7 +683,7 @@ Sprite* createSprite(float positionx, float positiony, float scalex, float scale
         sprites[spritesSize].scale[0] = scalex;
         sprites[spritesSize].scale[1] = scaley;
         sprites[spritesSize].textureIndex = textureIndex;
-        sprites[spritesSize].depth = .999f - ((float)spritesSize * 0.00001f);
+        sprites[spritesSize].depth = 0.00001f + ((float)spritesSize * 0.00001f);
         rotateSprite(&sprites[spritesSize], rotation);
         spritesSize++;
 

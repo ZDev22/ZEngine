@@ -1,3 +1,7 @@
+/* this is a single-header example of how to use ZEngine. It is not compiled into the executable by default.
+ * This example includes textures, text and audio.
+ */
+
 #ifndef FLAPPYBIRD_H
 #define FLAPPYBIRD_H
 
@@ -15,23 +19,27 @@ bool flappyBirdStarted = 0;
 int flappyBirdScore = 0;
 
 Sprite* bird;
-Sprite* pipes[10];
-Sprite* ztext[100];
-unsigned char ztextSize = 0;
+Sprite* pipes[100];
+unsigned char pipeSize = 0;
 
 ma_engine audio;
+
+void createPipe(unsigned char index) {
+    pipes[pipeSize] = createSprite(0.f, 0.f, .1f, .1f, 0.f, index);
+    pipeSize++;
+}
 
 void initGame() {
     srand(100);
     ma_engine_init(NULL, &audio);
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
-    createTexture("assets/img/flappyBird.png", .5f, 0);
-    createTexture("assets/img/pipe.png", 1.f, 1);
-    createText("ZDev", 150, 64, 64, 0, 3);
+    createTexture("assets/img/flappyBird.png", 0);
+    createTexture("assets/img/pipe.png", 1);
+    createText("ZDev", 150, 64, 64, 0, 2);
 
     bird = createSprite(-.7f, 0.f, .1f, .1f, 0.f, 0);
-    for (unsigned char i = 0; i < 10; i++) { pipes[i] = createSprite(-.7f, -.3f, .1f, .1f, 0.f, 1); }
+    for (unsigned char i = 0; i < 10; i++) { createPipe(1); }
 }
 
 void tickGame() {
@@ -46,8 +54,7 @@ void tickGame() {
                 bird->textureIndex = 0;
 
                 ma_engine_play_sound(&audio, "assets/sounds/chirp.mp3", NULL);
-                ztext[ztextSize] = createSprite(0.f, 0.f, .5f, .2f, 0.f, 3);
-                ztextSize++;
+                createPipe(2);
             }
 
             if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
@@ -64,17 +71,14 @@ void tickGame() {
             flappyBirdDead = 0;
         }
 
-        for (unsigned int i = 1; i < spritesSize / 2; i++) {
-            unsigned int index = ((i - 1) * 2) + 1;
-            sprites[index].position[0] -= .5f * deltaTime;
-            if (sprites[index].position[0] < -1.5f) {
-                sprites[index].position[0] = 1.5f;
-                sprites[index].position[1] = (float)((rand() % 10) + 4) / 10.f;
+        for (unsigned int i = 0; i < pipeSize; i++) {
+            pipes[i]->position[0] -= .5f * deltaTime;
+            if (pipes[i]->position[0] < -camera.aspect) {
+                pipes[i]->position[0] = camera.aspect;
+                pipes[i]->position[1] = ((float)(rand() % 2000) / 1000.f) - 1.f;
             }
-            sprites[index + 1].position[0] = sprites[index].position[0];
-            sprites[index + 1].position[1] = sprites[index].position[1] - 2.f;
 
-            if (flappyBirdStarted && !flappyBirdDead && (zcollide_squareCollision(sprites[index].position[0], sprites[index].position[1], sprites[index].scale[0], sprites[index].scale[1], bird->position[0], bird->position[1], bird->scale[0], bird->scale[1]) || zcollide_squareCollision(sprites[index + 1].position[0], sprites[index + 1].position[1], sprites[index + 1].scale[0], sprites[index + 1].scale[1], bird->position[0], bird->position[1], bird->scale[0], bird->scale[1]))) {
+            if (flappyBirdStarted && !flappyBirdDead && (zcollide_squareCollision(pipes[i]->position[0], pipes[i]->position[1], pipes[i]->scale[0], pipes[i]->scale[1], bird->position[0], bird->position[1], bird->scale[0], bird->scale[1]))) {
                 flappyBirdDead = 1;
                 flappyBirdSpeedY = -1.5f;
                 rotateSprite(bird, 60.f);
@@ -92,6 +96,7 @@ void tickGame() {
         }
     }
 }
+
 
 void deinitGame(void) {
     ma_engine_uninit(&audio);

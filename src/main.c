@@ -18,7 +18,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #endif
 
 /* games */
-#include "examples/flappybird.h"
+#include "test/test.h"
 
 #include <time.h>
 #include <unistd.h>
@@ -41,7 +41,7 @@ int main() {
     RGFW_window_maximize(zwindow);
 #endif
     ZEngineInit();
-    initGame();
+    initTest();
 
 #if defined(TRACK_FPS) || defined(FPS_CAP)
     clock_gettime(CLOCK_MONOTONIC, &fpsLastTime);
@@ -78,8 +78,7 @@ int main() {
             }
         }
 
-        tickGame();
-
+        tickTest();
         ZEngineRender();
     }
 
@@ -87,6 +86,6 @@ int main() {
     zwindow = NULL;
     ZEngineDeinit();
     RGFW_deinit();
-    deinitGame();
+    deinitTest();
 }
 
