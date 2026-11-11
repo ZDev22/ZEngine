@@ -38,7 +38,7 @@ void loadFont(const char* font, const unsigned char index);
     #define ZTEXT_MAX_FONTS 1
 #endif
 
-#include "deps/zimage.h"
+#include "deps/stb_truetype.h"
 
 stbtt_fontinfo fonts[ZTEXT_MAX_FONTS];
 

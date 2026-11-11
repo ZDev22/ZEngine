@@ -46,9 +46,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define MA_NO_VORBIS
 #define MA_NO_OPUS
 
-/* STB_IMAGE */
-#define ZIMAGE_IMPLEMENTATION
-
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_ASSERT(x)
@@ -56,7 +53,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 /* DEPENDENCIES */
 #include "deps/RGFW.h"
 #include "deps/miniaudio.h"
-#include "deps/zimage.h"
 #include "deps/stb_truetype.h"
 
 #include <vulkan/vulkan.h>
@@ -67,7 +63,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #undef ZCOLLIDE_IMPLEMENTATION
 #undef ZMATH_IMPLEMENTATION
 #undef ZTEXT_IMPLEMENTATION
-#undef ZIMAGE_IMPLEMENTATION
 #undef STB_TRUETYPE_IMPLEMENTATION
 
 /* zdeps */

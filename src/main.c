@@ -88,4 +88,3 @@ int main() {
     RGFW_deinit();
     deinitTest();
 }
-
