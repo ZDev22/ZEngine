@@ -34,7 +34,6 @@ void initGame() {
     ma_engine_init(NULL, &audio);
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
-    createTexture("assets/img/flappyBird.png", 0);
     createTexture("assets/img/pipe.png", 1);
     createText("ZDev", 150, 64, 64, 0, 2);
 
@@ -43,6 +42,7 @@ void initGame() {
 }
 
 void tickGame() {
+    createTexture("assets/img/flappyBird.png", 0);
     if (flappyBirdStarted) {
         flappyBirdSpeedY += 3.8f * deltaTime;
         bird->position[1] += flappyBirdSpeedY * deltaTime;

@@ -61,7 +61,7 @@ COMPILER FLAGS:
 #define RGFW_EXPORT
 
 #include "deps/RGFW.h" /* window */
-#include "deps/stb_image.h" /* image */
+#include "deps/zimage.h" /* image */
 
 /* vulkan */
 #include <vulkan/vulkan.h>
@@ -171,7 +171,7 @@ void deleteSwapChain();
 
 /* texture funcs*/
 void createTexture(const char* filepath, unsigned int index);
-void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkDeviceSize imageSize, VkFormat format);
+void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkFormat format);
 
 /* buffer funcs */
 void createBuffer(Buffer* buffer, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
@@ -498,15 +498,15 @@ void deleteTexture(unsigned int index) {
 }
 
 void createTexture(const char* filepath, unsigned int index) {
-    int width = 0; int height = 0;
-    unsigned char* pixels = stbi_load(filepath, &width, &height, NULL, STBI_rgb_alpha);
-    VkDeviceSize imageSize = width * height * 4;
+    unsigned int width = 0; unsigned int height = 0;
+    unsigned char* pixels = NULL;
+    ZImageLoad(filepath, &pixels, &width, &height);
 
-    createTextureExt(pixels, index, width, height, imageSize, VK_FORMAT_R8G8B8A8_SRGB);
-    stbi_image_free(pixels);
+    createTextureExt(pixels, index, width, height, VK_FORMAT_R8G8B8A8_SRGB);
+    free(pixels);
 }
 
-void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkDeviceSize imageSize, VkFormat format) {
+void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkFormat format) {
 #ifdef ZENGINE_DEBUG
     if (index > ZENGINE_MAX_TEXTURES - 1) {
         ZENGINE_PRINT("The texture you are trying to load exceeds the texture limit! Please make sure -DZENGINE_MAX_TEXTURES is higher than the loaded index!");
@@ -517,6 +517,7 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
     deleteTexture(index);
     spriteTextures[index].loaded = 1;
 
+    VkDeviceSize imageSize = width * height * 4;
     textureBufferInfo.size = imageSize;
     vkCreateBuffer(device_, &textureBufferInfo, NULL, &spriteTextures[index].buffer);
 
