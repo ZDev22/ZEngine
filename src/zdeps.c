@@ -23,28 +23,9 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define RGFW_EXPORT
 #define RGFW_ASSERT(x) (void)(x)
 
-/* MINIAUDIO */
-#define MINIAUDIO_IMPLEMENTATION
-#ifndef _WIN32
-    #define MA_NO_RUNTIME_LINKING
-#endif
-#define MA_64BIT
-/* disable decoders */
-#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
-#if defined(__linux__)
-    #define MA_ENABLE_PULSEAUDIO
-#elif defined(_APPLE_)
-    #define MA_ENABLE_COREAUDIO
-#elif defined(_WIN32_)
-    #define MA_ENABLE_WINMM
-    #define MA_ENABLE_WASAPI
-#else
-    #define MA_NULL
-#endif
-#define MA_NO_FLAC
-#define MA_NO_WAV
-#define MA_NO_VORBIS
-#define MA_NO_OPUS
+/* AUDIO */
+#define SOKOL_IMPL
+#define SOKOL_ASSERT(x) (void)(x)
 
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION
@@ -52,22 +33,27 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* DEPENDENCIES */
 #include "deps/RGFW.h"
-#include "deps/miniaudio.h"
+#include "deps/sokol_audio.h"
 #include "deps/stb_truetype.h"
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
 #undef RGFW_IMPLEMENTATION
-#undef MINIAUDIO_IMPLEMENTATION
+#undef SOKOL_AUDIO_IMPL
+#undef MINIMP3_IMPLEMENTATION
+#undef ZAUDIO_IMPLEMENTATION
 #undef ZCOLLIDE_IMPLEMENTATION
 #undef ZMATH_IMPLEMENTATION
 #undef ZTEXT_IMPLEMENTATION
 #undef STB_TRUETYPE_IMPLEMENTATION
 
 /* zdeps */
+#define ZAUDIO_IMPLEMENTATION
 #define ZCOLLIDE_IMPLEMENTATION
 #define ZTEXT_IMPLEMENTATION
 
+#include "zaudio.h"
 #include "zcollide.h"
 #include "ztext.h"
+

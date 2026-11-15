@@ -4,6 +4,7 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.C ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
+#define ZENGINE_FAST_DEPTH - reorders depth to be faster on the GPU, however newly created sprites are layered behind older ones. Use depending on how you create your sprites and if you have a lot of overlap.
 
 COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
@@ -48,7 +49,7 @@ COMPILER FLAGS:
 #ifdef ZENGINE_DEBUG
     #include <stdio.h>
     #undef ZENGINE_THROW
-    #define ZENGINE_THROW(x) if((x) != VK_SUCCESS) exit(1);
+    #define ZENGINE_THROW(x) if((x) != VK_SUCCESS) { ZENGINE_PRINT("CRASH ON LINE %d\n", __LINE__); exit(1); }
 
     #undef ZENGINE_PRINT
     #define ZENGINE_PRINT(x, ...) printf(x, ##__VA_ARGS__)
@@ -499,6 +500,7 @@ void deleteTexture(unsigned int index) {
 
 void createTexture(const char* filepath, unsigned int index) {
     FILE *fp = fopen(filepath, "rb");
+    if (!fp) { ZENGINE_PRINT("Failed to load texture: %s\n", filepath); return; }
     png_byte bit_depth;
     png_byte color_type;
 
@@ -521,27 +523,17 @@ void createTexture(const char* filepath, unsigned int index) {
     /* These color_type don't have an alpha channel then fill it with 0xff. */
     if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_PALETTE) { png_set_filler(png, 0xFF, PNG_FILLER_AFTER); }
     if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { png_set_gray_to_rgb(png); }
-
     png_read_update_info(png, info);
 
     png_size_t rowbytes = png_get_rowbytes(png, info);
-    unsigned char* pixels = malloc(rowbytes * (height));
-    png_bytep *rows = malloc(sizeof(png_bytep) * (height));
+    unsigned char* pixels = (unsigned char*)malloc(rowbytes * (height));
+    png_bytep* rows = (png_bytep*)malloc(sizeof(png_bytep) * (height));
     for (unsigned int y = 0; y < height; y++) { rows[y] = pixels + y * rowbytes; }
 
     png_read_image(png, rows);
     png_destroy_read_struct(&png, &info, NULL);
     free(rows);
     fclose(fp);
-
-    for (unsigned int y = 0; y < height; y++) {
-        for (unsigned int x = 0; x < width; x++) {
-            unsigned char* px = pixels + (y * rowbytes) + (x >> 2);
-            px[0] = px[0];
-            px[1] = px[1];
-            px[2] = px[2];
-        }
-    }
 
     createTextureExt(pixels, index, width, height, VK_FORMAT_R8G8B8A8_SRGB);
     free(pixels);
@@ -551,7 +543,7 @@ void createTextureExt(const unsigned char* data, unsigned int index, unsigned in
 #ifdef ZENGINE_DEBUG
     if (index > ZENGINE_MAX_TEXTURES - 1) {
         ZENGINE_PRINT("The texture you are trying to load exceeds the texture limit! Please make sure -DZENGINE_MAX_TEXTURES is higher than the loaded index!");
-        exit(1);
+        return;
     }
 #endif
 
@@ -725,7 +717,11 @@ Sprite* createSprite(float positionx, float positiony, float scalex, float scale
         sprites[spritesSize].scale[0] = scalex;
         sprites[spritesSize].scale[1] = scaley;
         sprites[spritesSize].textureIndex = textureIndex;
+#ifdef ZENGINE_FAST_DEPTH
         sprites[spritesSize].depth = 0.00001f + ((float)spritesSize * 0.00001f);
+#else
+    sprites[spritesSize].depth = .5f - ((float)spritesSize * 0.00001f);
+#endif
         rotateSprite(&sprites[spritesSize], rotation);
         spritesSize++;
 
@@ -803,7 +799,6 @@ void ZEngineInit() {
 
     ZENGINE_PRINT("Enabling extensions:\n");
     for (size_t i = 0; i < rgfWExtensionCount; i++) { ZENGINE_PRINT("     - %s\n", rgfWExtensions[i]); }
-
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
     /* add an extra extension for vulkan validation output */
     size_t instanceExtensionCount = rgfWExtensionCount + 1;
@@ -817,7 +812,6 @@ void ZEngineInit() {
     instanceInfo.enabledExtensionCount = rgfWExtensionCount;
     instanceInfo.ppEnabledExtensionNames = rgfWExtensions;
 #endif
-
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
     /* enable the vulkan validation layers */
     instanceInfo.enabledLayerCount = sizeof(validationLayers) / sizeof(validationLayers[0]);
@@ -842,6 +836,7 @@ void ZEngineInit() {
 #endif
 
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+
     /* create a debug messenger to validate the engine during its entire lifetime */
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessenger = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (vkCreateDebugUtilsMessenger == NULL) {

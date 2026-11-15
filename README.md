@@ -5,6 +5,7 @@ ZEngine's goal is to be **THE FASTEST** *2D game engine*, utilizing GPU accelera
 ZEngine's features include *vulkan initialization*, *sprite creation* and *texture loading*.
 ZDep libraries are included for additional features for creating games, such as *font loading* and *collision detection*.</br>
 Version handling is ZIVH (ZDev's Incremental Version Handling) - a *non-destructive* version counting system ex: ```1.4.7 -> 2.4.7``` ```9.12.9.4 -> 9.13.9.4```</br>
+ZAudio.h only supports 44100Hz Mono mp3 - ```ffmpeg -i sound.mp3 -ar 44100 -ac 1 newsound.mp3```
 Licensed under the GNU GPL v3 license - please see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for more details</br>
 *If you find an issue, please submit an issue on the github page. If you also find a fix, make it a pull request!*</br>
 
@@ -103,8 +104,8 @@ cd bin
 # Dependencies:
 [VULKAN (Graphics)](https://vulkan.lunarg.com/sdk/home)</br>
 [RGFW (Window)](https://github.com/ColleagueRiley/RGFW)</br>
-[MINIAUDIO (Audio)](https://miniaud.io/)</br>
-[STB-IMAGE (Image loader)](https://github.com/nothings/stb)</br>
+[MINIMP3 (MP3 decoder)](https://github.com/lieff/minimp3)</br>
+[SOKOL_AUDIO (Audio player)](https://github.com/floooh/sokol)</br>
 [STB-TRUETYPE (font text rasterizer)](https://github.com/nothings/stb)
 
 # Notes:

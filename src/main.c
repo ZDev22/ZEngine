@@ -9,9 +9,10 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 /* ZENGINE */
 #define ZENGINE_IMPLEMENTATION
 #define ZENGINE_DISABLE_VSYNC
+#define ZENGINE_FAST_DEPTH
 #include "zengine.h"
 
-//#define FPS_CAP 60.f
+#define FPS_CAP 60.f
 
 #ifdef TRACK_FPS
     #include <stdio.h>
@@ -30,7 +31,7 @@ struct timespec fpsLastTime;
 
 int main() {
     /* init engine */
-#ifndef _WIN32
+#ifdef __linux__
     setenv("__GL_YIELD", "USLEEP", 1);
     setenv("MESA_NO_ERROR", "1", 1);
 #endif

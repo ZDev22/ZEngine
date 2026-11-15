@@ -5,9 +5,8 @@
 #ifndef FLAPPYBIRD_H
 #define FLAPPYBIRD_H
 
-#include "../deps/miniaudio.h"
-
 #include "../zengine.h"
+#include "../zaudio.h"
 #include "../zcollide.h"
 #include "../ztext.h"
 
@@ -22,18 +21,18 @@ Sprite* bird;
 Sprite* pipes[100];
 unsigned char pipeSize = 0;
 
-ma_engine audio;
-
 void createPipe(unsigned char index) {
     pipes[pipeSize] = createSprite(0.f, 0.f, .1f, .1f, 0.f, index);
     pipeSize++;
 }
 
 void initGame() {
+    ZAudioInit();
+
     srand(100);
-    ma_engine_init(NULL, &audio);
     loadFont("assets/fonts/Bullpen3D.ttf", 0);
 
+    createTexture("assets/img/flappyBird.png", 0);
     createTexture("assets/img/pipe.png", 1);
     createText("ZDev", 150, 64, 64, 0, 2);
 
@@ -42,7 +41,7 @@ void initGame() {
 }
 
 void tickGame() {
-    createTexture("assets/img/flappyBird.png", 0);
+    ZAudioTick();
     if (flappyBirdStarted) {
         flappyBirdSpeedY += 3.8f * deltaTime;
         bird->position[1] += flappyBirdSpeedY * deltaTime;
@@ -53,14 +52,14 @@ void tickGame() {
                 rotateSprite(bird, 60.f);
                 bird->textureIndex = 0;
 
-                ma_engine_play_sound(&audio, "assets/sounds/chirp.mp3", NULL);
                 createPipe(2);
+                ZAudioPlay("assets/sounds/bird.mp3");
             }
 
             if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
                 flappyBirdDead = 1;
-                ma_engine_play_sound(&audio, "assets/sounds/hit.mp3", NULL);
                 createText("Something", 128, 64, 64, 0, 3);
+                ZAudioPlay("assets/sounds/death.mp3");
             }
         }
         else if (bird->position[1] > 2.5f) {
@@ -83,8 +82,7 @@ void tickGame() {
                 flappyBirdSpeedY = -1.5f;
                 rotateSprite(bird, 60.f);
                 bird->textureIndex = 1;
-
-                ma_engine_play_sound(&audio, "assets/sounds/hit.mp3", NULL);
+                ZAudioPlay("assets/sounds/death.mp3");
             }
         }
     }
@@ -93,14 +91,13 @@ void tickGame() {
             flappyBirdStarted = 1;
             flappyBirdSpeedY = -1.3f;
             rotateSprite(bird, 60.f);
+            ZAudioPlay("assets/sounds/bird.mp3");
         }
     }
 }
 
-
 void deinitGame(void) {
-    ma_engine_uninit(&audio);
+    ZAudioDeinit();
 }
 
 #endif // FLAPPYBIRD_H
-
