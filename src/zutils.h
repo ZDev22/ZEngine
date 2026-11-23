@@ -7,6 +7,10 @@
 #ifndef ZUTILS_H
 #define ZUTILS_H
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 #include "zengine.h"
 
 typedef struct {
@@ -138,7 +142,7 @@ void createText(const char* text, unsigned char textureIndex, unsigned int fontI
     /* there is only 1 row of characters, so the total height of the image will be the height of a single character */
     PNG.height = zutilsFont[fontIndex].typeface;
     /* total pixels is imageSize * colors */
-    PNG.pixels = calloc(PNG.width * PNG.height, 4);
+    PNG.pixels = (unsigned char*)calloc(PNG.width * PNG.height, 4);
 
     /* loop through and parse every letter */
     for (unsigned int i = 0; i < size; i++) {
@@ -177,4 +181,9 @@ void ZUtilsDeinit(void) {
 }
 
 #endif // ZUTILS_IMPLEMENTATION
+
+#ifdef __cplusplus
+    }
+#endif
+
 #endif // ZUTILS_H

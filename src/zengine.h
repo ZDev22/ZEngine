@@ -19,9 +19,11 @@ COMPILER FLAGS:
 
 #ifdef __cplusplus
     extern "C" {
+    #define ZENGINE_BOOL bool
 #else
-    #include <stdbool.h>
+    #define ZENGINE_BOOL _Bool
 #endif
+#include <math.h>
 
 #ifdef ZENGINE_IMPLEMENTATION
 /* define a few necissary macros if not already defined */
@@ -66,12 +68,6 @@ COMPILER FLAGS:
 /* vulkan */
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
-
-/* std libs (the less the better) */
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 struct ma_engine;
 
@@ -120,8 +116,8 @@ typedef struct SwapChainSupportDetails {
 typedef struct QueueFamilyIndices {
     unsigned int graphicsFamily;
     unsigned int presentFamily;
-    bool graphicsFamilyHasValue;
-    bool presentFamilyHasValue;
+    ZENGINE_BOOL graphicsFamilyHasValue;
+    ZENGINE_BOOL presentFamilyHasValue;
 } QueueFamilyIndices;
 
 typedef struct Texture {
@@ -131,7 +127,7 @@ typedef struct Texture {
     VkSampler sampler;
     VkBuffer buffer;
     VkDeviceMemory bufferMemory;
-    bool loaded;
+    ZENGINE_BOOL loaded;
 } Texture;
 
 /* extern vars */
@@ -142,10 +138,10 @@ extern unsigned int spritesSize;
 extern unsigned int availibleSpriteSize;
 extern struct Model zmodel;
 extern Camera camera;
-extern bool ZEngine_framebufferResized;
+extern ZENGINE_BOOL ZEngine_framebufferResized;
 extern RGFW_window* zwindow;
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-    extern bool ZEngineSpriteRemap;
+    extern ZENGINE_BOOL ZEngineSpriteRemap;
 #endif
 
 /* ZENGINE FORWARD-DECLARED FUNCTIONS */
@@ -180,9 +176,9 @@ void createBuffer(Buffer* buffer, VkDeviceSize instanceSize, unsigned int instan
 Camera camera;
 
 double deltaTime = 0.0; /* deltaTime, do what you will. Example implementation in main.cpp */
-bool ZEngineClose = 0; /* flag to show when the engine is closing */
+ZENGINE_BOOL ZEngineClose = 0; /* flag to show when the engine is closing */
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-    bool ZEngineSpriteRemap = 1; /* flag to update sprite data buffer with ZENGINE_SPRITE_MAPMODE_MANUAL */
+    ZENGINE_BOOL ZEngineSpriteRemap = 1; /* flag to update sprite data buffer with ZENGINE_SPRITE_MAPMODE_MANUAL */
 #endif
 
 /* texture vecs */
@@ -200,7 +196,7 @@ VkDescriptorImageInfo textureMoreImageInfo = {(VkSampler)0};
 VkWriteDescriptorSet textureImageWrite = {(VkStructureType)0};
 
 /* window vars */
-bool ZEngine_framebufferResized = 0;
+ZENGINE_BOOL ZEngine_framebufferResized = 0;
 RGFW_window* zwindow = NULL;
 VkExtent2D windowExtent;
 
@@ -220,7 +216,7 @@ VkDevice device_;
 VkQueue presentQueue_;
 VkSurfaceKHR surface_;
 VkQueue graphicsQueue_;
-bool uniformBuffer = 0;
+ZENGINE_BOOL uniformBuffer = 0;
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
 VkDebugUtilsMessengerEXT debugMessenger;
 #endif
@@ -858,7 +854,7 @@ void ZEngineInit() {
         queueCreateInfos[i] = queueCreateInfo;
     }
 
-    VkPhysicalDeviceVulkan12Features deviceVulkanUpdate = {0};
+    VkPhysicalDeviceVulkan12Features deviceVulkanUpdate = {(VkStructureType)0};
     deviceVulkanUpdate.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
     deviceVulkanUpdate.runtimeDescriptorArray = VK_TRUE;
     deviceVulkanUpdate.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;

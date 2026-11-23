@@ -7,6 +7,10 @@
 #ifndef ZAUDIO_H
 #define ZAUDIO_H
 
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 void ZAudioInit(void);
 void ZAudioPlay(const char* filepath);
 void ZAudioTick(void);
@@ -14,18 +18,12 @@ void ZAudioDeinit(void);
 
 #ifdef ZAUDIO_IMPLEMENTATION
 
-#ifdef __cplusplus
-    extern "C" {
-#endif
-
 /* std */
-#include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <immintrin.h>
-#include <stdbool.h>
 
 #ifndef ZAUDIO_MAX_SOUNDS
 #define ZAUDIO_MAX_SOUNDS 10
@@ -1142,7 +1140,7 @@ typedef struct {
 
 typedef struct ZAudio {
     mp3dec_ex_t dec;
-    bool active;
+    unsigned char active;
 } ZAudio;
 
 struct ZAudio zaudio[ZAUDIO_MAX_SOUNDS] = {0};
@@ -1353,11 +1351,11 @@ size_t mp3dec_ex_read_frame(mp3dec_ex_t *dec, float **buf, mp3dec_frame_info_t *
 
 /* ZAUDIO */
 void ZAudioInit(void) {
-    saudio_setup(&(saudio_desc){
-        .sample_rate = ZAUDIO_SAMPLE_RATE,
-        .num_channels = ZAUDIO_CHANNELS,
-        .buffer_frames = ZAUDIO_BUFFER_FRAMES,
-    });
+    saudio_desc saudio_desc = {0};
+    saudio_desc.sample_rate = ZAUDIO_SAMPLE_RATE;
+    saudio_desc.num_channels = ZAUDIO_CHANNELS;
+    saudio_desc.buffer_frames = ZAUDIO_BUFFER_FRAMES;
+    saudio_setup(&saudio_desc);
 }
 
 void ZAudioPlay(const char* filepath) {
@@ -1461,8 +1459,8 @@ void ZAudioDeinit(void) {
     _saudio_fifo_destroy_mutex(&_saudio.fifo);
 }
 
+#endif // ZAUDIO_IMPLEMENTATION
 #ifdef __cplusplus
     }
 #endif // __cplusplus
-#endif // ZAUDIO_IMPLEMENTATION
 #endif // ZAUDIO_H
