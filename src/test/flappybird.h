@@ -21,7 +21,7 @@ Sprite* pipes[100];
 unsigned char pipeSize = 0;
 
 void createPipe(unsigned char index) {
-    pipes[pipeSize] = createSprite(0.f, 0.f, .8f, .1f, 0.f, index);
+    pipes[pipeSize] = createSprite(0.f, 0.f, .4f, .1f, 0.f, index);
     pipeSize++;
 }
 
@@ -29,11 +29,11 @@ void initGame() {
     ZAudioInit();
 
     srand(100);
-    loadFont("assets/fonts/font.png", 7, 0);
+    loadFont("assets/fonts/Minecraft.png", 7, 0);
 
     createPNGTexture("assets/img/flappyBird.png", 0);
     createPNGTexture("assets/img/pipe.png", 1);
-    createText("aaaaaaaa", 2, 0);
+    createText("ZDev", 2, 0);
 
     bird = createSprite(-.7f, 0.f, .1f, .1f, 0.f, 0);
     for (unsigned char i = 0; i < 10; i++) { createPipe(1); }

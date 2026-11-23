@@ -82,6 +82,7 @@ int main() {
     RGFW_window_close(zwindow);
     zwindow = NULL;
     ZEngineDeinit();
+    ZUtilsDeinit();
     RGFW_deinit();
     deinitGame();
 }
