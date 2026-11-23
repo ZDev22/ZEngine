@@ -747,29 +747,12 @@ void ZEngineInit() {
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceInfo.pApplicationInfo = &appInfo;
 
-    size_t rgfWExtensionCount = 0;
-    const char** rgfWExtensions = RGFW_getRequiredInstanceExtensions_Vulkan(&rgfWExtensionCount);
-    if (!rgfWExtensions || rgfWExtensionCount == 0) {
-        ZENGINE_PRINT("Failed to get Vulkan extensions\n");
-        exit(1);
-    }
-
-    ZENGINE_PRINT("Enabling extensions:\n");
-    for (size_t i = 0; i < rgfWExtensionCount; i++) { ZENGINE_PRINT("     - %s\n", rgfWExtensions[i]); }
 #ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
-    /* add an extra extension for vulkan validation output */
-    size_t instanceExtensionCount = rgfWExtensionCount + 1;
-    const char* instanceExtensions[instanceExtensionCount];
-    for (size_t i = 0; i < rgfWExtensionCount; i++) { instanceExtensions[i] = rgfWExtensions[i]; }
-    instanceExtensions[rgfWExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-
-    instanceInfo.enabledExtensionCount = instanceExtensionCount;
+    /* add VK_EXT_DEBUG_UTILS_EXTENSION_NAME for vulkan validation output */
+    const char* instanceExtensions[3] = {VK_KHR_SURFACE_EXTENSION_NAME, RGFW_VK_SURFACE, VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
+    instanceInfo.enabledExtensionCount = 3;
     instanceInfo.ppEnabledExtensionNames = instanceExtensions;
-#else
-    instanceInfo.enabledExtensionCount = rgfWExtensionCount;
-    instanceInfo.ppEnabledExtensionNames = rgfWExtensions;
-#endif
-#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+
     /* enable the vulkan validation layers */
     instanceInfo.enabledLayerCount = sizeof(validationLayers) / sizeof(validationLayers[0]);
     instanceInfo.ppEnabledLayerNames = validationLayers;
@@ -781,18 +764,9 @@ void ZEngineInit() {
     debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     debugInfo.pfnUserCallback = debugCallback;
     instanceInfo.pNext = &debugInfo;
-#endif
 
-#ifdef ZENGINE_DEBUG
-    VkResult result = vkCreateInstance(&instanceInfo, NULL, &instance);
-    if  (result != 0) {
-        ZENGINE_PRINT("Instance creation failed - error code: %d\n", result);
-    }
-#else
-    vkCreateInstance(&instanceInfo, NULL, &instance);
-#endif
-
-#ifdef ZENGINE_ENABLE_VALIDATION_LAYERS
+    /* create instance */
+    ZENGINE_THROW(vkCreateInstance(&instanceInfo, NULL, &instance));
 
     /* create a debug messenger to validate the engine during its entire lifetime */
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessenger = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -802,6 +776,12 @@ void ZEngineInit() {
     }
 
     ZENGINE_THROW(vkCreateDebugUtilsMessenger(instance, &debugInfo, NULL, &debugMessenger));
+#else
+    const char* instanceExtensions[2] = {VK_KHR_SURFACE_EXTENSION_NAME, RGFW_VK_SURFACE};
+    instanceInfo.enabledExtensionCount = 2;
+    instanceInfo.ppEnabledExtensionNames = instanceExtensions;
+
+    ZENGINE_THROW(vkCreateInstance(&instanceInfo, NULL, &instance));
 #endif
 
     ZENGINE_PRINT("Creating surface...\n"); RGFW_window_createSurface_Vulkan(zwindow, instance, &surface_); //---------------------------------------------------------------------------------------------------------------
