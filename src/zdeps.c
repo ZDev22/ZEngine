@@ -31,29 +31,22 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_ASSERT(x)
 
-/* DEPENDENCIES */
-#include "deps/RGFW.h"
-#include "deps/sokol_audio.h"
-#include "deps/stb_truetype.h"
-
+/* VULKAN */
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
+/* DEPENDENCIES */
+#include "deps/RGFW.h"
+#include "deps/sokol_audio.h"
+
 #undef RGFW_IMPLEMENTATION
 #undef SOKOL_AUDIO_IMPL
-#undef MINIMP3_IMPLEMENTATION
-#undef ZAUDIO_IMPLEMENTATION
-#undef ZCOLLIDE_IMPLEMENTATION
-#undef ZMATH_IMPLEMENTATION
-#undef ZTEXT_IMPLEMENTATION
-#undef STB_TRUETYPE_IMPLEMENTATION
 
 /* zdeps */
+#define ZUTILS_IMPLEMENTATION
 #define ZAUDIO_IMPLEMENTATION
 #define ZCOLLIDE_IMPLEMENTATION
-#define ZTEXT_IMPLEMENTATION
 
+#include "zutils.h"
 #include "zaudio.h"
 #include "zcollide.h"
-#include "ztext.h"
-

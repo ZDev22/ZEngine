@@ -1,7 +1,5 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
 
-v3.4.11
-
 zcollide.h is a lightweight cross-platform sigle-header c library for checking if 2D objects are colliding!
 
 #define ZCOLLIDE_IMPLEMENTATION - define in one c ONLY
@@ -27,6 +25,7 @@ zcollide_squareCollision(sprites[0], sprites[1]); - check the collision between 
 #endif
 
 bool zcollide_squareCollision(float positionAx, float positionAy, float scaleAx, float scaleAy, float positionBx, float positionBy, float scaleBx, float scaleBy);
+bool zcollide_pointSquareCollision(float pointx, float pointy, float posx, float posy, float sizex, float sizey);
 bool zcollide_circleCollision(float circleAx, float circleAy, float radiusA, float circleBx, float circleBy, float radiusB);
 bool zcollide_pointCircleCollision(float pointx, float pointy, float circlex, float circley, float radius);
 
@@ -44,6 +43,10 @@ bool zcollide_pointCircleCollision(float pointx, float pointy, float circlex, fl
 
 bool zcollide_squareCollision(float positionAx, float positionAy, float scaleAx, float scaleAy, float positionBx, float positionBy, float scaleBx, float scaleBy) {
     return (fabs(positionAx - positionBx) <= (scaleAx * .5f) + (scaleBx * .5f)) && (fabs(positionAy - positionBy) <= (scaleAy * .5f) + (scaleBy * .5f));
+}
+
+bool zcollide_pointSquareCollision(float pointx, float pointy, float posx, float posy, float sizex, float sizey) {
+    return zcollide_squareCollision(posx, posy, sizex, sizey, pointx, pointy, .0001f, .0001f);
 }
 
 /* thanks to MidnightHammer for this collision function! */

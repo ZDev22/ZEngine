@@ -1,8 +1,8 @@
 #include "test.h"
-#include "../zengine.h"
+#include "../zutils.h"
 
 void initTest(void) {
-    createTexture("assets/img/flappyBird.png", 0);
+    createPNGTexture("assets/img/flappyBird.png", 0);
     for (unsigned int i = 0; i < ZENGINE_MAX_SPRITES; i++) {
         createSprite(0.f, 0.f, .5f, .5f, 0.f, 0);
     }

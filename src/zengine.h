@@ -68,7 +68,6 @@ COMPILER FLAGS:
 #include <vulkan/vulkan_core.h>
 
 /* std libs (the less the better) */
-#include <png.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -143,7 +142,7 @@ extern unsigned int spritesSize;
 extern unsigned int availibleSpriteSize;
 extern struct Model zmodel;
 extern Camera camera;
-extern bool framebufferResized;
+extern bool ZEngine_framebufferResized;
 extern RGFW_window* zwindow;
 #ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
     extern bool ZEngineSpriteRemap;
@@ -171,8 +170,7 @@ void createSwapChain();
 void deleteSwapChain();
 
 /* texture funcs*/
-void createTexture(const char* filepath, unsigned int index);
-void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkFormat format);
+void createTexture(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkFormat format);
 
 /* buffer funcs */
 void createBuffer(Buffer* buffer, VkDeviceSize instanceSize, unsigned int instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags);
@@ -202,7 +200,7 @@ VkDescriptorImageInfo textureMoreImageInfo = {(VkSampler)0};
 VkWriteDescriptorSet textureImageWrite = {(VkStructureType)0};
 
 /* window vars */
-bool framebufferResized = 0;
+bool ZEngine_framebufferResized = 0;
 RGFW_window* zwindow = NULL;
 VkExtent2D windowExtent;
 
@@ -498,48 +496,7 @@ void deleteTexture(unsigned int index) {
     }
 }
 
-void createTexture(const char* filepath, unsigned int index) {
-    FILE *fp = fopen(filepath, "rb");
-    if (!fp) { ZENGINE_PRINT("Failed to load texture: %s\n", filepath); return; }
-    png_byte bit_depth;
-    png_byte color_type;
-
-    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    png_infop info = png_create_info_struct(png);
-
-    png_init_io(png, fp);
-    png_read_info(png, info);
-    unsigned int width = png_get_image_width(png, info);
-    unsigned int height = png_get_image_height(png, info);
-    color_type = png_get_color_type(png, info);
-    bit_depth = png_get_bit_depth(png, info);
-
-    /* Read any color_type into 8bit depth, RGBA format. */
-    if (bit_depth == 16) { png_set_strip_16(png); }
-    if (color_type == PNG_COLOR_TYPE_PALETTE) { png_set_palette_to_rgb(png); }
-    /* PNG_COLOR_TYPE_GRAY_ALPHA is always 8 or 16bit depth. */
-    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) { png_set_expand_gray_1_2_4_to_8(png); }
-    if (png_get_valid(png, info, PNG_INFO_tRNS)) { png_set_tRNS_to_alpha(png); }
-    /* These color_type don't have an alpha channel then fill it with 0xff. */
-    if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_PALETTE) { png_set_filler(png, 0xFF, PNG_FILLER_AFTER); }
-    if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { png_set_gray_to_rgb(png); }
-    png_read_update_info(png, info);
-
-    png_size_t rowbytes = png_get_rowbytes(png, info);
-    unsigned char* pixels = (unsigned char*)malloc(rowbytes * (height));
-    png_bytep* rows = (png_bytep*)malloc(sizeof(png_bytep) * (height));
-    for (unsigned int y = 0; y < height; y++) { rows[y] = pixels + y * rowbytes; }
-
-    png_read_image(png, rows);
-    png_destroy_read_struct(&png, &info, NULL);
-    free(rows);
-    fclose(fp);
-
-    createTextureExt(pixels, index, width, height, VK_FORMAT_R8G8B8A8_SRGB);
-    free(pixels);
-}
-
-void createTextureExt(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkFormat format) {
+void createTexture(const unsigned char* data, unsigned int index, unsigned int width, unsigned int height, VkFormat format) {
 #ifdef ZENGINE_DEBUG
     if (index > ZENGINE_MAX_TEXTURES - 1) {
         ZENGINE_PRINT("The texture you are trying to load exceeds the texture limit! Please make sure -DZENGINE_MAX_TEXTURES is higher than the loaded index!");
@@ -720,7 +677,7 @@ Sprite* createSprite(float positionx, float positiony, float scalex, float scale
 #ifdef ZENGINE_FAST_DEPTH
         sprites[spritesSize].depth = 0.00001f + ((float)spritesSize * 0.00001f);
 #else
-    sprites[spritesSize].depth = .5f - ((float)spritesSize * 0.00001f);
+    sprites[spritesSize].depth = .99999f - ((float)spritesSize * 0.00001f);
 #endif
         rotateSprite(&sprites[spritesSize], rotation);
         spritesSize++;
@@ -1236,14 +1193,14 @@ void ZEngineRender() {
     vkWaitForFences(device_, 1, &inFlightFences[currentFrame], VK_TRUE, 0xFFFFFFFFFFFFFFFF);
     /* resize window */
     VkResult result = vkAcquireNextImageKHR(device_, swapChain, 0xFFFFFFFFFFFFFFFF, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &currentImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || ZEngine_framebufferResized) {
         /* recreate swapchain */
         vkDeviceWaitIdle(device_);
         oldSwapChain = swapChain;
         deleteSwapChain();
         createSwapChain();
 
-        framebufferResized = 0;
+        ZEngine_framebufferResized = 0;
         camera.aspect = (float)windowExtent.width / (float)windowExtent.height;
         return;
     }

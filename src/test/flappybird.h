@@ -5,10 +5,9 @@
 #ifndef FLAPPYBIRD_H
 #define FLAPPYBIRD_H
 
-#include "../zengine.h"
+#include "../zutils.h"
 #include "../zaudio.h"
 #include "../zcollide.h"
-#include "../ztext.h"
 
 #include <stdbool.h>
 
@@ -22,7 +21,7 @@ Sprite* pipes[100];
 unsigned char pipeSize = 0;
 
 void createPipe(unsigned char index) {
-    pipes[pipeSize] = createSprite(0.f, 0.f, .1f, .1f, 0.f, index);
+    pipes[pipeSize] = createSprite(0.f, 0.f, .8f, .1f, 0.f, index);
     pipeSize++;
 }
 
@@ -30,11 +29,11 @@ void initGame() {
     ZAudioInit();
 
     srand(100);
-    loadFont("assets/fonts/Bullpen3D.ttf", 0);
+    loadFont("assets/fonts/font.png", 7, 0);
 
-    createTexture("assets/img/flappyBird.png", 0);
-    createTexture("assets/img/pipe.png", 1);
-    createText("ZDev", 150, 64, 64, 0, 2);
+    createPNGTexture("assets/img/flappyBird.png", 0);
+    createPNGTexture("assets/img/pipe.png", 1);
+    createText("aaaaaaaa", 2, 0);
 
     bird = createSprite(-.7f, 0.f, .1f, .1f, 0.f, 0);
     for (unsigned char i = 0; i < 10; i++) { createPipe(1); }
@@ -58,7 +57,7 @@ void tickGame() {
 
             if (bird->position[1] > 1.f || bird->position[1] < -1.f) {
                 flappyBirdDead = 1;
-                createText("Something", 128, 64, 64, 0, 3);
+                createText("aa", 3, 0);
                 ZAudioPlay("assets/sounds/death.mp3");
             }
         }

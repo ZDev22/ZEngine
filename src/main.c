@@ -12,14 +12,17 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #define ZENGINE_FAST_DEPTH
 #include "zengine.h"
 
-#define FPS_CAP 60.f
+/* zutils is not required, if you don't want to use it remove ZUtilsInit and ZUtilsTick. If you do not include it, you will have to handle window resizing yourself */
+#include "zutils.h"
+
+//#define FPS_CAP 60.f
 
 #ifdef TRACK_FPS
     #include <stdio.h>
 #endif
 
 /* games */
-#include "test/test.h"
+#include "test/flappybird.h"
 
 #include <time.h>
 #include <unistd.h>
@@ -41,8 +44,9 @@ int main() {
 #ifdef _WIN32
     RGFW_window_maximize(zwindow);
 #endif
+    ZUtilsInit();
     ZEngineInit();
-    initTest();
+    initGame();
 
 #if defined(TRACK_FPS) || defined(FPS_CAP)
     clock_gettime(CLOCK_MONOTONIC, &fpsLastTime);
@@ -70,16 +74,8 @@ int main() {
         }
         fps++;
 #endif
-        /* poll window events */
-        RGFW_event event;
-        while (RGFW_window_checkEvent(zwindow, &event)) {
-            if (event.type == RGFW_windowResized) {
-                framebufferResized = 1;
-                break;
-            }
-        }
-
-        tickTest();
+        ZUtilsTick();
+        tickGame();
         ZEngineRender();
     }
 
@@ -87,5 +83,5 @@ int main() {
     zwindow = NULL;
     ZEngineDeinit();
     RGFW_deinit();
-    deinitTest();
+    deinitGame();
 }
