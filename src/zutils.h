@@ -118,14 +118,10 @@ void loadFont(const char* filepath, unsigned char typeface, unsigned char index)
     }
 
     zutilsFont[index].image = ZUtilsLoadPNG(filepath);
-    if (zutilsFont[index].image != NULL) {
-        zutilsFont[index].typeface = typeface;
-    }
+    zutilsFont[index].typeface = typeface;
 }
 
 void drawLetter(ZUtilsPNG* PNG, unsigned short targetGlyph, unsigned short glyph, unsigned char fontIndex) {
-    printf("%hu\n", glyph);
-
     for (unsigned char y = 0; y < zutilsFont[fontIndex].typeface; ++y) {
         memcpy(PNG->pixels + (y * PNG->width + targetGlyph * zutilsFont[fontIndex].typeface) * 4, zutilsFont[fontIndex].image->pixels + (y * zutilsFont[fontIndex].image->width + glyph * zutilsFont[fontIndex].typeface) * 4, zutilsFont[fontIndex].typeface * 4);
     }
