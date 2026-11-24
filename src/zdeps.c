@@ -37,7 +37,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* VULKAN */
 #include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
 
 /* DEPENDENCIES */
 #include "deps/RGFW.h"

@@ -22,7 +22,7 @@ An example implementation on how to init and use zengine, as well as a few zdeps
 #endif
 
 /* games */
-#include "test/flappybird.h"
+#include "test/test.h"
 
 #include <time.h>
 #include <unistd.h>
@@ -46,7 +46,7 @@ int main() {
 #endif
     ZUtilsInit();
     ZEngineInit();
-    initGame();
+    initTest();
 
 #if defined(TRACK_FPS) || defined(FPS_CAP)
     clock_gettime(CLOCK_MONOTONIC, &fpsLastTime);
@@ -75,7 +75,7 @@ int main() {
         fps++;
 #endif
         ZUtilsTick();
-        tickGame();
+        tickTest();
         ZEngineRender();
     }
 
@@ -84,5 +84,5 @@ int main() {
     ZEngineDeinit();
     ZUtilsDeinit();
     RGFW_deinit();
-    deinitGame();
+    deinitTest();
 }

@@ -44,11 +44,11 @@ void tickGame() {
     if (flappyBirdStarted) {
         flappyBirdSpeedY += 3.8f * deltaTime;
         bird->position[1] += flappyBirdSpeedY * deltaTime;
-        rotateSprite(bird, bird->rotation - (90.f * deltaTime));
+        bird->rotation -= 90.f * deltaTime);
         if (!flappyBirdDead) {
             if (RGFW_isKeyPressed(RGFW_keySpace)) {
                 flappyBirdSpeedY = -1.3f;
-                rotateSprite(bird, 60.f);
+                bird->rotation = 60.f;
                 bird->textureIndex = 0;
 
                 createPipe(2);
@@ -64,7 +64,7 @@ void tickGame() {
         else if (bird->position[1] > 2.5f) {
             bird->textureIndex = 0;
             bird->position[1] = -.25f;
-            rotateSprite(bird, 0.f);
+            bird->rotation = 0.f;
             flappyBirdSpeedY = 0.f;
             flappyBirdDead = 0;
         }
@@ -79,7 +79,7 @@ void tickGame() {
             if (flappyBirdStarted && !flappyBirdDead && (zcollide_squareCollision(pipes[i]->position[0], pipes[i]->position[1], pipes[i]->scale[0], pipes[i]->scale[1], bird->position[0], bird->position[1], bird->scale[0], bird->scale[1]))) {
                 flappyBirdDead = 1;
                 flappyBirdSpeedY = -1.5f;
-                rotateSprite(bird, 60.f);
+                bird->rotation = 60.f;
                 bird->textureIndex = 1;
                 ZAudioPlay("assets/sounds/death.mp3");
             }
@@ -89,7 +89,7 @@ void tickGame() {
         if (RGFW_isKeyPressed(RGFW_keySpace)) {
             flappyBirdStarted = 1;
             flappyBirdSpeedY = -1.3f;
-            rotateSprite(bird, 60.f);
+            bird->rotation = 60.f;
             ZAudioPlay("assets/sounds/bird.mp3");
         }
     }

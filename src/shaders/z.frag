@@ -9,7 +9,7 @@ layout(location = 0) out vec4 outColor;
 layout(set = 0, binding = 1) uniform sampler2D texSampler[];
 
 void main() {
-    vec4 color = texture(texSampler[nonuniformEXT(fragTextureIndex)], fragTexCoord);
+    vec4 color = textureLod(texSampler[nonuniformEXT(fragTextureIndex)], fragTexCoord, 0.0);
     if (color.a == 0.0) discard;
     outColor = color;
 }
