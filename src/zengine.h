@@ -1,5 +1,5 @@
 /* licensed under GPL v3.0 see https://github.com/ZDev22/ZEngine/blob/main/LICENSE for current license
- * RGFW and stb_image MUST be initialized. See zdeps.c for an example implementation, or just use it.
+ * RGFW See zdeps.c for an example implementation, or just use it.
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.C ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
@@ -7,9 +7,9 @@
 
 COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
--DZENGINE_MAX_SPRITES=10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
--DZENGINE_MAX_TEXTURES=50 - the maximum amount of texture the engine can load at once
 -DZENGINE_ENABLE_VALIDATION_LAYERS - enable vulkan validation layers, validation messages print to stderr
+-DZENGINE_MAX_SPRITES=10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
+-DZENGINE_MAX_TEXTURES=50 - the maximum amount of texture the engine can load at once (more textures, more memory and vram usage)
 -DZENGINE_MAX_FRAMES_IN_FLIGHT=2 - change the maximum frames in flight (default 2)
 */
 
@@ -30,11 +30,6 @@ COMPILER FLAGS:
 #endif
 #ifndef ZENGINE_MAX_TEXTURES
     #define ZENGINE_MAX_TEXTURES 50
-#endif
-
-#if ZENGINE_MAX_TEXTURES < 25
-    #undef ZENGINE_MAX_TEXTURES
-    #define ZENGINE_MAX_TEXTURES 25
 #endif
 
 /* misc definitions */
