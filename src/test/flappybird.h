@@ -44,7 +44,7 @@ void tickGame() {
     if (flappyBirdStarted) {
         flappyBirdSpeedY += 3.8f * deltaTime;
         bird->position[1] += flappyBirdSpeedY * deltaTime;
-        bird->rotation -= 90.f * deltaTime);
+        bird->rotation -= 90.f * deltaTime;
         if (!flappyBirdDead) {
             if (RGFW_isKeyPressed(RGFW_keySpace)) {
                 flappyBirdSpeedY = -1.3f;

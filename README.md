@@ -106,9 +106,3 @@ cd bin
 [RGFW (Window)](https://github.com/ColleagueRiley/RGFW)</br>
 [MINIMP3 (MP3 decoder)](https://github.com/lieff/minimp3)</br>
 [SOKOL_AUDIO (Audio player)](https://github.com/floooh/sokol)</br>
-[STB-TRUETYPE (font text rasterizer)](https://github.com/nothings/stb)
-
-# Notes:
-- RGFW.h and stb_image.h are required dependencies
-- miniaudio.h is not initialized by zengine.h
-- stb_truetype.h is required if you are using ztext.h, otherwise remove it from zdeps.c

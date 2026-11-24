@@ -1,8 +1,8 @@
 CC = gcc
 #CC = clang
-CFLAGS = -march=native -mtune=native -Ofast -flto -fomit-frame-pointer -fprefetch-loop-arrays -fno-semantic-interposition -fno-plt -fipa-pta -fipa-icf -fira-loop-pressure -fira-region=all -fwhole-program -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -fvect-cost-model=unlimited -fsimd-cost-model=unlimited -std=c99 -DZENGINE_MAX_SPRITES=1000000 -DZENGINE_MAX_TEXTURES=100 -DTRACK_FPS
-#CFLAGS = -O0 -g3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_ENABLE_VALIDATION_LAYERS -DTRACK_FPS -DZENGINE_MAX_SPRITES=1000000 -DZENGINE_MAX_TEXTURES=100 -lXext
-LDFLAGS = -lvulkan -lX11 -lXrandr -lXcursor -lXi -lpulse-simple -lm -lpng
+CFLAGS += -march=native -mtune=native -Ofast -flto -fomit-frame-pointer -fprefetch-loop-arrays -fno-semantic-interposition -fno-plt -fipa-pta -fipa-icf -fira-loop-pressure -fira-region=all -fwhole-program -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -fvect-cost-model=unlimited -fsimd-cost-model=unlimited -std=c99 -DZENGINE_MAX_SPRITES=1000000 -DZENGINE_MAX_TEXTURES=100 -DTRACK_FPS
+#CFLAGS += -O0 -g3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-override-init -Wno-missing-field-initializers -std=c99 -fsanitize=address -DZENGINE_DEBUG -DZENGINE_ENABLE_VALIDATION_LAYERS -DTRACK_FPS -DZENGINE_MAX_SPRITES=1000000 -DZENGINE_MAX_TEXTURES=100 -lXext
+LDFLAGS += -lvulkan -lX11 -lXrandr -lXcursor -lXi -lpulse-simple -lm -lpng
 
 BIN := bin/main
 MAKEFLAGS := -j$(shell nproc)

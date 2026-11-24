@@ -4,13 +4,13 @@
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.C ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
 #define ZENGINE_FAST_DEPTH - reorders depth to be faster on the GPU, however newly created sprites are layered behind older ones. Use depending on how you create your sprites and if you have a lot of overlap.
+#define ZENGINE_MAX_FRAMES_IN_FLIGHT 1 - change the maximum frames in flight (default 2)
 
 COMPILER FLAGS:
 -DZENGINE_DEBUG - adds debug printing for debugging.
 -DZENGINE_ENABLE_VALIDATION_LAYERS - enable vulkan validation layers, validation messages print to stderr
 -DZENGINE_MAX_SPRITES=10000 - the maximum amount of sprite the engine can load at once (more sprites, more memory usage)
 -DZENGINE_MAX_TEXTURES=50 - the maximum amount of texture the engine can load at once (more textures, more memory and vram usage)
--DZENGINE_MAX_FRAMES_IN_FLIGHT=2 - change the maximum frames in flight (default 2)
 */
 
 #ifndef ZENGINE_H
@@ -33,8 +33,8 @@ COMPILER FLAGS:
 #endif
 
 /* misc definitions */
-#ifndef MAX_FRAMES_IN_FLIGHT
-    #define MAX_FRAMES_IN_FLIGHT 2
+#ifndef ZENGINE_MAX_FRAMES_IN_FLIGHT
+    #define ZENGINE_MAX_FRAMES_IN_FLIGHT 2
 #endif
 
 /* debugging */
@@ -223,8 +223,8 @@ VkImageView* depthImageViews = NULL;
 VkImage* swapChainImages = NULL;
 VkImageView* swapChainImageViews = NULL;
 VkSemaphore* renderFinishedSemaphores = NULL;
-VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
-VkFence inFlightFences[MAX_FRAMES_IN_FLIGHT];
+VkSemaphore imageAvailableSemaphores[ZENGINE_MAX_FRAMES_IN_FLIGHT];
+VkFence inFlightFences[ZENGINE_MAX_FRAMES_IN_FLIGHT];
 VkFence* imagesInFlight = NULL;
 unsigned int imageCount;
 unsigned int currentFrame = 0;
@@ -417,7 +417,7 @@ void createSwapChain() {
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (unsigned char i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
         vkCreateSemaphore(device_, &semaphoreInfo, NULL, &imageAvailableSemaphores[i]);
         vkCreateFence(device_, &fenceInfo, NULL, &inFlightFences[i]);
     }
@@ -436,7 +436,7 @@ void deleteSwapChain() {
         vkDestroyImageView(device_, swapChainImageViews[i], NULL);
         vkDestroySemaphore(device_, renderFinishedSemaphores[i], NULL);
     }
-    for (unsigned char i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (unsigned char i = 0; i < ZENGINE_MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device_, imageAvailableSemaphores[i], NULL);
         vkDestroyFence(device_, inFlightFences[i], NULL);
     }
@@ -1172,7 +1172,7 @@ void ZEngineRender() {
     presentInfo.pImageIndices = &currentImageIndex;
 
     vkQueuePresentKHR(presentQueue_, &presentInfo);
-    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    currentFrame = (currentFrame + 1) % ZENGINE_MAX_FRAMES_IN_FLIGHT;
 }
 
 void ZEngineDeinit() {
@@ -1217,9 +1217,7 @@ void ZEngineDeinit() {
 
 #undef ZENGINE_IMPLEMENTATION
 #endif // ZENGINE_IMPLEMENTATION
-
 #ifdef __cplusplus
     }
-#endif
-
+#endif // __cplusplus
 #endif // ZENGINE_H
