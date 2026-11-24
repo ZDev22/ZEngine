@@ -3,7 +3,6 @@
 
 #define ZENGINE_IMPLEMENTATION - define functions INCLUDE IN MAIN.C ONLY
 #define ZENGINE_DISABLE_VSYNC - extend beyond mortal limitations and exceed maximum fps
-#define ZENGINE_SPRITE_MAPMODE_MANUAL - manually change the ZEngineSpriteRemap flag whenever you update sprite data
 #define ZENGINE_FAST_DEPTH - reorders depth to be faster on the GPU, however newly created sprites are layered behind older ones. Use depending on how you create your sprites and if you have a lot of overlap.
 
 COMPILER FLAGS:
@@ -129,9 +128,6 @@ extern unsigned int availibleSpriteSize;
 extern ZCamera camera;
 extern ZENGINE_BOOL ZEngine_framebufferResized;
 extern RGFW_window* zwindow;
-#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-    extern ZENGINE_BOOL ZEngineSpriteRemap;
-#endif
 
 /* ZENGINE FORWARD-DECLARED FUNCTIONS */
 void ZEngineInit();
@@ -165,9 +161,6 @@ ZCamera camera;
 
 double deltaTime = 0.0; /* deltaTime, do what you will. Example implementation in main.cpp */
 ZENGINE_BOOL ZEngineClose = 0; /* flag to show when the engine is closing */
-#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-    ZENGINE_BOOL ZEngineSpriteRemap = 1; /* flag to update sprite data buffer with ZENGINE_SPRITE_MAPMODE_MANUAL */
-#endif
 
 /* texture vecs */
 struct ZTexture spriteTextures[ZENGINE_MAX_TEXTURES] = {0};
@@ -1142,20 +1135,13 @@ void ZEngineRender() {
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-    /* render sprites */
+    /* bind sprites */
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &spriteDataDescriptorSet, 0, NULL);
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(ZCamera), &camera);
 
-#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-    if (ZEngineSpriteRemap) {
-#endif
-        memcpy(spriteDataBuffer.mapped, sprites, sizeof(Sprite) * spritesSize);
-#ifdef ZENGINE_SPRITE_MAPMODE_MANUAL
-        ZEngineSpriteRemap = 0;
-    }
-#endif
-
+    /* render sprites */
+    memcpy(spriteDataBuffer.mapped, sprites, sizeof(Sprite) * spritesSize);
     vkCmdDraw(commandBuffer, 4, spritesSize, 0, 0);
 
     /* end frame */
