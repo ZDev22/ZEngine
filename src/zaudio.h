@@ -1454,9 +1454,19 @@ void ZAudioDeinit(void) {
         }
     }
 
-    _saudio_backend_shutdown();
-    _saudio_fifo_shutdown(&_saudio.fifo);
-    _saudio_fifo_destroy_mutex(&_saudio.fifo);
+    #if defined(_SAUDIO_PULSEAUDIO)
+        _saudio_pulseaudio_backend_shutdown();
+    #elif defined(_SAUDIO_WINDOWS)
+        _saudio_wasapi_backend_shutdown();
+    #elif defined(_SAUDIO_EMSCRIPTEN)
+        _saudio_webaudio_backend_shutdown();
+    #elif defined(_SAUDIO_ANDROID)
+        _saudio_aaudio_backend_shutdown();
+    #elif defined(_SAUDIO_APPLE)
+        _saudio_coreaudio_backend_shutdown();
+    #endif
+
+    _saudio_mutex_destroy(&_saudio.fifo.mutex);
 }
 
 #endif // ZAUDIO_IMPLEMENTATION

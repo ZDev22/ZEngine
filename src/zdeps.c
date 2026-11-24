@@ -25,11 +25,15 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 /* AUDIO */
 #define SOKOL_IMPL
-#define SOKOL_ASSERT(x) (void)(x)
 
 /* STB_TRUETYPE */
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_ASSERT(x)
+
+/* ZDEPS */
+#define ZUTILS_IMPLEMENTATION
+#define ZAUDIO_IMPLEMENTATION
+#define ZCOLLIDE_IMPLEMENTATION
 
 /* VULKAN */
 #include <vulkan/vulkan.h>
@@ -41,11 +45,6 @@ To use along-side zengine.h, use #define ZENGINE_DEPS_DEFINED */
 
 #undef RGFW_IMPLEMENTATION
 #undef SOKOL_AUDIO_IMPL
-
-/* zdeps */
-#define ZUTILS_IMPLEMENTATION
-#define ZAUDIO_IMPLEMENTATION
-#define ZCOLLIDE_IMPLEMENTATION
 
 #include "zutils.h"
 #include "zaudio.h"
