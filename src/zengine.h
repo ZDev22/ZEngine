@@ -152,12 +152,10 @@ void createBuffer(ZBuffer* buffer, VkDeviceSize instanceSize, unsigned int insta
 
 #ifdef ZENGINE_IMPLEMENTATION
 /* PRIVATE VARS/EXTERN DEFINITIONS */
-ZCamera camera;
+ZCamera camera; /* camera position & scale can be changed, camera.aspect is calculated by ZEngine, can be used for UI positioning */
+double deltaTime = 0.0; /* deltaTime, do what you will. Example implementation in main.c */
 
-double deltaTime = 0.0; /* deltaTime, do what you will. Example implementation in main.cpp */
-ZENGINE_BOOL ZEngineClose = 0; /* flag to show when the engine is closing */
-
-/* texture vecs */
+/* texture vers */
 struct ZTexture spriteTextures[ZENGINE_MAX_TEXTURES] = {0};
 VkCommandBuffer textureCommandBuffer;
 VkCommandBufferAllocateInfo textureAllocInfo = {(VkStructureType)0};
@@ -442,7 +440,6 @@ void deleteSwapChain() {
     }
 
     vkDestroyRenderPass(device_, renderPass, NULL);
-    if (!ZEngineClose) vkDestroySwapchainKHR(device_, swapChain, NULL);
 
     free(swapChainImages);
     free(swapChainFramebuffers);
@@ -1094,6 +1091,7 @@ void ZEngineRender() {
         /* recreate swapchain */
         vkDeviceWaitIdle(device_);
         deleteSwapChain();
+        vkDestroySwapchainKHR(device_, swapChain, NULL);
         createSwapChain();
 
         ZEngine_framebufferResized = 0;
@@ -1176,7 +1174,6 @@ void ZEngineRender() {
 }
 
 void ZEngineDeinit() {
-    ZEngineClose = 1;
     ZENGINE_PRINT("Waiting for GPU...\n"); vkDeviceWaitIdle(device_);
 
     ZENGINE_PRINT("Freeing command buffers\n"); vkFreeCommandBuffers(device_, commandPool, imageCount, commandBuffers);
